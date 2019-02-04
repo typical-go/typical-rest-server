@@ -1,15 +1,21 @@
-# Typical Go Server
+# Typical Go Server (WIP)
 
-This project aim to provide copy-paste-ready source code to API Server in opinionated way.
+This project aim to provide copy-paste-ready source code as starter project to build API Server in opinionated way.
 
-[KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and others best practices in the industry.
+[KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and adopt other best practices for microservices.
 - [ ] Intuitive Project Layout
 - [ ] README Documentation
 - [ ] Graceful Shutdown Implementation
 - [ ] Test Coverage Checking
 - [ ] Health Check
-- [ ] Profiling
 - [ ] Vendoring
+- [ ] Database Migration
+- [ ] Authentication
+- [ ] Generated API Doc
+- [ ] Cache
+- [ ] Worker
+- [ ] Profiling
+
 
 ### How to Use
 
@@ -27,7 +33,7 @@ _Under Construction_
 - [golang-migrate/migrate](https://github.com/golang-migrate/migrate): Database migrations. CLI and Golang library.
 
 
-### Contributing and Make This Better
+### Contributing
 
 _Under Construction_
 <!-- FIXME: -->
