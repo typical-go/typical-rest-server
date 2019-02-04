@@ -1,3 +1,4 @@
+<!-- FIXME: Project Title & Project description -->
 # [Project Title]
 
 [One Paragraph of project description goes here]
@@ -9,28 +10,51 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 What things you need to install the software and how to install them
+1. Install [go](https://golang.org/)
+  ```sh
+  # for macOS, required https://brew.sh/
+  brew install go
+  ```
+2. [Setting up `GOPATH`](https://github.com/golang/go/wiki/SettingGOPATH)
+  ```sh
+  # create empty directory
+  mkdir $HOME/go && cd $HOME/go && mkdir bin pkg src && cd -
 
-```
-Give examples
-```
+  # example using https://ohmyz.sh/
+  # change ~/.zshrc to ~/.bashrc if you use default bash
+  echo "export GOPATH=$HOME/go
+  export PATH=$PATH:$GOPATH/bin
+  " >> ~/.zshrc
+  source ~/.zshrc
+  ```
+2. Install [dep](https://github.com/golang/dep) as dependency management tool
+  ```sh
+  # for macOS
+  brew install dep
+  ```
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+<!-- FIXME: Project path, git path and project binary name -->
+A step by step that tell you how to get a development environment running
+1. Create project directory
+  ```sh
+  mkdir $GOPATH/src/your/project/path
+  ```
+2. Change directory to project path then `git clone` the project
+  ```sh
+  cd $GOPATH/src/your/project/path && git clone git@your/project
+  ```
+3. Download all dependencies
+  ```sh
+  dep ensure
+  ```
+4. Build and run the project
+  ```sh
+  # rename `my-project` to your project binary name
+  go build -o my-project
+  ./my-project
+  ```
 
 ## Running the tests
 
@@ -54,7 +78,7 @@ Give an example
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+Notes about how to deploy this on a live system
 
 ## Authors
 

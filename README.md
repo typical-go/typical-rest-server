@@ -5,6 +5,7 @@ This project aim to provide copy-paste-ready source code as starter project to b
 [KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and adopt other best practices for microservices.
 - [ ] Intuitive Project Layout
 - [ ] README Documentation
+- [ ] Makefile
 - [ ] Graceful Shutdown Implementation
 - [ ] Test Coverage Checking
 - [ ] Health Check

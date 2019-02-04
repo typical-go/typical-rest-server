@@ -1,1 +1,6 @@
+# binary name
 typical-go-server
+my-project
+
+# dependencies folder
+/vendor
