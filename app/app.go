@@ -3,20 +3,27 @@ package app
 import (
 	"os"
 
-	"github.com/kelseyhightower/envconfig"
+	"github.com/imantung/typical-go-server/app/config"
 	"github.com/urfave/cli"
+)
+
+// FIXME: Application Name, Description, Config Prefix
+const (
+	appName         = "[Service Name]"
+	appUsage        = "API Server for [Service Description]"
+	appConfigPrefix = "APP"
 )
 
 var (
 	app  cli.App
-	conf config
+	conf config.Config
 )
 
-// Run run the application
+// Run the service
 func Run() (err error) {
 
 	// prepare configuration
-	err = envconfig.Process(appConfigPrefix, &conf)
+	conf, err = config.Load(appConfigPrefix)
 	if err != nil {
 		return
 	}
