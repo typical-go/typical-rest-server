@@ -9,13 +9,14 @@ This project aim to provide copy-paste-ready source code as starter project to b
 - [ ] Graceful Shutdown Implementation
 - [ ] Test Coverage Checking
 - [ ] Health Check
-- [ ] Vendoring
+- [x] Vendoring
 - [ ] Database Migration
 - [ ] Authentication
 - [ ] Generated API Doc
 - [ ] Cache
 - [ ] Worker
 - [ ] Profiling
+- [ ] Travis CI Release example
 
 
 ### How to Use

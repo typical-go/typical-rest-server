@@ -3,6 +3,12 @@
 
 [One Paragraph of project description goes here]
 
+## Usages
+
+### Configuration
+
+### Usages
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
@@ -10,17 +16,15 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 What things you need to install the software and how to install them
-1. Install [go](https://golang.org/)
+1. Install [go](https://golang.org/) and [set up `GOPATH`](https://github.com/golang/go/wiki/SettingGOPATH)
   ```sh
   # for macOS, required https://brew.sh/
   brew install go
-  ```
-2. [Setting up `GOPATH`](https://github.com/golang/go/wiki/SettingGOPATH)
-  ```sh
-  # create empty directory
+
+  # create empty directory for GOPATH
   mkdir $HOME/go && cd $HOME/go && mkdir bin pkg src && cd -
 
-  # example using https://ohmyz.sh/
+  # set up GOPATH, the example using https://ohmyz.sh/
   # change ~/.zshrc to ~/.bashrc if you use default bash
   echo "export GOPATH=$HOME/go
   export PATH=$PATH:$GOPATH/bin
@@ -31,6 +35,11 @@ What things you need to install the software and how to install them
   ```sh
   # for macOS
   brew install dep
+  ```
+3. Install [direnv](https://direnv.net/) for directory level environment variable
+  ```sh
+  # for macOS
+  brew install direnv
   ```
 
 ### Installing
@@ -52,7 +61,7 @@ A step by step that tell you how to get a development environment running
 4. Build and run the project
   ```sh
   # rename `my-project` to your project binary name
-  go build -o my-project
+  go build -o my-project`
   ./my-project
   ```
 

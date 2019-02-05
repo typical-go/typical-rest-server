@@ -4,3 +4,6 @@ my-project
 
 # dependencies folder
 /vendor
+
+# local environment variable
+.envrc

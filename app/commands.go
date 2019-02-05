@@ -1,24 +1,22 @@
 package app
 
 import (
-	"github.com/imantung/typical-go-server/app/server"
+	"github.com/labstack/echo"
 	"github.com/urfave/cli"
 )
 
-func initCommands(app *App) {
+func initCommands(app *cli.App) {
 	app.Commands = []cli.Command{
-		{
-			Name:      "Serve",
-			ShortName: "s",
-			Usage:     "Serve the clients",
-			Action:    cmdServe,
-		},
+		{Name: "Serve", ShortName: "s", Usage: "Serve the clients", Action: cmdServe},
+		// add more command here
 	}
 }
 
-func cmdServe(c *cli.Context) (err error) {
-	server := server.New()
+func cmdServe(c *cli.Context) error {
+	server := echo.New()
 
-	// TODO: get address from config
-	return server.Start(":1323")
+	initMiddlewares(server)
+	initRoutes(server)
+
+	return server.Start(conf.Address)
 }

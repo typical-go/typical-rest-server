@@ -1,23 +1,32 @@
 package app
 
 import (
+	"os"
+
+	"github.com/kelseyhightower/envconfig"
 	"github.com/urfave/cli"
 )
 
-// App application
-type App struct {
-	cli.App
-}
+var (
+	app  cli.App
+	conf config
+)
 
-// New create new app
-func New() *App {
-	app := &App{
-		App: *cli.NewApp(),
+// Run run the application
+func Run() (err error) {
+
+	// prepare configuration
+	err = envconfig.Process(appConfigPrefix, &conf)
+	if err != nil {
+		return
 	}
-	app.Name = AppName
-	app.Usage = AppUsage
+
+	// command line interface
+	app := cli.NewApp()
+	app.Name = appName
+	app.Usage = appUsage
 
 	initCommands(app)
 
-	return app
+	return app.Run(os.Args)
 }

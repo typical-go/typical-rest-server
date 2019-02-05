@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func initRoutes(server *Server) {
+func initRoutes(server *echo.Echo) {
 	server.GET("/", hello)
 
 }
