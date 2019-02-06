@@ -3,19 +3,21 @@
 This project aim to provide copy-paste-ready source code as starter project to build API Server in opinionated way.
 
 [KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and adopt other best practices for microservices.
-- [ ] Intuitive Project Layout
-- [ ] README Documentation
-- [ ] Makefile
-- [x] Graceful Shutdown
+- [ ] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
+- [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
+- [x] [Graceful Shutdown](https://12factor.net/disposability)
 - [ ] Test Coverage Checking
-- [ ] Health Check
+- [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
 - [x] Vendoring
+- [ ] Repository Pattern
 - [ ] Database Migration
-- [ ] Authentication
+- [ ] Simple authentication
 - [ ] Generated API Doc
 - [ ] Cache
 - [ ] Worker
 - [ ] Profiling
+- [ ] README Documentation
+- [ ] Makefile
 - [ ] Travis CI Release example
 - [ ] Docker file
 
