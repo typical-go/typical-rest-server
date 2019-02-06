@@ -7,3 +7,6 @@ my-project
 
 # local environment variable
 .envrc
+
+# testing
+cover.out
