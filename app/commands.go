@@ -1,7 +1,14 @@
 package app
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/labstack/echo"
+
 	"github.com/urfave/cli"
 )
 
@@ -13,10 +20,22 @@ func initCommands(app *cli.App) {
 }
 
 func cmdServe(c *cli.Context) error {
-	server := echo.New()
+	e := echo.New()
+	initMiddlewares(e)
+	initRoutes(e)
 
-	initMiddlewares(server)
-	initRoutes(server)
+	gracefulStop := make(chan os.Signal)
+	signal.Notify(gracefulStop, syscall.SIGTERM)
+	signal.Notify(gracefulStop, syscall.SIGINT)
 
-	return server.Start(conf.Address)
+	// gracefull shutdown
+	go func() {
+		<-gracefulStop
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		e.Shutdown(ctx)
+	}()
+
+	return e.Start(conf.Address)
+
 }

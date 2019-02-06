@@ -6,7 +6,7 @@ This project aim to provide copy-paste-ready source code as starter project to b
 - [ ] Intuitive Project Layout
 - [ ] README Documentation
 - [ ] Makefile
-- [ ] Graceful Shutdown Implementation
+- [x] Graceful Shutdown
 - [ ] Test Coverage Checking
 - [ ] Health Check
 - [x] Vendoring
@@ -17,6 +17,7 @@ This project aim to provide copy-paste-ready source code as starter project to b
 - [ ] Worker
 - [ ] Profiling
 - [ ] Travis CI Release example
+- [ ] Docker file
 
 
 ### How to Use
@@ -44,6 +45,7 @@ _Under Construction_
 
 - [gobuffalo](https://gobuffalo.io/): Web Development eco-system
 - [go-swagger](https://goswagger.io/): OpenAPI implementation on Go
+- [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
 
 
 ### Authors

@@ -61,9 +61,10 @@ A step by step that tell you how to get a development environment running
 4. Build and run the project
   ```sh
   # rename `my-project` to your project binary name
-  go build -o my-project`
+  go build -o my-project
   ./my-project
   ```
+
 
 ## Running the tests
 
