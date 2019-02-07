@@ -1,9 +1,10 @@
-package config
+package config_test
 
 import (
 	"os"
 	"testing"
 
+	"github.com/imantung/typical-go-server/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -11,7 +12,8 @@ func TestConfig(t *testing.T) {
 	os.Setenv("TEST_ADDRESS", ":8889")
 	defer os.Clearenv()
 
-	conf, err := Load("TEST")
+	config.Prefix = "TEST"
+	conf, err := config.Load()
 
 	assert.NoError(t, err)
 	assert.Equal(t, conf.Address, ":8889")

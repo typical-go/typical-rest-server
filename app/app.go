@@ -7,14 +7,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-// FIXME: Application Name, Description, Config Prefix
-const (
-	appName         = "[Service Name]"
-	appUsage        = "API Server for [Service Description]"
-	appVersion      = "0.0.1"
-	appConfigPrefix = "APP"
-)
-
 var (
 	app  cli.App
 	conf config.Config
@@ -24,16 +16,16 @@ var (
 func Run() (err error) {
 
 	// prepare configuration
-	conf, err = config.Load(appConfigPrefix)
+	conf, err = config.Load()
 	if err != nil {
 		return
 	}
 
 	// command line interface
 	app := cli.NewApp()
-	app.Name = appName
-	app.Usage = appUsage
-	app.Version = appVersion
+	app.Name = config.App.Name
+	app.Usage = config.App.Usage
+	app.Version = config.App.Version
 
 	initCommands(app)
 
