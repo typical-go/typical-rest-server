@@ -13,6 +13,7 @@ This project aim to provide copy-paste-ready source code as starter project to b
 - [ ] Database Migration
 - [ ] Simple authentication
 - [ ] Generated API Doc
+- [ ] API Versioning
 - [ ] Cache
 - [ ] Worker
 - [ ] Profiling
@@ -36,6 +37,7 @@ _Under Construction_
 - [urfave/cli](https://github.com/urfave/cli): A simple, fast, and fun package for building command line apps in Go
 - [labstack/echo](https://github.com/labstack/echo): High performance, minimalist Go web framework
 - [golang-migrate/migrate](https://github.com/golang-migrate/migrate): Database migrations. CLI and Golang library.
+- [kelseyhightower/envconfig](https://github.com/kelseyhightower/envconfig): managing configuration data from environment variables
 
 
 ### Contributing
@@ -48,7 +50,6 @@ _Under Construction_
 - [gobuffalo](https://gobuffalo.io/): Web Development eco-system
 - [go-swagger](https://goswagger.io/): OpenAPI implementation on Go
 - [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
-
 
 ### Authors
 
