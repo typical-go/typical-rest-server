@@ -3,7 +3,7 @@ package app
 import (
 	"os"
 
-	"github.com/imantung/typical-go-server/app/config"
+	"github.com/imantung/typical-go-server/config"
 	"github.com/urfave/cli"
 )
 
@@ -11,6 +11,7 @@ import (
 const (
 	appName         = "[Service Name]"
 	appUsage        = "API Server for [Service Description]"
+	appVersion      = "0.0.1"
 	appConfigPrefix = "APP"
 )
 
@@ -32,6 +33,7 @@ func Run() (err error) {
 	app := cli.NewApp()
 	app.Name = appName
 	app.Usage = appUsage
+	app.Version = appVersion
 
 	initCommands(app)
 
