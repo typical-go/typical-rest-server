@@ -1,17 +1,18 @@
 # Typical Go Server (WIP)
 
-This project aim to provide copy-paste-ready source code as starter project to build API Server in opinionated way.
+This project aim to provide starter/example project for API Service in Go.
 
 [KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and adopt other best practices for microservices.
-- [ ] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
+- [x] Go Idiomatic
+- [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
+- [x] Package Management/Vendoring
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
-- [ ] [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
+- [x] Modular with [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
 - [x] [Graceful Shutdown](https://12factor.net/disposability)
-- [ ] Test Coverage Checking
 - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-- [x] Vendoring
-- [ ] Repository Pattern
-- [ ] Database Migration
+- [ ] Database Administration (Create/Drop/Migrate/Rollback)
+- [ ] Data Access Layer/Repository Pattern
+- [ ] Test Coverage Checking
 - [ ] Simple authentication
 - [ ] Generated API Doc
 - [ ] API Versioning
