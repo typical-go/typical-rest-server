@@ -13,7 +13,7 @@ func TestConfig(t *testing.T) {
 	defer os.Clearenv()
 
 	config.Prefix = "TEST"
-	conf, err := config.Load()
+	conf, err := config.NewConfig()
 
 	assert.NoError(t, err)
 	assert.Equal(t, conf.Address, ":8889")

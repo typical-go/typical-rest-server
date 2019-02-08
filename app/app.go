@@ -1,33 +1,24 @@
 package app
 
 import (
-	"os"
-
 	"github.com/imantung/typical-go-server/config"
 	"github.com/urfave/cli"
+	"go.uber.org/dig"
 )
 
 var (
-	app  cli.App
-	conf config.Config
+	container *dig.Container
 )
 
-// Run the service
-func Run() (err error) {
+// called once when package imported as go ecosystem
+func init() {
+	container = dig.New()
+	container.Provide(config.NewConfig)
+	container.Provide(newServer)
+}
 
-	// prepare configuration
-	conf, err = config.Load()
-	if err != nil {
-		return
+func triggerAction(function interface{}) interface{} {
+	return func(ctx *cli.Context) error {
+		return container.Invoke(function)
 	}
-
-	// command line interface
-	app := cli.NewApp()
-	app.Name = config.App.Name
-	app.Usage = config.App.Usage
-	app.Version = config.App.Version
-
-	initCommands(app)
-
-	return app.Run(os.Args)
 }

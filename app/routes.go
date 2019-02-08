@@ -6,12 +6,8 @@ import (
 	"github.com/labstack/echo"
 )
 
-func initRoutes(server *echo.Echo) {
-	server.GET("/", hello)
-
-}
-
-// Handler
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+func (s *server) initRoutes() {
+	s.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
 }

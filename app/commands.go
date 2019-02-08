@@ -5,43 +5,44 @@ import (
 	"github.com/urfave/cli"
 )
 
-func initCommands(app *cli.App) {
-	app.Commands = []cli.Command{
+// Commands return list of command
+func Commands() []cli.Command {
+	return []cli.Command{
 		{
 			Name:      "serve",
 			ShortName: "s",
 			Usage:     "Serve the clients",
-			Action:    serve,
+			Action:    triggerAction(serve),
 		},
 
 		{
 			Name:      "database",
 			ShortName: "db",
-			Usage:     "database comamnd",
+			Usage:     "database tool",
 			Subcommands: []cli.Command{
 				{
 					Name:      "create",
 					ShortName: "c",
 					Usage:     "create new database",
-					Action:    db.Create,
+					Action:    triggerAction(db.Create),
 				},
 				{
 					Name:      "drop",
 					ShortName: "d",
 					Usage:     "drop database",
-					Action:    db.Drop,
+					Action:    triggerAction(db.Drop),
 				},
 				{
 					Name:      "migrate",
 					ShortName: "m",
 					Usage:     "migrate database",
-					Action:    db.Migrate,
+					Action:    triggerAction(db.Migrate),
 				},
 				{
 					Name:      "rollback",
 					ShortName: "r",
 					Usage:     "rollback database",
-					Action:    db.Rollback,
+					Action:    triggerAction(db.Rollback),
 				},
 			},
 		},

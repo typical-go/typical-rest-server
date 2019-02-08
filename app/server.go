@@ -7,26 +7,32 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/imantung/typical-go-server/config"
 	"github.com/labstack/echo"
-	"github.com/urfave/cli"
 )
 
-func serve(c *cli.Context) error {
-	e := echo.New()
-	initMiddlewares(e)
-	initRoutes(e)
+type server struct {
+	*echo.Echo
+}
 
+func newServer() *server {
+	s := &server{
+		Echo: echo.New(),
+	}
+	s.initMiddlewares()
+	s.initRoutes()
+	return s
+}
+
+func serve(s *server, conf config.Config) error {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
-
-	// gracefull shutdown
-	go func() {
+	go func() { // gracefull shutdown
 		<-gracefulStop
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-		e.Shutdown(ctx)
+		s.Shutdown(ctx)
 	}()
-
-	return e.Start(conf.Address)
+	return s.Start(conf.Address)
 }

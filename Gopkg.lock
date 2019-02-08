@@ -106,6 +106,18 @@
   revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
 
 [[projects]]
+  digest = "1:2773e4e922e5af534775962ffef08770b8114e177590f7605886528d37417105"
+  name = "go.uber.org/dig"
+  packages = [
+    ".",
+    "internal/digreflect",
+    "internal/dot",
+  ]
+  pruneopts = "UT"
+  revision = "7ff117f761a3f1b3eb521945c17a1091438eb6de"
+  version = "v1.7.0"
+
+[[projects]]
   branch = "master"
   digest = "1:520c8ed6c442eed074caf8c1d874d2b0241edbe59729199f6bdf1db99f2ccb9f"
   name = "golang.org/x/crypto"
@@ -118,11 +130,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e148a4a19f62c442c03fbab1c8810780d739bcc3e9e6b818971035e1c4946582"
+  digest = "1:969c44c96e9866e912a16e282a362cf045b64202107424983fe8abc3373d1eab"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "980327fe3c65509adaad5a9ff06abdf7611b4411"
+  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -133,6 +145,7 @@
     "github.com/labstack/echo/middleware",
     "github.com/stretchr/testify/assert",
     "github.com/urfave/cli",
+    "go.uber.org/dig",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
