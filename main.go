@@ -19,7 +19,7 @@ func main() {
 
 	err := cliApp.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[Fatal Error] %s", err.Error())
 	}
 
 }

@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/imantung/typical-go-server/config"
+	"github.com/imantung/typical-go-server/db"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -14,6 +15,7 @@ var (
 func init() {
 	container = dig.New()
 	container.Provide(config.NewConfig)
+	container.Provide(db.Connect)
 	container.Provide(newServer)
 }
 

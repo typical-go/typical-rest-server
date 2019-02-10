@@ -1,29 +1,25 @@
 package db
 
 import (
-	"fmt"
+	"database/sql"
+
+	"github.com/imantung/go-helper/dbkit"
+	"github.com/imantung/typical-go-server/config"
+
+	// load the driver
+	_ "github.com/lib/pq"
 )
 
-// Create database
-func Create() (err error) {
-	fmt.Println("Create Database")
-	return
-}
+// Connect to database
+func Connect(conf config.Config) (*sql.DB, error) {
+	pgConf := dbkit.PgConfig{
+		Host:     conf.DbHost,
+		Port:     conf.DbPort,
+		DbName:   conf.DbName,
+		User:     conf.DbUser,
+		Password: conf.DbPassword,
+		SslMode:  "disable",
+	}
 
-// Drop database
-func Drop() (err error) {
-	fmt.Println("Drop Database")
-	return
-}
-
-// Migrate database
-func Migrate() (err error) {
-	fmt.Println("Migrate Database")
-	return
-}
-
-// Rollback database
-func Rollback() (err error) {
-	fmt.Println("Rollback Database")
-	return
+	return sql.Open("postgres", pgConf.ConnectionString())
 }

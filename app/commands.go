@@ -18,7 +18,7 @@ func Commands() []cli.Command {
 		{
 			Name:      "database",
 			ShortName: "db",
-			Usage:     "database tool",
+			Usage:     "database administration",
 			Subcommands: []cli.Command{
 				{
 					Name:      "create",
