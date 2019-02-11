@@ -58,8 +58,6 @@ _Under Construction_
 - [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
 - [qiangxue/golang-restful-starter-kit](github.com/qiangxue/golang-restful-starter-kit): A RESTful application boilerplate in Go (golang) taking best practices and utilizing best available packages and tools
 
-
-
 ### Authors
 
 * **[imantung](https://github.com/imantung)** - *Initial work* -

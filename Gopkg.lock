@@ -18,6 +18,20 @@
   version = "v3.2.0"
 
 [[projects]]
+  digest = "1:692b29784ba0a25c33a77cb4c2594e2ffc1e72fc66e17e87503e03a29cb227c5"
+  name = "github.com/golang-migrate/migrate"
+  packages = [
+    ".",
+    "database",
+    "database/postgres",
+    "source",
+    "source/file",
+  ]
+  pruneopts = "UT"
+  revision = "4937cd088f7c7193ee59b319c1c2caa7482aae8e"
+  version = "v3.5.4"
+
+[[projects]]
   branch = "master"
   digest = "1:9740884a64fe98f2a472a7a6f3c7dc337fa45d81afdcd7e98e1fd9dc1dedbdda"
   name = "github.com/imantung/go-helper"
@@ -96,12 +110,11 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:8ff03ccc603abb0d7cce94d34b613f5f6251a9e1931eba1a3f9888a9029b055c"
+  digest = "1:5da8ce674952566deae4dbc23d07c85caafc6cfa815b0b3e03e41979cedb8750"
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
     "require",
-    "suite",
   ]
   pruneopts = "UT"
   revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
@@ -166,14 +179,16 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/golang-migrate/migrate",
+    "github.com/golang-migrate/migrate/database/postgres",
+    "github.com/golang-migrate/migrate/source/file",
     "github.com/imantung/go-helper/dbkit",
     "github.com/imantung/go-helper/envkit",
     "github.com/kelseyhightower/envconfig",
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",
     "github.com/lib/pq",
-    "github.com/stretchr/testify/assert",
-    "github.com/stretchr/testify/suite",
+    "github.com/stretchr/testify/require",
     "github.com/urfave/cli",
     "go.uber.org/dig",
   ]

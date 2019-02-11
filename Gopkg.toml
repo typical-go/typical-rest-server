@@ -26,12 +26,24 @@
 
 
 [[constraint]]
+  name = "github.com/golang-migrate/migrate"
+  version = "3.5.4"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/imantung/go-helper"
+
+[[constraint]]
   name = "github.com/kelseyhightower/envconfig"
   version = "1.3.0"
 
 [[constraint]]
   name = "github.com/labstack/echo"
   version = "3.3.10"
+
+[[constraint]]
+  name = "github.com/lib/pq"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
@@ -48,11 +60,3 @@
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  name = "github.com/lib/pq"
-  version = "1.0.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/imantung/go-helper"
