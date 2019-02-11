@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	cliApp := cli.NewApp()
 	cliApp.Name = config.App.Name
 	cliApp.Usage = config.App.Usage
@@ -19,7 +18,6 @@ func main() {
 
 	err := cliApp.Run(os.Args)
 	if err != nil {
-		log.Fatalf("[Fatal Error] %s", err.Error())
+		log.Fatalf("%s", err.Error())
 	}
-
 }
