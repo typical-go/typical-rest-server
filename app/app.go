@@ -7,20 +7,18 @@ import (
 	"go.uber.org/dig"
 )
 
-var (
-	container *dig.Container
-)
-
-// called once when package imported as go ecosystem
-func init() {
-	container = dig.New()
+func container() *dig.Container {
+	container := dig.New()
 	container.Provide(config.NewConfig)
 	container.Provide(db.Connect)
 	container.Provide(newServer)
+	return container
 }
 
-func triggerAction(function interface{}) interface{} {
+func triggerAction(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
-		return container.Invoke(function)
+		container := container()
+		container.Provide(ctx.Args)
+		return container.Invoke(invokeFunc)
 	}
 }

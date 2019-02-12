@@ -16,4 +16,7 @@ var (
 
 	// Prefix of configuration
 	Prefix = "APP"
+
+	// DefaultMigrationDirectory refer to migration directory path
+	DefaultMigrationDirectory = "db/migrate"
 )

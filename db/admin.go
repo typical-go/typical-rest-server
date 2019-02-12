@@ -3,9 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/imantung/go-helper/dbkit"
 	"github.com/imantung/typical-go-server/config"
+	"github.com/urfave/cli"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
@@ -27,9 +29,13 @@ func Drop(conf config.Config) error {
 }
 
 // Migrate database
-func Migrate(conn *sql.DB) error {
-	// TODO: migration folder should be parameterize
-	migration, err := newMigration(conn, "db/migrate")
+func Migrate(conn *sql.DB, args cli.Args) error {
+	migrationDir := config.DefaultMigrationDirectory
+	if len(args) > 0 {
+		migrationDir = args.First()
+	}
+	log.Printf("Migrate database from directory '%s'\n", migrationDir)
+	migration, err := newMigration(conn, migrationDir)
 	if err != nil {
 		return err
 	}
@@ -38,8 +44,12 @@ func Migrate(conn *sql.DB) error {
 }
 
 // Rollback database
-func Rollback(conn *sql.DB) error {
-	// TODO: migration folder should be parameterize
+func Rollback(conn *sql.DB, args cli.Args) error {
+	migrationDir := config.DefaultMigrationDirectory
+	if len(args) > 0 {
+		migrationDir = args.First()
+	}
+	log.Printf("Rollback database from directory '%s'\n", migrationDir)
 	migration, err := newMigration(conn, "db/migrate")
 	if err != nil {
 		return err
