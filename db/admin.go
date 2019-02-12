@@ -28,17 +28,18 @@ func Drop(conf config.Config) error {
 
 // Migrate database
 func Migrate(conn *sql.DB) error {
+	// TODO: migration folder should be parameterize
 	migration, err := newMigration(conn, "db/migrate")
 	if err != nil {
 		return err
 	}
 	defer migration.Close()
-
 	return migration.Up()
 }
 
 // Rollback database
 func Rollback(conn *sql.DB) error {
+	// TODO: migration folder should be parameterize
 	migration, err := newMigration(conn, "db/migrate")
 	if err != nil {
 		return err
