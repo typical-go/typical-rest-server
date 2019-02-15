@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/imantung/typical-go-server/config"
 	"github.com/imantung/typical-go-server/db"
 	"github.com/urfave/cli"
@@ -9,9 +10,10 @@ import (
 
 func container() *dig.Container {
 	container := dig.New()
+	container.Provide(newServer)
 	container.Provide(config.NewConfig)
 	container.Provide(db.Connect)
-	container.Provide(newServer)
+	container.Provide(controller.NewBookController)
 	return container
 }
 

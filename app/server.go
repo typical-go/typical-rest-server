@@ -1,38 +1,33 @@
 package app
 
 import (
-	"context"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+	"fmt"
 
-	"github.com/imantung/typical-go-server/config"
+	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/labstack/echo"
 )
 
 type server struct {
 	*echo.Echo
+	bookController controller.BookController
 }
 
-func newServer() *server {
+func newServer(bookController controller.BookController) *server {
 	s := &server{
-		Echo: echo.New(),
+		Echo:           echo.New(),
+		bookController: bookController,
 	}
-	s.initMiddlewares()
-	s.initRoutes()
+
+	initMiddlewares(s)
+	initRoutes(s)
+
 	return s
 }
 
-func serve(s *server, conf config.Config) error {
-	gracefulStop := make(chan os.Signal)
-	signal.Notify(gracefulStop, syscall.SIGTERM)
-	signal.Notify(gracefulStop, syscall.SIGINT)
-	go func() { // gracefull shutdown
-		<-gracefulStop
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		s.Shutdown(ctx)
-	}()
-	return s.Start(conf.Address)
+func (s *server) CRUD(entity string, crud controller.CRUD) {
+	s.GET(fmt.Sprintf("/%s", entity), crud.List)
+	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
+	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)
+	s.PUT(fmt.Sprintf("/%s/:id", entity), crud.Update)
+	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
 }
