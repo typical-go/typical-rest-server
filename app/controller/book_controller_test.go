@@ -7,40 +7,35 @@ import (
 	"testing"
 
 	"github.com/imantung/typical-go-server/app/controller"
+	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/labstack/echo"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBookController(t *testing.T) {
 
-	bookController := controller.NewBookController()
-
 	testcases := []struct {
-		handler      func(e echo.Context) error
+		repository   repository.BookRepository
 		method       string
 		target       string
 		requestBody  io.Reader
 		statusCode   int
 		responseBody string
 	}{
-		{bookController.List, http.MethodGet, "/book", nil, http.StatusServiceUnavailable, ""},
-		{bookController.Create, http.MethodPost, "/book", nil, http.StatusServiceUnavailable, ""},
-		{bookController.Get, http.MethodGet, "/book/1", nil, http.StatusServiceUnavailable, ""},
-		{bookController.Delete, http.MethodDelete, "/book/1", nil, http.StatusServiceUnavailable, ""},
-		{bookController.Update, http.MethodPut, "/book", nil, http.StatusServiceUnavailable, ""},
+		{nil, http.MethodGet, "/book/1", nil, http.StatusInternalServerError, ""},
 	}
 
-	e := echo.New()
-
-	for _, tt := range testcases {
+	for i, tt := range testcases {
 		req := httptest.NewRequest(tt.method, tt.target, tt.requestBody)
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
+		rr := httptest.NewRecorder()
 
-		// Assertions
-		if assert.NoError(t, tt.handler(c)) {
-			assert.Equal(t, tt.statusCode, rec.Code)
-		}
+		bookController := controller.NewBookController(tt.repository)
+
+		e := echo.New()
+		bookController.RegisterTo("book", e)
+		http.HandlerFunc(e.ServeHTTP).ServeHTTP(rr, req)
+
+		require.Equal(t, tt.statusCode, rr.Code, "Failed at test case %d", i)
 	}
 }

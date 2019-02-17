@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/labstack/echo"
 )
@@ -25,9 +23,5 @@ func newServer(bookController controller.BookController) *server {
 }
 
 func (s *server) CRUD(entity string, crud controller.CRUD) {
-	s.GET(fmt.Sprintf("/%s", entity), crud.List)
-	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
-	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)
-	s.PUT(fmt.Sprintf("/%s/:id", entity), crud.Update)
-	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
+	crud.RegisterTo(entity, s.Echo)
 }
