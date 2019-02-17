@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
 
 	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/labstack/echo"
@@ -32,9 +34,12 @@ func (c *bookController) List(e echo.Context) error {
 }
 
 func (c *bookController) Get(e echo.Context) error {
-	// id, _ := strconv.Atoi(e.Param("id"))
-	// c.bookRepository.Get(id)
-	return underContruction(e)
+	id, _ := strconv.Atoi(e.Param("id"))
+	book, err := c.bookRepository.Get(id)
+	if err != nil {
+		return err
+	}
+	return e.JSON(http.StatusOK, book)
 }
 
 func (c *bookController) Delete(e echo.Context) error {
