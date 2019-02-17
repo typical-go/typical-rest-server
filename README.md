@@ -7,12 +7,13 @@ This project aim to provide starter/example project for API Service in Go.
 - [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
 - [x] Package Management/Vendoring
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
-- [x] Modular with [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
+- [x] Separation of concern/Modular/[Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
 - [x] Postgres Database
 - [x] [Graceful Shutdown](https://12factor.net/disposability)
+- [x] Database Administration (Create/Drop/Migrate/Rollback)
+- [x] Data Access Layer/Repository Pattern
+- [x] [README Documentation](Typical_README.md)
 - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-- [ ] Database Administration (Create/Drop/Migrate/Rollback)
-- [ ] Data Access Layer/Repository Pattern
 - [ ] Test Coverage Checking
 - [ ] Simple authentication
 - [ ] Generated API Doc
@@ -20,7 +21,6 @@ This project aim to provide starter/example project for API Service in Go.
 - [ ] Cache
 - [ ] Worker
 - [ ] Profiling
-- [ ] README Documentation
 - [ ] Makefile
 - [ ] Travis CI Release example
 - [ ] Docker file
