@@ -3,8 +3,6 @@
 
 [One Paragraph of project description goes here]
 
-## Usages
-
 ### Configuration
 
 ### Usages

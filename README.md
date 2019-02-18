@@ -2,29 +2,32 @@
 
 This project aim to provide starter/example project for API Service in Go.
 
-[KISS](https://en.wikipedia.org/wiki/KISS_principle) is the core principle while follows [The Twelve-Factor App](https://12factor.net/) to make sure the service will be easy to ship and adopt another best practices for microservices.
-- [x] Go Idiomatic
+- [x] [KISS](https://en.wikipedia.org/wiki/KISS_principle) and Go Idiomatic
 - [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
-- [x] Package Management/Vendoring
+  - [x] [Separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
+  - [x] [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
+- [x] [12 Factor App](https://12factor.net/) and micro-services friendly
+  - [x] Package Management/Vendoring
+  - [x] [Graceful Shutdown](https://12factor.net/disposability)
+  - [x] Database Administration (Create/Drop/Migrate/Rollback)
+  - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
+  - [ ] Travis CI Release example
+  - [ ] Docker file
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
-- [x] Separation of concern/Modular/[Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
+  - [x] Generate Mocking class
 - [x] Postgres Database
-- [x] [Graceful Shutdown](https://12factor.net/disposability)
-- [x] Database Administration (Create/Drop/Migrate/Rollback)
-- [x] Data Access Layer/Repository Pattern
-- [x] [README Documentation](Typical_README.md)
-- [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-- [ ] Test Coverage Checking
-- [ ] Simple authentication
-- [ ] Generated API Doc
-- [ ] API Versioning
-- [ ] Cache
-- [ ] Worker
-- [ ] Profiling
-- [ ] Makefile
-- [ ] Travis CI Release example
-- [ ] Docker file
-
+  - [x] Data Access Layer/Repository Pattern
+- [ ] Self-explanatory
+  - [x] [Project README](Typical_README.md)
+  - [x] Makefile
+  - [x] Cli Help
+  - [ ] Generate documentation for configuration
+  - [ ] Generate API Doc
+- [ ] Misc
+  - [ ] Machine Profiling
+  - [ ] API Versioning
+  - [ ] Cache
+  - [ ] Worker
 
 ### How to Use
 
