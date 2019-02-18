@@ -2,7 +2,6 @@
 
 PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
-BINARY_LINUX := $(PROJECT_NAME)_linux
 MOCK_TARGET := test/mock
 
 ## install: Install missing dependencies.
@@ -16,13 +15,22 @@ clean:
 	@rm -rf vendor
 	@-$(MAKE) go-clean
 
-## mock: Generate mock class
-mock:
+## mockgen: Generate mock class
+mockgen:
 	@./mockgen.sh $(MOCK_TARGET)
+
+## test: Running test
+test:
+	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
+
+## test-detail: Show test detail
+test-detail:
+	@-$(MAKE) test
+	@go tool cover -html=cover.out
 
 go-build:
 	@echo "  >  Building binary..."
-	@go build -o $(PROJECT_NAME)
+	@go build -o $(BINARY)
 
 go-dep:
 	@echo "  >  Checking if there is any missing dependencies..."
