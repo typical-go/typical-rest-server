@@ -44,6 +44,8 @@ _Under Construction_
 - [uber-go/dig](https://github.com/uber-go/dig): A reflection based dependency injection toolkit for Go.
 - [lib/pq](https://github.com/lib/pq): Pure Go Postgres driver for database/sql
 - [imantung/go-helper](https://github.com/imantung/go-helper): Helper library collection for golang
+- [Masterminds/squirrel](https://github.com/Masterminds/squirrel): Fluent SQL generation for golang
+- [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Sql mock driver for golang to test database interactions
 
 
 ### Contributing
