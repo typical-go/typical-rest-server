@@ -17,11 +17,11 @@ This project aim to provide starter/example project for API Service in Go.
   - [x] Generate Mocking class
 - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
-- [ ] Self-explanatory
-  - [x] [Project README](Typical_README.md)
+- [ ] Self-explanatory Project
+  - [x] [Project README](Project_README.md)
   - [x] Makefile
   - [x] Cli Help
-  - [ ] Generate documentation for configuration
+  - [x] Config Documentation
   - [ ] Generate API Doc
 - [ ] Misc
   - [ ] Machine Profiling
@@ -30,11 +30,6 @@ This project aim to provide starter/example project for API Service in Go.
   - [ ] Worker
 
 ### How to Use
-
-_Under Construction_
-<!-- FIXME: -->
-
-### Project Layout
 
 _Under Construction_
 <!-- FIXME: -->
@@ -50,12 +45,8 @@ _Under Construction_
 - [Masterminds/squirrel](https://github.com/Masterminds/squirrel): Fluent SQL generation for golang
 - [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Sql mock driver for golang to test database interactions
 - [golang/mock](https://github.com/golang/mock): A mocking framework for the Go programming language.
+- [olekukonko/tablewriter](https://github.com/olekukonko/tablewriter): ASCII table in golang
 
-
-### Contributing
-
-_Under Construction_
-<!-- FIXME: -->
 
 ### Similar Projects
 
@@ -63,6 +54,12 @@ _Under Construction_
 - [go-swagger](https://goswagger.io/): OpenAPI implementation on Go
 - [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
 - [qiangxue/golang-restful-starter-kit](github.com/qiangxue/golang-restful-starter-kit): A RESTful application boilerplate in Go (golang) taking best practices and utilizing best available packages and tools
+
+### Contributing
+
+_Under Construction_
+<!-- FIXME: -->
+
 
 ### Authors
 

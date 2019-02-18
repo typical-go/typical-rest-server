@@ -3,9 +3,30 @@
 
 [One Paragraph of project description goes here]
 
-### Configuration
+## Usages
 
-### Usages
+List of Commands
+```
+serve, s              Serve the clients
+database, db          database administration
+config-details, conf  Print configuration detail
+help, h               Shows a list of commands or help for one command
+```
+
+## Configuration
+
+```
++-------------+--------+----------+-----------+
+|    NAME     |  TYPE  | REQUIRED |  DEFAULT  |
++-------------+--------+----------+-----------+
+| ADDRESS     | string | true     |           |
+| DB_NAME     | string | true     |           |
+| DB_USER     | string | true     |           |
+| DB_PASSWORD | string | true     |           |
+| DB_HOST     | string |          | localhost |
+| DB_PORT     | int    |          |      5432 |
++-------------+--------+----------+-----------+
+```
 
 ## Getting Started
 
@@ -40,7 +61,7 @@ What things you need to install the software and how to install them
   brew install direnv
   ```
 
-### Installing
+### Clone
 
 <!-- FIXME: Project path, git path and project binary name -->
 A step by step that tell you how to get a development environment running
@@ -52,16 +73,12 @@ A step by step that tell you how to get a development environment running
   ```sh
   cd $GOPATH/src/your/project/path && git clone git@your/project
   ```
-3. Download all dependencies
+3. Build the project
   ```sh
-  dep ensure
+  make build
   ```
-4. Build and run the project
-  ```sh
-  # rename `my-project` to your project binary name
-  go build -o my-project
-  ./my-project
-  ```
+
+### Make
 
 
 ## Running the tests
