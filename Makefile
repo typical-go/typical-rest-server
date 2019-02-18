@@ -3,17 +3,22 @@
 PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
 BINARY_LINUX := $(PROJECT_NAME)_linux
+MOCK_TARGET := test/mock
 
 ## install: Install missing dependencies.
 install: go-dep
 
-## build: build the binary.
+## build: Build the binary.
 build: go-dep go-build
 
 ## clean: Clean build files. Runs `go clean` internally.
 clean:
 	@rm -rf vendor
 	@-$(MAKE) go-clean
+
+## mock: Generate mock class
+mock:
+	@./mockgen.sh $(MOCK_TARGET)
 
 go-build:
 	@echo "  >  Building binary..."
