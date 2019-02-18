@@ -20,8 +20,7 @@ mockgen:
 	@./mockgen.sh $(MOCK_TARGET)
 
 ## test: Running test
-test:
-	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
+test: go-dep go-test
 
 ## test-detail: Show test detail
 test-detail:
@@ -37,6 +36,9 @@ go-dep:
 	@go get github.com/golang/dep/cmd/dep
 	@go install github.com/golang/dep/cmd/dep
 	@$(GOPATH)/bin/dep ensure
+
+go-test:
+	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
 
 go-clean:
 	@echo "  >  Cleaning build cache"
