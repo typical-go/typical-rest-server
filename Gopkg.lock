@@ -48,6 +48,14 @@
   version = "v3.5.4"
 
 [[projects]]
+  digest = "1:b60efdeb75d3c0ceed88783ac2495256aba3491a537d0f31401202579fd62a94"
+  name = "github.com/golang/mock"
+  packages = ["gomock"]
+  pruneopts = "UT"
+  revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
+  version = "v1.2.0"
+
+[[projects]]
   branch = "master"
   digest = "1:7fade4befe3049d5a0d2941ca4f1c6f50bb8515de7ac9f1814af5886c2efd495"
   name = "github.com/imantung/go-helper"
@@ -133,6 +141,22 @@
   pruneopts = "UT"
   revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
   version = "v0.0.4"
+
+[[projects]]
+  digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
+  version = "v0.0.4"
+
+[[projects]]
+  digest = "1:abcdbf03ca6ca13d3697e2186edc1f33863bbdac2b3a44dfa39015e8903f7409"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e6d60cf7ba1f42d86d54cdf5508611c4aafb3970"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
@@ -224,6 +248,7 @@
     "github.com/golang-migrate/migrate",
     "github.com/golang-migrate/migrate/database/postgres",
     "github.com/golang-migrate/migrate/source/file",
+    "github.com/golang/mock/gomock",
     "github.com/imantung/go-helper/dbkit",
     "github.com/imantung/go-helper/envkit",
     "github.com/imantung/go-helper/timekit",
@@ -231,6 +256,7 @@
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",
     "github.com/lib/pq",
+    "github.com/olekukonko/tablewriter",
     "github.com/stretchr/testify/require",
     "github.com/urfave/cli",
     "go.uber.org/dig",

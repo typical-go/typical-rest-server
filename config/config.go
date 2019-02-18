@@ -24,3 +24,8 @@ func NewConfig() (conf Config, err error) {
 	err = envconfig.Process(Prefix, &conf)
 	return
 }
+
+// Details return details of configuration
+func Details() []ConfigDetail {
+	return details(&Config{})
+}

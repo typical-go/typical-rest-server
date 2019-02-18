@@ -18,7 +18,7 @@ func Commands() []cli.Command {
 		{
 			Name:      "database",
 			ShortName: "db",
-			Usage:     "database administration",
+			Usage:     "Database Administration",
 			Subcommands: []cli.Command{
 				{
 					Name:      "create",
@@ -45,6 +45,13 @@ func Commands() []cli.Command {
 					Action:    triggerAction(db.Rollback),
 				},
 			},
+		},
+
+		{
+			Name:      "config-details",
+			ShortName: "conf",
+			Usage:     "Print configuration detail",
+			Action:    printConfigDetails,
 		},
 
 		// add more command here
