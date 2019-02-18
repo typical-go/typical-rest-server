@@ -46,6 +46,7 @@ _Under Construction_
 - [imantung/go-helper](https://github.com/imantung/go-helper): Helper library collection for golang
 - [Masterminds/squirrel](https://github.com/Masterminds/squirrel): Fluent SQL generation for golang
 - [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Sql mock driver for golang to test database interactions
+- [golang/mock](https://github.com/golang/mock): A mocking framework for the Go programming language.
 
 
 ### Contributing
