@@ -16,19 +16,25 @@ This project aim to provide starter/example project for API Service in Go.
   - [ ] Docker example
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
   - [x] Generate Mocking class
-- [x] Postgres Database
+- [x] Working with Database
+  - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
 - [ ] Self-explanatory Project
   - [x] [Project README](Project_README.md)
+  - [x] Automatically generate cli/command documentation
+  - [x] Automatically generate config documentation
+  - [ ] Automatically generate API Doc
   - [x] Makefile
-  - [x] Automatic generate cli/command documentation
-  - [x] Automatic generate config documentation
-  - [ ] Automatic generate API Doc
 - [ ] Misc
   - [ ] Machine Profiling
   - [ ] API Versioning
   - [ ] Cache
   - [ ] Worker
+
+We write some the article to allow us to talk more about concept, reasoning, and opinion behind the project:
+- KISS Principle: Go Idiomatic and Rails-like project layout. (WIP)
+- Working with Database and Go: Between ORMHater and Data Access Layer. (WIP)
+- Testing in Go: BDD Styled with no library and other tips. (WIP)
 
 ### How to Use
 
