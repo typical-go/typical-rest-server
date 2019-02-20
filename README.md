@@ -31,17 +31,19 @@ This project aim to provide starter/example project for API Service in Go.
   - [ ] Cache
   - [ ] Worker
 
+## Learn More
+
 We write some the article to allow us to talk more about concept, reasoning, and opinion behind the project:
 - KISS Principle: Go Idiomatic and Rails-like project layout. (WIP)
 - Working with Database and Go: Between ORMHater and Data Access Layer. (WIP)
 - Testing in Go: BDD Styled with no library and other tips. (WIP)
 
-### How to Use
+## How to Use
 
 _Under Construction_
 <!-- FIXME: -->
 
-### Library Overview
+## Library Overview
 - [urfave/cli](https://github.com/urfave/cli): A simple, fast, and fun package for building command line apps in Go
 - [labstack/echo](https://github.com/labstack/echo): High performance, minimalist Go web framework
 - [kelseyhightower/envconfig](https://github.com/kelseyhightower/envconfig): Managing configuration data from environment variables
@@ -55,20 +57,20 @@ _Under Construction_
 - [olekukonko/tablewriter](https://github.com/olekukonko/tablewriter): ASCII table in golang
 
 
-### Similar Projects
+## Similar Projects
 
 - [gobuffalo](https://gobuffalo.io/): Web Development eco-system
 - [go-swagger](https://goswagger.io/): OpenAPI implementation on Go
 - [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
 - [qiangxue/golang-restful-starter-kit](github.com/qiangxue/golang-restful-starter-kit): A RESTful application boilerplate in Go (golang) taking best practices and utilizing best available packages and tools
 
-### Contributing
+## Contributing
 
 _Under Construction_
 <!-- FIXME: -->
 
 
-### Authors
+## Authors
 
 * **[imantung](https://github.com/imantung)** - *Initial work* -
 
