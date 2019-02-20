@@ -7,12 +7,13 @@ This project aim to provide starter/example project for API Service in Go.
   - [x] [Separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
   - [x] [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
 - [x] [12 Factor App](https://12factor.net/) and micro-services friendly
+  - [x] Using environment variable as config (for development, use [direnv](https://direnv.net/))
   - [x] Package Management/Vendoring
   - [x] [Graceful Shutdown](https://12factor.net/disposability)
   - [x] Database Administration (Create/Drop/Migrate/Rollback)
   - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-  - [ ] Travis CI Release example
-  - [ ] Docker file
+  - [ ] Travis CI example
+  - [ ] Docker example
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
   - [x] Generate Mocking class
 - [x] Postgres Database
@@ -20,9 +21,9 @@ This project aim to provide starter/example project for API Service in Go.
 - [ ] Self-explanatory Project
   - [x] [Project README](Project_README.md)
   - [x] Makefile
-  - [x] Cli Help
-  - [x] Config Documentation
-  - [ ] Generate API Doc
+  - [x] Automatic generate cli/command documentation
+  - [x] Automatic generate config documentation
+  - [ ] Automatic generate API Doc
 - [ ] Misc
   - [ ] Machine Profiling
   - [ ] API Versioning
