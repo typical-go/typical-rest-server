@@ -27,9 +27,9 @@ func NewBookRepository(conn *sql.DB) BookRepository {
 
 func (r *bookRepository) Get(id int) (book Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-
 	builder := psql.Select(bookColumns...).
-		From(bookTable).Where(sq.Eq{"id": id})
+		From(bookTable).
+		Where(sq.Eq{"id": id})
 
 	rows, err := builder.RunWith(r.conn).Query()
 	if err != nil {
@@ -43,7 +43,22 @@ func (r *bookRepository) Get(id int) (book Book, err error) {
 }
 
 func (r *bookRepository) List() (list []Book, err error) {
-	err = fmt.Errorf("Under Construction")
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	builder := psql.Select(bookColumns...).From(bookTable)
+
+	rows, err := builder.RunWith(r.conn).Query()
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var book Book
+		book, err = scanBook(rows)
+		if err != nil {
+			return
+		}
+		list = append(list, book)
+	}
 	return
 }
 
