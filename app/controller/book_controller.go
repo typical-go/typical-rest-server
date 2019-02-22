@@ -30,7 +30,11 @@ func (c *bookController) Create(e echo.Context) error {
 }
 
 func (c *bookController) List(e echo.Context) error {
-	return underContruction(e)
+	books, err := c.bookRepository.List()
+	if err != nil {
+		return err
+	}
+	return e.JSON(http.StatusOK, books)
 }
 
 func (c *bookController) Get(e echo.Context) error {
@@ -56,7 +60,6 @@ func (c *bookController) BeforeActionFunc(next echo.HandlerFunc) echo.HandlerFun
 		if err != nil {
 			return err
 		}
-
 		return next(e)
 	}
 }
