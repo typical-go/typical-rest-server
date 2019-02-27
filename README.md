@@ -1,6 +1,6 @@
 # Typical Go Server (WIP)
 
-This project aim to provide starter/example project for API Service in Go.
+This project aim to provide template project for API Service.
 
 - [x] [KISS](https://en.wikipedia.org/wiki/KISS_principle) and Go Idiomatic
 - [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
