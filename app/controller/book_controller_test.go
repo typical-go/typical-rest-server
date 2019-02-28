@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/imantung/go-helper/timekit"
 	"github.com/imantung/typical-go-server/app/controller"
@@ -45,6 +46,8 @@ func TestBookController(t *testing.T) {
 	bookR.EXPECT().Get(2).Return(repository.Book{}, fmt.Errorf("some-error"))
 	bookR.EXPECT().List().Return([]repository.Book{book1, book2}, nil)
 	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-error"))
+	bookR.EXPECT().Insert(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
+	bookR.EXPECT().Insert(gomock.Any()).Return(sqlmock.NewResult(99, 1), nil)
 
 	bookController := controller.NewBookController(bookR)
 	e := echo.New()
@@ -74,13 +77,30 @@ func TestBookController(t *testing.T) {
 			http.MethodGet, "/book", "",
 			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
 		},
+		{
+			http.MethodPost, "/book", "{}",
+			http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n",
+		},
+		{
+			http.MethodPost, "/book", "invalid-json",
+			http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n",
+		},
+		{
+			http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`,
+			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+		},
+		{
+			http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`,
+			http.StatusCreated, "{\"message\":\"Success insert new record #99\"}\n",
+		},
 	}
 
 	// execute the test
 	for i, tt := range testcases {
+		req := httptest.NewRequest(tt.method, tt.target, strings.NewReader(tt.requestBody))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rr := httptest.NewRecorder()
-		http.HandlerFunc(e.ServeHTTP).ServeHTTP(rr,
-			httptest.NewRequest(tt.method, tt.target, strings.NewReader(tt.requestBody)))
+		http.HandlerFunc(e.ServeHTTP).ServeHTTP(rr, req)
 
 		require.Equal(t, tt.statusCode, rr.Code, "%d: Expect %d but got %d",
 			i, tt.statusCode, rr.Code)
