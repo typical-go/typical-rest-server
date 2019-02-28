@@ -1,35 +1,47 @@
 # Typical Go Server (WIP)
 
-This project aim to provide template project for API Service.
+This project aim to provide template project for Golang API Server.
 
-- [x] [KISS](https://en.wikipedia.org/wiki/KISS_principle) and Go Idiomatic
-- [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
+- [x] Encourage [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle)
+  - [x] Go Idiomatic
+  - [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
   - [x] [Separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
   - [x] [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
-- [x] [12 Factor App](https://12factor.net/) and micro-services friendly
-  - [x] Using environment variable as config (for development, use [direnv](https://direnv.net/))
+- [x] Micro-services Friendly
+  - [x] Follow [12 Factor App](https://12factor.net/)
+  - [x] Environment Variable as configuration (for development, use [direnv](https://direnv.net/))
   - [x] Package Management/Vendoring
   - [x] [Graceful Shutdown](https://12factor.net/disposability)
-  - [x] Database Administration (Create/Drop/Migrate/Rollback)
   - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-  - [ ] Travis CI example
-  - [ ] Docker example
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
   - [x] Generate Mocking class
+- [x] RESTful API
+  - [ ] CRUD Operation
+  - [ ] Model Validation
+  - [ ] Custom Error Handling
+  - [ ] CORS
+  - [ ] Cache
+  - [ ] API Versioning
+  - [ ] API Documentation
+- [ ] Worker
+  - [ ] Job Background Process
 - [x] Working with Database
   - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
+  - [x] Database Administration
+    - [x] Create db
+    - [x] Drop db
+    - [x] Migration
+    - [x] Rollback
 - [ ] Self-explanatory Project
   - [x] [Project README](Project_README.md)
   - [x] Automatically generate cli/command documentation
   - [x] Automatically generate config documentation
-  - [ ] Automatically generate API Doc
   - [x] Makefile
 - [ ] Misc
-  - [ ] Machine Profiling
-  - [ ] API Versioning
-  - [ ] Cache
-  - [ ] Worker
+  - [ ] Debug/Profiling
+  - [ ] Travis CI example
+  - [ ] Docker example
 
 ## Learn More
 
