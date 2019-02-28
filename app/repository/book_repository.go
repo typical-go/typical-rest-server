@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	sq "gopkg.in/Masterminds/squirrel.v1"
 )
@@ -11,7 +10,7 @@ import (
 type BookRepository interface {
 	Get(id int) (Book, error)
 	List() ([]Book, error)
-	Insert(book Book) error
+	Insert(book Book) (sql.Result, error)
 }
 
 type bookRepository struct {
@@ -62,7 +61,9 @@ func (r *bookRepository) List() (list []Book, err error) {
 	return
 }
 
-func (r *bookRepository) Insert(book Book) (err error) {
-	err = fmt.Errorf("Under Construction")
-	return
+func (r *bookRepository) Insert(book Book) (result sql.Result, err error) {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	builder := psql.Insert(bookTable).Columns("title", "author").
+		Values(book.Author, book.Title)
+	return builder.RunWith(r.conn).Exec()
 }

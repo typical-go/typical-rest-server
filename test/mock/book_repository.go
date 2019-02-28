@@ -5,6 +5,7 @@
 package mock
 
 import (
+	sql "database/sql"
 	gomock "github.com/golang/mock/gomock"
 	repository "github.com/imantung/typical-go-server/app/repository"
 	reflect "reflect"
@@ -34,10 +35,10 @@ func (m *MockBookRepository) EXPECT() *MockBookRepositoryMockRecorder {
 }
 
 // Get mocks base method
-func (m *MockBookRepository) Get(id int) (*repository.Book, error) {
+func (m *MockBookRepository) Get(id int) (repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id)
-	ret0, _ := ret[0].(*repository.Book)
+	ret0, _ := ret[0].(repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,11 +65,12 @@ func (mr *MockBookRepositoryMockRecorder) List() *gomock.Call {
 }
 
 // Insert mocks base method
-func (m *MockBookRepository) Insert(book repository.Book) error {
+func (m *MockBookRepository) Insert(book repository.Book) (sql.Result, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", book)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(sql.Result)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert

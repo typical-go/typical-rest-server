@@ -71,3 +71,30 @@ func TestBookRepository_List(t *testing.T) {
 		require.EqualError(t, err, "sql: expected 1 destination arguments in Scan, not 4")
 	})
 }
+
+func TestBookRepository_Insert(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectExec("INSERT").WillReturnResult(sqlmock.NewResult(99, 1))
+	mock.ExpectExec("INSERT").WillReturnError(fmt.Errorf("some-error"))
+
+	bookRepository := NewBookRepository(db)
+
+	t.Run("return error", func(t *testing.T) {
+		result, err := bookRepository.Insert(Book{Author: "some-author", Title: "some-title"})
+		require.NoError(t, err)
+
+		lastInsertID, _ := result.LastInsertId()
+		rowAffected, _ := result.RowsAffected()
+
+		require.Equal(t, lastInsertID, int64(99))
+		require.Equal(t, rowAffected, int64(1))
+	})
+
+	t.Run("return error", func(t *testing.T) {
+		_, err := bookRepository.Insert(Book{Author: "some-author", Title: "some-title"})
+		require.EqualError(t, err, "some-error")
+	})
+}
