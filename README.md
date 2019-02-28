@@ -38,6 +38,7 @@ This project aim to provide template project for Golang API Server.
   - [x] Automatically generate cli/command documentation
   - [x] Automatically generate config documentation
   - [x] Makefile
+- [ ] Internationalization  
 - [ ] Misc
   - [ ] Debug/Profiling
   - [ ] Travis CI example
