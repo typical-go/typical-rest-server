@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/imantung/go-helper/dbkit"
 	"github.com/imantung/typical-go-server/config"
 	"github.com/urfave/cli"
 
@@ -59,15 +58,7 @@ func Rollback(conn *sql.DB, args cli.Args) error {
 }
 
 func executeFromTemplateDB(conf config.Config, query string) (err error) {
-	pgConf := dbkit.PgConfig{
-		Host:     conf.DbHost,
-		Port:     conf.DbPort,
-		DbName:   "template1",
-		User:     conf.DbUser,
-		Password: conf.DbPassword,
-		SslMode:  "disable",
-	}
-	conn, err := sql.Open("postgres", pgConf.ConnectionString())
+	conn, err := sql.Open("postgres", connectionStringWithDBName(conf, "template1"))
 	if err != nil {
 		return
 	}

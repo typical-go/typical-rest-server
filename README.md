@@ -16,9 +16,9 @@ This project aim to provide template project for Golang API Server.
 - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
   - [x] Generate Mocking class
 - [x] RESTful API
-  - [ ] CRUD Operation
-  - [ ] Model Validation
-  - [ ] Custom Error Handling
+  - [x] CRUD Operation
+  - [x] Model Validation
+  - [ ] Authentication
   - [ ] CORS
   - [ ] Cache
   - [ ] API Versioning
@@ -28,6 +28,7 @@ This project aim to provide template project for Golang API Server.
 - [x] Working with Database
   - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
+  - [ ] Soft delete
   - [x] Database Administration
     - [x] Create db
     - [x] Drop db
@@ -63,11 +64,11 @@ _Under Construction_
 - [stretchr/testify](https://github.com/stretchr/testify): A toolkit with common assertions and mocks that plays nicely with the standard library
 - [uber-go/dig](https://github.com/uber-go/dig): A reflection based dependency injection toolkit for Go.
 - [lib/pq](https://github.com/lib/pq): Pure Go Postgres driver for database/sql
-- [imantung/go-helper](https://github.com/imantung/go-helper): Helper library collection for golang
 - [Masterminds/squirrel](https://github.com/Masterminds/squirrel): Fluent SQL generation for golang
 - [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Sql mock driver for golang to test database interactions
 - [golang/mock](https://github.com/golang/mock): A mocking framework for the Go programming language.
 - [olekukonko/tablewriter](https://github.com/olekukonko/tablewriter): ASCII table in golang
+- [go-playground/validator](https://github.com/go-playground/validator):Go Struct and Field validation, including Cross Field, Cross Struct, Map, Slice and Array diving
 
 
 ## Similar Projects
