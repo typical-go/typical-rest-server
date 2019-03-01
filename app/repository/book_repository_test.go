@@ -99,3 +99,31 @@ func TestBookRepository_Insert(t *testing.T) {
 		require.EqualError(t, err, "some-error")
 	})
 }
+
+func TestBookRepository_Delete(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectExec("DELETE").WillReturnResult(sqlmock.NewResult(99, 1))
+	mock.ExpectExec("DELETE").WillReturnError(fmt.Errorf("some-error"))
+
+	bookRepository := NewBookRepository(db)
+
+	t.Run("return error", func(t *testing.T) {
+		result, err := bookRepository.Delete(99)
+		require.NoError(t, err)
+
+		lastInsertID, _ := result.LastInsertId()
+		rowAffected, _ := result.RowsAffected()
+
+		require.Equal(t, lastInsertID, int64(99))
+		require.Equal(t, rowAffected, int64(1))
+	})
+
+	t.Run("return error", func(t *testing.T) {
+		_, err := bookRepository.Delete(99)
+		require.EqualError(t, err, "some-error")
+	})
+
+}

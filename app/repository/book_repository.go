@@ -11,6 +11,7 @@ type BookRepository interface {
 	Get(id int) (Book, error)
 	List() ([]Book, error)
 	Insert(book Book) (sql.Result, error)
+	Delete(id int) (sql.Result, error)
 }
 
 type bookRepository struct {
@@ -65,5 +66,11 @@ func (r *bookRepository) Insert(book Book) (result sql.Result, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Insert(bookTable).Columns("title", "author").
 		Values(book.Author, book.Title)
+	return builder.RunWith(r.conn).Exec()
+}
+
+func (r *bookRepository) Delete(id int) (result sql.Result, err error) {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	builder := psql.Delete(bookTable).Where(sq.Eq{"id": id})
 	return builder.RunWith(r.conn).Exec()
 }
