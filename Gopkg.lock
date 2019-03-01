@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:17131c6158c724a12a6249bf4e28c239357695cb15ffccb6bc3f246d95e04f09"
-  name = "bou.ke/monkey"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "bdf6dea004c6fd1cdf4b25da8ad45a606c09409a"
-  version = "v1.0.1"
-
-[[projects]]
   digest = "1:bcf7a85791e7f2a7d3099085f4ccddd7105fd449a322599114c3701e0d7a510d"
   name = "github.com/DATA-DOG/go-sqlmock"
   packages = ["."]
@@ -73,18 +65,6 @@
   pruneopts = "UT"
   revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
   version = "v1.2.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:7fade4befe3049d5a0d2941ca4f1c6f50bb8515de7ac9f1814af5886c2efd495"
-  name = "github.com/imantung/go-helper"
-  packages = [
-    "dbkit",
-    "envkit",
-    "timekit",
-  ]
-  pruneopts = "UT"
-  revision = "1f1388895e98cd81b1a17b8b41c77582b75c71ed"
 
 [[projects]]
   digest = "1:edbef42561faa44c19129b68d1e109fbc1647f63239250391eadc8d0e7c9f669"
@@ -284,9 +264,6 @@
     "github.com/golang-migrate/migrate/database/postgres",
     "github.com/golang-migrate/migrate/source/file",
     "github.com/golang/mock/gomock",
-    "github.com/imantung/go-helper/dbkit",
-    "github.com/imantung/go-helper/envkit",
-    "github.com/imantung/go-helper/timekit",
     "github.com/kelseyhightower/envconfig",
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",

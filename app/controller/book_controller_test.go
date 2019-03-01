@@ -9,8 +9,8 @@ import (
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
-	"github.com/imantung/go-helper/timekit"
 	"github.com/imantung/typical-go-server/app/controller"
+	"github.com/imantung/typical-go-server/app/helper/timekit"
 	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/imantung/typical-go-server/test/mock"
 	"github.com/labstack/echo"

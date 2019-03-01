@@ -5,7 +5,8 @@ import (
 	"testing"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/imantung/go-helper/timekit"
+	"github.com/imantung/typical-go-server/app/helper/timekit"
+
 	"github.com/stretchr/testify/require"
 )
 
