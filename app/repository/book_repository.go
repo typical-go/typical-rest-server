@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	sq "gopkg.in/Masterminds/squirrel.v1"
 )
@@ -12,6 +13,7 @@ type BookRepository interface {
 	List() ([]Book, error)
 	Insert(book Book) (sql.Result, error)
 	Delete(id int) (sql.Result, error)
+	Update(book Book) (sql.Result, error)
 }
 
 type bookRepository struct {
@@ -29,7 +31,7 @@ func (r *bookRepository) Get(id int) (book Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select(bookColumns...).
 		From(bookTable).
-		Where(sq.Eq{"id": id})
+		Where(sq.Eq{idColumn: id})
 
 	rows, err := builder.RunWith(r.conn).Query()
 	if err != nil {
@@ -64,13 +66,25 @@ func (r *bookRepository) List() (list []Book, err error) {
 
 func (r *bookRepository) Insert(book Book) (result sql.Result, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Insert(bookTable).Columns("title", "author").
+	builder := psql.Insert(bookTable).
+		Columns(bookTitleColumn, bookAuthorColumn).
 		Values(book.Author, book.Title)
 	return builder.RunWith(r.conn).Exec()
 }
 
 func (r *bookRepository) Delete(id int) (result sql.Result, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Delete(bookTable).Where(sq.Eq{"id": id})
+	builder := psql.Delete(bookTable).
+		Where(sq.Eq{idColumn: id})
+	return builder.RunWith(r.conn).Exec()
+}
+
+func (r *bookRepository) Update(book Book) (result sql.Result, err error) {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	builder := psql.Update(bookTable).
+		Set(bookTitleColumn, book.Title).
+		Set(bookAuthorColumn, book.Title).
+		Set(updatedAtColumn, time.Now())
+
 	return builder.RunWith(r.conn).Exec()
 }

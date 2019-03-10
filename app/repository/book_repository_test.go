@@ -18,7 +18,7 @@ func TestBookRepository_Get(t *testing.T) {
 	mock.ExpectQuery("SELECT").WithArgs(1).
 		WillReturnRows(
 			sqlmock.NewRows(bookColumns).
-				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00")),
+				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")),
 		)
 	mock.ExpectQuery("SELECT").WithArgs(9999).WillReturnError(fmt.Errorf("some-error"))
 
@@ -27,7 +27,7 @@ func TestBookRepository_Get(t *testing.T) {
 	t.Run("return rows", func(t *testing.T) {
 		book, err := bookRepository.Get(1)
 		require.NoError(t, err)
-		require.Equal(t, book, Book{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00")})
+		require.Equal(t, book, Book{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")})
 	})
 
 	t.Run("return error", func(t *testing.T) {
@@ -44,8 +44,8 @@ func TestBookRepository_List(t *testing.T) {
 	mock.ExpectQuery("SELECT").
 		WillReturnRows(
 			sqlmock.NewRows(bookColumns).
-				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00")).
-				AddRow(2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00")),
+				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")).
+				AddRow(2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00"), timekit.UTC("2019-02-20T10:00:01-05:00")),
 		)
 	mock.ExpectQuery("SELECT").WillReturnError(fmt.Errorf("some-error"))
 	mock.ExpectQuery("SELECT").
@@ -57,8 +57,8 @@ func TestBookRepository_List(t *testing.T) {
 		books, err := bookRepository.List()
 		require.NoError(t, err)
 		require.Equal(t, books, []Book{
-			{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00")},
-			{2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00")},
+			{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")},
+			{2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00"), timekit.UTC("2019-02-20T10:00:01-05:00")},
 		})
 	})
 
@@ -69,7 +69,7 @@ func TestBookRepository_List(t *testing.T) {
 
 	t.Run("return error when scan problem", func(t *testing.T) {
 		_, err := bookRepository.List()
-		require.EqualError(t, err, "sql: expected 1 destination arguments in Scan, not 4")
+		require.EqualError(t, err, "sql: expected 1 destination arguments in Scan, not 5")
 	})
 }
 
@@ -125,5 +125,4 @@ func TestBookRepository_Delete(t *testing.T) {
 		_, err := bookRepository.Delete(99)
 		require.EqualError(t, err, "some-error")
 	})
-
 }
