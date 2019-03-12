@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
@@ -28,13 +28,11 @@ func Drop(conf config.Config) error {
 }
 
 // Migrate database
-func Migrate(conn *sql.DB, args cli.Args) error {
-	migrationDir := config.DefaultMigrationDirectory
-	if len(args) > 0 {
-		migrationDir = args.First()
-	}
-	log.Printf("Migrate database from directory '%s'\n", migrationDir)
-	migration, err := newMigration(conn, migrationDir)
+func Migrate(conf config.Config, args cli.Args) error {
+	source := migrationSource(args)
+	log.Printf("Migrate database from source '%s'\n", source)
+
+	migration, err := migrate.New(source, connectionString(conf))
 	if err != nil {
 		return err
 	}
@@ -43,13 +41,11 @@ func Migrate(conn *sql.DB, args cli.Args) error {
 }
 
 // Rollback database
-func Rollback(conn *sql.DB, args cli.Args) error {
-	migrationDir := config.DefaultMigrationDirectory
-	if len(args) > 0 {
-		migrationDir = args.First()
-	}
-	log.Printf("Rollback database from directory '%s'\n", migrationDir)
-	migration, err := newMigration(conn, "db/migrate")
+func Rollback(conf config.Config, args cli.Args) error {
+	source := migrationSource(args)
+	log.Printf("Migrate database from source '%s'\n", source)
+
+	migration, err := migrate.New(source, connectionString(conf))
 	if err != nil {
 		return err
 	}
@@ -66,12 +62,10 @@ func executeFromTemplateDB(conf config.Config, query string) (err error) {
 	return
 }
 
-func newMigration(conn *sql.DB, dir string) (m *migrate.Migrate, err error) {
-	sourceURL := fmt.Sprintf("file://%s", dir)
-	driver, err := postgres.WithInstance(conn, &postgres.Config{})
-	if err != nil {
-		return
+func migrationSource(args cli.Args) string {
+	dir := config.DefaultMigrationDirectory
+	if len(args) > 0 {
+		dir = args.First()
 	}
-	m, err = migrate.NewWithDatabaseInstance(sourceURL, "postgres", driver)
-	return
+	return fmt.Sprintf("file://%s", dir)
 }
