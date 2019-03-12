@@ -7,13 +7,14 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/imantung/typical-go-server/app/helper/timekit"
 
+	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBookRepository_Get(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	conn, mock, err := sqlmock.New()
 	require.NoError(t, err)
-	defer db.Close()
+	defer conn.Close()
 
 	mock.ExpectQuery("SELECT").WithArgs(1).
 		WillReturnRows(
@@ -22,7 +23,7 @@ func TestBookRepository_Get(t *testing.T) {
 		)
 	mock.ExpectQuery("SELECT").WithArgs(9999).WillReturnError(fmt.Errorf("some-error"))
 
-	bookRepository := NewBookRepository(db)
+	bookRepository := NewBookRepository(conn)
 
 	t.Run("return rows", func(t *testing.T) {
 		book, err := bookRepository.Get(1)
@@ -125,4 +126,20 @@ func TestBookRepository_Delete(t *testing.T) {
 		_, err := bookRepository.Delete(99)
 		require.EqualError(t, err, "some-error")
 	})
+}
+
+func TestBookRepository_Update(t *testing.T) {
+	m, conn, err := migrateTestDB(migrationSource)
+	require.NoError(t, err)
+	defer m.Close()
+
+	bookRepository := NewBookRepository(conn)
+	bookRepository.Insert(Book{Title: "same-title", Author: "some-author"})
+
+	result, err := bookRepository.Update(Book{Title: "new-title", Author: "new-author"})
+	require.NoError(t, err)
+
+	rowsAffected, _ := result.RowsAffected()
+	require.Equal(t, int64(1), rowsAffected)
+
 }
