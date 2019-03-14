@@ -12,7 +12,7 @@ import (
 func container() *dig.Container {
 	container := dig.New()
 	container.Provide(newServer)
-	container.Provide(config.NewConfig)
+	container.Provide(config.LoadConfig)
 	container.Provide(db.Connect)
 	container.Provide(controller.NewBookController)
 	container.Provide(repository.NewBookRepository)

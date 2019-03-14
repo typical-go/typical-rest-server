@@ -24,12 +24,25 @@ func init() {
 	config.Prefix = "TEST"
 }
 
-func TestConfig(t *testing.T) {
+func TestLoadConfig(t *testing.T) {
 	envkit.Set(all_good_env)
 	defer os.Clearenv()
-	conf, err := config.NewConfig()
+	conf, err := config.LoadConfig()
 	require.NoError(t, err)
 	require.Equal(t, conf.Address, ":99999")
+	require.Equal(t, conf.DbName, "some-dbname")
+	require.Equal(t, conf.DbPassword, "some-dbpassword")
+	require.Equal(t, conf.DbHost, "some-dbhost")
+	require.Equal(t, conf.DbPort, 88888)
+
+}
+
+func TestLoadConfigForTest(t *testing.T) {
+	envkit.Set(all_good_env)
+	defer os.Clearenv()
+	conf, err := config.LoadConfigForTest()
+	require.NoError(t, err)
+	require.Equal(t, conf.DbName, "some-dbname_test")
 }
 
 func TestDetails(t *testing.T) {

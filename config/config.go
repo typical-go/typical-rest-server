@@ -19,9 +19,16 @@ type Config struct {
 	DbPort     int    `envconfig:"DB_PORT" default:"5432"`
 }
 
-// NewConfig return new instance of config
-func NewConfig() (conf Config, err error) {
+// LoadConfig return new instance of config
+func LoadConfig() (conf Config, err error) {
 	err = envconfig.Process(Prefix, &conf)
+	return
+}
+
+// LoadConfigForTest return config for testing environment
+func LoadConfigForTest() (conf Config, err error) {
+	conf, err = LoadConfig()
+	conf.DbName = conf.DbName + "_test"
 	return
 }
 

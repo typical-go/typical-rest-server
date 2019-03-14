@@ -9,7 +9,11 @@ import (
 	"github.com/urfave/cli"
 
 	"github.com/golang-migrate/migrate"
+
+	// load postgres migration driver
 	_ "github.com/golang-migrate/migrate/database/postgres"
+
+	// load file source driver
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
@@ -67,7 +71,7 @@ func Rollback(conf config.Config, args cli.Args) error {
 	return migration.Down()
 }
 
-// ResetTestDB
+// ResetTestDB reset test database
 func ResetTestDB(conf config.Config, source string) (err error) {
 	conn, err := sql.Open("postgres", connectionStringWithDBName(conf, "template1"))
 	if err != nil {
