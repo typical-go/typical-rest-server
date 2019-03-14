@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
+	"github.com/imantung/typical-go-server/app/helper/strkit"
 	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/labstack/echo"
 )
@@ -56,7 +56,11 @@ func (c *bookController) List(ctx echo.Context) error {
 }
 
 func (c *bookController) Get(ctx echo.Context) error {
-	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, err := strkit.ToInt64(ctx.Param("id"))
+	if err != nil {
+		return invalidID(ctx, err)
+	}
+
 	book, err := c.bookRepository.Get(id)
 	if err != nil {
 		return err
@@ -65,7 +69,17 @@ func (c *bookController) Get(ctx echo.Context) error {
 }
 
 func (c *bookController) Delete(ctx echo.Context) error {
-	return underContruction(ctx)
+	id, err := strkit.ToInt64(ctx.Param("id"))
+	if err != nil {
+		return invalidID(ctx, err)
+	}
+
+	err = c.bookRepository.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("Delete #%d done", id)})
 }
 
 func (c *bookController) Update(ctx echo.Context) error {

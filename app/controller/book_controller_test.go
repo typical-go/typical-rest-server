@@ -42,11 +42,13 @@ func TestBookController(t *testing.T) {
 	// prepare mock book repository
 	bookR := mock.NewMockBookRepository(ctrl)
 	bookR.EXPECT().Get(int64(1)).Return(book1, nil)
-	bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-error"))
+	bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 	bookR.EXPECT().List().Return([]*repository.Book{book1, book2}, nil)
-	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-error"))
-	bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-error"))
+	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
+	bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
 	bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
+	bookR.EXPECT().Delete(int64(1)).Return(nil)
+	bookR.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
 
 	bookController := controller.NewBookController(bookR)
 	e := echo.New()
@@ -60,6 +62,10 @@ func TestBookController(t *testing.T) {
 		statusCode   int
 		responseBody string
 	}{
+		{
+			http.MethodGet, "/book/abc", "",
+			http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n",
+		},
 		{
 			http.MethodGet, "/book/1", "",
 			http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n",
@@ -91,6 +97,18 @@ func TestBookController(t *testing.T) {
 		{
 			http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`,
 			http.StatusCreated, "{\"message\":\"Success insert new record #99\"}\n",
+		},
+		{
+			http.MethodDelete, "/book/abc", ``,
+			http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n",
+		},
+		{
+			http.MethodDelete, "/book/1", ``,
+			http.StatusOK, "{\"message\":\"Delete #1 done\"}\n",
+		},
+		{
+			http.MethodDelete, "/book/2", ``,
+			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
 		},
 	}
 
