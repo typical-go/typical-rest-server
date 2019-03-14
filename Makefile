@@ -15,8 +15,8 @@ clean:
 	@rm -rf vendor
 	@-$(MAKE) go-clean
 
-## mockgen: Generate mock class
-mockgen:
+## mock: Generate mock class
+mock:
 	@./mockgen.sh $(MOCK_TARGET)
 
 ## test: Running test

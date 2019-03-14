@@ -5,7 +5,6 @@
 package mock
 
 import (
-	sql "database/sql"
 	gomock "github.com/golang/mock/gomock"
 	repository "github.com/imantung/typical-go-server/app/repository"
 	reflect "reflect"
@@ -35,10 +34,10 @@ func (m *MockBookRepository) EXPECT() *MockBookRepositoryMockRecorder {
 }
 
 // Get mocks base method
-func (m *MockBookRepository) Get(id int) (repository.Book, error) {
+func (m *MockBookRepository) Get(id int64) (*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id)
-	ret0, _ := ret[0].(repository.Book)
+	ret0, _ := ret[0].(*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +49,10 @@ func (mr *MockBookRepositoryMockRecorder) Get(id interface{}) *gomock.Call {
 }
 
 // List mocks base method
-func (m *MockBookRepository) List() ([]repository.Book, error) {
+func (m *MockBookRepository) List() ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List")
-	ret0, _ := ret[0].([]repository.Book)
+	ret0, _ := ret[0].([]*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +64,10 @@ func (mr *MockBookRepositoryMockRecorder) List() *gomock.Call {
 }
 
 // Insert mocks base method
-func (m *MockBookRepository) Insert(book repository.Book) (sql.Result, error) {
+func (m *MockBookRepository) Insert(book repository.Book) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", book)
-	ret0, _ := ret[0].(sql.Result)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -80,12 +79,11 @@ func (mr *MockBookRepositoryMockRecorder) Insert(book interface{}) *gomock.Call 
 }
 
 // Delete mocks base method
-func (m *MockBookRepository) Delete(id int) (sql.Result, error) {
+func (m *MockBookRepository) Delete(id int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", id)
-	ret0, _ := ret[0].(sql.Result)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Delete indicates an expected call of Delete
@@ -95,12 +93,11 @@ func (mr *MockBookRepositoryMockRecorder) Delete(id interface{}) *gomock.Call {
 }
 
 // Update mocks base method
-func (m *MockBookRepository) Update(book repository.Book) (sql.Result, error) {
+func (m *MockBookRepository) Update(book repository.Book) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", book)
-	ret0, _ := ret[0].(sql.Result)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Update indicates an expected call of Update

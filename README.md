@@ -1,6 +1,6 @@
 # Typical Go Server (WIP)
 
-This project aim to provide template project for Golang API Server.
+This project aim to provide practical template project for RESTful API Server.
 
 - [x] Encourage [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle)
   - [x] Go Idiomatic
@@ -13,32 +13,36 @@ This project aim to provide template project for Golang API Server.
   - [x] Package Management/Vendoring
   - [x] [Graceful Shutdown](https://12factor.net/disposability)
   - [ ] [Health Check](https://microservices.io/patterns/observability/health-check-api.html)
-- [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
-  - [x] Generate Mocking class
+- [ ] Self-explanatory Project
+  - [ ] [Self Testing Code](https://martinfowler.com/bliki/SelfTestingCode.html)
+  - [x] [Project README](Project_README.md)
+  - [x] Automatically generate cli/command documentation
+  - [x] Automatically generate config documentation
+  - [x] Makefile
+  - [ ] GoDoc
+  - [ ] Wiki
 - [x] RESTful API
   - [x] CRUD Operation
   - [x] Model Validation
   - [ ] Authentication
   - [ ] CORS
   - [ ] Cache
+  - [ ] Pagination
+  - [ ] Search API
   - [ ] API Versioning
   - [ ] API Documentation
-- [ ] Worker
-  - [ ] Job Background Process
 - [x] Working with Database
   - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
+  - [ ] Test database
   - [ ] Soft delete
   - [x] Database Administration
     - [x] Create db
     - [x] Drop db
     - [x] Migration
     - [x] Rollback
-- [ ] Self-explanatory Project
-  - [x] [Project README](Project_README.md)
-  - [x] Automatically generate cli/command documentation
-  - [x] Automatically generate config documentation
-  - [x] Makefile
+- [ ] Worker
+  - [ ] Job Background Process
 - [ ] Internationalization  
 - [ ] Misc
   - [ ] Debug/Profiling
@@ -47,10 +51,8 @@ This project aim to provide template project for Golang API Server.
 
 ## Learn More
 
-We write some the article to allow us to talk more about concept, reasoning, and opinion behind the project:
-- KISS Principle: Go Idiomatic and Rails-like project layout. (WIP)
-- Working with Database and Go: Between ORMHater and Data Access Layer. (WIP)
-- Testing in Go: BDD Styled with no library and other tips. (WIP)
+_Under Construction_
+<!-- FIXME: -->
 
 ## How to Use
 

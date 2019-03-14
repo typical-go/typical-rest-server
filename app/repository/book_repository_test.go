@@ -4,142 +4,76 @@ import (
 	"fmt"
 	"testing"
 
-	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/imantung/typical-go-server/app/helper/timekit"
-
 	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/imantung/typical-go-server/config"
+	"github.com/imantung/typical-go-server/db"
 	"github.com/stretchr/testify/require"
 )
 
-func TestBookRepository_Get(t *testing.T) {
-	conn, mock, err := sqlmock.New()
+func TestBookRepository(t *testing.T) {
+	conf, _ := config.NewConfig()
+	conf.DbName = fmt.Sprintf("%s_test", conf.DbName)
+
+	// FIXME: migration outside the test
+	// FIXME: clear database without drop
+	err := db.ResetTestDB(conf, "file://../../db/migrate")
+	require.NoError(t, err)
+
+	conn, err := db.Connect(conf)
 	require.NoError(t, err)
 	defer conn.Close()
 
-	mock.ExpectQuery("SELECT").WithArgs(1).
-		WillReturnRows(
-			sqlmock.NewRows(bookColumns).
-				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")),
-		)
-	mock.ExpectQuery("SELECT").WithArgs(9999).WillReturnError(fmt.Errorf("some-error"))
+	repository := NewBookRepository(conn)
 
-	bookRepository := NewBookRepository(conn)
+	var id int64
+	var book *Book
 
-	t.Run("return rows", func(t *testing.T) {
-		book, err := bookRepository.Get(1)
+	t.Run("insert new record", func(t *testing.T) {
+		id, err = repository.Insert(Book{Title: "some-title", Author: "some-author"})
 		require.NoError(t, err)
-		require.Equal(t, book, Book{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")})
-	})
+		require.True(t, id > 0)
 
-	t.Run("return error", func(t *testing.T) {
-		_, err := bookRepository.Get(9999)
-		require.EqualError(t, err, "some-error")
-	})
-}
-
-func TestBookRepository_List(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	mock.ExpectQuery("SELECT").
-		WillReturnRows(
-			sqlmock.NewRows(bookColumns).
-				AddRow(1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")).
-				AddRow(2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00"), timekit.UTC("2019-02-20T10:00:01-05:00")),
-		)
-	mock.ExpectQuery("SELECT").WillReturnError(fmt.Errorf("some-error"))
-	mock.ExpectQuery("SELECT").
-		WillReturnRows(sqlmock.NewRows([]string{"wrong column"}).AddRow("data"))
-
-	bookRepository := NewBookRepository(db)
-
-	t.Run("return rows", func(t *testing.T) {
-		books, err := bookRepository.List()
+		book, err = repository.Get(id)
 		require.NoError(t, err)
-		require.Equal(t, books, []Book{
-			{1, "title1", "author1", timekit.UTC("2019-02-20T10:00:00-05:00"), timekit.UTC("2019-02-20T10:00:00-05:00")},
-			{2, "title2", "author2", timekit.UTC("2019-02-20T10:00:01-05:00"), timekit.UTC("2019-02-20T10:00:01-05:00")},
-		})
+		require.Equal(t, "some-title", book.Title)
+		require.Equal(t, "some-author", book.Author)
 	})
 
-	t.Run("return error when database problem", func(t *testing.T) {
-		_, err := bookRepository.List()
-		require.EqualError(t, err, "some-error")
-	})
-
-	t.Run("return error when scan problem", func(t *testing.T) {
-		_, err := bookRepository.List()
-		require.EqualError(t, err, "sql: expected 1 destination arguments in Scan, not 5")
-	})
-}
-
-func TestBookRepository_Insert(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	mock.ExpectExec("INSERT").WillReturnResult(sqlmock.NewResult(99, 1))
-	mock.ExpectExec("INSERT").WillReturnError(fmt.Errorf("some-error"))
-
-	bookRepository := NewBookRepository(db)
-
-	t.Run("return error", func(t *testing.T) {
-		result, err := bookRepository.Insert(Book{Author: "some-author", Title: "some-title"})
+	t.Run("update record", func(t *testing.T) {
+		err = repository.Update(Book{ID: id, Title: "new-title", Author: "new-author"})
 		require.NoError(t, err)
 
-		lastInsertID, _ := result.LastInsertId()
-		rowAffected, _ := result.RowsAffected()
-
-		require.Equal(t, lastInsertID, int64(99))
-		require.Equal(t, rowAffected, int64(1))
+		book, err = repository.Get(id)
+		require.NoError(t, err)
+		require.Equal(t, "new-title", book.Title)
+		require.Equal(t, "new-author", book.Author)
 	})
 
-	t.Run("return error", func(t *testing.T) {
-		_, err := bookRepository.Insert(Book{Author: "some-author", Title: "some-title"})
-		require.EqualError(t, err, "some-error")
-	})
-}
-
-func TestBookRepository_Delete(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	mock.ExpectExec("DELETE").WillReturnResult(sqlmock.NewResult(99, 1))
-	mock.ExpectExec("DELETE").WillReturnError(fmt.Errorf("some-error"))
-
-	bookRepository := NewBookRepository(db)
-
-	t.Run("return error", func(t *testing.T) {
-		result, err := bookRepository.Delete(99)
+	t.Run("delete record", func(t *testing.T) {
+		err = repository.Delete(id)
 		require.NoError(t, err)
 
-		lastInsertID, _ := result.LastInsertId()
-		rowAffected, _ := result.RowsAffected()
-
-		require.Equal(t, lastInsertID, int64(99))
-		require.Equal(t, rowAffected, int64(1))
+		book, err := repository.Get(id)
+		require.NoError(t, err)
+		require.Nil(t, book)
 	})
 
-	t.Run("return error", func(t *testing.T) {
-		_, err := bookRepository.Delete(99)
-		require.EqualError(t, err, "some-error")
+	t.Run("list of record", func(t *testing.T) {
+		data := []Book{
+			Book{Title: "title-1001", Author: "author-1001"},
+			Book{Title: "title-1002", Author: "author-1002"},
+			Book{Title: "title-1003", Author: "author-1003"},
+		}
+
+		for _, book := range data {
+			repository.Insert(book)
+		}
+
+		list, err := repository.List()
+		require.NoError(t, err)
+		for i := range list {
+			require.Equal(t, data[i].Title, list[i].Title)
+			require.Equal(t, data[i].Author, list[i].Author)
+		}
 	})
-}
-
-func TestBookRepository_Update(t *testing.T) {
-	m, conn, err := migrateTestDB(migrationSource)
-	require.NoError(t, err)
-	defer m.Close()
-
-	bookRepository := NewBookRepository(conn)
-	bookRepository.Insert(Book{Title: "same-title", Author: "some-author"})
-
-	result, err := bookRepository.Update(Book{Title: "new-title", Author: "new-author"})
-	require.NoError(t, err)
-
-	rowsAffected, _ := result.RowsAffected()
-	require.Equal(t, int64(1), rowsAffected)
-
 }

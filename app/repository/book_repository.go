@@ -9,11 +9,11 @@ import (
 
 // BookRepository to get book data from databasesa
 type BookRepository interface {
-	Get(id int) (Book, error)
-	List() ([]Book, error)
-	Insert(book Book) (sql.Result, error)
-	Delete(id int) (sql.Result, error)
-	Update(book Book) (sql.Result, error)
+	Get(id int64) (*Book, error)
+	List() ([]*Book, error)
+	Insert(book Book) (lastInsertID int64, err error)
+	Delete(id int64) error
+	Update(book Book) error
 }
 
 type bookRepository struct {
@@ -27,7 +27,7 @@ func NewBookRepository(conn *sql.DB) BookRepository {
 	}
 }
 
-func (r *bookRepository) Get(id int) (book Book, err error) {
+func (r *bookRepository) Get(id int64) (book *Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select(bookColumns...).
 		From(bookTable).
@@ -44,7 +44,7 @@ func (r *bookRepository) Get(id int) (book Book, err error) {
 	return
 }
 
-func (r *bookRepository) List() (list []Book, err error) {
+func (r *bookRepository) List() (list []*Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select(bookColumns...).From(bookTable)
 
@@ -54,7 +54,7 @@ func (r *bookRepository) List() (list []Book, err error) {
 	}
 
 	for rows.Next() {
-		var book Book
+		var book *Book
 		book, err = scanBook(rows)
 		if err != nil {
 			return
@@ -64,27 +64,40 @@ func (r *bookRepository) List() (list []Book, err error) {
 	return
 }
 
-func (r *bookRepository) Insert(book Book) (result sql.Result, err error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Insert(bookTable).
+func (r *bookRepository) Insert(book Book) (lastInsertID int64, err error) {
+	query := sq.Insert(bookTable).
 		Columns(bookTitleColumn, bookAuthorColumn).
-		Values(book.Author, book.Title)
-	return builder.RunWith(r.conn).Exec()
+		Values(book.Title, book.Author).
+		Suffix("RETURNING \"id\"").
+		RunWith(r.conn).
+		PlaceholderFormat(sq.Dollar)
+
+	err = query.QueryRow().Scan(&book.ID)
+	if err != nil {
+		return
+	}
+
+	lastInsertID = book.ID
+	return
 }
 
-func (r *bookRepository) Delete(id int) (result sql.Result, err error) {
+func (r *bookRepository) Delete(id int64) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Delete(bookTable).
 		Where(sq.Eq{idColumn: id})
-	return builder.RunWith(r.conn).Exec()
+
+	_, err = builder.RunWith(r.conn).Exec()
+	return
 }
 
-func (r *bookRepository) Update(book Book) (result sql.Result, err error) {
+func (r *bookRepository) Update(book Book) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Update(bookTable).
 		Set(bookTitleColumn, book.Title).
-		Set(bookAuthorColumn, book.Title).
-		Set(updatedAtColumn, time.Now())
+		Set(bookAuthorColumn, book.Author).
+		Set(updatedAtColumn, time.Now()).
+		Where(sq.Eq{idColumn: book.ID})
 
-	return builder.RunWith(r.conn).Exec()
+	_, err = builder.RunWith(r.conn).Exec()
+	return
 }

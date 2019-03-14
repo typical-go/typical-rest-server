@@ -9,16 +9,20 @@ import (
 
 // Book represented database model
 type Book struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	Title     string    `json:"title" validate:"required"`
 	Author    string    `json:"author" validate:"required"`
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"-"`
 }
 
-func scanBook(rows *sql.Rows) (book Book, err error) {
-	err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt)
-	return
+func scanBook(rows *sql.Rows) (*Book, error) {
+	var book Book
+	err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &book, nil
 }
 
 // Validate book

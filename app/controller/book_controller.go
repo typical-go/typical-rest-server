@@ -56,7 +56,7 @@ func (c *bookController) List(ctx echo.Context) error {
 }
 
 func (c *bookController) Get(ctx echo.Context) error {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	book, err := c.bookRepository.Get(id)
 	if err != nil {
 		return err

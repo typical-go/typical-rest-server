@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/imantung/typical-go-server/app/helper/timekit"
@@ -19,8 +18,8 @@ import (
 
 // dummy data
 var (
-	book1 = repository.Book{ID: 1, Title: "title1", Author: "author1", CreatedAt: timekit.UTC("2019-02-20T10:00:00-05:00")}
-	book2 = repository.Book{ID: 2, Title: "title2", Author: "author2", CreatedAt: timekit.UTC("2019-02-20T10:00:01-05:00")}
+	book1 = &repository.Book{ID: 1, Title: "title1", Author: "author1", CreatedAt: timekit.UTC("2019-02-20T10:00:00-05:00")}
+	book2 = &repository.Book{ID: 2, Title: "title2", Author: "author2", CreatedAt: timekit.UTC("2019-02-20T10:00:01-05:00")}
 )
 
 func TestBookController_NoRepository(t *testing.T) {
@@ -42,12 +41,12 @@ func TestBookController(t *testing.T) {
 
 	// prepare mock book repository
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Get(1).Return(book1, nil)
-	bookR.EXPECT().Get(2).Return(repository.Book{}, fmt.Errorf("some-error"))
-	bookR.EXPECT().List().Return([]repository.Book{book1, book2}, nil)
+	bookR.EXPECT().Get(int64(1)).Return(book1, nil)
+	bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-error"))
+	bookR.EXPECT().List().Return([]*repository.Book{book1, book2}, nil)
 	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-error"))
-	bookR.EXPECT().Insert(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
-	bookR.EXPECT().Insert(gomock.Any()).Return(sqlmock.NewResult(99, 1), nil)
+	bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-error"))
+	bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
 
 	bookController := controller.NewBookController(bookR)
 	e := echo.New()
@@ -63,7 +62,7 @@ func TestBookController(t *testing.T) {
 	}{
 		{
 			http.MethodGet, "/book/1", "",
-			http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"created_at\":\"2019-02-20T10:00:00-05:00\"}\n",
+			http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n",
 		},
 		{
 			http.MethodGet, "/book/2", "",
@@ -71,7 +70,7 @@ func TestBookController(t *testing.T) {
 		},
 		{
 			http.MethodGet, "/book", "",
-			http.StatusOK, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"created_at\":\"2019-02-20T10:00:00-05:00\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\",\"created_at\":\"2019-02-20T10:00:01-05:00\"}]\n",
+			http.StatusOK, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n",
 		},
 		{
 			http.MethodGet, "/book", "",

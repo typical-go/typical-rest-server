@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -25,8 +24,7 @@ func invalidMessage(c echo.Context, err error) error {
 	return c.JSON(invalidMessageStatus, res)
 }
 
-func insertSuccess(c echo.Context, result sql.Result) error {
-	lastInsertID, _ := result.LastInsertId()
+func insertSuccess(c echo.Context, lastInsertID int64) error {
 	res := map[string]interface{}{}
 	res["message"] = fmt.Sprintf("Success insert new record #%d", lastInsertID)
 	return c.JSON(insertSuccessStatus, res)
