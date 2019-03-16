@@ -8,17 +8,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/imantung/typical-go-server/app/controller"
-	"github.com/imantung/typical-go-server/app/helper/timekit"
 	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/imantung/typical-go-server/test/mock"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
-)
-
-// dummy data
-var (
-	book1 = &repository.Book{ID: 1, Title: "title1", Author: "author1", CreatedAt: timekit.UTC("2019-02-20T10:00:00-05:00")}
-	book2 = &repository.Book{ID: 2, Title: "title2", Author: "author2", CreatedAt: timekit.UTC("2019-02-20T10:00:01-05:00")}
 )
 
 func TestBookController_NoRepository(t *testing.T) {
@@ -40,11 +33,11 @@ func TestBookController_Get(t *testing.T) {
 
 	// prepare mock book repository
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Get(int64(1)).Return(book1, nil)
+	bookR.EXPECT().Get(int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 	bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 
 	e := echo.New()
-
+	defer e.Close()
 	bookController := controller.NewBookController(bookR)
 	bookController.RegisterTo("book", e)
 
@@ -73,11 +66,15 @@ func TestBookController_List(t *testing.T) {
 
 	// prepare mock book repository
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().List().Return([]*repository.Book{book1, book2}, nil)
+	bookR.EXPECT().List().Return(
+		[]*repository.Book{
+			&repository.Book{ID: 1, Title: "title1", Author: "author1"},
+			&repository.Book{ID: 2, Title: "title2", Author: "author2"},
+		}, nil)
 	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
 
 	e := echo.New()
-
+	defer e.Close()
 	bookController := controller.NewBookController(bookR)
 	bookController.RegisterTo("book", e)
 
@@ -105,7 +102,7 @@ func TestBookController_Insert(t *testing.T) {
 	bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
 
 	e := echo.New()
-
+	defer e.Close()
 	bookController := controller.NewBookController(bookR)
 	bookController.RegisterTo("book", e)
 
@@ -143,7 +140,7 @@ func TestBookController_Delete(t *testing.T) {
 	bookR.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
 
 	e := echo.New()
-
+	defer e.Close()
 	bookController := controller.NewBookController(bookR)
 	bookController.RegisterTo("book", e)
 
@@ -176,7 +173,7 @@ func TestBookController_Update(t *testing.T) {
 	bookR.EXPECT().Update(gomock.Any()).Return(nil)
 
 	e := echo.New()
-
+	defer e.Close()
 	bookController := controller.NewBookController(bookR)
 	bookController.RegisterTo("book", e)
 
