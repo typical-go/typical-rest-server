@@ -51,18 +51,18 @@ func TestBookController_Get(t *testing.T) {
 	runTestCase(t, e, []ControllerTestCase{
 		{
 			"Invalid ID",
-			http.MethodGet, "/book/abc", "",
-			http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n",
+			RequestTestCase{http.MethodGet, "/book/abc", ""},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
 		},
 		{
 			"Get success",
-			http.MethodGet, "/book/1", "",
-			http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n",
+			RequestTestCase{http.MethodGet, "/book/1", ""},
+			ResponseTestCase{http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n"},
 		},
 		{
 			"Get error",
-			http.MethodGet, "/book/2", "",
-			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+			RequestTestCase{http.MethodGet, "/book/2", ""},
+			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
 		},
 	})
 }
@@ -84,13 +84,13 @@ func TestBookController_List(t *testing.T) {
 	runTestCase(t, e, []ControllerTestCase{
 		{
 			"List success",
-			http.MethodGet, "/book", "",
-			http.StatusOK, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n",
+			RequestTestCase{http.MethodGet, "/book", ""},
+			ResponseTestCase{http.StatusOK, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n"},
 		},
 		{
 			"List error",
-			http.MethodGet, "/book", "",
-			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+			RequestTestCase{http.MethodGet, "/book", ""},
+			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
 		},
 	})
 }
@@ -112,23 +112,23 @@ func TestBookController_Insert(t *testing.T) {
 	runTestCase(t, e, []ControllerTestCase{
 		{
 			"Invalid message body",
-			http.MethodPost, "/book", "{}",
-			http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n",
+			RequestTestCase{http.MethodPost, "/book", "{}"},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n"},
 		},
 		{
 			"Invalid json format",
-			http.MethodPost, "/book", "invalid-json",
-			http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n",
+			RequestTestCase{http.MethodPost, "/book", "invalid-json"},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n"},
 		},
 		{
 			"Insert error",
-			http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`,
-			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+			RequestTestCase{http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`},
+			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
 		},
 		{
 			"Insert Success",
-			http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`,
-			http.StatusCreated, "{\"message\":\"Success insert new record #99\"}\n",
+			RequestTestCase{http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`},
+			ResponseTestCase{http.StatusCreated, "{\"message\":\"Success insert new record #99\"}\n"},
 		},
 	})
 }
@@ -150,18 +150,18 @@ func TestBookController_Delete(t *testing.T) {
 	runTestCase(t, e, []ControllerTestCase{
 		{
 			"Invalid ID in url parameter",
-			http.MethodDelete, "/book/abc", ``,
-			http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n",
+			RequestTestCase{http.MethodDelete, "/book/abc", ``},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
 		},
 		{
 			"Valid ID",
-			http.MethodDelete, "/book/1", ``,
-			http.StatusOK, "{\"message\":\"Delete #1 done\"}\n",
+			RequestTestCase{http.MethodDelete, "/book/1", ``},
+			ResponseTestCase{http.StatusOK, "{\"message\":\"Delete #1 done\"}\n"},
 		},
 		{
 			"ID not found",
-			http.MethodDelete, "/book/2", ``,
-			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+			RequestTestCase{http.MethodDelete, "/book/2", ``},
+			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
 		},
 	})
 }
@@ -183,28 +183,28 @@ func TestBookController_Update(t *testing.T) {
 	runTestCase(t, e, []ControllerTestCase{
 		{
 			"Invalid json format",
-			http.MethodPut, "/book", "invalid-json",
-			http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n",
+			RequestTestCase{http.MethodPut, "/book", "invalid-json"},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n"},
 		},
 		{
 			"Invalid message body",
-			http.MethodPut, "/book", `{}`,
-			http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n",
+			RequestTestCase{http.MethodPut, "/book", `{}`},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
 		},
 		{
 			"Invalid message body",
-			http.MethodPut, "/book", `{"id":1}`,
-			http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n",
+			RequestTestCase{http.MethodPut, "/book", `{"id":1}`},
+			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n"},
 		},
 		{
 			"Update error",
-			http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`,
-			http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n",
+			RequestTestCase{http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`},
+			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
 		},
 		{
 			"Update success",
-			http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`,
-			http.StatusOK, "{\"message\":\"Update success\"}\n",
+			RequestTestCase{http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`},
+			ResponseTestCase{http.StatusOK, "{\"message\":\"Update success\"}\n"},
 		},
 	})
 }

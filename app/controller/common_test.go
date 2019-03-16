@@ -10,13 +10,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type ControllerTestCase struct {
-	description  string
-	method       string
-	target       string
-	requestBody  string
+type RequestTestCase struct {
+	method      string
+	target      string
+	requestBody string
+}
+
+type ResponseTestCase struct {
 	statusCode   int
 	responseBody string
+}
+
+type ControllerTestCase struct {
+	description string
+	RequestTestCase
+	ResponseTestCase
 }
 
 func runTestCase(t *testing.T, handler http.Handler, testcases []ControllerTestCase) {
