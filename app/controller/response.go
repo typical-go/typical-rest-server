@@ -14,11 +14,6 @@ const (
 	insertSuccessStatus    = http.StatusCreated
 )
 
-// CommonResponse common response for API
-type CommonResponse struct {
-	message string `json:"message"`
-}
-
 func underContruction(ctx echo.Context) error {
 	return ctx.JSON(underConstrucionStatus, map[string]string{"message": "Under Construction"})
 }

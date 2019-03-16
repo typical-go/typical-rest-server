@@ -82,8 +82,29 @@ func (c *bookController) Delete(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("Delete #%d done", id)})
 }
 
-func (c *bookController) Update(ctx echo.Context) error {
-	return underContruction(ctx)
+func (c *bookController) Update(ctx echo.Context) (err error) {
+	var book repository.Book
+
+	err = ctx.Bind(&book)
+	if err != nil {
+		return err
+	}
+
+	if book.ID <= 0 {
+		return invalidID(ctx, err)
+	}
+
+	err = book.Validate()
+	if err != nil {
+		return invalidMessage(ctx, err)
+	}
+
+	err = c.bookRepository.Update(book)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "Update success"})
 }
 
 func (c *bookController) BeforeActionFunc(next echo.HandlerFunc) echo.HandlerFunc {
@@ -107,6 +128,6 @@ func (c *bookController) RegisterTo(entity string, e *echo.Echo) {
 	e.GET(fmt.Sprintf("/%s", entity), c.List, c.BeforeActionFunc)
 	e.POST(fmt.Sprintf("/%s", entity), c.Create, c.BeforeActionFunc)
 	e.GET(fmt.Sprintf("/%s/:id", entity), c.Get, c.BeforeActionFunc)
-	e.PUT(fmt.Sprintf("/%s/:id", entity), c.Update, c.BeforeActionFunc)
+	e.PUT(fmt.Sprintf("/%s", entity), c.Update, c.BeforeActionFunc)
 	e.DELETE(fmt.Sprintf("/%s/:id", entity), c.Delete, c.BeforeActionFunc)
 }
