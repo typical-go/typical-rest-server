@@ -16,6 +16,7 @@ func container() *dig.Container {
 	container.Provide(db.Connect)
 	container.Provide(controller.NewBookController)
 	container.Provide(repository.NewBookRepository)
+
 	return container
 }
 
