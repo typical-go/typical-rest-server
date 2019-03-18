@@ -51,46 +51,12 @@ This project aim to provide practical template project for RESTful API Server.
 
 ## Learn More
 
-_Under Construction_
-<!-- FIXME: -->
-
-## How to Use
-
-_Under Construction_
-<!-- FIXME: -->
-
-## Library Overview
-- [urfave/cli](https://github.com/urfave/cli): A simple, fast, and fun package for building command line apps in Go
-- [labstack/echo](https://github.com/labstack/echo): High performance, minimalist Go web framework
-- [kelseyhightower/envconfig](https://github.com/kelseyhightower/envconfig): Managing configuration data from environment variables
-- [stretchr/testify](https://github.com/stretchr/testify): A toolkit with common assertions and mocks that plays nicely with the standard library
-- [uber-go/dig](https://github.com/uber-go/dig): A reflection based dependency injection toolkit for Go.
-- [lib/pq](https://github.com/lib/pq): Pure Go Postgres driver for database/sql
-- [Masterminds/squirrel](https://github.com/Masterminds/squirrel): Fluent SQL generation for golang
-- [DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Sql mock driver for golang to test database interactions
-- [golang/mock](https://github.com/golang/mock): A mocking framework for the Go programming language.
-- [olekukonko/tablewriter](https://github.com/olekukonko/tablewriter): ASCII table in golang
-- [go-playground/validator](https://github.com/go-playground/validator):Go Struct and Field validation, including Cross Field, Cross Struct, Map, Slice and Array diving
-
-
-## Similar Projects
-
-- [gobuffalo](https://gobuffalo.io/): Web Development eco-system
-- [go-swagger](https://goswagger.io/): OpenAPI implementation on Go
-- [go-bootstrap](http://go-bootstrap.io/): Generates a lean and mean Go web project.
-- [qiangxue/golang-restful-starter-kit](github.com/qiangxue/golang-restful-starter-kit): A RESTful application boilerplate in Go (golang) taking best practices and utilizing best available packages and tools
+Check our [wiki](https://github.com/imantung/typical-go-server/wiki)
 
 ## Contributing
 
 _Under Construction_
 <!-- FIXME: -->
-
-
-## Authors
-
-* **[imantung](https://github.com/imantung)** - *Initial work* -
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
