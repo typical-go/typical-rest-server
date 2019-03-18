@@ -109,19 +109,11 @@ func (c *bookController) Update(ctx echo.Context) (err error) {
 
 func (c *bookController) BeforeActionFunc(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(e echo.Context) error {
-		err := c.beforeAction()
-		if err != nil {
-			return err
+		if c.bookRepository == nil {
+			return fmt.Errorf("BookRepository is missing")
 		}
 		return next(e)
 	}
-}
-
-func (c *bookController) beforeAction() error {
-	if c.bookRepository == nil {
-		return fmt.Errorf("BookRepository is missing")
-	}
-	return nil
 }
 
 func (c *bookController) RegisterTo(entity string, e *echo.Echo) {

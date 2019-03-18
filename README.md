@@ -1,13 +1,20 @@
 # Typical Go Server (WIP)
 
-This project aim to provide practical template project for RESTful API Server.
+The project aims to provide typical RESTful API Server for Go. The core value is included simple, scalable and self-explanatory project.
+- `Simple`: Encourage KISS Principle with go idiomatic code and conventions.
+- `Scalable`: Ready for Distributed System and Micro Service Architecture.
+- `Self Explanatory Project`: Make sure everyone easy to understand and on board to the project
+
+Check our [wiki](https://github.com/imantung/typical-go-server/wiki) to learn more.
+
+## Checklist
 
 - [x] Encourage [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle)
   - [x] Go Idiomatic
   - [x] [Rails-like](https://guides.rubyonrails.org/getting_started.html#creating-the-blog-application) Project Layout
   - [x] [Separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
   - [x] [Dependency Injection](https://stackoverflow.com/questions/130794/what-is-dependency-injection)
-- [x] Micro-services Friendly
+- [x] System Scalability
   - [x] Follow [12 Factor App](https://12factor.net/)
   - [x] Environment Variable as configuration (for development, use [direnv](https://direnv.net/))
   - [x] Package Management/Vendoring
@@ -34,7 +41,7 @@ This project aim to provide practical template project for RESTful API Server.
 - [x] Working with Database
   - [x] Postgres Database
   - [x] Data Access Layer/Repository Pattern
-  - [ ] Test database
+  - [x] Test database
   - [ ] Soft delete
   - [x] Database Administration
     - [x] Create db
@@ -49,14 +56,6 @@ This project aim to provide practical template project for RESTful API Server.
   - [ ] Travis CI example
   - [ ] Docker example
 
-## Learn More
-
-Check our [wiki](https://github.com/imantung/typical-go-server/wiki)
-
-## Contributing
-
-_Under Construction_
-<!-- FIXME: -->
 
 ## License
 
