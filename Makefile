@@ -4,10 +4,22 @@ PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
 MOCK_TARGET := test/mock
 
-## all: install missing dependency and build the binary
+help: Makefile
+	@echo "\n Choose a command run in "$(PROJECT_NAME)":\n"
+	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
+	@echo
+
+## all: Install dependencies and build the binary
 all: dep test build
 
-## build: Build the binary.
+## dep: Install dependencies
+dep:
+	@echo "  >  Install dependencies..."
+	@go get github.com/golang/dep/cmd/dep
+	@go install github.com/golang/dep/cmd/dep
+	@$(GOPATH)/bin/dep ensure
+
+## build: Build the binary
 build:
 	@echo "  >  Building binary..."
 	@go build -o $(BINARY)
@@ -17,12 +29,10 @@ test:
 	@echo "  >  Running test..."
 	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
 
-## dep: install missing dependency
-dep:
-	@echo "  >  Install missing dependencies..."
-	@go get github.com/golang/dep/cmd/dep
-	@go install github.com/golang/dep/cmd/dep
-	@$(GOPATH)/bin/dep ensure
+## test-report: Running test and show coverage profile
+test-report:
+	@-$(MAKE) test
+	@go tool cover -html=cover.out
 
 dep-clean:
 	@echo "  >  Clean dependencies..."
@@ -34,7 +44,7 @@ clean:
 	@rm $(BINARY)
 	@-$(MAKE) go-clean
 
-## clean: Clean build files and dependency
+## clean-all: Clean build files and dependency
 clean-all: dep-clean clean
 
 ## mock: Generate mock class
@@ -42,16 +52,4 @@ mock:
 	@echo "  >  Generate mock class..."
 	@./mockgen.sh $(MOCK_TARGET)
 
-## test-report: Show test report
-test-report:
-	@-$(MAKE) test
-	@go tool cover -html=cover.out
-
-.PHONY: help test
-all: help
-help: Makefile
-	@echo
-	@echo " Choose a command run in "$(PROJECT_NAME)":"
-	@echo
-	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
-	@echo
+.PHONY: help all dep build test test-report dep-clean clean clean-all mock
