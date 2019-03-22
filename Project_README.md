@@ -3,19 +3,77 @@
 
 [One Paragraph of project description goes here]
 
+## Getting Started
+
+### Prerequisites
+
+1. Install [go](https://golang.org/) and [set up `GOPATH`](https://github.com/golang/go/wiki/SettingGOPATH)
+2. Install [dep](https://github.com/golang/dep) as dependency management tool
+3. Install [direnv](https://direnv.net/) for directory level environment variable
+
+### Clone
+
+<!-- FIXME: Project path, git path and project binary name -->
+
+1. Create project directory
+  ```sh
+  mkdir $GOPATH/src/your/project/path
+  ```
+2. Change directory to project path then `git clone` the project
+  ```sh
+  cd $GOPATH/src/your/project/path && git clone git@your/project
+  ```
+
+## Installing
+
+Use `Make` to clean, build, test, generate mock class, etc.
+- `make all`: Install dependencies and build the binary
+- `make dep`: Install dependencies
+- `make build`: Build the binary
+- `make test`: Running test
+- `make test-report`: Running test and show coverage profile
+- `make clean`: Clean build files
+- `make clean-all`: Clean build files and all dependency
+- `make mock`: Generate mock class
+
 ## Usages
 
-List of Commands
+### Show a list of Commands
+`[BINARY] help`
 ```
-serve, s              Serve the clients
-database, db          database administration
-config-details, conf  Print configuration detail
-help, h               Shows a list of commands or help for one command
+NAME:
+   [Name] - API for [Usage]
+
+USAGE:
+   typical-go-server [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.1
+
+COMMANDS:
+     serve, s      Run the server
+     database, db  Database Administration
+     config, conf  Configuration
+     help, h       Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
 ```
 
-## Configuration
+### Run the server
+`[BINARY] serve`
 
+### Database Administration
 
+- `[BINARY] db create`: Create New Database
+- `[BINARY] db drop`: Drop Database
+- `[BINARY] db migrate`: Migrate Database
+- `[BINARY] db rollback`: Rollback Database
+
+### Print configuration details
+
+`[BINARY] config`
 ```
 +-------------+--------+----------+-----------+
 |    NAME     |  TYPE  | REQUIRED |  DEFAULT  |
@@ -27,54 +85,4 @@ help, h               Shows a list of commands or help for one command
 | DB_HOST     | string |          | localhost |
 | DB_PORT     | int    |          |      5432 |
 +-------------+--------+----------+-----------+
-```
-
-## Getting Started
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-1. Install [go](https://golang.org/) and [set up `GOPATH`](https://github.com/golang/go/wiki/SettingGOPATH)
-  ```sh
-  # for macOS, required https://brew.sh/
-  brew install go
-
-  # create empty directory for GOPATH
-  mkdir $HOME/go && cd $HOME/go && mkdir bin pkg src && cd -
-
-  # set up GOPATH, the example using https://ohmyz.sh/
-  # change ~/.zshrc to ~/.bashrc if you use default bash
-  echo "export GOPATH=$HOME/go
-  export PATH=$PATH:$GOPATH/bin
-  " >> ~/.zshrc
-  source ~/.zshrc
-  ```
-2. Install [dep](https://github.com/golang/dep) as dependency management tool
-  ```sh
-  # for macOS
-  brew install dep
-  ```
-3. Install [direnv](https://direnv.net/) for directory level environment variable
-  ```sh
-  # for macOS
-  brew install direnv
-  ```
-
-### Clone
-
-<!-- FIXME: Project path, git path and project binary name -->
-A step by step that tell you how to get a development environment running
-1. Create project directory
-  ```sh
-  mkdir $GOPATH/src/your/project/path
-  ```
-2. Change directory to project path then `git clone` the project
-  ```sh
-  cd $GOPATH/src/your/project/path && git clone git@your/project
-  ```
-
-### Build
-
-```sh
-make build
 ```

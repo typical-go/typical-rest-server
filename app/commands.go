@@ -11,7 +11,7 @@ func Commands() []cli.Command {
 		{
 			Name:      "serve",
 			ShortName: "s",
-			Usage:     "Serve the clients",
+			Usage:     "Run the server",
 			Action:    triggerAction(serve),
 		},
 
@@ -23,34 +23,34 @@ func Commands() []cli.Command {
 				{
 					Name:      "create",
 					ShortName: "c",
-					Usage:     "create new database",
+					Usage:     "Create New Database",
 					Action:    triggerAction(db.Create),
 				},
 				{
 					Name:      "drop",
 					ShortName: "d",
-					Usage:     "drop database",
+					Usage:     "Drop Database",
 					Action:    triggerAction(db.Drop),
 				},
 				{
 					Name:      "migrate",
 					ShortName: "m",
-					Usage:     "migrate database",
+					Usage:     "Migrate Database",
 					Action:    triggerAction(db.Migrate),
 				},
 				{
 					Name:      "rollback",
 					ShortName: "r",
-					Usage:     "rollback database",
+					Usage:     "Rollback Database",
 					Action:    triggerAction(db.Rollback),
 				},
 			},
 		},
 
 		{
-			Name:      "config-details",
+			Name:      "config",
 			ShortName: "conf",
-			Usage:     "Print configuration detail",
+			Usage:     "Configuration",
 			Action:    printConfigDetails,
 		},
 

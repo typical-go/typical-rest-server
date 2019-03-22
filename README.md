@@ -5,8 +5,6 @@ The project aims to provide typical RESTful API Server for Go. The core value is
 - `Scalable`: Ready for Distributed System and Micro Service Architecture.
 - `Self Explanatory Project`: Make sure everyone easy to understand and on board to the project
 
-Check our [wiki](https://github.com/imantung/typical-go-server/wiki) to learn more.
-
 ## Checklist
 
 - [x] Encourage [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle)
@@ -56,6 +54,10 @@ Check our [wiki](https://github.com/imantung/typical-go-server/wiki) to learn mo
   - [ ] Travis CI example
   - [ ] Docker example
 
+## Learn More
+
+- [Our wiki](https://github.com/imantung/typical-go-server/wiki)
+- [Project README](/Project_README.md)
 
 ## License
 
