@@ -8,7 +8,7 @@ const (
 // Table Column Names
 const (
 	idColumn        = "id"
-	updatedAtColumn = "created_at"
+	updatedAtColumn = "updated_at"
 	createdAtColumn = "created_at"
 
 	// Book Table Column Names
