@@ -50,6 +50,12 @@ clean-all: dep-clean clean
 ## mock: Generate mock class
 mock:
 	@echo "  >  Generate mock class..."
-	@./mockgen.sh $(MOCK_TARGET)
+	@go get github.com/golang/mock/gomock
+	@go install github.com/golang/mock/mockgen
+
+	# generate mock for repository
+	@for filename in app/repository/*_repository.go; do \
+		$(GOPATH)/bin/mockgen -source=$$filename -destination=$(MOCK_TARGET)/$$(basename $$filename) -package=$$(basename $(MOCK_TARGET)); \
+	done
 
 .PHONY: help all dep build test test-report dep-clean clean clean-all mock
