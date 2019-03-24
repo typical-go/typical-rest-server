@@ -1,6 +1,6 @@
 # Typical Go Server (WIP)
 
-The project aims to provide typical RESTful API Server for Go. The core value is included simple, scalable and self-explanatory project.
+The project aims to provide typical RESTful API Server for Go.
 - `Simple`: Encourage KISS Principle with go idiomatic code and conventions.
 - `Scalable`: Ready for Distributed System and Micro Service Architecture.
 - `Self Explanatory Project`: Make sure everyone easy to understand and on board to the project
