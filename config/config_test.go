@@ -11,7 +11,7 @@ import (
 
 var (
 	all_good_env = map[string]string{
-		"TEST_ADDRESS":     ":99999",
+		"TEST_APP_ADDRESS": ":99999",
 		"TEST_DB_NAME":     "some-dbname",
 		"TEST_DB_USER":     "some-dbuser",
 		"TEST_DB_PASSWORD": "some-dbpassword",
@@ -48,7 +48,7 @@ func TestLoadConfigForTest(t *testing.T) {
 func TestDetails(t *testing.T) {
 	details := config.Details()
 	require.Equal(t, details, []config.ConfigDetail{
-		{Name: "ADDRESS", Type: "string", Required: "true"},
+		{Name: "APP_ADDRESS", Type: "string", Required: "true"},
 		{Name: "DB_NAME", Type: "string", Required: "true"},
 		{Name: "DB_USER", Type: "string", Required: "true"},
 		{Name: "DB_PASSWORD", Type: "string", Required: "true"},

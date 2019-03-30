@@ -10,8 +10,7 @@ import (
 // Config type
 // Check https://github.com/kelseyhightower/envconfig#struct-tag-support for more help
 type Config struct {
-	Address string `envconfig:"ADDRESS" required:"true"`
-
+	Address    string `envconfig:"APP_ADDRESS" required:"true"`
 	DbName     string `envconfig:"DB_NAME" required:"true"`
 	DbUser     string `envconfig:"DB_USER" required:"true"`
 	DbPassword string `envconfig:"DB_PASSWORD" required:"true"`

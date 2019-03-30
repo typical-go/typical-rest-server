@@ -78,7 +78,7 @@ GLOBAL OPTIONS:
 +-------------+--------+----------+-----------+
 |    NAME     |  TYPE  | REQUIRED |  DEFAULT  |
 +-------------+--------+----------+-----------+
-| ADDRESS     | string | true     |           |
+| APP_ADDRESS | string | true     |           |
 | DB_NAME     | string | true     |           |
 | DB_USER     | string | true     |           |
 | DB_PASSWORD | string | true     |           |
