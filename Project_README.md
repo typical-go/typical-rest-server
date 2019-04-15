@@ -11,6 +11,24 @@
 2. Install [dep](https://github.com/golang/dep) as dependency management tool
 3. Install [direnv](https://direnv.net/) for directory level environment variable
 
+```bash
+# install go and setup GOPATH
+brew install go
+mkdir $HOME/go && cd $HOME/go && mkdir bin pkg src && cd -
+echo "export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+" >> ~/.zshrc
+source ~/.zshrc
+
+# install dep
+brew install dep
+
+# install direnv
+brew install direnv
+echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
+source ~/.zshrc
+```
+
 ### Clone
 
 <!-- FIXME: Project path, git path and project binary name -->
