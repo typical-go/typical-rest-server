@@ -7,9 +7,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/imantung/typical-go-server/config"
-	"github.com/olekukonko/tablewriter"
-	"github.com/urfave/cli"
+	"github.com/labstack/echo"
 )
 
 func serve(s *server, conf config.Config) error {
@@ -28,11 +28,23 @@ func serve(s *server, conf config.Config) error {
 	return s.Start(conf.Address)
 }
 
-func printConfigDetails(ctx *cli.Context) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Type", "Required", "Default"})
-	for _, detail := range config.Details() {
-		table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
+type server struct {
+	*echo.Echo
+	bookController controller.BookController
+}
+
+func newServer(bookController controller.BookController) *server {
+	s := &server{
+		Echo:           echo.New(),
+		bookController: bookController,
 	}
-	table.Render()
+
+	initMiddlewares(s)
+	initRoutes(s)
+
+	return s
+}
+
+func (s *server) CRUD(entity string, crud controller.CRUD) {
+	crud.RegisterTo(entity, s.Echo)
 }

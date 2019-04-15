@@ -57,3 +57,11 @@ func Commands() []cli.Command {
 		// add more command here
 	}
 }
+
+func triggerAction(invokeFunc interface{}) interface{} {
+	return func(ctx *cli.Context) error {
+		container := container()
+		container.Provide(ctx.Args)
+		return container.Invoke(invokeFunc)
+	}
+}
