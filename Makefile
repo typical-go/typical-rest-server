@@ -14,19 +14,25 @@ all: dep test build
 
 ## dep: Install dependencies
 dep:
-	@echo "  >  Install dependencies..."
+	@echo "  >  Install Dependencies"
 	@go get github.com/golang/dep/cmd/dep
 	@go install github.com/golang/dep/cmd/dep
 	@$(GOPATH)/bin/dep ensure
 
 ## build: Build the binary
 build:
-	@echo "  >  Building binary..."
+	@echo "  >  Building Binary"
 	@go build -o $(BINARY)
+
+run:
+	@./$(BINARY)
+	
+## binary: Build and run the binary
+binary: build run
 
 ## test: Running test
 test:
-	@echo "  >  Running test..."
+	@echo "  >  Running Test"
 	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
 
 ## test-report: Running test and show coverage profile
@@ -52,10 +58,13 @@ mock:
 	@echo "  >  Generate mock class..."
 	@go get github.com/golang/mock/gomock
 	@go install github.com/golang/mock/mockgen
-
-	# generate mock for repository
 	@for filename in app/repository/*_repository.go; do \
 		$(GOPATH)/bin/mockgen -source=$$filename -destination=$(MOCK_TARGET)/$$(basename $$filename) -package=$$(basename $(MOCK_TARGET)); \
 	done
+	
+## env: prepare the directory enviroment
+env:
+	@cp .envrc.sample .envrc
+	@direnv allow .
 
 .PHONY: help all dep build test test-report dep-clean clean clean-all mock
