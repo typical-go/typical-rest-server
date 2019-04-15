@@ -1,1 +1,4 @@
 export APP_ADDRESS=:8089
+export DB_NAME=typical-app
+export DB_USER=user
+export DB_PASSWORD=password
