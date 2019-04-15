@@ -3,6 +3,7 @@
 PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
 MOCK_TARGET := test/mock
+TEST_TARGET := ./config ./app/controller ./app/repository
 
 help: Makefile
 	@echo "\n Choose a command run in "$(PROJECT_NAME)":\n"
@@ -33,7 +34,7 @@ binary: build run
 ## test: Running test
 test:
 	@echo "  >  Running Test"
-	@go test ./config ./app/controller ./app/repository  -coverprofile cover.out
+	@go test $(TEST_TARGET)  -coverprofile cover.out
 
 ## test-report: Running test and show coverage profile
 test-report:
