@@ -27,7 +27,7 @@ build:
 	
 ## server: Build and run the server
 server: 
-	@-$(MAKE)test
+	@-$(MAKE) build
 	@./$(BINARY) s
 
 ## test: Running test
