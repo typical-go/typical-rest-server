@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/imantung/typical-go-server/config"
@@ -10,7 +9,6 @@ import (
 
 func init() {
 	conf, _ := config.LoadConfig()
-	fmt.Println(conf)
 
 	err := db.ResetTestDB(conf, "file://../../db/migrate")
 	if err != nil {
