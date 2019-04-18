@@ -12,7 +12,7 @@ func Commands() []cli.Command {
 			Name:      "serve",
 			ShortName: "s",
 			Usage:     "Run the server",
-			Action: triggerAction(func(s *server) error {
+			Action: commandAction(func(s *server) error {
 				return s.Serve()
 			}),
 		},
@@ -26,25 +26,25 @@ func Commands() []cli.Command {
 					Name:      "create",
 					ShortName: "c",
 					Usage:     "Create New Database",
-					Action:    triggerAction(db.Create),
+					Action:    commandAction(db.Create),
 				},
 				{
 					Name:      "drop",
 					ShortName: "d",
 					Usage:     "Drop Database",
-					Action:    triggerAction(db.Drop),
+					Action:    commandAction(db.Drop),
 				},
 				{
 					Name:      "migrate",
 					ShortName: "m",
 					Usage:     "Migrate Database",
-					Action:    triggerAction(db.Migrate),
+					Action:    commandAction(db.Migrate),
 				},
 				{
 					Name:      "rollback",
 					ShortName: "r",
 					Usage:     "Rollback Database",
-					Action:    triggerAction(db.Rollback),
+					Action:    commandAction(db.Rollback),
 				},
 			},
 		},
@@ -60,7 +60,7 @@ func Commands() []cli.Command {
 	}
 }
 
-func triggerAction(invokeFunc interface{}) interface{} {
+func commandAction(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
 		container := container()
 		container.Provide(ctx.Args)
