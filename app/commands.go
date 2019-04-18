@@ -3,9 +3,9 @@ package app
 import (
 	"os"
 
+	"github.com/imantung/typical-go-server/config"
 	"github.com/imantung/typical-go-server/db"
 	"github.com/olekukonko/tablewriter"
-	"github.com/tiket/TIX-SESSION-GO/config"
 	"github.com/urfave/cli"
 )
 

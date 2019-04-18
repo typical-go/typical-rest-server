@@ -4,6 +4,7 @@
 package config
 
 import (
+	"github.com/imantung/typical-go-server/infra"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -12,11 +13,7 @@ import (
 type Config struct {
 	Address string `envconfig:"ADDRESS" required:"true"`
 
-	DbName     string `envconfig:"DB_NAME" required:"true"`
-	DbUser     string `envconfig:"DB_USER" required:"true"`
-	DbPassword string `envconfig:"DB_PASSWORD" required:"true"`
-	DbHost     string `envconfig:"DB_HOST" default:"localhost"`
-	DbPort     int    `envconfig:"DB_PORT" default:"5432"`
+	infra.Postgres
 }
 
 // LoadConfig return new instance of config
@@ -34,5 +31,7 @@ func LoadConfigForTest() (conf Config, err error) {
 
 // Details return details of configuration
 func Details() []ConfigDetail {
-	return details(&Config{})
+	var slice []ConfigDetail
+	details(&slice, &Config{})
+	return slice
 }

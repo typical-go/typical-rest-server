@@ -10,22 +10,19 @@ import (
 
 	"github.com/golang-migrate/migrate"
 
-	// load postgres migration driver
-	_ "github.com/golang-migrate/migrate/database/postgres"
-
 	// load file source driver
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
 // Create database
 func Create(conf config.Config) (err error) {
-	conn, err := sql.Open("postgres", connectionStringWithDBName(conf, "template1"))
+	conn, err := sql.Open("postgres", conf.Postgres.ConnectionStringTemplate1())
 	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	query := fmt.Sprintf(`CREATE DATABASE "%s"`, conf.DbName)
+	query := fmt.Sprintf(`CREATE DATABASE "%s"`, conf.Postgres.DbName)
 	fmt.Println(query)
 	_, err = conn.Exec(query)
 	return
@@ -33,13 +30,13 @@ func Create(conf config.Config) (err error) {
 
 // Drop database
 func Drop(conf config.Config) (err error) {
-	conn, err := sql.Open("postgres", connectionStringWithDBName(conf, "template1"))
+	conn, err := sql.Open("postgres", conf.Postgres.ConnectionStringTemplate1())
 	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, conf.DbName)
+	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, conf.Postgres.DbName)
 	fmt.Println(query)
 	_, err = conn.Exec(query)
 	return
@@ -50,7 +47,7 @@ func Migrate(conf config.Config, args cli.Args) error {
 	source := migrationSource(args)
 	log.Printf("Migrate database from source '%s'\n", source)
 
-	migration, err := migrate.New(source, connectionString(conf))
+	migration, err := migrate.New(source, conf.Postgres.ConnectionString())
 	if err != nil {
 		return err
 	}
@@ -63,7 +60,7 @@ func Rollback(conf config.Config, args cli.Args) error {
 	source := migrationSource(args)
 	log.Printf("Migrate database from source '%s'\n", source)
 
-	migration, err := migrate.New(source, connectionString(conf))
+	migration, err := migrate.New(source, conf.Postgres.ConnectionString())
 	if err != nil {
 		return err
 	}
@@ -73,22 +70,22 @@ func Rollback(conf config.Config, args cli.Args) error {
 
 // ResetTestDB reset test database
 func ResetTestDB(conf config.Config, source string) (err error) {
-	conn, err := sql.Open("postgres", connectionStringWithDBName(conf, "template1"))
+	conn, err := sql.Open("postgres", conf.Postgres.ConnectionStringTemplate1())
 	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	_, err = conn.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, conf.DbName))
+	_, err = conn.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, conf.Postgres.DbName))
 	if err != nil {
 		return
 	}
-	_, err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, conf.DbName))
+	_, err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, conf.Postgres.DbName))
 	if err != nil {
 		return
 	}
 
-	migration, err := migrate.New(source, connectionString(conf))
+	migration, err := migrate.New(source, conf.Postgres.ConnectionString())
 	if err != nil {
 		return err
 	}
