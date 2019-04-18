@@ -2,7 +2,7 @@
 
 PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
-MOCK_TARGET := test/mock
+MOCK_TARGET := mock
 TEST_TARGET := ./config ./app/controller ./app/repository
 
 help: Makefile

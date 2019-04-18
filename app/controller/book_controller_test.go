@@ -9,7 +9,8 @@ import (
 	"github.com/imantung/typical-go-server/app/controller"
 	"github.com/imantung/typical-go-server/app/helper/testkit"
 	"github.com/imantung/typical-go-server/app/repository"
-	"github.com/imantung/typical-go-server/test/mock"
+	"github.com/imantung/typical-go-server/mock"
+
 	"github.com/stretchr/testify/require"
 )
 
