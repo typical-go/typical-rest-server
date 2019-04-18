@@ -3,205 +3,201 @@ package controller_test
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/imantung/typical-go-server/app/controller"
+	"github.com/imantung/typical-go-server/app/helper/testkit"
 	"github.com/imantung/typical-go-server/app/repository"
 	"github.com/imantung/typical-go-server/test/mock"
-	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBookController_NoRepository(t *testing.T) {
-	e := echo.New()
-
 	bookController := controller.NewBookController(nil)
-	bookController.RegisterTo("book", e)
+	ctx, _ := testkit.RequestGET("/")
 
-	rr := httptest.NewRecorder()
-	http.HandlerFunc(e.ServeHTTP).ServeHTTP(rr,
-		httptest.NewRequest(http.MethodGet, "/book/1", nil))
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.EqualError(t, bookController.Get(ctx), "BookRepository is missing")
+	require.EqualError(t, bookController.Delete(ctx), "BookRepository is missing")
+	require.EqualError(t, bookController.Create(ctx), "BookRepository is missing")
+	require.EqualError(t, bookController.Update(ctx), "BookRepository is missing")
+	require.EqualError(t, bookController.List(ctx), "BookRepository is missing")
 }
 
-func TestBookController_Get(t *testing.T) {
+func TestBookController(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	// prepare mock book repository
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Get(int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
-	bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
-
-	e := echo.New()
-	defer e.Close()
 	bookController := controller.NewBookController(bookR)
-	bookController.RegisterTo("book", e)
 
-	runTestCase(t, e, []ControllerTestCase{
-		{
-			"Invalid ID",
-			RequestTestCase{http.MethodGet, "/book/abc", ""},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
-		},
-		{
-			"Get success",
-			RequestTestCase{http.MethodGet, "/book/1", ""},
-			ResponseTestCase{http.StatusOK, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n"},
-		},
-		{
-			"Get error",
-			RequestTestCase{http.MethodGet, "/book/2", ""},
-			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
-		},
+	t.Run("Get", func(t *testing.T) {
+		t.Run("When invalid ID", func(t *testing.T) {
+			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "invalid",
+			})
+			err := bookController.Get(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusBadRequest, rr.Code)
+		})
+
+		t.Run("When return success", func(t *testing.T) {
+			bookR.EXPECT().Get(int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+
+			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "1",
+			})
+
+			err := bookController.Get(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusOK, rr.Code)
+			require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n", rr.Body.String())
+		})
+
+		t.Run("When return error", func(t *testing.T) {
+			bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
+
+			ctx, _ := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "2",
+			})
+
+			err := bookController.Get(ctx)
+			require.EqualError(t, err, "some-get-error")
+		})
 	})
-}
 
-func TestBookController_List(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Run("List", func(t *testing.T) {
+		t.Run("When repo success", func(t *testing.T) {
+			bookR.EXPECT().List().Return(
+				[]*repository.Book{
+					&repository.Book{ID: 1, Title: "title1", Author: "author1"},
+					&repository.Book{ID: 2, Title: "title2", Author: "author2"},
+				}, nil)
 
-	// prepare mock book repository
-	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().List().Return(
-		[]*repository.Book{
-			&repository.Book{ID: 1, Title: "title1", Author: "author1"},
-			&repository.Book{ID: 2, Title: "title2", Author: "author2"},
-		}, nil)
-	bookR.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
+			ctx, rr := testkit.RequestGET("/")
+			err := bookController.List(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusOK, rr.Code)
+			require.Equal(t, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n", rr.Body.String())
+		})
 
-	e := echo.New()
-	defer e.Close()
-	bookController := controller.NewBookController(bookR)
-	bookController.RegisterTo("book", e)
+		t.Run("When repo error", func(t *testing.T) {
+			bookR.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
 
-	runTestCase(t, e, []ControllerTestCase{
-		{
-			"List success",
-			RequestTestCase{http.MethodGet, "/book", ""},
-			ResponseTestCase{http.StatusOK, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n"},
-		},
-		{
-			"List error",
-			RequestTestCase{http.MethodGet, "/book", ""},
-			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
-		},
+			ctx, _ := testkit.RequestGET("/")
+			err := bookController.List(ctx)
+			require.EqualError(t, err, "some-list-error")
+		})
 	})
-}
 
-func TestBookController_Insert(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Run("Create", func(t *testing.T) {
+		t.Run("When invalid message request", func(t *testing.T) {
+			ctx, rr := testkit.RequestPOST("/", `{}`)
+			err := bookController.Create(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusBadRequest, rr.Code)
+			require.Equal(t, "{\"message\":\"Invalid Message\"}\n", rr.Body.String())
+		})
 
-	// prepare mock book repository
-	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
-	bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
+		t.Run("When invalid json format", func(t *testing.T) {
+			ctx, _ := testkit.RequestPOST("/", `invalid-json}`)
+			err := bookController.Create(ctx)
+			require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
+		})
 
-	e := echo.New()
-	defer e.Close()
-	bookController := controller.NewBookController(bookR)
-	bookController.RegisterTo("book", e)
+		t.Run("When error", func(t *testing.T) {
+			bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
 
-	runTestCase(t, e, []ControllerTestCase{
-		{
-			"Invalid message body",
-			RequestTestCase{http.MethodPost, "/book", "{}"},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n"},
-		},
-		{
-			"Invalid json format",
-			RequestTestCase{http.MethodPost, "/book", "invalid-json"},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n"},
-		},
-		{
-			"Insert error",
-			RequestTestCase{http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`},
-			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
-		},
-		{
-			"Insert Success",
-			RequestTestCase{http.MethodPost, "/book", `{"author":"some-author", "title":"some-title"}`},
-			ResponseTestCase{http.StatusCreated, "{\"message\":\"Success insert new record #99\"}\n"},
-		},
+			ctx, _ := testkit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
+			err := bookController.Create(ctx)
+			require.EqualError(t, err, "some-insert-error")
+		})
+
+		t.Run("When success", func(t *testing.T) {
+			bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
+
+			ctx, rr := testkit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
+			err := bookController.Create(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusCreated, rr.Code)
+			require.Equal(t, "{\"message\":\"Success insert new record #99\"}\n", rr.Body.String())
+		})
 	})
-}
 
-func TestBookController_Delete(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Run("Delete", func(t *testing.T) {
+		t.Run("When invalid ID", func(t *testing.T) {
+			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "invalid",
+			})
+			err := bookController.Delete(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusBadRequest, rr.Code)
+		})
 
-	// prepare mock book repository
-	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Delete(int64(1)).Return(nil)
-	bookR.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
+		t.Run("When return success", func(t *testing.T) {
+			bookR.EXPECT().Delete(int64(1)).Return(nil)
 
-	e := echo.New()
-	defer e.Close()
-	bookController := controller.NewBookController(bookR)
-	bookController.RegisterTo("book", e)
+			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "1",
+			})
 
-	runTestCase(t, e, []ControllerTestCase{
-		{
-			"Invalid ID in url parameter",
-			RequestTestCase{http.MethodDelete, "/book/abc", ``},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
-		},
-		{
-			"Valid ID",
-			RequestTestCase{http.MethodDelete, "/book/1", ``},
-			ResponseTestCase{http.StatusOK, "{\"message\":\"Delete #1 done\"}\n"},
-		},
-		{
-			"ID not found",
-			RequestTestCase{http.MethodDelete, "/book/2", ``},
-			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
-		},
+			err := bookController.Delete(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusOK, rr.Code)
+			require.Equal(t, "{\"message\":\"Delete #1 done\"}\n", rr.Body.String())
+		})
+
+		t.Run("When error", func(t *testing.T) {
+			bookR.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
+
+			ctx, _ := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "2",
+			})
+
+			err := bookController.Delete(ctx)
+			require.EqualError(t, err, "some-delete-error")
+		})
 	})
-}
 
-func TestBookController_Update(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Run("Updte", func(t *testing.T) {
+		t.Run("When invalid message request", func(t *testing.T) {
+			ctx, rr := testkit.RequestPOST("/", `{}`)
+			err := bookController.Update(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusBadRequest, rr.Code)
+			require.Equal(t, "{\"message\":\"Invalid ID\"}\n", rr.Body.String())
+		})
 
-	// prepare mock book repository
-	bookR := mock.NewMockBookRepository(ctrl)
-	bookR.EXPECT().Update(gomock.Any()).Return(fmt.Errorf("some-update-error"))
-	bookR.EXPECT().Update(gomock.Any()).Return(nil)
+		t.Run("When invalid message request", func(t *testing.T) {
+			ctx, rr := testkit.RequestPOST("/", `{"id": 1}`)
+			err := bookController.Update(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusBadRequest, rr.Code)
+			require.Equal(t, "{\"message\":\"Invalid Message\"}\n", rr.Body.String())
+		})
 
-	e := echo.New()
-	defer e.Close()
-	bookController := controller.NewBookController(bookR)
-	bookController.RegisterTo("book", e)
+		t.Run("When invalid json format", func(t *testing.T) {
+			ctx, _ := testkit.RequestPOST("/", `invalid-json}`)
+			err := bookController.Update(ctx)
+			require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
+		})
 
-	runTestCase(t, e, []ControllerTestCase{
-		{
-			"Invalid json format",
-			RequestTestCase{http.MethodPut, "/book", "invalid-json"},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Syntax error: offset=1, error=invalid character 'i' looking for beginning of value\"}\n"},
-		},
-		{
-			"Invalid message body",
-			RequestTestCase{http.MethodPut, "/book", `{}`},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid ID\"}\n"},
-		},
-		{
-			"Invalid message body",
-			RequestTestCase{http.MethodPut, "/book", `{"id":1}`},
-			ResponseTestCase{http.StatusBadRequest, "{\"message\":\"Invalid Message\"}\n"},
-		},
-		{
-			"Update error",
-			RequestTestCase{http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`},
-			ResponseTestCase{http.StatusInternalServerError, "{\"message\":\"Internal Server Error\"}\n"},
-		},
-		{
-			"Update success",
-			RequestTestCase{http.MethodPut, "/book", `{"id":1, "title":"some-title", "author": "some-author"}`},
-			ResponseTestCase{http.StatusOK, "{\"message\":\"Update success\"}\n"},
-		},
+		t.Run("When error", func(t *testing.T) {
+			bookR.EXPECT().Update(gomock.Any()).Return(fmt.Errorf("some-update-error"))
+
+			ctx, _ := testkit.RequestPOST("/", `{"id": 1,"author":"some-author", "title":"some-title"}`)
+			err := bookController.Update(ctx)
+			require.EqualError(t, err, "some-update-error")
+		})
+
+		t.Run("When success", func(t *testing.T) {
+			bookR.EXPECT().Update(gomock.Any()).Return(nil)
+
+			ctx, rr := testkit.RequestPOST("/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
+			err := bookController.Update(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusOK, rr.Code)
+			require.Equal(t, "{\"message\":\"Update success\"}\n", rr.Body.String())
+		})
 	})
 }

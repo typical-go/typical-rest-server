@@ -14,10 +14,6 @@ const (
 	insertSuccessStatus    = http.StatusCreated
 )
 
-func underContruction(ctx echo.Context) error {
-	return ctx.JSON(underConstrucionStatus, map[string]string{"message": "Under Construction"})
-}
-
 func invalidMessage(ctx echo.Context, err error) error {
 	res := map[string]interface{}{}
 	res["message"] = "Invalid Message"

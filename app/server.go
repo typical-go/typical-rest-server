@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,8 +36,12 @@ func newServer(
 	return s
 }
 
-func (s *server) CRUD(entity string, crud controller.CRUD) {
-	crud.RegisterTo(entity, s.Echo)
+func (s *server) CRUDController(entity string, crud controller.CRUDController) {
+	s.GET(fmt.Sprintf("/%s", entity), crud.List)
+	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
+	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)
+	s.PUT(fmt.Sprintf("/%s", entity), crud.Update)
+	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
 }
 
 func (s *server) Serve() error {

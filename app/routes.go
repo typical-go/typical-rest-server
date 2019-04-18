@@ -1,5 +1,5 @@
 package app
 
 func initRoutes(s *server) {
-	s.CRUD("book", s.bookController)
+	s.CRUDController("book", s.bookController)
 }

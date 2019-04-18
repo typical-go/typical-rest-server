@@ -11,7 +11,7 @@ import (
 
 // BookController handle input related to Book
 type BookController interface {
-	CRUD
+	CRUDController
 }
 
 type bookController struct {
@@ -26,6 +26,10 @@ func NewBookController(bookRepository repository.BookRepository) BookController 
 }
 
 func (c *bookController) Create(ctx echo.Context) (err error) {
+	if err := c.Check(); err != nil {
+		return err
+	}
+
 	var book repository.Book
 
 	err = ctx.Bind(&book)
@@ -48,6 +52,10 @@ func (c *bookController) Create(ctx echo.Context) (err error) {
 }
 
 func (c *bookController) List(ctx echo.Context) error {
+	if err := c.Check(); err != nil {
+		return err
+	}
+
 	books, err := c.bookRepository.List()
 	if err != nil {
 		return err
@@ -56,6 +64,10 @@ func (c *bookController) List(ctx echo.Context) error {
 }
 
 func (c *bookController) Get(ctx echo.Context) error {
+	if err := c.Check(); err != nil {
+		return err
+	}
+
 	id, err := strkit.ToInt64(ctx.Param("id"))
 	if err != nil {
 		return invalidID(ctx, err)
@@ -69,6 +81,10 @@ func (c *bookController) Get(ctx echo.Context) error {
 }
 
 func (c *bookController) Delete(ctx echo.Context) error {
+	if err := c.Check(); err != nil {
+		return err
+	}
+
 	id, err := strkit.ToInt64(ctx.Param("id"))
 	if err != nil {
 		return invalidID(ctx, err)
@@ -83,6 +99,10 @@ func (c *bookController) Delete(ctx echo.Context) error {
 }
 
 func (c *bookController) Update(ctx echo.Context) (err error) {
+	if err := c.Check(); err != nil {
+		return err
+	}
+
 	var book repository.Book
 
 	err = ctx.Bind(&book)
@@ -107,19 +127,9 @@ func (c *bookController) Update(ctx echo.Context) (err error) {
 	return ctx.JSON(http.StatusOK, map[string]string{"message": "Update success"})
 }
 
-func (c *bookController) BeforeActionFunc(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(e echo.Context) error {
-		if c.bookRepository == nil {
-			return fmt.Errorf("BookRepository is missing")
-		}
-		return next(e)
+func (c *bookController) Check() error {
+	if c.bookRepository == nil {
+		return fmt.Errorf("BookRepository is missing")
 	}
-}
-
-func (c *bookController) RegisterTo(entity string, e *echo.Echo) {
-	e.GET(fmt.Sprintf("/%s", entity), c.List, c.BeforeActionFunc)
-	e.POST(fmt.Sprintf("/%s", entity), c.Create, c.BeforeActionFunc)
-	e.GET(fmt.Sprintf("/%s/:id", entity), c.Get, c.BeforeActionFunc)
-	e.PUT(fmt.Sprintf("/%s", entity), c.Update, c.BeforeActionFunc)
-	e.DELETE(fmt.Sprintf("/%s/:id", entity), c.Delete, c.BeforeActionFunc)
+	return nil
 }
