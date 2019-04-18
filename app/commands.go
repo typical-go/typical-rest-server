@@ -1,7 +1,11 @@
 package app
 
 import (
+	"os"
+
 	"github.com/imantung/typical-go-server/db"
+	"github.com/olekukonko/tablewriter"
+	"github.com/tiket/TIX-SESSION-GO/config"
 	"github.com/urfave/cli"
 )
 
@@ -53,7 +57,14 @@ func Commands() []cli.Command {
 			Name:      "config",
 			ShortName: "conf",
 			Usage:     "Configuration",
-			Action:    printConfigDetails,
+			Action: func(ctx *cli.Context) {
+				table := tablewriter.NewWriter(os.Stdout)
+				table.SetHeader([]string{"Name", "Type", "Required", "Default"})
+				for _, detail := range config.Details() {
+					table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
+				}
+				table.Render()
+			},
 		},
 
 		// add more command here
