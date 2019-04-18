@@ -55,6 +55,19 @@ func TestBookController(t *testing.T) {
 			require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n", rr.Body.String())
 		})
 
+		t.Run("When entity not found", func(t *testing.T) {
+			bookR.EXPECT().Get(int64(3)).Return(nil, nil)
+
+			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+				"id": "3",
+			})
+
+			err := bookController.Get(ctx)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusNotFound, rr.Code)
+			require.Equal(t, "{\"message\":\"book #3 not found\"}\n", rr.Body.String())
+		})
+
 		t.Run("When return error", func(t *testing.T) {
 			bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 

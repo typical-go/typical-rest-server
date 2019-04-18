@@ -77,6 +77,11 @@ func (c *bookController) Get(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	if book == nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{"message": fmt.Sprintf("book #%d not found", id)})
+	}
+
 	return ctx.JSON(http.StatusOK, book)
 }
 
