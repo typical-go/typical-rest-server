@@ -76,16 +76,16 @@ func ResetTestDB(conf config.Config, source string) (err error) {
 	}
 	defer conn.Close()
 
-	_, err = conn.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, conf.Postgres.DbName))
+	_, err = conn.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s_test"`, conf.Postgres.DbName))
 	if err != nil {
 		return
 	}
-	_, err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, conf.Postgres.DbName))
+	_, err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s_test"`, conf.Postgres.DbName))
 	if err != nil {
 		return
 	}
 
-	migration, err := migrate.New(source, conf.Postgres.ConnectionString())
+	migration, err := migrate.New(source, conf.Postgres.ConnectionStringDBTest())
 	if err != nil {
 		return err
 	}

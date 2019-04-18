@@ -6,13 +6,12 @@ import (
 
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/imantung/typical-go-server/config"
-	"github.com/imantung/typical-go-server/db"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBookRepository(t *testing.T) {
-	conf, _ := config.LoadConfigForTest()
-	conn, err := db.Connect(conf)
+	conf, _ := config.LoadConfig()
+	conn, err := conf.Postgres.OpenDBTest()
 	require.NoError(t, err)
 	defer conn.Close()
 
@@ -53,8 +52,8 @@ func TestBookRepository(t *testing.T) {
 }
 
 func TestBookRepository_List(t *testing.T) {
-	conf, _ := config.LoadConfigForTest()
-	conn, err := db.Connect(conf)
+	conf, _ := config.LoadConfig()
+	conn, err := conf.Postgres.Open()
 	require.NoError(t, err)
 	defer conn.Close()
 

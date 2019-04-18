@@ -53,6 +53,8 @@ func (r *bookRepository) List() (list []*Book, err error) {
 		return
 	}
 
+	list = make([]*Book, 0)
+
 	for rows.Next() {
 		var book *Book
 		book, err = scanBook(rows)

@@ -22,13 +22,6 @@ func LoadConfig() (conf Config, err error) {
 	return
 }
 
-// LoadConfigForTest return config for testing environment
-func LoadConfigForTest() (conf Config, err error) {
-	conf, err = LoadConfig()
-	conf.DbName = conf.DbName + "_test"
-	return
-}
-
 // Details return details of configuration
 func Details() []ConfigDetail {
 	var slice []ConfigDetail

@@ -37,14 +37,6 @@ func TestLoadConfig(t *testing.T) {
 
 }
 
-func TestLoadConfigForTest(t *testing.T) {
-	envkit.Set(all_good_env)
-	defer os.Clearenv()
-	conf, err := config.LoadConfigForTest()
-	require.NoError(t, err)
-	require.Equal(t, conf.DbName, "some-dbname_test")
-}
-
 func TestDetails(t *testing.T) {
 	details := config.Details()
 	require.Equal(t, details, []config.ConfigDetail{

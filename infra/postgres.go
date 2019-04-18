@@ -21,10 +21,21 @@ func (p Postgres) Open() (*sql.DB, error) {
 	return sql.Open("postgres", p.ConnectionString())
 }
 
+// OpenDBTest connection to postgres
+func (p Postgres) OpenDBTest() (*sql.DB, error) {
+	return sql.Open("postgres", p.ConnectionStringDBTest())
+}
+
 // ConnectionString return connection string
 func (p Postgres) ConnectionString() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		p.User, p.Password, p.Host, p.Port, p.DbName)
+}
+
+// ConnectionStringDBTest return connection string
+func (p Postgres) ConnectionStringDBTest() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		p.User, p.Password, p.Host, p.Port, p.DbName+"_test")
 }
 
 // ConnectionStringTemplate1 return connection string to template1 database
