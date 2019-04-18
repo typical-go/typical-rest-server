@@ -12,7 +12,9 @@ func Commands() []cli.Command {
 			Name:      "serve",
 			ShortName: "s",
 			Usage:     "Run the server",
-			Action:    triggerAction(serve),
+			Action: triggerAction(func(s *server) error {
+				return s.Serve()
+			}),
 		},
 
 		{

@@ -24,12 +24,11 @@ dep:
 build:
 	@echo "  >  Building Binary"
 	@go build -o $(BINARY)
-
-run:
-	@./$(BINARY)
 	
-## binary: Build and run the binary
-binary: build run
+## server: Build and run the server
+server: 
+	@-$(MAKE)test
+	@./$(BINARY) s
 
 ## test: Running test
 test:

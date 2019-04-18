@@ -12,7 +12,34 @@ import (
 	"github.com/labstack/echo"
 )
 
-func serve(s *server, conf config.Config) error {
+type server struct {
+	*echo.Echo
+	address        string
+	bookController controller.BookController
+}
+
+func newServer(
+	conf config.Config,
+	bookController controller.BookController,
+) *server {
+
+	s := &server{
+		Echo:           echo.New(),
+		address:        conf.Address,
+		bookController: bookController,
+	}
+
+	initMiddlewares(s)
+	initRoutes(s)
+
+	return s
+}
+
+func (s *server) CRUD(entity string, crud controller.CRUD) {
+	crud.RegisterTo(entity, s.Echo)
+}
+
+func (s *server) Serve() error {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
@@ -25,26 +52,5 @@ func serve(s *server, conf config.Config) error {
 		s.Shutdown(ctx)
 	}()
 
-	return s.Start(conf.Address)
-}
-
-type server struct {
-	*echo.Echo
-	bookController controller.BookController
-}
-
-func newServer(bookController controller.BookController) *server {
-	s := &server{
-		Echo:           echo.New(),
-		bookController: bookController,
-	}
-
-	initMiddlewares(s)
-	initRoutes(s)
-
-	return s
-}
-
-func (s *server) CRUD(entity string, crud controller.CRUD) {
-	crud.RegisterTo(entity, s.Echo)
+	return s.Start(s.address)
 }
