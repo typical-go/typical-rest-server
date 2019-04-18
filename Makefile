@@ -67,4 +67,4 @@ env:
 	@cp .envrc.sample .envrc
 	@direnv allow .
 
-.PHONY: help all dep build test test-report dep-clean clean clean-all mock
+.PHONY: help all dep build test test-report dep-clean clean clean-all mock server env
