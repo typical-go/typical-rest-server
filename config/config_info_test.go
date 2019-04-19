@@ -21,10 +21,10 @@ type Xx struct {
 }
 
 func TestDetail(t *testing.T) {
-	var slice []ConfigDetail
-	details(&slice, &Xx{})
+	var slice []InfoDetail
+	informations(&slice, &Xx{})
 
-	require.Equal(t, slice, []ConfigDetail{
+	require.Equal(t, slice, []InfoDetail{
 		{Name: "HOST", Type: "string", Required: "true"},
 		{Name: "PORT", Type: "int", Default: "123"},
 		{Name: "USERNAME", Type: "string"},

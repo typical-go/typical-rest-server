@@ -38,8 +38,8 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestDetails(t *testing.T) {
-	details := config.Details()
-	require.Equal(t, details, []config.ConfigDetail{
+	details := config.Informations()
+	require.Equal(t, details, []config.InfoDetail{
 		{Name: "ADDRESS", Type: "string", Required: "true"},
 		{Name: "PG_DBNAME", Type: "string", Required: "true"},
 		{Name: "PG_USER", Type: "string", Required: "true"},

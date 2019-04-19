@@ -5,14 +5,22 @@ import (
 	"strconv"
 )
 
-type ConfigDetail struct {
+// InfoDetail contain information detail
+type InfoDetail struct {
 	Name     string
 	Type     string
 	Required string
 	Default  string
 }
 
-func details(slice *[]ConfigDetail, obj interface{}) {
+// Informations return details of configuration
+func Informations() []InfoDetail {
+	var slice []InfoDetail
+	informations(&slice, &Config{})
+	return slice
+}
+
+func informations(slice *[]InfoDetail, obj interface{}) {
 	elem := reflect.ValueOf(obj).Elem()
 
 	for i := 0; i < elem.NumField(); i++ {
@@ -20,7 +28,7 @@ func details(slice *[]ConfigDetail, obj interface{}) {
 		fieldType := elem.Type().Field(i)
 
 		if fieldValue.Kind() == reflect.Struct && fieldType.Anonymous {
-			details(slice, fieldValue.Addr().Interface())
+			informations(slice, fieldValue.Addr().Interface())
 		}
 
 		tag := fieldType.Tag
@@ -31,13 +39,12 @@ func details(slice *[]ConfigDetail, obj interface{}) {
 			continue
 		}
 
-		*slice = append(*slice, ConfigDetail{
+		*slice = append(*slice, InfoDetail{
 			Name:     name,
 			Type:     fieldValue.Type().String(),
 			Required: tag.Get("required"),
 			Default:  tag.Get("default"),
 		})
-
 	}
 
 }
