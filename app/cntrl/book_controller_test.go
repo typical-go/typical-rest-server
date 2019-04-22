@@ -1,4 +1,4 @@
-package controller_test
+package cntrl_test
 
 import (
 	"fmt"
@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/imantung/typical-go-server/app/controller"
+	"github.com/imantung/typical-go-server/app/cntrl"
 	"github.com/imantung/typical-go-server/app/helper/testkit"
-	"github.com/imantung/typical-go-server/app/repository"
+	"github.com/imantung/typical-go-server/app/repo"
 	"github.com/imantung/typical-go-server/mock"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestBookController_NoRepository(t *testing.T) {
-	bookController := controller.NewBookController(nil)
+	bookController := cntrl.NewBookController(nil)
 	ctx, _ := testkit.RequestGET("/")
 
 	require.EqualError(t, bookController.Get(ctx), "BookRepository is missing")
@@ -30,7 +30,7 @@ func TestBookController(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookController := controller.NewBookController(bookR)
+	bookController := cntrl.NewBookController(bookR)
 
 	t.Run("Get", func(t *testing.T) {
 		t.Run("When invalid ID", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When return success", func(t *testing.T) {
-			bookR.EXPECT().Get(int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+			bookR.EXPECT().Get(int64(1)).Return(&repo.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 
 			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
 				"id": "1",
@@ -83,9 +83,9 @@ func TestBookController(t *testing.T) {
 	t.Run("List", func(t *testing.T) {
 		t.Run("When repo success", func(t *testing.T) {
 			bookR.EXPECT().List().Return(
-				[]*repository.Book{
-					&repository.Book{ID: 1, Title: "title1", Author: "author1"},
-					&repository.Book{ID: 2, Title: "title2", Author: "author2"},
+				[]*repo.Book{
+					&repo.Book{ID: 1, Title: "title1", Author: "author1"},
+					&repo.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
 
 			ctx, rr := testkit.RequestGET("/")

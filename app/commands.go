@@ -60,7 +60,7 @@ func Commands() []cli.Command {
 			Action: func(ctx *cli.Context) {
 				table := tablewriter.NewWriter(os.Stdout)
 				table.SetHeader([]string{"Name", "Type", "Required", "Default"})
-				for _, detail := range config.Information() {
+				for _, detail := range config.Informations() {
 					table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
 				}
 				table.Render()

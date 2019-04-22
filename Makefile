@@ -3,7 +3,7 @@
 PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY := $(PROJECT_NAME)
 MOCK_TARGET := mock
-TEST_TARGET := ./config ./app/controller ./app/repository
+TEST_TARGET := ./config ./app/cntrl ./app/cntrl
 
 help: Makefile
 	@echo "\n Choose a command run in "$(PROJECT_NAME)":\n"
@@ -58,7 +58,7 @@ mock:
 	@echo "  >  Generate mock class..."
 	@go get github.com/golang/mock/gomock
 	@go install github.com/golang/mock/mockgen
-	@for filename in app/repository/*_repository.go; do \
+	@for filename in app/repo/*_repo.go; do \
 		$(GOPATH)/bin/mockgen -source=$$filename -destination=$(MOCK_TARGET)/$$(basename $$filename) -package=$$(basename $(MOCK_TARGET)); \
 	done
 	

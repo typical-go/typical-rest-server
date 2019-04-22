@@ -1,4 +1,4 @@
-package repository
+package repo
 
 // Table Name
 const (

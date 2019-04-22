@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/imantung/typical-go-server/app/controller"
-	"github.com/imantung/typical-go-server/app/repository"
+	"github.com/imantung/typical-go-server/app/cntrl"
+	"github.com/imantung/typical-go-server/app/repo"
 	"github.com/imantung/typical-go-server/config"
 	"go.uber.org/dig"
 )
@@ -12,8 +12,8 @@ func container() *dig.Container {
 	container.Provide(newServer)
 	container.Provide(config.LoadConfig)
 	container.Provide(connectDB)
-	container.Provide(controller.NewBookController)
-	container.Provide(repository.NewBookRepository)
+	container.Provide(cntrl.NewBookController)
+	container.Provide(repo.NewBookRepository)
 
 	return container
 }

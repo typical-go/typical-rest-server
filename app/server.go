@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/imantung/typical-go-server/app/controller"
+	"github.com/imantung/typical-go-server/app/cntrl"
 	"github.com/imantung/typical-go-server/config"
 	"github.com/labstack/echo"
 )
@@ -16,12 +16,12 @@ import (
 type server struct {
 	*echo.Echo
 	address        string
-	bookController controller.BookController
+	bookController cntrl.BookController
 }
 
 func newServer(
 	conf config.Config,
-	bookController controller.BookController,
+	bookController cntrl.BookController,
 ) *server {
 
 	s := &server{
@@ -36,7 +36,7 @@ func newServer(
 	return s
 }
 
-func (s *server) CRUDController(entity string, crud controller.CRUDController) {
+func (s *server) CRUDController(entity string, crud cntrl.CRUDController) {
 	s.GET(fmt.Sprintf("/%s", entity), crud.List)
 	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
 	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)

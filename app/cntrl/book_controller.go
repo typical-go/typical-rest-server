@@ -1,11 +1,11 @@
-package controller
+package cntrl
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/imantung/typical-go-server/app/helper/strkit"
-	"github.com/imantung/typical-go-server/app/repository"
+	"github.com/imantung/typical-go-server/app/repo"
 	"github.com/labstack/echo"
 )
 
@@ -15,11 +15,11 @@ type BookController interface {
 }
 
 type bookController struct {
-	bookRepository repository.BookRepository
+	bookRepository repo.BookRepository
 }
 
 // NewBookController return new instance of book controller
-func NewBookController(bookRepository repository.BookRepository) BookController {
+func NewBookController(bookRepository repo.BookRepository) BookController {
 	return &bookController{
 		bookRepository: bookRepository,
 	}
@@ -30,7 +30,7 @@ func (c *bookController) Create(ctx echo.Context) (err error) {
 		return err
 	}
 
-	var book repository.Book
+	var book repo.Book
 
 	err = ctx.Bind(&book)
 	if err != nil {
@@ -108,7 +108,7 @@ func (c *bookController) Update(ctx echo.Context) (err error) {
 		return err
 	}
 
-	var book repository.Book
+	var book repo.Book
 
 	err = ctx.Bind(&book)
 	if err != nil {
