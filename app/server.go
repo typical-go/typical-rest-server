@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/imantung/typical-go-server/app/cntrl"
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/app/cntrl"
+	"github.com/typical-go/typical-rest-server/config"
 	"github.com/labstack/echo"
 )
 

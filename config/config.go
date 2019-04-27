@@ -4,7 +4,7 @@
 package config
 
 import (
-	"github.com/imantung/typical-go-server/infra"
+	"github.com/typical-go/typical-rest-server/infra"
 	"github.com/kelseyhightower/envconfig"
 )
 

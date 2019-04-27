@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/imantung/typical-go-server/app"
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/app"
+	"github.com/typical-go/typical-rest-server/config"
 	"github.com/urfave/cli"
 )
 

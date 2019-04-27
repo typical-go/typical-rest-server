@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/imantung/typical-go-server/app/helper/strkit"
-	"github.com/imantung/typical-go-server/app/repo"
+	"github.com/typical-go/typical-rest-server/app/helper/strkit"
+	"github.com/typical-go/typical-rest-server/app/repo"
 	"github.com/labstack/echo"
 )
 

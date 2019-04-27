@@ -1,4 +1,4 @@
-# Typical Go Server (WIP)
+# Typical Rest Server
 
 The project aims to provide typical RESTful API Server for Go.
 - `Simple`: Encourage KISS Principle with go idiomatic code and conventions.
@@ -56,7 +56,7 @@ The project aims to provide typical RESTful API Server for Go.
 
 ## Learn More
 
-- [Our wiki](https://github.com/imantung/typical-go-server/wiki)
+- [Our wiki](https://github.com/typical-go/typical-rest-server/wiki)
 - [Project README](/Project_README.md)
 
 ## License

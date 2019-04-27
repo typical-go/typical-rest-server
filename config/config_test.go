@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/imantung/typical-go-server/app/helper/envkit"
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/app/helper/envkit"
+	"github.com/typical-go/typical-rest-server/config"
 	"github.com/stretchr/testify/require"
 )
 

@@ -6,7 +6,7 @@ package mock
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	repo "github.com/imantung/typical-go-server/app/repo"
+	repo "github.com/typical-go/typical-rest-server/app/repo"
 	reflect "reflect"
 )
 

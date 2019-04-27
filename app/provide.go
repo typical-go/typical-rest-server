@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/imantung/typical-go-server/app/cntrl"
-	"github.com/imantung/typical-go-server/app/repo"
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/app/cntrl"
+	"github.com/typical-go/typical-rest-server/app/repo"
+	"github.com/typical-go/typical-rest-server/config"
 	"go.uber.org/dig"
 )
 

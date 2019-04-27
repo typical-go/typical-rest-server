@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/imantung/typical-go-server/app/cntrl"
-	"github.com/imantung/typical-go-server/app/helper/testkit"
-	"github.com/imantung/typical-go-server/app/repo"
-	"github.com/imantung/typical-go-server/mock"
+	"github.com/typical-go/typical-rest-server/app/cntrl"
+	"github.com/typical-go/typical-rest-server/app/helper/testkit"
+	"github.com/typical-go/typical-rest-server/app/repo"
+	"github.com/typical-go/typical-rest-server/mock"
 
 	"github.com/stretchr/testify/require"
 )

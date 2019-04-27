@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/config"
 	"github.com/urfave/cli"
 
 	"github.com/golang-migrate/migrate"

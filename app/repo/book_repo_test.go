@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	_ "github.com/golang-migrate/migrate/source/file"
-	"github.com/imantung/typical-go-server/config"
 	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-rest-server/config"
 )
 
 func TestBookRepository(t *testing.T) {

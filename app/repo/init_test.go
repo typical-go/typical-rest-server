@@ -3,8 +3,8 @@ package repo
 import (
 	"log"
 
-	"github.com/imantung/typical-go-server/config"
-	"github.com/imantung/typical-go-server/db"
+	"github.com/typical-go/typical-rest-server/config"
+	"github.com/typical-go/typical-rest-server/db"
 )
 
 func init() {

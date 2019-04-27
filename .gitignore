@@ -1,6 +1,5 @@
 # binary name
-typical-go-server
-my-project
+typical-rest-server
 
 # dependencies folder
 /vendor

@@ -3,7 +3,7 @@ package app
 import (
 	"database/sql"
 
-	"github.com/imantung/typical-go-server/config"
+	"github.com/typical-go/typical-rest-server/config"
 )
 
 func connectDB(conf config.Config) (*sql.DB, error) {
