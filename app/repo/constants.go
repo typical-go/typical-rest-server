@@ -18,5 +18,5 @@ const (
 
 // Table Columns
 var (
-	bookColumns = []string{idColumn, bookTitleColumn, bookAuthorColumn, updatedAtColumn, createdAtColumn}
+	BookColumns = []string{idColumn, bookTitleColumn, bookAuthorColumn, updatedAtColumn, createdAtColumn}
 )

@@ -9,7 +9,7 @@ import (
 
 // BookRepository to get book data from databasesa
 type BookRepository interface {
-	Get(id int64) (*Book, error)
+	Find(id int64) (*Book, error)
 	List() ([]*Book, error)
 	Insert(book Book) (lastInsertID int64, err error)
 	Delete(id int64) error
@@ -27,9 +27,9 @@ func NewBookRepository(conn *sql.DB) BookRepository {
 	}
 }
 
-func (r *bookRepository) Get(id int64) (book *Book, err error) {
+func (r *bookRepository) Find(id int64) (book *Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select(bookColumns...).
+	builder := psql.Select(BookColumns...).
 		From(bookTable).
 		Where(sq.Eq{idColumn: id})
 
@@ -46,7 +46,7 @@ func (r *bookRepository) Get(id int64) (book *Book, err error) {
 
 func (r *bookRepository) List() (list []*Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select(bookColumns...).From(bookTable)
+	builder := psql.Select(BookColumns...).From(bookTable)
 
 	rows, err := builder.RunWith(r.conn).Query()
 	if err != nil {

@@ -33,19 +33,19 @@ func (m *MockBookRepository) EXPECT() *MockBookRepositoryMockRecorder {
 	return m.recorder
 }
 
-// Get mocks base method
-func (m *MockBookRepository) Get(id int64) (*repo.Book, error) {
+// Find mocks base method
+func (m *MockBookRepository) Find(id int64) (*repo.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", id)
+	ret := m.ctrl.Call(m, "Find", id)
 	ret0, _ := ret[0].(*repo.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Get indicates an expected call of Get
-func (mr *MockBookRepositoryMockRecorder) Get(id interface{}) *gomock.Call {
+// Find indicates an expected call of Find
+func (mr *MockBookRepositoryMockRecorder) Find(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockBookRepository)(nil).Get), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepository)(nil).Find), id)
 }
 
 // List mocks base method

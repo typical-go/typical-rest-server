@@ -43,7 +43,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When return success", func(t *testing.T) {
-			bookR.EXPECT().Get(int64(1)).Return(&repo.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+			bookR.EXPECT().Find(int64(1)).Return(&repo.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 
 			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
 				"id": "1",
@@ -56,7 +56,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When entity not found", func(t *testing.T) {
-			bookR.EXPECT().Get(int64(3)).Return(nil, nil)
+			bookR.EXPECT().Find(int64(3)).Return(nil, nil)
 
 			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
 				"id": "3",
@@ -69,7 +69,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When return error", func(t *testing.T) {
-			bookR.EXPECT().Get(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
+			bookR.EXPECT().Find(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 
 			ctx, _ := testkit.RequestGETWithParam("/", map[string]string{
 				"id": "2",

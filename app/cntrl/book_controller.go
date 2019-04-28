@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/helper/strkit"
 	"github.com/typical-go/typical-rest-server/app/repo"
-	"github.com/labstack/echo"
 )
 
 // BookController handle input related to Book
@@ -73,7 +73,7 @@ func (c *bookController) Get(ctx echo.Context) error {
 		return invalidID(ctx, err)
 	}
 
-	book, err := c.bookRepository.Get(id)
+	book, err := c.bookRepository.Find(id)
 	if err != nil {
 		return err
 	}

@@ -68,31 +68,6 @@ func Rollback(conf config.Config, args cli.Args) error {
 	return migration.Down()
 }
 
-// ResetTestDB reset test database
-func ResetTestDB(conf config.Config, source string) (err error) {
-	conn, err := sql.Open("postgres", conf.Postgres.ConnectionStringTemplate1())
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	_, err = conn.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s_test"`, conf.Postgres.DbName))
-	if err != nil {
-		return
-	}
-	_, err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s_test"`, conf.Postgres.DbName))
-	if err != nil {
-		return
-	}
-
-	migration, err := migrate.New(source, conf.Postgres.ConnectionStringDBTest())
-	if err != nil {
-		return err
-	}
-	defer migration.Close()
-	return migration.Up()
-}
-
 func migrationSource(args cli.Args) string {
 	dir := config.DefaultMigrationDirectory
 	if len(args) > 0 {

@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:c84a587136cb69cecc11f3dbe9f9001444044c0dba74997b07f7e4c150b07cda"
+  name = "github.com/DATA-DOG/go-sqlmock"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3f9954f6f6697845b082ca57995849ddf614f450"
+  version = "v1.3.3"
+
+[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -251,6 +259,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/DATA-DOG/go-sqlmock",
     "github.com/golang-migrate/migrate",
     "github.com/golang-migrate/migrate/database/postgres",
     "github.com/golang-migrate/migrate/source/file",

@@ -68,3 +68,7 @@
 [[constraint]]
   name = "gopkg.in/go-playground/validator.v9"
   version = "9.27.0"
+
+[[constraint]]
+  name = "github.com/DATA-DOG/go-sqlmock"
+  version = "1.3.3"
