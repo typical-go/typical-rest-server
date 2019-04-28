@@ -14,6 +14,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
+var DefaultMigrationDirectory = "db/migrate"
+
 // Create database
 func Create(conf config.Config) (err error) {
 	conn, err := sql.Open("postgres", conf.Postgres.ConnectionStringTemplate1())
@@ -69,7 +71,7 @@ func Rollback(conf config.Config, args cli.Args) error {
 }
 
 func migrationSource(args cli.Args) string {
-	dir := config.DefaultMigrationDirectory
+	dir := DefaultMigrationDirectory
 	if len(args) > 0 {
 		dir = args.First()
 	}

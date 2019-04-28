@@ -8,23 +8,23 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/cntrl"
 	"github.com/typical-go/typical-rest-server/config"
-	"github.com/labstack/echo"
 )
 
-type server struct {
+type Server struct {
 	*echo.Echo
 	address        string
 	bookController cntrl.BookController
 }
 
-func newServer(
+func NewServer(
 	conf config.Config,
 	bookController cntrl.BookController,
-) *server {
+) *Server {
 
-	s := &server{
+	s := &Server{
 		Echo:           echo.New(),
 		address:        conf.Address,
 		bookController: bookController,
@@ -36,7 +36,7 @@ func newServer(
 	return s
 }
 
-func (s *server) CRUDController(entity string, crud cntrl.CRUDController) {
+func (s *Server) CRUDController(entity string, crud cntrl.CRUDController) {
 	s.GET(fmt.Sprintf("/%s", entity), crud.List)
 	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
 	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)
@@ -44,7 +44,7 @@ func (s *server) CRUDController(entity string, crud cntrl.CRUDController) {
 	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
 }
 
-func (s *server) Serve() error {
+func (s *Server) Serve() error {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)

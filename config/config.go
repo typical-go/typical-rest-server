@@ -4,15 +4,16 @@
 package config
 
 import (
-	"github.com/typical-go/typical-rest-server/infra"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/typical-go/typical-rest-server/infra"
 )
+
+var Prefix = "APP"
 
 // Config type
 // Check https://github.com/kelseyhightower/envconfig#struct-tag-support for more help
 type Config struct {
 	Address string `envconfig:"ADDRESS" required:"true"`
-
 	infra.Postgres
 }
 

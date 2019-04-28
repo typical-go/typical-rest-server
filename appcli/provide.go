@@ -1,6 +1,7 @@
-package app
+package appcli
 
 import (
+	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/cntrl"
 	"github.com/typical-go/typical-rest-server/app/repo"
 	"github.com/typical-go/typical-rest-server/config"
@@ -9,7 +10,7 @@ import (
 
 func container() *dig.Container {
 	container := dig.New()
-	container.Provide(newServer)
+	container.Provide(app.NewServer)
 	container.Provide(config.LoadConfig)
 	container.Provide(connectDB)
 	container.Provide(cntrl.NewBookController)

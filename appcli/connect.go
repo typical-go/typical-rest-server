@@ -1,4 +1,4 @@
-package app
+package appcli
 
 import (
 	"database/sql"

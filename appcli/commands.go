@@ -1,11 +1,12 @@
-package app
+package appcli
 
 import (
 	"os"
 
+	"github.com/olekukonko/tablewriter"
+	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/db"
-	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
 )
 
@@ -16,7 +17,7 @@ func Commands() []cli.Command {
 			Name:      "serve",
 			ShortName: "s",
 			Usage:     "Run the server",
-			Action: commandAction(func(s *server) error {
+			Action: commandAction(func(s *app.Server) error {
 				return s.Serve()
 			}),
 		},
