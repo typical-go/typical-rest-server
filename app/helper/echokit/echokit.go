@@ -1,4 +1,4 @@
-package testkit
+package echokit
 
 import (
 	"net/http"

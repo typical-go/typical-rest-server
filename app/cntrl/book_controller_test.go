@@ -7,7 +7,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/typical-go/typical-rest-server/app/cntrl"
-	"github.com/typical-go/typical-rest-server/app/helper/testkit"
+	"github.com/typical-go/typical-rest-server/app/helper/echokit"
+
 	"github.com/typical-go/typical-rest-server/app/repo"
 	"github.com/typical-go/typical-rest-server/mock"
 
@@ -16,7 +17,7 @@ import (
 
 func TestBookController_NoRepository(t *testing.T) {
 	bookController := cntrl.NewBookController(nil)
-	ctx, _ := testkit.RequestGET("/")
+	ctx, _ := echokit.RequestGET("/")
 
 	require.EqualError(t, bookController.Get(ctx), "BookRepository is missing")
 	require.EqualError(t, bookController.Delete(ctx), "BookRepository is missing")
@@ -34,7 +35,7 @@ func TestBookController(t *testing.T) {
 
 	t.Run("Get", func(t *testing.T) {
 		t.Run("When invalid ID", func(t *testing.T) {
-			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "invalid",
 			})
 			err := bookController.Get(ctx)
@@ -45,7 +46,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When return success", func(t *testing.T) {
 			bookR.EXPECT().Find(int64(1)).Return(&repo.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 
-			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "1",
 			})
 
@@ -58,7 +59,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When entity not found", func(t *testing.T) {
 			bookR.EXPECT().Find(int64(3)).Return(nil, nil)
 
-			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "3",
 			})
 
@@ -71,7 +72,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When return error", func(t *testing.T) {
 			bookR.EXPECT().Find(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 
-			ctx, _ := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, _ := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "2",
 			})
 
@@ -88,7 +89,7 @@ func TestBookController(t *testing.T) {
 					&repo.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
 
-			ctx, rr := testkit.RequestGET("/")
+			ctx, rr := echokit.RequestGET("/")
 			err := bookController.List(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusOK, rr.Code)
@@ -98,7 +99,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When repo error", func(t *testing.T) {
 			bookR.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
 
-			ctx, _ := testkit.RequestGET("/")
+			ctx, _ := echokit.RequestGET("/")
 			err := bookController.List(ctx)
 			require.EqualError(t, err, "some-list-error")
 		})
@@ -106,7 +107,7 @@ func TestBookController(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		t.Run("When invalid message request", func(t *testing.T) {
-			ctx, rr := testkit.RequestPOST("/", `{}`)
+			ctx, rr := echokit.RequestPOST("/", `{}`)
 			err := bookController.Create(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusBadRequest, rr.Code)
@@ -114,7 +115,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When invalid json format", func(t *testing.T) {
-			ctx, _ := testkit.RequestPOST("/", `invalid-json}`)
+			ctx, _ := echokit.RequestPOST("/", `invalid-json}`)
 			err := bookController.Create(ctx)
 			require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 		})
@@ -122,7 +123,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When error", func(t *testing.T) {
 			bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
 
-			ctx, _ := testkit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
+			ctx, _ := echokit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
 			err := bookController.Create(ctx)
 			require.EqualError(t, err, "some-insert-error")
 		})
@@ -130,7 +131,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When success", func(t *testing.T) {
 			bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
 
-			ctx, rr := testkit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
+			ctx, rr := echokit.RequestPOST("/", `{"author":"some-author", "title":"some-title"}`)
 			err := bookController.Create(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusCreated, rr.Code)
@@ -140,7 +141,7 @@ func TestBookController(t *testing.T) {
 
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("When invalid ID", func(t *testing.T) {
-			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "invalid",
 			})
 			err := bookController.Delete(ctx)
@@ -151,7 +152,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When return success", func(t *testing.T) {
 			bookR.EXPECT().Delete(int64(1)).Return(nil)
 
-			ctx, rr := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "1",
 			})
 
@@ -164,7 +165,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When error", func(t *testing.T) {
 			bookR.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
 
-			ctx, _ := testkit.RequestGETWithParam("/", map[string]string{
+			ctx, _ := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "2",
 			})
 
@@ -175,7 +176,7 @@ func TestBookController(t *testing.T) {
 
 	t.Run("Updte", func(t *testing.T) {
 		t.Run("When invalid message request", func(t *testing.T) {
-			ctx, rr := testkit.RequestPOST("/", `{}`)
+			ctx, rr := echokit.RequestPOST("/", `{}`)
 			err := bookController.Update(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusBadRequest, rr.Code)
@@ -183,7 +184,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When invalid message request", func(t *testing.T) {
-			ctx, rr := testkit.RequestPOST("/", `{"id": 1}`)
+			ctx, rr := echokit.RequestPOST("/", `{"id": 1}`)
 			err := bookController.Update(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusBadRequest, rr.Code)
@@ -191,7 +192,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When invalid json format", func(t *testing.T) {
-			ctx, _ := testkit.RequestPOST("/", `invalid-json}`)
+			ctx, _ := echokit.RequestPOST("/", `invalid-json}`)
 			err := bookController.Update(ctx)
 			require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 		})
@@ -199,7 +200,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When error", func(t *testing.T) {
 			bookR.EXPECT().Update(gomock.Any()).Return(fmt.Errorf("some-update-error"))
 
-			ctx, _ := testkit.RequestPOST("/", `{"id": 1,"author":"some-author", "title":"some-title"}`)
+			ctx, _ := echokit.RequestPOST("/", `{"id": 1,"author":"some-author", "title":"some-title"}`)
 			err := bookController.Update(ctx)
 			require.EqualError(t, err, "some-update-error")
 		})
@@ -207,7 +208,7 @@ func TestBookController(t *testing.T) {
 		t.Run("When success", func(t *testing.T) {
 			bookR.EXPECT().Update(gomock.Any()).Return(nil)
 
-			ctx, rr := testkit.RequestPOST("/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
+			ctx, rr := echokit.RequestPOST("/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
 			err := bookController.Update(ctx)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusOK, rr.Code)
