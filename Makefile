@@ -58,7 +58,7 @@ mock:
 	@echo "  >  Generate mock class..."
 	@go get github.com/golang/mock/gomock
 	@go install github.com/golang/mock/mockgen
-	@for filename in app/repo/*_repo.go; do \
+	@for filename in app/entity/*_repo.go; do \
 		$(GOPATH)/bin/mockgen -source=$$filename -destination=$(MOCK_TARGET)/$$(basename $$filename) -package=$$(basename $(MOCK_TARGET)); \
 	done
 	

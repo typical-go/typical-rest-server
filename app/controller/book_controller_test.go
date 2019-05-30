@@ -1,4 +1,4 @@
-package cntrl_test
+package controller_test
 
 import (
 	"fmt"
@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/typical-go/typical-rest-server/app/cntrl"
+	"github.com/typical-go/typical-rest-server/app/controller"
+	"github.com/typical-go/typical-rest-server/app/entity"
 	"github.com/typical-go/typical-rest-server/app/helper/echokit"
 
-	"github.com/typical-go/typical-rest-server/app/repo"
 	"github.com/typical-go/typical-rest-server/mock"
 
 	"github.com/stretchr/testify/require"
@@ -20,7 +20,7 @@ func TestBookController(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookController := cntrl.NewBookController(bookR)
+	bookController := controller.NewBookController(bookR)
 
 	t.Run("Get", func(t *testing.T) {
 		t.Run("When invalid ID", func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestBookController(t *testing.T) {
 		})
 
 		t.Run("When return success", func(t *testing.T) {
-			bookR.EXPECT().Find(int64(1)).Return(&repo.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+			bookR.EXPECT().Find(int64(1)).Return(&entity.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 
 			ctx, rr := echokit.RequestGETWithParam("/", map[string]string{
 				"id": "1",
@@ -73,9 +73,9 @@ func TestBookController(t *testing.T) {
 	t.Run("List", func(t *testing.T) {
 		t.Run("When repo success", func(t *testing.T) {
 			bookR.EXPECT().List().Return(
-				[]*repo.Book{
-					&repo.Book{ID: 1, Title: "title1", Author: "author1"},
-					&repo.Book{ID: 2, Title: "title2", Author: "author2"},
+				[]*entity.Book{
+					&entity.Book{ID: 1, Title: "title1", Author: "author1"},
+					&entity.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
 
 			ctx, rr := echokit.RequestGET("/")

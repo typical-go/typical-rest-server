@@ -1,4 +1,4 @@
-package repo
+package entity
 
 import (
 	"database/sql"

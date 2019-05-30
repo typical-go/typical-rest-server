@@ -9,19 +9,20 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/app/cntrl"
+
+	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/config"
 )
 
 type Server struct {
 	*echo.Echo
 	address        string
-	bookController cntrl.BookController
+	bookController controller.BookController
 }
 
 func NewServer(
 	conf config.Config,
-	bookController cntrl.BookController,
+	bookController controller.BookController,
 ) *Server {
 
 	s := &Server{
@@ -29,14 +30,13 @@ func NewServer(
 		address:        conf.Address,
 		bookController: bookController,
 	}
-
 	initMiddlewares(s)
 	initRoutes(s)
 
 	return s
 }
 
-func (s *Server) CRUDController(entity string, crud cntrl.CRUDController) {
+func (s *Server) CRUDController(entity string, crud controller.CRUDController) {
 	s.GET(fmt.Sprintf("/%s", entity), crud.List)
 	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
 	s.GET(fmt.Sprintf("/%s/:id", entity), crud.Get)

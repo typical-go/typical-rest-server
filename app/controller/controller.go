@@ -1,4 +1,4 @@
-package cntrl
+package controller
 
 import "github.com/labstack/echo"
 

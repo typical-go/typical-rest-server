@@ -1,4 +1,4 @@
-package repo_test
+package entity_test
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/app/repo"
+	"github.com/typical-go/typical-rest-server/app/entity"
 )
 
 func TestBookRepository(t *testing.T) {
@@ -17,7 +17,7 @@ func TestBookRepository(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	repository := repo.NewBookRepository(db)
+	entitysitory := entity.NewBookRepository(db)
 
 	t.Run("Insert", func(t *testing.T) {
 		insertSQL := regexp.QuoteMeta(`INSERT INTO books (title,author) VALUES ($1,$2) RETURNING "id"`)
@@ -26,7 +26,7 @@ func TestBookRepository(t *testing.T) {
 			mock.ExpectQuery(insertSQL).WithArgs("some-title", "some-author").
 				WillReturnError(fmt.Errorf("some-insert-error"))
 
-			_, err = repository.Insert(repo.Book{Title: "some-title", Author: "some-author"})
+			_, err = entitysitory.Insert(entity.Book{Title: "some-title", Author: "some-author"})
 			require.EqualError(t, err, "some-insert-error")
 		})
 
@@ -34,7 +34,7 @@ func TestBookRepository(t *testing.T) {
 			mock.ExpectQuery(insertSQL).WithArgs("some-title", "some-author").
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(999))
 
-			id, err := repository.Insert(repo.Book{Title: "some-title", Author: "some-author"})
+			id, err := entitysitory.Insert(entity.Book{Title: "some-title", Author: "some-author"})
 			require.NoError(t, err)
 			require.Equal(t, int64(999), id)
 		})
@@ -46,14 +46,14 @@ func TestBookRepository(t *testing.T) {
 		t.Run("sql error", func(t *testing.T) {
 			mock.ExpectExec(updateSQL).WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 				WillReturnError(fmt.Errorf("some-update-error"))
-			err = repository.Update(repo.Book{ID: 888, Title: "new-title", Author: "new-author"})
+			err = entitysitory.Update(entity.Book{ID: 888, Title: "new-title", Author: "new-author"})
 			require.EqualError(t, err, "some-update-error")
 		})
 
 		t.Run("sql success", func(t *testing.T) {
 			mock.ExpectExec(updateSQL).WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 				WillReturnResult(sqlmock.NewResult(1, 1))
-			err = repository.Update(repo.Book{ID: 888, Title: "new-title", Author: "new-author"})
+			err = entitysitory.Update(entity.Book{ID: 888, Title: "new-title", Author: "new-author"})
 			require.NoError(t, err)
 		})
 	})
@@ -64,14 +64,14 @@ func TestBookRepository(t *testing.T) {
 		t.Run("sql error", func(t *testing.T) {
 			mock.ExpectExec(deleteSQL).WithArgs(666).
 				WillReturnError(fmt.Errorf("some-delete-error"))
-			err := repository.Delete(666)
+			err := entitysitory.Delete(666)
 			require.EqualError(t, err, "some-delete-error")
 		})
 
 		t.Run("sql success", func(t *testing.T) {
 			mock.ExpectExec(deleteSQL).WithArgs(555).
 				WillReturnResult(sqlmock.NewResult(1, 1))
-			err := repository.Delete(555)
+			err := entitysitory.Delete(555)
 			require.NoError(t, err)
 		})
 	})
@@ -83,12 +83,12 @@ func TestBookRepository(t *testing.T) {
 			mock.ExpectQuery(querySQL).WithArgs(123).
 				WillReturnError(fmt.Errorf("some-find-error"))
 
-			_, err := repository.Find(123)
+			_, err := entitysitory.Find(123)
 			require.EqualError(t, err, "some-find-error")
 		})
 
 		t.Run("sql success", func(t *testing.T) {
-			expected := &repo.Book{
+			expected := &entity.Book{
 				ID:        123,
 				Title:     "some-title",
 				Author:    "some-author",
@@ -96,10 +96,10 @@ func TestBookRepository(t *testing.T) {
 				CreatedAt: time.Now(),
 			}
 			mock.ExpectQuery(querySQL).WithArgs(123).
-				WillReturnRows(sqlmock.NewRows(repo.BookColumns).
+				WillReturnRows(sqlmock.NewRows(entity.BookColumns).
 					AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt))
 
-			book, err := repository.Find(123)
+			book, err := entitysitory.Find(123)
 			require.NoError(t, err)
 			require.Equal(t, expected, book)
 		})
@@ -110,24 +110,24 @@ func TestBookRepository(t *testing.T) {
 
 		t.Run("sql error", func(t *testing.T) {
 			mock.ExpectQuery(listSQL).WillReturnError(fmt.Errorf("some-list-error"))
-			_, err := repository.List()
+			_, err := entitysitory.List()
 			require.EqualError(t, err, "some-list-error")
 		})
 
 		t.Run("sql success", func(t *testing.T) {
-			expecteds := []*repo.Book{
-				&repo.Book{ID: 1234, Title: "some-title4", Author: "some-author4", UpdatedAt: time.Now(), CreatedAt: time.Now()},
-				&repo.Book{ID: 1235, Title: "some-title5", Author: "some-author5", UpdatedAt: time.Now(), CreatedAt: time.Now()},
+			expecteds := []*entity.Book{
+				&entity.Book{ID: 1234, Title: "some-title4", Author: "some-author4", UpdatedAt: time.Now(), CreatedAt: time.Now()},
+				&entity.Book{ID: 1235, Title: "some-title5", Author: "some-author5", UpdatedAt: time.Now(), CreatedAt: time.Now()},
 			}
 
-			rows := sqlmock.NewRows(repo.BookColumns)
+			rows := sqlmock.NewRows(entity.BookColumns)
 			for _, expected := range expecteds {
 				rows.AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt)
 			}
 
 			mock.ExpectQuery(listSQL).WillReturnRows(rows)
 
-			books, err := repository.List()
+			books, err := entitysitory.List()
 			require.NoError(t, err)
 			require.Equal(t, expecteds, books)
 		})
@@ -138,7 +138,7 @@ func TestBookRepository(t *testing.T) {
 				AddRow(1, "one").
 				AddRow(2, "two"))
 
-			_, err := repository.List()
+			_, err := entitysitory.List()
 			require.EqualError(t, err, "sql: expected 2 destination arguments in Scan, not 5")
 
 		})
