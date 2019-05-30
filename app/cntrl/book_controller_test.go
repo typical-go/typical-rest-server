@@ -15,17 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBookController_NoRepository(t *testing.T) {
-	bookController := cntrl.NewBookController(nil)
-	ctx, _ := echokit.RequestGET("/")
-
-	require.EqualError(t, bookController.Get(ctx), "BookRepository is missing")
-	require.EqualError(t, bookController.Delete(ctx), "BookRepository is missing")
-	require.EqualError(t, bookController.Create(ctx), "BookRepository is missing")
-	require.EqualError(t, bookController.Update(ctx), "BookRepository is missing")
-	require.EqualError(t, bookController.List(ctx), "BookRepository is missing")
-}
-
 func TestBookController(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

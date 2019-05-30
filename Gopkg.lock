@@ -10,14 +10,6 @@
   version = "v1.3.3"
 
 [[projects]]
-  digest = "1:13b33bb36eac45a74f9a7b2f33d586dd702f17df935a74a1c8a32d47372c77f3"
-  name = "github.com/alicebob/miniredis"
-  packages = ["server"]
-  pruneopts = "UT"
-  revision = "3d7aa1333af56ab862d446678d93aaa6803e0938"
-  version = "v2.7.0"
-
-[[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -268,7 +260,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/DATA-DOG/go-sqlmock",
-    "github.com/alicebob/miniredis/server",
     "github.com/golang-migrate/migrate",
     "github.com/golang-migrate/migrate/database/postgres",
     "github.com/golang-migrate/migrate/source/file",
@@ -276,7 +267,6 @@
     "github.com/kelseyhightower/envconfig",
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",
-    "github.com/lib/pq",
     "github.com/olekukonko/tablewriter",
     "github.com/stretchr/testify/require",
     "github.com/urfave/cli",

@@ -26,10 +26,6 @@ func NewBookController(bookRepository repo.BookRepository) BookController {
 }
 
 func (c *bookController) Create(ctx echo.Context) (err error) {
-	if err := c.Check(); err != nil {
-		return err
-	}
-
 	var book repo.Book
 
 	err = ctx.Bind(&book)
@@ -52,10 +48,6 @@ func (c *bookController) Create(ctx echo.Context) (err error) {
 }
 
 func (c *bookController) List(ctx echo.Context) error {
-	if err := c.Check(); err != nil {
-		return err
-	}
-
 	books, err := c.bookRepository.List()
 	if err != nil {
 		return err
@@ -64,10 +56,6 @@ func (c *bookController) List(ctx echo.Context) error {
 }
 
 func (c *bookController) Get(ctx echo.Context) error {
-	if err := c.Check(); err != nil {
-		return err
-	}
-
 	id, err := strkit.ToInt64(ctx.Param("id"))
 	if err != nil {
 		return invalidID(ctx, err)
@@ -86,10 +74,6 @@ func (c *bookController) Get(ctx echo.Context) error {
 }
 
 func (c *bookController) Delete(ctx echo.Context) error {
-	if err := c.Check(); err != nil {
-		return err
-	}
-
 	id, err := strkit.ToInt64(ctx.Param("id"))
 	if err != nil {
 		return invalidID(ctx, err)
@@ -104,10 +88,6 @@ func (c *bookController) Delete(ctx echo.Context) error {
 }
 
 func (c *bookController) Update(ctx echo.Context) (err error) {
-	if err := c.Check(); err != nil {
-		return err
-	}
-
 	var book repo.Book
 
 	err = ctx.Bind(&book)
@@ -130,11 +110,4 @@ func (c *bookController) Update(ctx echo.Context) (err error) {
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]string{"message": "Update success"})
-}
-
-func (c *bookController) Check() error {
-	if c.bookRepository == nil {
-		return fmt.Errorf("BookRepository is missing")
-	}
-	return nil
 }
