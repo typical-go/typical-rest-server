@@ -1,16 +1,16 @@
-package appcli
+package provider
 
 import (
-	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/entity"
+	"github.com/typical-go/typical-rest-server/app/server"
 	"github.com/typical-go/typical-rest-server/config"
 	"go.uber.org/dig"
 )
 
-func container() *dig.Container {
+func Container() *dig.Container {
 	container := dig.New()
-	container.Provide(app.NewServer)
+	container.Provide(server.NewServer)
 	container.Provide(config.LoadConfig)
 	container.Provide(connectDB)
 	container.Provide(controller.NewBookController)

@@ -1,4 +1,4 @@
-package appcli
+package main
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 
 var Version = "0.0.1"
 
-func Run() {
+func main() {
 	cliApp := cli.NewApp()
 	cliApp.Version = Version
 	cliApp.Commands = Commands()

@@ -1,27 +1,18 @@
-package appcli
+package main
 
 import (
 	"os"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/db"
+	"github.com/typical-go/typical-rest-server/typical/provider"
 	"github.com/urfave/cli"
 )
 
 // Commands return list of command
 func Commands() []cli.Command {
 	return []cli.Command{
-		{
-			Name:      "serve",
-			ShortName: "s",
-			Usage:     "Run the server",
-			Action: commandAction(func(s *app.Server) error {
-				return s.Serve()
-			}),
-		},
-
 		{
 			Name:      "database",
 			ShortName: "db",
@@ -74,7 +65,7 @@ func Commands() []cli.Command {
 
 func commandAction(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
-		container := container()
+		container := provider.Container()
 		container.Provide(ctx.Args)
 		return container.Invoke(invokeFunc)
 	}

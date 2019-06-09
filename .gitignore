@@ -4,6 +4,9 @@ typical-rest-server
 # dependencies folder
 /vendor
 
+# binaries folder
+/bin
+
 # local environment variable
 .envrc
 
