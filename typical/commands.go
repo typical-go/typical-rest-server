@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/olekukonko/tablewriter"
@@ -16,39 +17,18 @@ func Commands() []cli.Command {
 		{
 			Name:      "database",
 			ShortName: "db",
-			Usage:     "Database Administration",
 			Subcommands: []cli.Command{
-				{
-					Name:      "create",
-					ShortName: "c",
-					Usage:     "Create New Database",
-					Action:    commandAction(db.Create),
-				},
-				{
-					Name:      "drop",
-					ShortName: "d",
-					Usage:     "Drop Database",
-					Action:    commandAction(db.Drop),
-				},
-				{
-					Name:      "migrate",
-					ShortName: "m",
-					Usage:     "Migrate Database",
-					Action:    commandAction(db.Migrate),
-				},
-				{
-					Name:      "rollback",
-					ShortName: "r",
-					Usage:     "Rollback Database",
-					Action:    commandAction(db.Rollback),
-				},
+				{Name: "create", ShortName: "c", Usage: "Create New Database", Action: commandAction(db.Create)},
+				{Name: "drop", ShortName: "d", Usage: "Drop Database", Action: commandAction(db.Drop)},
+				{Name: "migrate", ShortName: "m", Usage: "Migrate Database", Action: commandAction(db.Migrate)},
+				{Name: "rollback", ShortName: "r", Usage: "Rollback Database", Action: commandAction(db.Rollback)},
 			},
 		},
 
 		{
 			Name:      "config",
-			ShortName: "conf",
-			Usage:     "Configuration",
+			ShortName: "cfg",
+			Usage:     "Config details",
 			Action: func(ctx *cli.Context) {
 				table := tablewriter.NewWriter(os.Stdout)
 				table.SetHeader([]string{"Name", "Type", "Required", "Default"})
@@ -56,6 +36,33 @@ func Commands() []cli.Command {
 					table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
 				}
 				table.Render()
+			},
+		},
+
+		{
+			Name:      "context",
+			ShortName: "ctx",
+			Action:    notImplement,
+		},
+
+		{
+			Name:      "dependency",
+			ShortName: "dep",
+			Subcommands: []cli.Command{
+				{Name: "init", ShortName: "i", Usage: "Set up a new Go project, or migrate an existing one", Action: notImplement},
+				{Name: "ensure", ShortName: "e", Usage: "install the project's dependencies", Action: notImplement},
+				{Name: "update", ShortName: "u", Usage: "update the locked versions of all dependencies", Action: notImplement},
+				{Name: "add", ShortName: "a", Usage: "add a dependency to the project", Action: notImplement},
+			},
+		},
+
+		{
+			Name:      "generate",
+			ShortName: "gen",
+			Subcommands: []cli.Command{
+				{Name: "mock", Usage: "Generate mock", Action: notImplement},
+				{Name: "migration", Usage: "Generate migration", Action: notImplement},
+				{Name: "readme", Usage: "Generate readme", Action: notImplement},
 			},
 		},
 
@@ -69,4 +76,8 @@ func commandAction(invokeFunc interface{}) interface{} {
 		container.Provide(ctx.Args)
 		return container.Invoke(invokeFunc)
 	}
+}
+
+func notImplement(ctx *cli.Context) {
+	fmt.Println("Not implemented")
 }

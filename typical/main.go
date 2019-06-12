@@ -4,14 +4,16 @@ import (
 	"log"
 	"os"
 
+	"github.com/typical-go/typical-rest-server/typical/projctx"
 	"github.com/urfave/cli"
 )
 
-var Version = "0.0.1"
-
 func main() {
 	cliApp := cli.NewApp()
-	cliApp.Version = Version
+	cliApp.Name = projctx.Name()
+	cliApp.Usage = ""
+	cliApp.UsageText = projctx.UsageText()
+	cliApp.Version = projctx.Version()
 	cliApp.Commands = Commands()
 
 	err := cliApp.Run(os.Args)
