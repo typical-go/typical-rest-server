@@ -1,13 +1,42 @@
 package projctx
 
-func Name() string {
-	return "project-name"
+import (
+	"bytes"
+	"log"
+
+	"github.com/BurntSushi/toml"
+)
+
+var ctx Context
+
+func init() {
+	_, err := toml.DecodeFile(".typical/_context.toml", &ctx)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 }
 
-func UsageText() string {
-	return "project-usage-text"
+func Name() string {
+	return ctx.Name
+}
+
+func Usage() string {
+	return ctx.Usage
+}
+
+func Example() string {
+	return ctx.Example
 }
 
 func Version() string {
-	return "project-version"
+	return ctx.Version
+}
+
+func String() string {
+	buf := new(bytes.Buffer)
+	if err := toml.NewEncoder(buf).Encode(ctx); err != nil {
+		log.Fatal(err)
+	}
+	return buf.String()
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/db"
+	"github.com/typical-go/typical-rest-server/typical/projctx"
 	"github.com/typical-go/typical-rest-server/typical/provider"
 	"github.com/urfave/cli"
 )
@@ -42,7 +43,9 @@ func Commands() []cli.Command {
 		{
 			Name:      "context",
 			ShortName: "ctx",
-			Action:    notImplement,
+			Action: func(ctx *cli.Context) {
+				fmt.Println(projctx.String())
+			},
 		},
 
 		{

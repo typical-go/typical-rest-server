@@ -11,8 +11,8 @@ import (
 func main() {
 	cliApp := cli.NewApp()
 	cliApp.Name = projctx.Name()
-	cliApp.Usage = ""
-	cliApp.UsageText = projctx.UsageText()
+	cliApp.Usage = projctx.Usage()
+	cliApp.UsageText = projctx.Example()
 	cliApp.Version = projctx.Version()
 	cliApp.Commands = Commands()
 
