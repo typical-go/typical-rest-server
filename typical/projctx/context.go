@@ -1,8 +1,7 @@
 package projctx
 
 type Context struct {
-	Name    string
-	Version string
-	Usage   string
-	Example string
+	Name        string
+	Version     string
+	Description string
 }

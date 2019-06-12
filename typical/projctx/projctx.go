@@ -21,12 +21,8 @@ func Name() string {
 	return ctx.Name
 }
 
-func Usage() string {
-	return ctx.Usage
-}
-
-func Example() string {
-	return ctx.Example
+func Description() string {
+	return ctx.Description
 }
 
 func Version() string {

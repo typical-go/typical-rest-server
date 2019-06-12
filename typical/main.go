@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
-	cliApp := cli.NewApp()
-	cliApp.Name = projctx.Name()
-	cliApp.Usage = projctx.Usage()
-	cliApp.UsageText = projctx.Example()
-	cliApp.Version = projctx.Version()
-	cliApp.Commands = Commands()
+	app := cli.NewApp()
+	app.Name = projctx.Name()
+	app.Usage = ""
+	app.Description = projctx.Description()
+	app.Version = projctx.Version()
+	app.Commands = Commands()
 
-	err := cliApp.Run(os.Args)
+	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatalf("%s", err.Error())
 	}

@@ -1,7 +1,4 @@
 name="Typical-RESTful-Server"
 version="0.1.0"
-usage="Typical and Scalable RESTful API Server for Go"
-example="""\
-typical gen migrate # generate migration
-"""
+description="Example of typical and scalable RESTful API Server for Go"
 
