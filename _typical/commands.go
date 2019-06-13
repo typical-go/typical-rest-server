@@ -6,9 +6,10 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/tiket/TIX-SESSION-GO/config"
+	"github.com/typical-go/typical-rest-server/_typical/project"
 	"github.com/typical-go/typical-rest-server/db"
-	"github.com/typical-go/typical-rest-server/typical/project"
-	"github.com/typical-go/typical-rest-server/typical/provider"
+	"github.com/typical-go/typical-rest-server/provider"
+
 	"github.com/urfave/cli"
 )
 

@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/typical-go/typical-rest-server/typical/project"
+	"github.com/typical-go/typical-rest-server/_typical/project"
 	"github.com/urfave/cli"
 )
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/typical-go/typical-rest-server/app/server"
-	"github.com/typical-go/typical-rest-server/typical/provider"
+	"github.com/typical-go/typical-rest-server/provider"
 )
 
 func main() {
