@@ -4,16 +4,16 @@ import (
 	"log"
 	"os"
 
-	"github.com/typical-go/typical-rest-server/typical/projctx"
+	"github.com/typical-go/typical-rest-server/typical/project"
 	"github.com/urfave/cli"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = projctx.Name()
+	app.Name = project.Context.Name
 	app.Usage = ""
-	app.Description = projctx.Description()
-	app.Version = projctx.Version()
+	app.Description = project.Context.Description
+	app.Version = project.Context.Version
 	app.Commands = Commands()
 
 	err := app.Run(os.Args)

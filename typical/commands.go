@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/typical-go/typical-rest-server/config"
+	"github.com/tiket/TIX-SESSION-GO/config"
 	"github.com/typical-go/typical-rest-server/db"
-	"github.com/typical-go/typical-rest-server/typical/projctx"
+	"github.com/typical-go/typical-rest-server/typical/project"
 	"github.com/typical-go/typical-rest-server/typical/provider"
 	"github.com/urfave/cli"
 )
@@ -27,24 +27,30 @@ func Commands() []cli.Command {
 		},
 
 		{
-			Name:      "config",
-			ShortName: "cfg",
-			Usage:     "Config details",
-			Action: func(ctx *cli.Context) {
-				table := tablewriter.NewWriter(os.Stdout)
-				table.SetHeader([]string{"Name", "Type", "Required", "Default"})
-				for _, detail := range config.Informations() {
-					table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
-				}
-				table.Render()
-			},
-		},
+			Name:      "project",
+			ShortName: "proj",
+			Subcommands: []cli.Command{
+				{
+					Name:      "config",
+					ShortName: "cfg",
+					Usage:     "Config details",
+					Action: func(ctx *cli.Context) {
+						table := tablewriter.NewWriter(os.Stdout)
+						table.SetHeader([]string{"Name", "Type", "Required", "Default"})
+						for _, detail := range config.Informations() {
+							table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
+						}
+						table.Render()
+					},
+				},
 
-		{
-			Name:      "context",
-			ShortName: "ctx",
-			Action: func(ctx *cli.Context) {
-				fmt.Println(projctx.String())
+				{
+					Name:      "context",
+					ShortName: "ctx",
+					Action: func(ctx *cli.Context) {
+						fmt.Println(project.ContextDetail())
+					},
+				},
 			},
 		},
 
