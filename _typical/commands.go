@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/olekukonko/tablewriter"
-	"github.com/tiket/TIX-SESSION-GO/config"
 	"github.com/typical-go/typical-rest-server/_typical/project"
 	"github.com/typical-go/typical-rest-server/db"
 	"github.com/typical-go/typical-rest-server/provider"
@@ -20,10 +17,10 @@ func Commands() []cli.Command {
 			Name:      "database",
 			ShortName: "db",
 			Subcommands: []cli.Command{
-				{Name: "create", ShortName: "c", Usage: "Create New Database", Action: commandAction(db.Create)},
-				{Name: "drop", ShortName: "d", Usage: "Drop Database", Action: commandAction(db.Drop)},
-				{Name: "migrate", ShortName: "m", Usage: "Migrate Database", Action: commandAction(db.Migrate)},
-				{Name: "rollback", ShortName: "r", Usage: "Rollback Database", Action: commandAction(db.Rollback)},
+				{Name: "create", ShortName: "c", Usage: "Create New Database", Action: invoke(db.Create)},
+				{Name: "drop", ShortName: "d", Usage: "Drop Database", Action: invoke(db.Drop)},
+				{Name: "migrate", ShortName: "m", Usage: "Migrate Database", Action: invoke(db.Migrate)},
+				{Name: "rollback", ShortName: "r", Usage: "Rollback Database", Action: invoke(db.Rollback)},
 			},
 		},
 
@@ -31,27 +28,8 @@ func Commands() []cli.Command {
 			Name:      "project",
 			ShortName: "proj",
 			Subcommands: []cli.Command{
-				{
-					Name:      "config",
-					ShortName: "cfg",
-					Usage:     "Config details",
-					Action: func(ctx *cli.Context) {
-						table := tablewriter.NewWriter(os.Stdout)
-						table.SetHeader([]string{"Name", "Type", "Required", "Default"})
-						for _, detail := range config.Informations() {
-							table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
-						}
-						table.Render()
-					},
-				},
-
-				{
-					Name:      "context",
-					ShortName: "ctx",
-					Action: func(ctx *cli.Context) {
-						fmt.Println(project.ContextDetail())
-					},
-				},
+				{Name: "config", ShortName: "cfg", Usage: "Config details", Action: print(project.ConfigDetail)},
+				{Name: "context", ShortName: "ctx", Usage: "Context details", Action: print(project.ContextDetail)},
 			},
 		},
 
@@ -80,7 +58,7 @@ func Commands() []cli.Command {
 	}
 }
 
-func commandAction(invokeFunc interface{}) interface{} {
+func invoke(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
 		container := provider.Container()
 		container.Provide(ctx.Args)
@@ -90,4 +68,11 @@ func commandAction(invokeFunc interface{}) interface{} {
 
 func notImplement(ctx *cli.Context) {
 	fmt.Println("Not implemented")
+}
+
+func print(f func() string) interface{} {
+	return func(ctx *cli.Context) error {
+		fmt.Println(f())
+		return nil
+	}
 }
