@@ -10,10 +10,10 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = project.Context.Name
+	app.Name = project.Ctx.Name
 	app.Usage = ""
-	app.Description = project.Context.Description
-	app.Version = project.Context.Version
+	app.Description = project.Ctx.Description
+	app.Version = project.Ctx.Version
 	app.Commands = Commands()
 
 	err := app.Run(os.Args)

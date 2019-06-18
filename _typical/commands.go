@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/typical-go/typical-rest-server/_typical/generate"
 	"github.com/typical-go/typical-rest-server/_typical/project"
 	"github.com/typical-go/typical-rest-server/db"
 	"github.com/typical-go/typical-rest-server/provider"
@@ -50,7 +51,7 @@ func Commands() []cli.Command {
 			Subcommands: []cli.Command{
 				{Name: "mock", Usage: "Generate mock", Action: notImplement},
 				{Name: "migration", Usage: "Generate migration", Action: notImplement},
-				{Name: "readme", Usage: "Generate readme", Action: notImplement},
+				{Name: "readme", Usage: "Generate readme", Action: run(generate.Readme)},
 			},
 		},
 
@@ -74,5 +75,11 @@ func print(f func() string) interface{} {
 	return func(ctx *cli.Context) error {
 		fmt.Println(f())
 		return nil
+	}
+}
+
+func run(f func() error) interface{} {
+	return func(ctx *cli.Context) error {
+		return f()
 	}
 }
