@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/db"
 	"github.com/typical-go/typical-rest-server/provider"
+	"github.com/typical-go/typical-rest-server/typical/database"
 	"github.com/typical-go/typical-rest-server/typical/generate"
 	"github.com/typical-go/typical-rest-server/typical/project"
 
@@ -18,10 +18,10 @@ func Commands() []cli.Command {
 			Name:      "database",
 			ShortName: "db",
 			Subcommands: []cli.Command{
-				{Name: "create", ShortName: "c", Usage: "Create New Database", Action: invoke(db.Create)},
-				{Name: "drop", ShortName: "d", Usage: "Drop Database", Action: invoke(db.Drop)},
-				{Name: "migrate", ShortName: "m", Usage: "Migrate Database", Action: invoke(db.Migrate)},
-				{Name: "rollback", ShortName: "r", Usage: "Rollback Database", Action: invoke(db.Rollback)},
+				{Name: "create", ShortName: "c", Usage: "Create New Database", Action: invoke(database.Create)},
+				{Name: "drop", ShortName: "d", Usage: "Drop Database", Action: invoke(database.Drop)},
+				{Name: "migrate", ShortName: "m", Usage: "Migrate Database", Action: invoke(database.Migrate)},
+				{Name: "rollback", ShortName: "r", Usage: "Rollback Database", Action: invoke(database.Rollback)},
 			},
 		},
 
