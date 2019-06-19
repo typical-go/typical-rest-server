@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/_typical/generate"
-	"github.com/typical-go/typical-rest-server/_typical/project"
 	"github.com/typical-go/typical-rest-server/db"
 	"github.com/typical-go/typical-rest-server/provider"
+	"github.com/typical-go/typical-rest-server/typical/generate"
+	"github.com/typical-go/typical-rest-server/typical/project"
 
 	"github.com/urfave/cli"
 )
