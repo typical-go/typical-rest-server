@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/typical-go/typical-rest-server/provider"
-	"github.com/typical-go/typical-rest-server/typical/database"
-	"github.com/typical-go/typical-rest-server/typical/generate"
-	"github.com/typical-go/typical-rest-server/typical/project"
-
+	"github.com/typical-go/typical-rest-server/typical/task/database"
+	"github.com/typical-go/typical-rest-server/typical/task/generate"
+	"github.com/typical-go/typical-rest-server/typical/task/project"
 	"github.com/urfave/cli"
 )
 

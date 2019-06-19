@@ -14,7 +14,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
-var DefaultMigrationDirectory = "db/migrate"
+// DefaultMigrationDirectory default migration directory
+var DefaultMigrationDirectory = "db/migration"
 
 // Create database
 func Create(conf config.Config) (err error) {
