@@ -14,11 +14,17 @@ var Prefix = "APP"
 // Check https://github.com/kelseyhightower/envconfig#struct-tag-support for more help
 type Config struct {
 	Address string `envconfig:"ADDRESS" required:"true"`
-	infra.Postgres
+	infra.PostgresConfig
 }
 
 // LoadConfig return new instance of config
 func LoadConfig() (conf Config, err error) {
+	err = envconfig.Process(Prefix, &conf)
+	return
+}
+
+// LoadPostgresConfig load postgres configuration
+func LoadPostgresConfig() (conf infra.PostgresConfig, err error) {
 	err = envconfig.Process(Prefix, &conf)
 	return
 }
