@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/provider"
+	"github.com/typical-go/typical-rest-server/typical"
 	"github.com/typical-go/typical-rest-server/typical/task/database"
 	"github.com/typical-go/typical-rest-server/typical/task/generate"
 	"github.com/typical-go/typical-rest-server/typical/task/project"
@@ -60,7 +60,7 @@ func Commands() []cli.Command {
 
 func invoke(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
-		container := provider.Container()
+		container := typical.Container()
 		container.Provide(ctx.Args)
 		return container.Invoke(invokeFunc)
 	}

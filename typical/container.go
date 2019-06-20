@@ -1,4 +1,4 @@
-package provider
+package typical
 
 import (
 	"github.com/typical-go/typical-rest-server/app/controller"
