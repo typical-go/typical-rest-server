@@ -6,6 +6,8 @@ import (
 
 	"github.com/typical-go/typical-rest-server/typical/task/project"
 	"github.com/urfave/cli"
+
+	_ "github.com/golang-migrate/migrate/database/postgres"
 )
 
 func main() {

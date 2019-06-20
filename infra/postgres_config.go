@@ -2,8 +2,6 @@ package infra
 
 import (
 	"fmt"
-
-	_ "github.com/golang-migrate/migrate/database/postgres"
 )
 
 // PostgresConfig postgres config
