@@ -9,25 +9,30 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-
 	"github.com/typical-go/typical-rest-server/app/controller"
-	"github.com/typical-go/typical-rest-server/config"
 )
 
+// Config server configuration
+type Config struct {
+	Address string `envconfig:"ADDRESS" required:"true"`
+}
+
+// Server server application
 type Server struct {
 	*echo.Echo
-	address        string
+	Config
 	bookController controller.BookController
 }
 
+// NewServer return instance of server
 func NewServer(
-	conf config.Config,
+	config Config,
 	bookController controller.BookController,
 ) *Server {
 
 	s := &Server{
 		Echo:           echo.New(),
-		address:        conf.Address,
+		Config:         config,
 		bookController: bookController,
 	}
 	initMiddlewares(s)
@@ -36,6 +41,7 @@ func NewServer(
 	return s
 }
 
+// CRUDController CRUD Controller
 func (s *Server) CRUDController(entity string, crud controller.CRUDController) {
 	s.GET(fmt.Sprintf("/%s", entity), crud.List)
 	s.POST(fmt.Sprintf("/%s", entity), crud.Create)
@@ -44,6 +50,7 @@ func (s *Server) CRUDController(entity string, crud controller.CRUDController) {
 	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
 }
 
+// Serve start serve http request
 func (s *Server) Serve() error {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
@@ -57,5 +64,5 @@ func (s *Server) Serve() error {
 		s.Shutdown(ctx)
 	}()
 
-	return s.Start(s.address)
+	return s.Start(s.Address)
 }

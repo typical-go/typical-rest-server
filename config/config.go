@@ -5,6 +5,7 @@ package config
 
 import (
 	"github.com/kelseyhightower/envconfig"
+	"github.com/typical-go/typical-rest-server/app/server"
 	"github.com/typical-go/typical-rest-server/infra"
 )
 
@@ -13,13 +14,13 @@ var Prefix = "APP"
 // Config type
 // Check https://github.com/kelseyhightower/envconfig#struct-tag-support for more help
 type Config struct {
-	Address string `envconfig:"ADDRESS" required:"true"`
+	server.Config
 	infra.PostgresConfig
 }
 
 // LoadConfig return new instance of config
-func LoadConfig() (conf Config, err error) {
-	err = envconfig.Process(Prefix, &conf)
+func LoadConfig() (config server.Config, err error) {
+	err = envconfig.Process(Prefix, &config)
 	return
 }
 
