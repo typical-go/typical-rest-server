@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/typical-go/typical-rest-server/typical"
-	"github.com/urfave/cli"
+	"gopkg.in/urfave/cli.v1"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
 )

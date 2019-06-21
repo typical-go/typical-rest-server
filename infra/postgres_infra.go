@@ -5,17 +5,20 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/typical-go/typical-go/appx"
+
 	"github.com/golang-migrate/migrate"
 
-	"github.com/urfave/cli"
+	"gopkg.in/urfave/cli.v1"
 )
 
 // PostgresInfra postgres database infrastructure
 type PostgresInfra struct {
+	appx.DBInfra
 	config PostgresConfig
 }
 
-// DefaultMigrationDirectory default migration directory
+// DefaultMigrationDirectory default migration diremake ctory
 var DefaultMigrationDirectory = "db/migration"
 
 // Create database

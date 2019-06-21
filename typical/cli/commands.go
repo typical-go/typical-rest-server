@@ -7,7 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/typical/task/database"
 	"github.com/typical-go/typical-rest-server/typical/task/generate"
 	"github.com/typical-go/typical-rest-server/typical/task/project"
-	"github.com/urfave/cli"
+	"gopkg.in/urfave/cli.v1"
 )
 
 // Commands return list of command

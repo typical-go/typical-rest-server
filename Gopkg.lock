@@ -158,22 +158,6 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
-  name = "github.com/mattn/go-runewidth"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
-  version = "v0.0.4"
-
-[[projects]]
-  digest = "1:abcdbf03ca6ca13d3697e2186edc1f33863bbdac2b3a44dfa39015e8903f7409"
-  name = "github.com/olekukonko/tablewriter"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e6d60cf7ba1f42d86d54cdf5508611c4aafb3970"
-  version = "v0.0.1"
-
-[[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
@@ -193,12 +177,12 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
-  name = "github.com/urfave/cli"
-  packages = ["."]
+  branch = "master"
+  digest = "1:b73e9cd39f2991a828bd5f82ca4095d769324bc78efcd7031de1a844940a1ed8"
+  name = "github.com/typical-go/typical-go"
+  packages = ["appx"]
   pruneopts = "UT"
-  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
-  version = "v1.20.0"
+  revision = "8be8729653600e8d8f248ed6572bfeaa83b2a15e"
 
 [[projects]]
   digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
@@ -263,6 +247,14 @@
   revision = "b199fa0642d29caca62b6a99d65cc981ba5edc3b"
   version = "v9.27.0"
 
+[[projects]]
+  digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
+  name = "gopkg.in/urfave/cli.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
+  version = "v1.20.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -276,12 +268,14 @@
     "github.com/kelseyhightower/envconfig",
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",
-    "github.com/olekukonko/tablewriter",
+    "github.com/lib/pq",
     "github.com/stretchr/testify/require",
+    "github.com/typical-go/typical-go/appx",
     "github.com/urfave/cli",
     "go.uber.org/dig",
     "gopkg.in/Masterminds/squirrel.v1",
     "gopkg.in/go-playground/validator.v9",
+    "gopkg.in/urfave/cli.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
