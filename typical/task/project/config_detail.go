@@ -3,21 +3,20 @@ package project
 import (
 	"bytes"
 
-	"github.com/olekukonko/tablewriter"
-	"github.com/typical-go/typical-rest-server/config"
+	"github.com/kelseyhightower/envconfig"
+	"github.com/typical-go/typical-rest-server/typical"
 )
+
+const configFormat = `This application is configured via the environment. The following environment
+variables can be used:
+
+KEY	TYPE	DEFAULT	REQUIRED	DESCRIPTION
+{{range .}}{{usage_key .}}	{{usage_type .}}	{{usage_default .}}	{{usage_required .}}	{{usage_description .}}
+{{end}}`
 
 // ConfigDetail return config detail string
 func ConfigDetail() string {
 	buf := new(bytes.Buffer)
-	table := tablewriter.NewWriter(buf)
-	table.SetHeader([]string{"Name", "Type", "Required", "Default"})
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-	for _, detail := range config.Informations() {
-		table.Append([]string{detail.Name, detail.Type, detail.Required, detail.Default})
-	}
-	table.Render()
-
+	envconfig.Usagef(typical.Prefix, &typical.AllConfig{}, buf, configFormat)
 	return buf.String()
 }
