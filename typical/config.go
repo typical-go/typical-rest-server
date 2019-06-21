@@ -3,7 +3,7 @@ package typical
 import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app/server"
-	"github.com/typical-go/typical-rest-server/infra"
+	"github.com/typical-go/typical-rest-server/typical/infra"
 )
 
 // AllConfig all configuration
