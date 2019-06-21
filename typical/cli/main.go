@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/typical-go/typical-rest-server/typical/task/project"
+	"github.com/typical-go/typical-rest-server/typical"
 	"github.com/urfave/cli"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
@@ -12,10 +12,10 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = project.Ctx.Name
+	app.Name = typical.Context.Name
 	app.Usage = ""
-	app.Description = project.Ctx.Description
-	app.Version = project.Ctx.Version
+	app.Description = typical.Context.Description
+	app.Version = typical.Context.Version
 	app.Commands = Commands()
 
 	err := app.Run(os.Args)

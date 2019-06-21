@@ -1,14 +1,14 @@
-package project
+package typical
 
-// Context project contenxt
-type Context struct {
+// AppContext project contenxt
+type AppContext struct {
 	Name        string
 	Version     string
 	Description string
 }
 
-// Ctx instance of Context
-var Ctx = Context{
+// Context instance of Context
+var Context = AppContext{
 	Name:        "Typical-RESTful-Server",
 	Version:     "0.1.0",
 	Description: "Example of typical and scalable RESTful API Server for Go",
