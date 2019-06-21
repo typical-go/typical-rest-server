@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"github.com/labstack/echo/middleware"

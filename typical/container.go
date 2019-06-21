@@ -1,9 +1,9 @@
 package typical
 
 import (
+	"github.com/tiket/TIX-SESSION-GO/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/entity"
-	"github.com/typical-go/typical-rest-server/app/server"
 	"github.com/typical-go/typical-rest-server/typical/infra"
 
 	"go.uber.org/dig"
@@ -12,7 +12,7 @@ import (
 // Container dependency container
 func Container() *dig.Container {
 	container := dig.New()
-	container.Provide(server.NewServer)
+	container.Provide(app.NewServer)
 
 	// config
 	container.Provide(LoadConfig)
