@@ -17,6 +17,6 @@ KEY	TYPE	DEFAULT	REQUIRED	DESCRIPTION
 // ConfigDetail return config detail string
 func ConfigDetail() string {
 	buf := new(bytes.Buffer)
-	envconfig.Usagef(typical.Prefix, &typical.AllConfig{}, buf, configFormat)
+	envconfig.Usagef(typical.Context.ConfigPrefix, &typical.AllConfig{}, buf, configFormat)
 	return buf.String()
 }

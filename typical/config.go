@@ -6,8 +6,7 @@ import (
 	"github.com/typical-go/typical-rest-server/infra"
 )
 
-var Prefix = "APP"
-
+// AllConfig all configuration
 type AllConfig struct {
 	server.Config
 	infra.PostgresConfig
@@ -15,12 +14,12 @@ type AllConfig struct {
 
 // LoadConfig return new instance of config
 func LoadConfig() (config server.Config, err error) {
-	err = envconfig.Process(Prefix, &config)
+	err = envconfig.Process(Context.ConfigPrefix, &config)
 	return
 }
 
 // LoadPostgresConfig load postgres configuration
 func LoadPostgresConfig() (conf infra.PostgresConfig, err error) {
-	err = envconfig.Process(Prefix, &conf)
+	err = envconfig.Process(Context.ConfigPrefix, &conf)
 	return
 }
