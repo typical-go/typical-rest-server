@@ -8,8 +8,6 @@ import (
 	"github.com/typical-go/typical-go/appx"
 
 	"github.com/golang-migrate/migrate"
-
-	"gopkg.in/urfave/cli.v1"
 )
 
 // PostgresInfra postgres database infrastructure
@@ -17,9 +15,6 @@ type PostgresInfra struct {
 	appx.DBInfra
 	config PostgresConfig
 }
-
-// DefaultMigrationDirectory default migration diremake ctory
-var DefaultMigrationDirectory = "db/migration"
 
 // Create database
 func (i PostgresInfra) Create() (err error) {
@@ -50,8 +45,7 @@ func (i PostgresInfra) Drop() (err error) {
 }
 
 // Migrate database
-func (i PostgresInfra) Migrate(args cli.Args) error {
-	source := i.migrationSource(args)
+func (i PostgresInfra) Migrate(source string) error {
 	log.Printf("Migrate database from source '%s'\n", source)
 
 	migration, err := migrate.New(source, i.config.ConnectionString())
@@ -63,8 +57,7 @@ func (i PostgresInfra) Migrate(args cli.Args) error {
 }
 
 // Rollback database
-func (i PostgresInfra) Rollback(args cli.Args) error {
-	source := i.migrationSource(args)
+func (i PostgresInfra) Rollback(source string) error {
 	log.Printf("Migrate database from source '%s'\n", source)
 
 	migration, err := migrate.New(source, i.config.ConnectionString())
@@ -73,12 +66,4 @@ func (i PostgresInfra) Rollback(args cli.Args) error {
 	}
 	defer migration.Close()
 	return migration.Down()
-}
-
-func (i PostgresInfra) migrationSource(args cli.Args) string {
-	dir := DefaultMigrationDirectory
-	if len(args) > 0 {
-		dir = args.First()
-	}
-	return fmt.Sprintf("file://%s", dir)
 }
