@@ -1,5 +1,7 @@
 -include .env
 
+PROJECT_NAME := $(shell basename "$(PWD)")
+
 build:
-	@go build -o bin/typical ./typical/cmd
-	@go build -o bin/app ./app/cmd
+	@go build -o bin/typical ./cmd/typical
+	@go build -o bin/$(PROJECT_NAME) ./cmd/app
