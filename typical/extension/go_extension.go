@@ -7,7 +7,10 @@ import (
 )
 
 // GoExtension provide standar go command like build, run, test, mock, etc
-type GoExtension struct{}
+type GoExtension struct {
+	Extension
+	ActionTrigger
+}
 
 // Setup go extension
 func (e *GoExtension) Setup() error {
@@ -19,11 +22,11 @@ func (e *GoExtension) Command() cli.Command {
 	return cli.Command{
 		Name: "go",
 		Subcommands: []cli.Command{
-			{Name: "build", Usage: "Build the binary", Action: notImplement},
-			{Name: "test", Usage: "Run the Test", Action: notImplement},
-			{Name: "run", Usage: "Run the binary", Action: notImplement},
-			{Name: "distribute", Usage: "Create distribution package", Action: notImplement},
-			{Name: "mock", Usage: "Generate mock class", Action: notImplement},
+			{Name: "build", Usage: "Build the binary", Action: e.NotImplement},
+			{Name: "test", Usage: "Run the Test", Action: e.NotImplement},
+			{Name: "run", Usage: "Run the binary", Action: e.NotImplement},
+			{Name: "distribute", Usage: "Create distribution package", Action: e.NotImplement},
+			{Name: "mock", Usage: "Generate mock class", Action: e.NotImplement},
 		},
 	}
 }
