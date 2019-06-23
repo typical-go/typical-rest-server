@@ -1,4 +1,4 @@
-package generate
+package xproj
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 )
 
 // Readme generate readme.md
-func Readme() (err error) {
+func generateReadme() (err error) {
 	t, err := template.New("readme").Parse(readmeTemplate)
 	if err != nil {
 		return

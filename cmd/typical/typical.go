@@ -2,14 +2,15 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/appx"
-	"github.com/typical-go/typical-rest-server/typical/extension"
+	"github.com/typical-go/typical-rest-server/typical/ext"
+
 	"gopkg.in/urfave/cli.v1"
 )
 
 // Typical represent the typical framework tool
 type Typical struct {
 	Context    appx.Context
-	extensions []extension.Extension
+	extensions []ext.Extension
 }
 
 // NewTypical return new instance of Typical CLI
@@ -20,7 +21,7 @@ func NewTypical(context appx.Context) *Typical {
 }
 
 // AddExtension will add extension to typical
-func (t *Typical) AddExtension(extension extension.Extension) {
+func (t *Typical) AddExtension(extension ext.Extension) {
 	t.extensions = append(t.extensions, extension)
 }
 

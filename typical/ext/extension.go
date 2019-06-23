@@ -1,4 +1,4 @@
-package extension
+package ext
 
 import "gopkg.in/urfave/cli.v1"
 

@@ -1,4 +1,4 @@
-package project
+package xproj
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ KEY	TYPE	DEFAULT	REQUIRED	DESCRIPTION
 {{end}}`
 
 // ConfigDetail return config detail string
-func ConfigDetail() string {
+func configDetail() string {
 	buf := new(bytes.Buffer)
 	envconfig.Usagef(typical.Context.ConfigPrefix, &typical.AllConfig{}, buf, configFormat)
 	return buf.String()

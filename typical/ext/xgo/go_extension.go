@@ -1,15 +1,16 @@
-package extension
+package xgo
 
 import (
 	"fmt"
 
+	"github.com/typical-go/typical-rest-server/typical/ext"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // GoExtension provide standar go command like build, run, test, mock, etc
 type GoExtension struct {
-	Extension
-	ActionTrigger
+	ext.Extension
+	ext.ActionTrigger
 }
 
 // Setup go extension

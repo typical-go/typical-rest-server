@@ -1,4 +1,4 @@
-package project
+package xproj
 
 import (
 	"bytes"
@@ -8,8 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
-// ContextDetail return context detail string
-func ContextDetail() string {
+func contextDetail() string {
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(typical.Context); err != nil {
 		log.Fatal(err)
