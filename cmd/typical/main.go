@@ -8,6 +8,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/lib/pq"
 )
 
 func main() {
