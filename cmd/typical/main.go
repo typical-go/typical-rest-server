@@ -5,21 +5,19 @@ import (
 	"os"
 
 	"github.com/typical-go/typical-rest-server/typical"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/typical-go/typical-rest-server/typical/extension"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = typical.Context.Name
-	app.Usage = ""
-	app.Description = typical.Context.Description
-	app.Version = typical.Context.Version
-	app.Commands = Commands()
+	typi := NewTypical(typical.Context)
+	typi.AddExtension(&extension.GoExtension{})
+	typi.AddExtension(&extension.ProjectExtension{})
+	typi.AddExtension(&extension.DatabaseExtension{})
 
-	err := app.Run(os.Args)
+	err := typi.RunCLI(os.Args)
 	if err != nil {
 		log.Fatalf("%s", err.Error())
 	}
