@@ -3,7 +3,6 @@ package extension
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/typical/task/database"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -20,11 +19,11 @@ func (e *GoExtension) Command() cli.Command {
 	return cli.Command{
 		Name: "go",
 		Subcommands: []cli.Command{
-			{Name: "build", Usage: "Build the binary", Action: invoke(database.Create)},
-			{Name: "test", Usage: "Run the Test", Action: invoke(database.Drop)},
-			{Name: "run", Usage: "Run the binary", Action: invoke(database.Migrate)},
-			{Name: "distribute", Usage: "Create distribution package", Action: invoke(database.Migrate)},
-			{Name: "mock", Usage: "Generate mock class", Action: invoke(database.Rollback)},
+			{Name: "build", Usage: "Build the binary", Action: notImplement},
+			{Name: "test", Usage: "Run the Test", Action: notImplement},
+			{Name: "run", Usage: "Run the binary", Action: notImplement},
+			{Name: "distribute", Usage: "Create distribution package", Action: notImplement},
+			{Name: "mock", Usage: "Generate mock class", Action: notImplement},
 		},
 	}
 }

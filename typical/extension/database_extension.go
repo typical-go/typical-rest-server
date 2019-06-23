@@ -3,6 +3,7 @@ package extension
 import (
 	"fmt"
 
+	"github.com/typical-go/typical-rest-server/typical/task/database"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -22,10 +23,10 @@ func (e *DatabaseExtension) Command() cli.Command {
 		Name:      "database",
 		ShortName: "db",
 		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: notImplement},
-			{Name: "drop", Usage: "Drop Database", Action: notImplement},
-			{Name: "migrate", Usage: "Migrate Database", Action: notImplement},
-			{Name: "rollback", Usage: "Rollback Database", Action: notImplement},
+			{Name: "create", Usage: "Create New Database", Action: invoke(database.Create)},
+			{Name: "drop", Usage: "Drop Database", Action: invoke(database.Drop)},
+			{Name: "migrate", Usage: "Migrate Database", Action: invoke(database.Migrate)},
+			{Name: "rollback", Usage: "Rollback Database", Action: invoke(database.Rollback)},
 		},
 	}
 }
