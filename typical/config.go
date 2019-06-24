@@ -3,13 +3,13 @@ package typical
 import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app"
-	"github.com/typical-go/typical-rest-server/typical/infra"
+	"github.com/typical-go/typical-rest-server/typical/infra/ipostgres"
 )
 
 // AllConfig all configuration
 type AllConfig struct {
 	app.Config
-	infra.PostgresConfig
+	ipostgres.PGConfig
 }
 
 // LoadConfig return new instance of config
@@ -19,7 +19,7 @@ func LoadConfig() (config app.Config, err error) {
 }
 
 // LoadPostgresConfig load postgres configuration
-func LoadPostgresConfig() (conf infra.PostgresConfig, err error) {
+func LoadPostgresConfig() (conf ipostgres.PGConfig, err error) {
 	err = envconfig.Process(Context.ConfigPrefix, &conf)
 	return
 }

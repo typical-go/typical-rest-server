@@ -4,7 +4,7 @@ import (
 	"github.com/tiket/TIX-SESSION-GO/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/entity"
-	"github.com/typical-go/typical-rest-server/typical/infra"
+	"github.com/typical-go/typical-rest-server/typical/infra/ipostgres"
 
 	"go.uber.org/dig"
 )
@@ -19,8 +19,8 @@ func Container() *dig.Container {
 	container.Provide(LoadPostgresConfig)
 
 	// infra
-	container.Provide(infra.ConnectPostgres)
-	container.Provide(infra.CreatePostgresInfra)
+	container.Provide(ipostgres.Connect)
+	container.Provide(ipostgres.Create)
 
 	// controller
 	container.Provide(controller.NewBookController)

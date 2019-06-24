@@ -1,4 +1,4 @@
-package infra
+package ipostgres
 
 import (
 	"database/sql"
@@ -10,14 +10,14 @@ import (
 	"github.com/golang-migrate/migrate"
 )
 
-// PostgresInfra postgres database infrastructure
-type PostgresInfra struct {
+// DBInfra postgres database infrastructure
+type DBInfra struct {
 	appx.DBInfra
-	config PostgresConfig
+	config PGConfig
 }
 
 // Create database
-func (i PostgresInfra) Create() (err error) {
+func (i DBInfra) Create() (err error) {
 	conn, err := sql.Open("postgres", i.config.ConnectionStringNoDB())
 	if err != nil {
 		return
@@ -31,7 +31,7 @@ func (i PostgresInfra) Create() (err error) {
 }
 
 // Drop database
-func (i PostgresInfra) Drop() (err error) {
+func (i DBInfra) Drop() (err error) {
 	conn, err := sql.Open("postgres", i.config.ConnectionStringNoDB())
 	if err != nil {
 		return
@@ -45,7 +45,7 @@ func (i PostgresInfra) Drop() (err error) {
 }
 
 // Migrate database
-func (i PostgresInfra) Migrate(source string) error {
+func (i DBInfra) Migrate(source string) error {
 	log.Printf("Migrate database from source '%s'\n", source)
 
 	migration, err := migrate.New(source, i.config.ConnectionString())
@@ -57,7 +57,7 @@ func (i PostgresInfra) Migrate(source string) error {
 }
 
 // Rollback database
-func (i PostgresInfra) Rollback(source string) error {
+func (i DBInfra) Rollback(source string) error {
 	log.Printf("Migrate database from source '%s'\n", source)
 
 	migration, err := migrate.New(source, i.config.ConnectionString())
