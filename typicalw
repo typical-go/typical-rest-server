@@ -1,4 +1,0 @@
-#!/bin/bash
-
-go build -o bin/typical ./cmd/typical
-bin/typical $@
