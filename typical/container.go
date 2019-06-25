@@ -9,8 +9,7 @@ import (
 	"go.uber.org/dig"
 )
 
-// Container dependency container
-func Container() *dig.Container {
+func container() *dig.Container {
 	container := dig.New()
 	container.Provide(app.NewServer)
 

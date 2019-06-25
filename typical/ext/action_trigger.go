@@ -3,19 +3,20 @@ package ext
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/typical"
+	"github.com/typical-go/typical-rest-server/typical/appctx"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // ActionTrigger provider common action
-type ActionTrigger struct{}
+type ActionTrigger struct {
+	Context appctx.Context
+}
 
 // Invoke the function with DI container
 func (t ActionTrigger) Invoke(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
-		container := typical.Container()
-		container.Provide(ctx.Args)
-		return container.Invoke(invokeFunc)
+		t.Context.Container.Provide(ctx.Args)
+		return t.Context.Container.Invoke(invokeFunc)
 	}
 }
 

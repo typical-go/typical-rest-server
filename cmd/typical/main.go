@@ -16,7 +16,7 @@ import (
 func main() {
 	typi := NewTypical(typical.Context)
 	typi.AddExtension(&xgo.GoExtension{})
-	typi.AddExtension(&xproj.ProjectExtension{})
+	typi.AddExtension(xproj.NewProjectExtension(typical.Context))
 	typi.AddExtension(&xdb.DatabaseExtension{})
 
 	err := typi.RunCLI(os.Args)

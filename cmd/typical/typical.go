@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/typical-go/typical-go/appx"
+	"github.com/typical-go/typical-rest-server/typical/appctx"
 	"github.com/typical-go/typical-rest-server/typical/ext"
 
 	"gopkg.in/urfave/cli.v1"
@@ -9,12 +9,12 @@ import (
 
 // Typical represent the typical framework tool
 type Typical struct {
-	Context    appx.Context
+	Context    appctx.Context
 	extensions []ext.Extension
 }
 
 // NewTypical return new instance of Typical CLI
-func NewTypical(context appx.Context) *Typical {
+func NewTypical(context appctx.Context) *Typical {
 	return &Typical{
 		Context: context,
 	}
