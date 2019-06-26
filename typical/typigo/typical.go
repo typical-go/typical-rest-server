@@ -1,4 +1,4 @@
-package main
+package typigo
 
 import (
 	"github.com/typical-go/typical-rest-server/typical/appctx"
