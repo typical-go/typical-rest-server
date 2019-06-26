@@ -107,6 +107,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:be3bd107094de27145a9a92e9e5e2b3eb03d3d92a5dec68da31b8eba4e4c6ae2"
+  name = "github.com/iancoleman/strcase"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e506e3ef73653e84c592ba44aab577a46678f68c"
+
+[[projects]]
   digest = "1:edbef42561faa44c19129b68d1e109fbc1647f63239250391eadc8d0e7c9f669"
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
@@ -241,6 +249,18 @@
   version = "v1.3.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:662806098eb19b0fd1ce72a22df7d718588c239ffba6f1e48fda411ce50c222c"
+  name = "github.com/tiket-oss/phpsessgo"
+  packages = [
+    "phpencode",
+    "phpserialize",
+    "phptype",
+  ]
+  pruneopts = "UT"
+  revision = "34863dc70a3f0b988fa2f86845014098558f00f6"
+
+[[projects]]
   digest = "1:5e5649c6c86a3f6c71d43be56abfab69db7f8da39fd7e6f0d2c5f4671fffa0f9"
   name = "github.com/tiket/TIX-SESSION-GO"
   packages = [
@@ -256,14 +276,6 @@
   pruneopts = "UT"
   revision = "1630020163c4a4df784947c725149e4babd9e923"
   version = "v0.2.12"
-
-[[projects]]
-  branch = "master"
-  digest = "1:b73e9cd39f2991a828bd5f82ca4095d769324bc78efcd7031de1a844940a1ed8"
-  name = "github.com/typical-go/typical-go"
-  packages = ["appx"]
-  pruneopts = "UT"
-  revision = "8be8729653600e8d8f248ed6572bfeaa83b2a15e"
 
 [[projects]]
   digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
@@ -346,6 +358,7 @@
     "github.com/golang-migrate/migrate/database/postgres",
     "github.com/golang-migrate/migrate/source/file",
     "github.com/golang/mock/gomock",
+    "github.com/iancoleman/strcase",
     "github.com/kelseyhightower/envconfig",
     "github.com/labstack/echo",
     "github.com/labstack/echo/middleware",

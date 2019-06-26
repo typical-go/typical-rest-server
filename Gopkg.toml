@@ -68,3 +68,7 @@
 [[constraint]]
   name = "github.com/BurntSushi/toml"
   version = "0.3.1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/iancoleman/strcase"

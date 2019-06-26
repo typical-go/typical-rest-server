@@ -5,5 +5,18 @@ Example of typical and scalable RESTful API Server for Go
 
 ## Configuration
 
-mehmehmeh
+Server
+| Key | Type | Default | Request | Description |	
+|---|---|---|---|---|	
+|APP_ADDRESS|String||true||	
+
+Database
+| Key | Type | Default | Request | Description |	
+|---|---|---|---|---|	
+|APP_PG_DBNAME|String||true||	
+|APP_PG_USER|String||true||	
+|APP_PG_PASSWORD|String||true||	
+|APP_PG_HOST|String|localhost|||	
+|APP_PG_PORT|Integer|5432|||	
+
 
