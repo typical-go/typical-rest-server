@@ -27,7 +27,8 @@ func (c Context) ConfigDoc() string {
 		buf.WriteString("\n")
 		buf.WriteString(strcase.ToCamel(key))
 		buf.WriteString("\n")
-		envconfig.Usagef(c.ConfigPrefix, c.Modules[key].Config, buf, `| Key | Type | Default | Request | Description |	
+		envconfig.Usagef(c.ConfigPrefix, c.Modules[key].Config, buf, `
+| Key | Type | Default | Request | Description |	
 |---|---|---|---|---|	
 {{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
 {{end}}`)
