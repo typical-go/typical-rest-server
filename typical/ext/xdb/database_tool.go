@@ -11,7 +11,7 @@ import (
 )
 
 // DefaultMigrationDirectory default migration diremake ctory
-var DefaultMigrationDirectory = "db/migration"
+var DefaultMigrationDirectory = "scripts/migration"
 
 // Create database
 func Create(dbInfra appx.DBInfra) error {
