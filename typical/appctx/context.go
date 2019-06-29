@@ -3,21 +3,34 @@ package appctx
 import (
 	"bytes"
 
+	"go.uber.org/dig"
+
 	"github.com/iancoleman/strcase"
 	"github.com/kelseyhightower/envconfig"
-	"go.uber.org/dig"
 )
 
 // Context of typical application
 type Context struct {
-	Name           string
-	ConfigPrefix   string
-	Path           string
-	Version        string
-	Description    string
-	Container      *dig.Container
+	Name         string
+	ConfigPrefix string
+	Path         string
+	Version      string
+	Description  string
+	// Container      *dig.Container
+	Constructors   []interface{}
 	Modules        map[string]Module
 	ReadmeTemplate string
+}
+
+// Container to return the depedency injection
+func (c Context) Container() *dig.Container {
+	container := dig.New()
+
+	for _, contructor := range c.Constructors {
+		container.Provide(contructor)
+	}
+
+	return container
 }
 
 // ConfigDoc for configuration documentation

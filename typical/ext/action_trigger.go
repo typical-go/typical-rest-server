@@ -15,8 +15,9 @@ type ActionTrigger struct {
 // Invoke the function with DI container
 func (t ActionTrigger) Invoke(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
-		t.Context.Container.Provide(ctx.Args)
-		return t.Context.Container.Invoke(invokeFunc)
+		container := t.Context.Container()
+		container.Provide(ctx.Args)
+		return container.Invoke(invokeFunc)
 	}
 }
 
