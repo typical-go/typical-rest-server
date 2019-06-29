@@ -6,7 +6,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// RunTypical to start the command line interface
+// RunTypical to run typical task cli
 func (c *Context) RunTypical(arguments []string) error {
 	app := cli.NewApp()
 	app.Name = c.Name
