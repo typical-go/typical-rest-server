@@ -38,8 +38,9 @@ func (t *Typical) standardTypicalCommand() []cli.Command {
 		{Name: "build", Usage: "Build the binary", Action: notImplemented},
 		{Name: "test", Usage: "Run the Test", Action: notImplemented},
 		{Name: "run", Usage: "Run the binary", Action: notImplemented},
+		{Name: "vendoring", Usage: "Vendoring the dependency", Action: notImplemented},
 		{Name: "release", Usage: "Release the distribution", Action: notImplemented},
-		{Name: "mock", Usage: "Generate mock class", Action: notImplemented},
+		{Name: "mock", Usage: "Generate mock class", Action: mock},
 		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
 	}
 }
