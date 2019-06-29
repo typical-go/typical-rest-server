@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/app/entity"
 	"github.com/typical-go/typical-rest-server/app/helper/strkit"
+	"github.com/typical-go/typical-rest-server/app/repository"
 )
 
 // BookController handle input related to Book
@@ -15,18 +15,18 @@ type BookController interface {
 }
 
 type bookController struct {
-	bookRepository entity.BookRepository
+	bookRepository repository.BookRepository
 }
 
 // NewBookController return new instance of book controller
-func NewBookController(bookRepository entity.BookRepository) BookController {
+func NewBookController(bookRepository repository.BookRepository) BookController {
 	return &bookController{
 		bookRepository: bookRepository,
 	}
 }
 
 func (c *bookController) Create(ctx echo.Context) (err error) {
-	var book entity.Book
+	var book repository.Book
 
 	err = ctx.Bind(&book)
 	if err != nil {
@@ -88,7 +88,7 @@ func (c *bookController) Delete(ctx echo.Context) error {
 }
 
 func (c *bookController) Update(ctx echo.Context) (err error) {
-	var book entity.Book
+	var book repository.Book
 
 	err = ctx.Bind(&book)
 	if err != nil {

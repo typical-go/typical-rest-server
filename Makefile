@@ -1,14 +1,65 @@
 -include .env
 
 PROJECT_NAME := $(shell basename "$(PWD)")
+BINARY := $(PROJECT_NAME)
+MOCK_TARGET := mock
+TEST_TARGET := ./config ./app/controller ./app/repository
 
-typical:
-	@go build -o bin/typical ./cmd/typical
 
-t: 
-	@bin/typical $(filter-out $@,$(MAKECMDGOALS))
+## build: Build the binary
+build:
+	@echo "  >  Building Binary"
+	@go build -o bin/$(BINARY) ./cmd/app
 
-app:
-	@go build -o bin/$(PROJECT_NAME) ./cmd/app
+## dep: Install dependencies
+dep:
+	@echo "  >  Install Dependencies"
+	@go get github.com/golang/dep/cmd/dep
+	@go install github.com/golang/dep/cmd/dep
+	@$(GOPATH)/bin/dep ensure
 
-.PHONY: typical app 
+
+	
+## server: Build and run the server
+server: 
+	@-$(MAKE) build
+	@./$(BINARY) s
+
+## test: Running test
+test:
+	@echo "  >  Running Test"
+	@go test $(TEST_TARGET)  -coverprofile cover.out
+
+## test-report: Running test and show coverage profile
+test-report:
+	@-$(MAKE) test
+	@go tool cover -html=cover.out
+
+dep-clean:
+	@echo "  >  Clean dependencies..."
+	@rm -rf vendor
+
+## clean: Clean build files
+clean:
+	@echo "  >  Clean build files..."
+	@rm $(BINARY)
+	@-$(MAKE) go-clean
+
+## clean-all: Clean build files and dependency
+clean-all: dep-clean clean
+
+## mock: Generate mock class
+mock:
+	@echo "  >  Generate mock class..."
+	@go get github.com/golang/mock/gomock
+	@go install github.com/golang/mock/mockgen
+	@for filename in app/repository/*_repo.go; do \
+		$(GOPATH)/bin/mockgen -source=$$filename -destination=$(MOCK_TARGET)/$$(basename $$filename) -package=$$(basename $(MOCK_TARGET)); \
+	done
+	
+## env: prepare the directory enviroment
+env:
+	@cp .envrc.sample .envrc
+	@direnv allow .
+
+.PHONY: help all dep build test test-report dep-clean clean clean-all mock server env

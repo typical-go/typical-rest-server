@@ -1,4 +1,4 @@
-package entity
+package repository
 
 // Table Name
 const (

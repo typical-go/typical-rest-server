@@ -3,7 +3,7 @@ package typical
 import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
-	"github.com/typical-go/typical-rest-server/app/entity"
+	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/typical/appctx"
 	"github.com/typical-go/typical-rest-server/typical/infra/ipostgres"
 )
@@ -32,7 +32,7 @@ func init() {
 			app.NewServer,
 			LoadConfig,
 			controller.NewBookController,
-			entity.NewBookRepository,
+			repository.NewBookRepository,
 		},
 		ReadmeTemplate: readmeTemplate,
 		Modules: map[string]appctx.Module{

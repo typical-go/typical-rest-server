@@ -1,4 +1,4 @@
-package entity
+package repository
 
 import (
 	"testing"
