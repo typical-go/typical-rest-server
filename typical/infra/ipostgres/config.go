@@ -2,15 +2,17 @@ package ipostgres
 
 import (
 	"fmt"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 // PGConfig postgres config
 type PGConfig struct {
-	DbName   string `envconfig:"PG_DBNAME" required:"true"`
-	User     string `envconfig:"PG_USER" required:"true"`
-	Password string `envconfig:"PG_PASSWORD" required:"true"`
-	Host     string `envconfig:"PG_HOST" default:"localhost"`
-	Port     int    `envconfig:"PG_PORT" default:"5432"`
+	DbName   string `required:"true"`
+	User     string `required:"true"`
+	Password string `required:"true"`
+	Host     string `default:"localhost"`
+	Port     int    `default:"5432"`
 }
 
 // ConnectionString return connection string
@@ -23,4 +25,10 @@ func (c PGConfig) ConnectionString() string {
 func (c PGConfig) ConnectionStringNoDB() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
+}
+
+// LoadPostgresConfig load postgres configuration
+func LoadPostgresConfig() (conf PGConfig, err error) {
+	err = envconfig.Process("PG", &conf)
+	return
 }

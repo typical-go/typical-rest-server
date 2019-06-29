@@ -1,4 +1,4 @@
 export APP_ADDRESS=:8089
-export APP_PG_DBNAME=typical-app
-export APP_PG_USER=user
-export APP_PG_PASSWORD=password
+export PG_DBNAME=typical-app
+export PG_USER=user
+export PG_PASSWORD=password

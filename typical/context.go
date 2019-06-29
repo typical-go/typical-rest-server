@@ -31,16 +31,14 @@ func init() {
 		Constructors: []interface{}{
 			app.NewServer,
 			LoadConfig,
-			LoadPostgresConfig,
-			ipostgres.Connect,
-			ipostgres.Create,
 			controller.NewBookController,
 			entity.NewBookRepository,
 		},
 		ReadmeTemplate: readmeTemplate,
 		Modules: map[string]appctx.Module{
-			"server":   appctx.Module{Config: &app.Config{}},
-			"database": appctx.Module{Config: &ipostgres.PGConfig{}},
+			// "server":   appctx.Module{Config: &app.Config{}},
+			// "database": appctx.Module{Config: &ipostgres.PGConfig{}},
+			"database": ipostgres.NewPostgresModule(),
 		},
 	}
 }
