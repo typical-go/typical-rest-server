@@ -1,7 +1,7 @@
 package typical
 
 import (
-	"github.com/tiket/TIX-SESSION-GO/app"
+	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/entity"
 	"github.com/typical-go/typical-rest-server/typical/infra/ipostgres"
