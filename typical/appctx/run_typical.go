@@ -6,22 +6,22 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// Run to start the command line interface
-func (c *Context) Run(arguments []string) error {
+// RunTypical to start the command line interface
+func (c *Context) RunTypical(arguments []string) error {
 	app := cli.NewApp()
 	app.Name = c.Name
 	app.Usage = ""
 	app.Description = c.Description
 	app.Version = c.Version
 
-	app.Commands = c.standardCommand()
+	app.Commands = c.standardTypicalCommand()
 	for key := range c.Modules {
 		app.Commands = append(app.Commands, c.Modules[key].Command())
 	}
 	return app.Run(arguments)
 }
 
-func (c *Context) standardCommand() []cli.Command {
+func (c *Context) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
 		{Name: "build", Usage: "Build the binary", Action: notImplemented},
 		{Name: "test", Usage: "Run the Test", Action: notImplemented},

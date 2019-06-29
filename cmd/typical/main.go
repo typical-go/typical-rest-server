@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	err := typical.Context.Run(os.Args)
+	err := typical.Context.RunTypical(os.Args)
 	if err != nil {
 		log.Fatalf("%s", err.Error())
 	}
