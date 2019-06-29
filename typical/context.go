@@ -5,7 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/typical/appctx"
-	"github.com/typical-go/typical-rest-server/typical/infra/ipostgres"
+	"github.com/typical-go/typical-rest-server/typical/ext/xpostgres"
 )
 
 // Context instance of Context
@@ -38,7 +38,7 @@ func init() {
 		Modules: map[string]appctx.Module{
 			// "server":   appctx.Module{Config: &app.Config{}},
 			// "database": appctx.Module{Config: &ipostgres.PGConfig{}},
-			"database": ipostgres.NewPostgresModule(),
+			"database": xpostgres.NewModule(),
 		},
 	}
 }

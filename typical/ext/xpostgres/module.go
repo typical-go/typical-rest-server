@@ -1,4 +1,4 @@
-package ipostgres
+package xpostgres
 
 import (
 	"github.com/typical-go/typical-go/appx"
@@ -16,8 +16,8 @@ type PostgresModule struct {
 	dbInfra                   appx.DBInfra
 }
 
-// NewPostgresModule return new instance of PostgresModule
-func NewPostgresModule() *PostgresModule {
+// NewModule return new instance of PostgresModule
+func NewModule() *PostgresModule {
 	return &PostgresModule{
 		config:       &PGConfig{},
 		configPrefix: "PG",
