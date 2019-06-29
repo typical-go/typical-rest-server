@@ -8,6 +8,12 @@ import (
 	"github.com/typical-go/typical-rest-server/typical/appctx"
 )
 
+const configTemplate = `
+| Key | Type | Default | Request | Description |	
+|---|---|---|---|---|	
+{{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
+{{end}}`
+
 // Readme represent readme structured data
 type Readme struct {
 	appctx.Context
@@ -16,17 +22,17 @@ type Readme struct {
 // ConfigDoc for configuration documentation
 func (r Readme) ConfigDoc() string {
 	buf := new(bytes.Buffer)
+
+	buf.WriteString("\nApplication\n")
+	envconfig.Usagef(r.ConfigPrefix, r.Config, buf, configTemplate)
+
 	for key := range r.Modules {
 		module := r.Modules[key]
 		buf.WriteString("\n")
 		buf.WriteString(strcase.ToCamel(key))
 		buf.WriteString("\n")
 
-		envconfig.Usagef(module.ConfigPrefix(), module.Config(), buf, `
-| Key | Type | Default | Request | Description |	
-|---|---|---|---|---|	
-{{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
-{{end}}`)
+		envconfig.Usagef(module.ConfigPrefix(), module.Config(), buf, configTemplate)
 	}
 
 	return buf.String()

@@ -7,6 +7,7 @@ type Context struct {
 	Path           string
 	Version        string
 	Description    string
+	Config         interface{}
 	Constructors   []interface{}
 	Modules        map[string]Module
 	ReadmeTemplate string
