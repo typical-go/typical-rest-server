@@ -1,20 +1,23 @@
-package appctx
+package xreadme
 
 import (
 	"bytes"
-	"os"
-	"text/template"
 
 	"github.com/iancoleman/strcase"
 	"github.com/kelseyhightower/envconfig"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/typical-go/typical-rest-server/typical/appctx"
 )
 
+// Readme represent readme structured data
+type Readme struct {
+	appctx.Context
+}
+
 // ConfigDoc for configuration documentation
-func (c Context) ConfigDoc() string {
+func (r Readme) ConfigDoc() string {
 	buf := new(bytes.Buffer)
-	for key := range c.Modules {
-		module := c.Modules[key]
+	for key := range r.Modules {
+		module := r.Modules[key]
 		buf.WriteString("\n")
 		buf.WriteString(strcase.ToCamel(key))
 		buf.WriteString("\n")
@@ -27,19 +30,4 @@ func (c Context) ConfigDoc() string {
 	}
 
 	return buf.String()
-}
-
-func (c *Context) generateReadme(ctx *cli.Context) (err error) {
-	t, err := template.New("readme").Parse(c.ReadmeTemplate)
-	if err != nil {
-		return
-	}
-
-	f, err := os.Create("README.md")
-	if err != nil {
-		return
-	}
-
-	err = t.Execute(f, c)
-	return nil
 }

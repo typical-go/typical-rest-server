@@ -9,14 +9,15 @@ import (
 )
 
 // Context instance of Context
-var Context appctx.Context
+var Context *appctx.Context
 
 func init() {
-	Context = appctx.Context{
-		Name:           "Typical-RESTful-Server",
-		Version:        "0.1.0",
-		ConfigPrefix:   "APP",
-		Description:    "Example of typical and scalable RESTful API Server for Go",
+	Context = &appctx.Context{
+		Name:         "Typical-RESTful-Server",
+		Version:      "0.1.0",
+		ConfigPrefix: "APP",
+		Description:  "Example of typical and scalable RESTful API Server for Go",
+
 		ReadmeTemplate: readmeTemplate,
 
 		Constructors: []interface{}{
@@ -30,4 +31,5 @@ func init() {
 			"database": xpostgres.NewModule(),
 		},
 	}
+
 }

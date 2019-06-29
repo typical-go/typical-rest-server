@@ -15,4 +15,3 @@ Database
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
 
-
