@@ -1,5 +1,7 @@
 package appctx
 
+import "gopkg.in/urfave/cli.v1"
+
 // Context of typical application
 type Context struct {
 	Name           string
@@ -9,6 +11,7 @@ type Context struct {
 	Description    string
 	Config         interface{}
 	Constructors   []interface{}
+	Commands       []cli.Command
 	Modules        map[string]Module
 	ReadmeTemplate string
 }

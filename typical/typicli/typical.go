@@ -7,10 +7,12 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+// Typical program
 type Typical struct {
 	context *appctx.Context
 }
 
+// NewTypical return new instance of Typical
 func NewTypical(context *appctx.Context) *Typical {
 	return &Typical{
 		context: context,
@@ -30,6 +32,11 @@ func (t *Typical) Run(arguments []string) error {
 		module := t.context.Modules[key]
 		app.Commands = append(app.Commands, module.Command())
 	}
+
+	for key := range t.context.Commands {
+		command := t.context.Commands[key]
+		app.Commands = append(app.Commands, command)
+	}
 	return app.Run(arguments)
 }
 
@@ -38,7 +45,7 @@ func (t *Typical) standardTypicalCommand() []cli.Command {
 		{Name: "build", Usage: "Build the binary", Action: notImplemented},
 		{Name: "test", Usage: "Run the Test", Action: notImplemented},
 		{Name: "run", Usage: "Run the binary", Action: notImplemented},
-		{Name: "vendoring", Usage: "Vendoring the dependency", Action: notImplemented},
+		{Name: "dep", Usage: "Vendoring the dependency", Action: notImplemented},
 		{Name: "release", Usage: "Release the distribution", Action: notImplemented},
 		{Name: "mock", Usage: "Generate mock class", Action: mock},
 		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
