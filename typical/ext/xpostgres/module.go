@@ -34,14 +34,17 @@ func (m *PostgresModule) Config() interface{} {
 	return m.config
 }
 
+// ConfigPrefix of the module
 func (m *PostgresModule) ConfigPrefix() string {
 	return m.configPrefix
 }
 
+// Command of the module
 func (m *PostgresModule) Command() cli.Command {
 	return cli.Command{
-		Name:      "database",
-		ShortName: "db",
+		Name:        "postgres",
+		ShortName:   "pg",
+		Description: "postgres database tool",
 		Subcommands: []cli.Command{
 			{Name: "create", Usage: "Create New Database", Action: m.InvokeFunction(xdb.Create)},
 			{Name: "drop", Usage: "Drop Database", Action: m.InvokeFunction(xdb.Drop)},
