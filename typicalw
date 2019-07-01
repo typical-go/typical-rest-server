@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ ! -f "./bin/typical" ]; then 
+    go build -o bin/typical ./cmd/typical
+fi
+
+./bin/typical $@

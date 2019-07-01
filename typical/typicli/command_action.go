@@ -12,6 +12,10 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+func updateTypical(ctx *cli.Context) {
+	runOrFatal(goCommand(), "build", "-o", "bin/typical", "./cmd/typical")
+}
+
 func buildBinary(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", "bin/typical-rest-server", "./cmd/app")
 }

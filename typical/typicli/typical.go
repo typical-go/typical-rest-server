@@ -40,9 +40,10 @@ func (t *Typical) Run(arguments []string) error {
 
 func (t *Typical) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
-		{Name: "build", Usage: "Build the binary", Action: buildBinary},
+		{Name: "update", ShortName: "u", Usage: "Update the typical binary", Action: updateTypical},
+		{Name: "build", ShortName: "b", Usage: "Build the binary", Action: buildBinary},
 		{Name: "test", Usage: "Run the Test", Action: runTest},
-		{Name: "run", Usage: "Run the binary", Action: runBinary},
+		{Name: "run", ShortName: "r", Usage: "Run the binary", Action: runBinary},
 		{Name: "release", Usage: "Release the distribution", Action: releaseDistribution},
 		{Name: "mock", Usage: "Generate mock class", Action: generateMock},
 		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
