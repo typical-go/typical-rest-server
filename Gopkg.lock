@@ -2,28 +2,12 @@
 
 
 [[projects]]
-  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
-  name = "github.com/BurntSushi/toml"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
-  version = "v0.3.1"
-
-[[projects]]
   digest = "1:c84a587136cb69cecc11f3dbe9f9001444044c0dba74997b07f7e4c150b07cda"
   name = "github.com/DATA-DOG/go-sqlmock"
   packages = ["."]
   pruneopts = "UT"
   revision = "3f9954f6f6697845b082ca57995849ddf614f450"
   version = "v1.3.3"
-
-[[projects]]
-  digest = "1:c411ffc294156cfb8f0ea9366469397445f867cf20f1c00307bb19fc27d0babe"
-  name = "github.com/dafiti/echo-middleware"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e57a87d075eac2f1490212e8ad0e41be0de41fc1"
-  version = "0.4.0"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -61,22 +45,6 @@
   version = "v0.16.0"
 
 [[projects]]
-  digest = "1:c950e574951c7199fb3d990d0e7a61996f40f8e646ba7cf8a557878d4c737f53"
-  name = "github.com/go-redis/redis"
-  packages = [
-    ".",
-    "internal",
-    "internal/consistenthash",
-    "internal/hashtag",
-    "internal/pool",
-    "internal/proto",
-    "internal/util",
-  ]
-  pruneopts = "UT"
-  revision = "75795aa4236dc7341eefac3bbe945e68c99ef9df"
-  version = "v6.15.3"
-
-[[projects]]
   digest = "1:692b29784ba0a25c33a77cb4c2594e2ffc1e72fc66e17e87503e03a29cb227c5"
   name = "github.com/golang-migrate/migrate"
   packages = [
@@ -99,14 +67,6 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
-  name = "github.com/google/uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
-  version = "v1.1.1"
-
-[[projects]]
   branch = "master"
   digest = "1:be3bd107094de27145a9a92e9e5e2b3eb03d3d92a5dec68da31b8eba4e4c6ae2"
   name = "github.com/iancoleman/strcase"
@@ -121,14 +81,6 @@
   pruneopts = "UT"
   revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
   version = "v1.3.0"
-
-[[projects]]
-  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
-  name = "github.com/konsorten/go-windows-terminal-sequences"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
-  version = "v1.0.2"
 
 [[projects]]
   digest = "1:efd601ad1d1189884f37ed075fadb5bbd17f1f5acf5862827247c6da56d125ba"
@@ -206,36 +158,12 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:6763be699cf06757af4d05c0e7914adcd0a2221f4c775aa58d8ce6a671b07de3"
-  name = "github.com/newrelic/go-agent"
-  packages = [
-    ".",
-    "internal",
-    "internal/cat",
-    "internal/jsonx",
-    "internal/logger",
-    "internal/sysinfo",
-    "internal/utilization",
-  ]
-  pruneopts = "UT"
-  revision = "abae298d0396aa913c9d322276867e99ba6dca29"
-  version = "v2.8.1"
-
-[[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   pruneopts = "UT"
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
-
-[[projects]]
-  digest = "1:04457f9f6f3ffc5fea48e71d62f2ca256637dee0a04d710288e27e05c8b41976"
-  name = "github.com/sirupsen/logrus"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
-  version = "v1.4.2"
 
 [[projects]]
   digest = "1:5da8ce674952566deae4dbc23d07c85caafc6cfa815b0b3e03e41979cedb8750"
@@ -250,32 +178,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:662806098eb19b0fd1ce72a22df7d718588c239ffba6f1e48fda411ce50c222c"
-  name = "github.com/tiket-oss/phpsessgo"
-  packages = [
-    "phpencode",
-    "phpserialize",
-    "phptype",
-  ]
+  digest = "1:444ccbb61ef09d52eeaf865480bde73cb34405217a65f7a663733b061a280764"
+  name = "github.com/typical-go/typical-go"
+  packages = ["appx"]
   pruneopts = "UT"
-  revision = "34863dc70a3f0b988fa2f86845014098558f00f6"
-
-[[projects]]
-  digest = "1:5e5649c6c86a3f6c71d43be56abfab69db7f8da39fd7e6f0d2c5f4671fffa0f9"
-  name = "github.com/tiket/TIX-SESSION-GO"
-  packages = [
-    "app",
-    "app/cntrl",
-    "app/helper/httpkit",
-    "app/helper/timekit",
-    "app/repo/redisrepo",
-    "app/svc",
-    "config",
-    "infra",
-  ]
-  pruneopts = "UT"
-  revision = "1630020163c4a4df784947c725149e4babd9e923"
-  version = "v0.2.12"
+  revision = "f5b9117e9cbb5f23bdadd7860d111e1650020b19"
 
 [[projects]]
   digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
@@ -352,7 +259,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/BurntSushi/toml",
     "github.com/DATA-DOG/go-sqlmock",
     "github.com/golang-migrate/migrate",
     "github.com/golang-migrate/migrate/database/postgres",
@@ -364,7 +270,6 @@
     "github.com/labstack/echo/middleware",
     "github.com/lib/pq",
     "github.com/stretchr/testify/require",
-    "github.com/tiket/TIX-SESSION-GO/app",
     "github.com/typical-go/typical-go/appx",
     "go.uber.org/dig",
     "gopkg.in/Masterminds/squirrel.v1",

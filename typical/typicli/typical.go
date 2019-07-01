@@ -1,8 +1,6 @@
 package typicli
 
 import (
-	"fmt"
-
 	"github.com/typical-go/typical-rest-server/typical/appctx"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -42,17 +40,13 @@ func (t *Typical) Run(arguments []string) error {
 
 func (t *Typical) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
-		{Name: "build", Usage: "Build the binary", Action: notImplemented},
-		{Name: "test", Usage: "Run the Test", Action: notImplemented},
-		{Name: "run", Usage: "Run the binary", Action: notImplemented},
-		{Name: "dep", Usage: "Vendoring the dependency", Action: notImplemented},
-		{Name: "release", Usage: "Release the distribution", Action: notImplemented},
-		{Name: "mock", Usage: "Generate mock class", Action: mock},
+		{Name: "build", Usage: "Build the binary", Action: buildBinary},
+		{Name: "test", Usage: "Run the Test", Action: runTest},
+		{Name: "run", Usage: "Run the binary", Action: runBinary},
+		{Name: "release", Usage: "Release the distribution", Action: releaseDistribution},
+		{Name: "mock", Usage: "Generate mock class", Action: generateMock},
 		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
-	}
-}
 
-// NotImplement for not implemented function
-func notImplemented(ctx *cli.Context) {
-	fmt.Println("Not implemented")
+		{Name: "dep", Usage: "Vendoring the dependency", Action: vendoringDependency},
+	}
 }
