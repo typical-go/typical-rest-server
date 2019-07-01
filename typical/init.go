@@ -27,8 +27,8 @@ func init() {
 			repository.NewBookRepository,
 		},
 
-		Modules: map[string]appctx.Module{
-			"database": xpostgres.NewModule(),
+		Modules: []appctx.Module{
+			xpostgres.NewModule(),
 		},
 	}
 

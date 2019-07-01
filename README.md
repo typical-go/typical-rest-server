@@ -35,7 +35,7 @@ Application
 |---|---|---|---|---|	
 |APP_ADDRESS|String||true||	
 
-Database
+Postgres
 
 | Key | Type | Default | Request | Description |	
 |---|---|---|---|---|	

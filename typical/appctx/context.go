@@ -12,6 +12,6 @@ type Context struct {
 	Config         interface{}
 	Constructors   []interface{}
 	Commands       []cli.Command
-	Modules        map[string]Module
+	Modules        []Module
 	ReadmeTemplate string
 }

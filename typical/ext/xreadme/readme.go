@@ -26,10 +26,10 @@ func (r Readme) ConfigDoc() string {
 	buf.WriteString("\nApplication\n")
 	envconfig.Usagef(r.ConfigPrefix, r.Config, buf, configTemplate)
 
-	for key := range r.Modules {
-		module := r.Modules[key]
+	for i := range r.Modules {
+		module := r.Modules[i]
 		buf.WriteString("\n")
-		buf.WriteString(strcase.ToCamel(key))
+		buf.WriteString(strcase.ToCamel(module.Name()))
 		buf.WriteString("\n")
 
 		envconfig.Usagef(module.ConfigPrefix(), module.Config(), buf, configTemplate)
