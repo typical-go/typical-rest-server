@@ -1,7 +1,11 @@
 #!/bin/bash
 
-if [ ! -f "./bin/typical" ]; then 
-    go build -o bin/typical ./cmd/typical
+BIN=${TYPICAL_BIN:-bin}
+CMD=${TYPICAL_CMD:-cmd}
+NAME=${TYPICAL_NAME:-typical}
+
+if [ ! -f "./$BIN/$NAME" ]; then 
+    go build -o $BIN/typical ./$CMD/$NAME
 fi
 
-./bin/typical $@
+./$BIN/$NAME $@
