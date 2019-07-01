@@ -1,11 +1,13 @@
 package typicli
 
 import (
+	"bufio"
 	"fmt"
 	"go/build"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"gopkg.in/urfave/cli.v1"
 )
@@ -15,7 +17,31 @@ func buildBinary(ctx *cli.Context) {
 }
 
 func runBinary(ctx *cli.Context) {
+	setEnv(".env")
+	fmt.Println(os.Getenv("TEST"))
 	runOrFatal("bin/typical-rest-server", []string(ctx.Args())...)
+}
+
+func setEnv(envfile string) (err error) {
+	file, err := os.Open(envfile)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := scanner.Text()
+		if strings.HasPrefix(text, "export") {
+			args := strings.TrimSpace(text[len("export"):])
+			pair := strings.Split(args, "=")
+			if len(pair) > 1 {
+				os.Setenv(pair[0], pair[1])
+				log.Printf("Set Environment %s=%s\n", pair[0], pair[1])
+			}
+		}
+	}
+	return
 }
 
 func runTest(ctx *cli.Context) {

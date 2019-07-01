@@ -9,6 +9,7 @@ typical-rest-server
 
 # local environment variable
 .envrc
+.env
 
 # testing
 cover.out
