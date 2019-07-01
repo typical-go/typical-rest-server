@@ -5,7 +5,7 @@ CMD=${TYPICAL_CMD:-cmd}
 NAME=${TYPICAL_NAME:-typical}
 
 if [ ! -f "./$BIN/$NAME" ]; then 
-    go build -o $BIN/typical ./$CMD/$NAME
+    go build -o $BIN/$NAME ./$CMD/$NAME
 fi
 
 ./$BIN/$NAME $@
