@@ -6,9 +6,8 @@ import (
 
 // Module in typical-go applicaiton
 type Module interface {
+	ConfigLoader
 	Name() string
-	Config() interface{}
-	ConfigPrefix() string
 	Constructors() []interface{}
 	Command() cli.Command
 }

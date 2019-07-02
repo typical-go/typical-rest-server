@@ -10,9 +10,8 @@ import (
 // PostgresModule is module of postgres database
 type PostgresModule struct {
 	appctx.DependencyInjection
+	appctx.ConfigLoader
 	name                      string
-	config                    interface{}
-	configPrefix              string
 	DefaultMigrationDirectory string
 	dbInfra                   appx.DBInfra
 }
@@ -21,29 +20,19 @@ type PostgresModule struct {
 func NewModule() *PostgresModule {
 	return &PostgresModule{
 		DependencyInjection: appctx.NewDependencyInjection(
-			LoadPostgresConfig,
 			Connect,
 			CreateDBInfra,
 		),
-		name:         "Postgres",
-		config:       &PGConfig{},
-		configPrefix: "PG",
+		ConfigLoader: ConfigLoader{
+			ConfigDetail: appctx.NewConfigDetail("PG", &PGConfig{}),
+		},
+		name: "Postgres",
 	}
 }
 
 // Name of the module
 func (m *PostgresModule) Name() string {
 	return m.name
-}
-
-// Config to return the configuration
-func (m *PostgresModule) Config() interface{} {
-	return m.config
-}
-
-// ConfigPrefix of the module
-func (m *PostgresModule) ConfigPrefix() string {
-	return m.configPrefix
 }
 
 // Command of the module

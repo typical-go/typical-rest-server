@@ -2,8 +2,6 @@ package xpostgres
 
 import (
 	"fmt"
-
-	"github.com/kelseyhightower/envconfig"
 )
 
 // PGConfig postgres config
@@ -25,10 +23,4 @@ func (c PGConfig) ConnectionString() string {
 func (c PGConfig) ConnectionStringNoDB() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
-}
-
-// LoadPostgresConfig load postgres configuration
-func LoadPostgresConfig() (conf PGConfig, err error) {
-	err = envconfig.Process("PG", &conf)
-	return
 }

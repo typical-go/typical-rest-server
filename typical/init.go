@@ -17,12 +17,13 @@ func init() {
 		Version:        "0.1.0",
 		Description:    "Example of typical and scalable RESTful API Server for Go",
 		ReadmeTemplate: readmeTemplate,
-		ConfigPrefix:   "APP",
-		Config:         &app.Config{},
+
+		ConfigLoader: ConfigLoader{
+			ConfigDetail: appctx.NewConfigDetail("APP", &app.Config{}),
+		},
 
 		Constructors: []interface{}{
 			app.NewServer,
-			LoadConfig,
 			controller.NewBookController,
 			repository.NewBookRepository,
 		},
