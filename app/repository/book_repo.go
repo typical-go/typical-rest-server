@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	sq "gopkg.in/Masterminds/squirrel.v1"
+	sq "github.com/Masterminds/squirrel"
 )
 
 // BookRepository to get book data from databasesa
