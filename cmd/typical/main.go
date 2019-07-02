@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	cli := typicli.NewTypical(typical.Context)
+	cli := typicli.NewTypicalCli(typical.Context)
 	err := cli.Run(os.Args)
 	if err != nil {
 		log.Fatalf("%s", err.Error())

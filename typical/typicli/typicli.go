@@ -5,18 +5,18 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// Typical program
-type Typical struct {
+// TypicalCli represent typical CLI
+type TypicalCli struct {
 	appctx.Context
 }
 
-// NewTypical return new instance of Typical
-func NewTypical(context appctx.Context) *Typical {
-	return &Typical{context}
+// NewTypicalCli return new instance of TypicalCli
+func NewTypicalCli(context appctx.Context) *TypicalCli {
+	return &TypicalCli{context}
 }
 
 // Run the typical task cli
-func (t *Typical) Run(arguments []string) error {
+func (t *TypicalCli) Run(arguments []string) error {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
@@ -36,7 +36,7 @@ func (t *Typical) Run(arguments []string) error {
 	return app.Run(arguments)
 }
 
-func (t *Typical) standardTypicalCommand() []cli.Command {
+func (t *TypicalCli) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
 		{Name: "update", ShortName: "u", Usage: "Update the typical binary", Action: updateTypical},
 		{Name: "build", ShortName: "b", Usage: "Build the binary", Action: buildBinary},
@@ -45,7 +45,6 @@ func (t *Typical) standardTypicalCommand() []cli.Command {
 		{Name: "release", Usage: "Release the distribution", Action: releaseDistribution},
 		{Name: "mock", Usage: "Generate mock class", Action: generateMock},
 		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
-
 		{Name: "dep", Usage: "Vendoring the dependency", Action: vendoringDependency},
 	}
 }
