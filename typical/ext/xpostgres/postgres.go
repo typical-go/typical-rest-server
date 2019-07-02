@@ -7,12 +7,12 @@ import (
 )
 
 // Connect to postgres database
-func Connect(conf PGConfig) (*sql.DB, error) {
+func Connect(conf Config) (*sql.DB, error) {
 	return sql.Open("postgres", conf.ConnectionString())
 }
 
 // CreateDBInfra postgres infrastructure
-func CreateDBInfra(config PGConfig) appx.DBInfra {
+func CreateDBInfra(config Config) appx.DBInfra {
 	return &DBInfra{
 		config: config,
 	}

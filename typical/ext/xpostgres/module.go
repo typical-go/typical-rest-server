@@ -24,7 +24,7 @@ func NewModule() *PostgresModule {
 			CreateDBInfra,
 		),
 		ConfigLoader: ConfigLoader{
-			ConfigDetail: appctx.NewConfigDetail("PG", &PGConfig{}),
+			ConfigDetail: appctx.NewConfigDetail("PG", &Config{}),
 		},
 		name: "Postgres",
 	}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-// PGConfig postgres config
-type PGConfig struct {
+// Config containr postgres configuration
+type Config struct {
 	DbName   string `required:"true"`
 	User     string `required:"true"`
 	Password string `required:"true"`
@@ -14,13 +14,13 @@ type PGConfig struct {
 }
 
 // ConnectionString return connection string
-func (c PGConfig) ConnectionString() string {
+func (c Config) ConnectionString() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DbName)
 }
 
 // ConnectionStringNoDB return connection string to template1 database
-func (c PGConfig) ConnectionStringNoDB() string {
+func (c Config) ConnectionStringNoDB() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

@@ -13,7 +13,7 @@ import (
 // DBInfra postgres database infrastructure
 type DBInfra struct {
 	appx.DBInfra
-	config PGConfig
+	config Config
 }
 
 // Create database

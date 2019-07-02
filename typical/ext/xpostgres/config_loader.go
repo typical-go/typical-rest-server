@@ -10,7 +10,7 @@ type ConfigLoader struct {
 }
 
 func (l ConfigLoader) LoadFunc() interface{} {
-	return func() (config PGConfig, err error) {
+	return func() (config Config, err error) {
 		err = envconfig.Process(l.ConfigPrefix(), &config)
 		return
 	}
