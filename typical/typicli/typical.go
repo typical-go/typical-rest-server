@@ -20,7 +20,7 @@ func NewTypical(context *appctx.Context) *Typical {
 // Run the typical task cli
 func (t *Typical) Run(arguments []string) error {
 	app := cli.NewApp()
-	app.Name = t.context.Name
+	app.Name = t.context.Name + " (TYPICAL)"
 	app.Usage = ""
 	app.Description = t.context.Description
 	app.Version = t.context.Version
