@@ -9,7 +9,7 @@ import (
 )
 
 func (t *Typical) generateReadme(ctx *cli.Context) (err error) {
-	templ, err := template.New("readme").Parse(t.context.ReadmeTemplate)
+	templ, err := template.New("readme").Parse(t.ReadmeTemplate)
 	if err != nil {
 		return
 	}
@@ -20,7 +20,7 @@ func (t *Typical) generateReadme(ctx *cli.Context) (err error) {
 	}
 
 	err = templ.Execute(file, xreadme.Readme{
-		Context: *t.context,
+		Context: t.Context,
 	})
 	return nil
 }

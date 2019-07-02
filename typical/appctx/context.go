@@ -1,15 +1,14 @@
 package appctx
 
-import "gopkg.in/urfave/cli.v1"
-
 // Context of typical application
 type Context struct {
-	Name           string
-	ConfigLoader   ConfigLoader
-	Version        string
-	Description    string
-	Constructors   []interface{}
-	Commands       []cli.Command
+	TypiApp
+	TypiCli
+
+	Name        string
+	Version     string
+	Description string
+
 	Modules        []Module
 	ReadmeTemplate string
 }

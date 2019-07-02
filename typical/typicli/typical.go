@@ -7,32 +7,30 @@ import (
 
 // Typical program
 type Typical struct {
-	context *appctx.Context
+	appctx.Context
 }
 
 // NewTypical return new instance of Typical
-func NewTypical(context *appctx.Context) *Typical {
-	return &Typical{
-		context: context,
-	}
+func NewTypical(context appctx.Context) *Typical {
+	return &Typical{context}
 }
 
 // Run the typical task cli
 func (t *Typical) Run(arguments []string) error {
 	app := cli.NewApp()
-	app.Name = t.context.Name + " (TYPICAL)"
+	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
-	app.Description = t.context.Description
-	app.Version = t.context.Version
+	app.Description = t.Description
+	app.Version = t.Version
 
 	app.Commands = t.standardTypicalCommand()
-	for key := range t.context.Modules {
-		module := t.context.Modules[key]
+	for key := range t.Modules {
+		module := t.Modules[key]
 		app.Commands = append(app.Commands, module.Command())
 	}
 
-	for key := range t.context.Commands {
-		command := t.context.Commands[key]
+	for key := range t.TypiCli.Commands {
+		command := t.TypiCli.Commands[key]
 		app.Commands = append(app.Commands, command)
 	}
 	return app.Run(arguments)

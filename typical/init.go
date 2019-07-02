@@ -9,23 +9,27 @@ import (
 )
 
 // Context instance of Context
-var Context *appctx.Context
+var Context appctx.Context
 
 func init() {
-	Context = &appctx.Context{
+	Context = appctx.Context{
 		Name:           "Typical-RESTful-Server",
 		Version:        "0.1.0",
 		Description:    "Example of typical and scalable RESTful API Server for Go",
 		ReadmeTemplate: readmeTemplate,
 
-		ConfigLoader: ConfigLoader{
-			ConfigDetail: appctx.NewConfigDetail("APP", &app.Config{}),
-		},
-
-		Constructors: []interface{}{
-			app.NewServer,
-			controller.NewBookController,
-			repository.NewBookRepository,
+		TypiApp: appctx.TypiApp{
+			ConfigLoader: ConfigLoader{
+				ConfigDetail: appctx.NewConfigDetail("APP", &app.Config{}),
+			},
+			Constructors: []interface{}{
+				app.NewServer,
+				controller.NewBookController,
+				repository.NewBookRepository,
+			},
+			Action: func(s *app.Server) error {
+				return s.Serve()
+			},
 		},
 
 		Modules: []appctx.Module{
