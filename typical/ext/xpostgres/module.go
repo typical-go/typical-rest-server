@@ -44,7 +44,7 @@ func (m *PostgresModule) LoadFunc() interface{} {
 func (m *PostgresModule) Command() cli.Command {
 	return cli.Command{
 		Name:      m.Name(),
-		ShortName: "pg",
+		ShortName: m.ShortName(),
 		Usage:     "Postgres database tool",
 		Subcommands: []cli.Command{
 			{Name: "create", Usage: "Create New Database", Action: m.InvokeFunction(xdb.Create)},
