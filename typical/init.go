@@ -1,6 +1,7 @@
 package typical
 
 import (
+	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
@@ -19,8 +20,11 @@ func init() {
 		ReadmeTemplate: readmeTemplate,
 
 		TypiApp: appctx.TypiApp{
-			ConfigLoader: ConfigLoader{
-				ConfigDetail: appctx.NewConfigDetail("APP", &app.Config{}),
+			ConfigPrefix: "APP",
+			Config:       &app.Config{},
+			ConfigLoadFunc: func() (config app.Config, err error) {
+				err = envconfig.Process(Context.TypiApp.ConfigPrefix, &config)
+				return
 			},
 			Constructors: []interface{}{
 				app.NewServer,
