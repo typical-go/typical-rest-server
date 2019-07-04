@@ -30,6 +30,16 @@ func init() {
 			Action: func(s *app.Server) error {
 				return s.Serve()
 			},
+			BinaryName:     "typical-rest-go",
+			ApplicationPkg: "app",
+			MockPkg:        "mock",
+			TestTargets: []string{
+				"./app/controller",
+				"./app/repository",
+			},
+			MockTargets: []string{
+				"./app/repository/book_repo.go",
+			},
 		},
 
 		Modules: []appctx.Module{
