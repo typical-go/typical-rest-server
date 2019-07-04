@@ -16,6 +16,13 @@ type DBInfra struct {
 	config Config
 }
 
+// NewDBInfra postgres infrastructure
+func NewDBInfra(config Config) appx.DBInfra {
+	return &DBInfra{
+		config: config,
+	}
+}
+
 // Create database
 func (i DBInfra) Create() (err error) {
 	conn, err := sql.Open("postgres", i.config.ConnectionStringNoDB())

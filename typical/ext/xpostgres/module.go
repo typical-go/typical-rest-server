@@ -1,6 +1,7 @@
 package xpostgres
 
 import (
+	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-go/appx"
 	"github.com/typical-go/typical-rest-server/typical/appctx"
 	"github.com/typical-go/typical-rest-server/typical/ext/xdb"
@@ -10,8 +11,7 @@ import (
 // PostgresModule is module of postgres database
 type PostgresModule struct {
 	appctx.DependencyInjection
-	appctx.ConfigLoader
-	name                      string
+	appctx.ModuleDetail
 	DefaultMigrationDirectory string
 	dbInfra                   appx.DBInfra
 }
@@ -19,20 +19,25 @@ type PostgresModule struct {
 // NewModule return new instance of PostgresModule
 func NewModule() *PostgresModule {
 	return &PostgresModule{
+		ModuleDetail: *appctx.NewModuleDetail().
+			SetName("Postgres").
+			SetShortName("pg").
+			SetConfigPrefix("PG").
+			SetConfig(&Config{}),
+
 		DependencyInjection: appctx.NewDependencyInjection(
 			Connect,
-			CreateDBInfra,
+			NewDBInfra,
 		),
-		ConfigLoader: ConfigLoader{
-			ConfigDetail: appctx.NewConfigDetail("PG", &Config{}),
-		},
-		name: "Postgres",
 	}
 }
 
-// Name of the module
-func (m *PostgresModule) Name() string {
-	return m.name
+// LoadFunc to load the configuration
+func (m *PostgresModule) LoadFunc() interface{} {
+	return func() (config Config, err error) {
+		err = envconfig.Process(m.ConfigPrefix(), &config)
+		return
+	}
 }
 
 // Command of the module
