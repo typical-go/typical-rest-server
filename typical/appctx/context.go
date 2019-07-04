@@ -11,7 +11,7 @@ type Context struct {
 	Version     string
 	Description string
 
-	Modules        []Module
+	Modules        []*Module
 	ReadmeTemplate string
 }
 
@@ -27,10 +27,8 @@ func (c Context) Container() *dig.Container {
 
 	for key := range c.Modules {
 		module := c.Modules[key]
-		container.Provide(module.LoadFunc())
-		for _, contructor := range module.Constructors() {
-			container.Provide(contructor)
-		}
+		container.Provide(module.LoadConfigFunc)
+		container.Provide(module.OpenFunc)
 	}
 
 	return container

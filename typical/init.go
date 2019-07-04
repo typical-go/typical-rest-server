@@ -46,7 +46,7 @@ func init() {
 			},
 		},
 
-		Modules: []appctx.Module{
+		Modules: []*appctx.Module{
 			xpostgres.NewModule(),
 		},
 	}

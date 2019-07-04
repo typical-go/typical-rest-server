@@ -26,7 +26,7 @@ func (t *TypicalCli) Run(arguments []string) error {
 	app.Commands = t.standardTypicalCommand()
 	for key := range t.Modules {
 		module := t.Modules[key]
-		app.Commands = append(app.Commands, module.Command())
+		app.Commands = append(app.Commands, module.Command)
 	}
 
 	for key := range t.TypiCli.Commands {

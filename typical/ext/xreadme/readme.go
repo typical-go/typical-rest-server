@@ -29,10 +29,10 @@ func (r Readme) ConfigDoc() string {
 	for i := range r.Modules {
 		module := r.Modules[i]
 		buf.WriteString("\n")
-		buf.WriteString(strcase.ToCamel(module.Name()))
+		buf.WriteString(strcase.ToCamel(module.Name))
 		buf.WriteString("\n")
 
-		envconfig.Usagef(module.ConfigPrefix(), module.Config(), buf, configTemplate)
+		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, configTemplate)
 	}
 
 	return buf.String()
