@@ -22,11 +22,22 @@ func (t *TypicalApplication) Run(arguments []string) error {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = t.invokeAction
+	app.Action = t.invoke(t.TypiApp.Action)
+
+	for i := range t.TypiApp.Commands {
+		cmd := t.TypiApp.Commands[i]
+		app.Commands = append(app.Commands, cli.Command{
+			Name:      cmd.Name,
+			ShortName: cmd.ShortName,
+			Action:    t.invoke(cmd.Action),
+		})
+	}
 
 	return app.Run(arguments)
 }
 
-func (t *TypicalApplication) invokeAction(ctx *cli.Context) error {
-	return t.Container().Invoke(t.TypiApp.Action)
+func (t *TypicalApplication) invoke(f interface{}) interface{} {
+	return func(ctx *cli.Context) error {
+		return t.Container().Invoke(f)
+	}
 }
