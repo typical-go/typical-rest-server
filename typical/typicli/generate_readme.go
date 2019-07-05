@@ -4,7 +4,6 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/typical-go/typical-rest-server/typical/ext/xreadme"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -19,7 +18,7 @@ func (t *TypicalCli) generateReadme(ctx *cli.Context) (err error) {
 		return
 	}
 
-	err = templ.Execute(file, xreadme.Readme{
+	err = templ.Execute(file, Readme{
 		Context: t.Context,
 	})
 	return nil

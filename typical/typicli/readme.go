@@ -1,4 +1,4 @@
-package xreadme
+package typicli
 
 import (
 	"bytes"

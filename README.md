@@ -44,4 +44,5 @@ Postgres
 |PG_PASSWORD|String||true||	
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
+|PG_MIGRATIONSOURCE|String|scripts/migration|||	
 
