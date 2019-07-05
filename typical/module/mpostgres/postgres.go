@@ -1,4 +1,4 @@
-package xpostgres
+package mpostgres
 
 import (
 	"database/sql"

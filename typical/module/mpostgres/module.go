@@ -1,4 +1,4 @@
-package xpostgres
+package mpostgres
 
 import (
 	"database/sql"
@@ -8,8 +8,8 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// NewModule return new instance of PostgresModule
-func NewModule() *appctx.Module {
+// New return new instance of Module for postgrs
+func New() *appctx.Module {
 	m := &appctx.Module{
 		Name:         "postgres",
 		ShortName:    "pg",

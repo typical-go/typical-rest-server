@@ -6,13 +6,14 @@ import (
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/typical/appctx"
-	"github.com/typical-go/typical-rest-server/typical/ext/xpostgres"
+	"github.com/typical-go/typical-rest-server/typical/module/mpostgres"
 )
 
 // Context instance of Context
 var Context appctx.Context
 
 func init() {
+	// TODO: create driver list
 	Context = appctx.Context{
 		Name:           "Typical-RESTful-Server",
 		Version:        "0.1.0",
@@ -36,18 +37,18 @@ func init() {
 			},
 			BinaryName:     "typical-rest-go",
 			ApplicationPkg: "app",
-			MockPkg:        "mock",
 			TestTargets: []string{
 				"./app/controller",
 				"./app/repository",
 			},
+			MockPkg: "mock",
 			MockTargets: []string{
 				"./app/repository/book_repo.go",
 			},
 		},
 
 		Modules: []*appctx.Module{
-			xpostgres.NewModule(),
+			mpostgres.New(),
 		},
 	}
 
