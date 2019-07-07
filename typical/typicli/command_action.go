@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/typical/typienv"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -24,8 +25,16 @@ func (t *TypicalCli) buildBinary(ctx *cli.Context) {
 }
 
 func (t *TypicalCli) runBinary(ctx *cli.Context) {
-	setEnv(".env")
-	runOrFatal(typienv.BinaryPath(t.TypiApp.BinaryName), []string(ctx.Args())...)
+	// TODO: .env should be store in typienv
+	err := setEnv(".env")
+	if err != nil {
+		fmt.Printf("Can't load .env:%s", err.Error())
+		fmt.Printf("Typically generate new .env file, please check the environment variable in .env before run again")
+		t.generateDotEnv(".env")
+	} else {
+		runOrFatal(typienv.BinaryPath(t.TypiApp.BinaryName), []string(ctx.Args())...)
+	}
+
 }
 
 func (t *TypicalCli) runTest(ctx *cli.Context) {
@@ -48,6 +57,27 @@ func (t *TypicalCli) generateMock(ctx *cli.Context) {
 			"-destination", dest,
 			"-package", t.MockPkg)
 	}
+}
+
+func (t *TypicalCli) generateDotEnv(filename string) (err error) {
+	buf, err := os.Create(filename)
+	if err != nil {
+		return
+	}
+
+	// TODO: move it to constant
+	template := `{{range .}}export {{usage_key .}}={{usage_default .}}	
+{{end}}`
+
+	buf.WriteString("// .env automtically reload when using `./typicalw run`\n\n")
+	envconfig.Usagef(t.TypiApp.ConfigPrefix, t.TypiApp.Config, buf, template)
+
+	for i := range t.Modules {
+		module := t.Modules[i]
+		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, template)
+	}
+
+	return
 }
 
 func (t *TypicalCli) appPath(name string) string {

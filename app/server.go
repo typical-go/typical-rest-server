@@ -14,7 +14,7 @@ import (
 
 // Config server configuration
 type Config struct {
-	Address string `envconfig:"ADDRESS" required:"true"`
+	Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
 }
 
 // Server server application

@@ -6,9 +6,9 @@ import (
 
 // Config containr postgres configuration
 type Config struct {
-	DbName          string `required:"true"`
-	User            string `required:"true"`
-	Password        string `required:"true"`
+	DbName          string `required:"true" default:"default_dbname"`
+	User            string `required:"true" default:"default_user"`
+	Password        string `required:"true" default:"default_password"`
 	Host            string `default:"localhost"`
 	Port            int    `default:"5432"`
 	MigrationSource string `default:"scripts/migration"`
