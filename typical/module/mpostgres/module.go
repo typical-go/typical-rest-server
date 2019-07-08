@@ -17,7 +17,7 @@ func New() *appctx.Module {
 		ConfigPrefix: "PG",
 		Config:       &Config{},
 	}
-	m.Command = cli.Command{
+	m.Command = &cli.Command{
 		Name:      m.Name,
 		ShortName: m.ShortName,
 		Usage:     m.Usage,
