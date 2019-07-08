@@ -23,7 +23,7 @@ type Module struct {
 	Usage          string
 	ConfigPrefix   string
 	Config         interface{}
-	Command        cli.Command
+	Command        *cli.Command
 	LoadConfigFunc interface{}
 	OpenFunc       interface{}
 }
