@@ -66,7 +66,7 @@ func (t *TypicalCli) generateDotEnv(filename string) (err error) {
 	}
 
 	// TODO: move it to constant
-	template := `{{range .}}export {{usage_key .}}={{usage_default .}}	
+	template := `{{range .}}export {{usage_key .}}={{usage_default .}}
 {{end}}`
 
 	buf.WriteString("// .env automtically reload when using `./typicalw run`\n\n")
