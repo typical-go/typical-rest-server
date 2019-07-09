@@ -5,8 +5,9 @@ import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/typical/appctx"
-	"github.com/typical-go/typical-rest-server/typical/module/mpostgres"
+	"github.com/typical-go/typical-rest-server/typical/module"
 )
 
 // Context instance of Context
@@ -22,8 +23,8 @@ func init() {
 
 		TypiApp: appctx.TypiApp{
 			ConfigPrefix: "APP",
-			Config:       &app.Config{},
-			ConfigLoadFunc: func() (config app.Config, err error) {
+			Config:       &config.AppConfig{},
+			ConfigLoadFunc: func() (config config.AppConfig, err error) {
 				err = envconfig.Process(Context.TypiApp.ConfigPrefix, &config)
 				return
 			},
@@ -48,7 +49,7 @@ func init() {
 		},
 
 		Modules: []*appctx.Module{
-			mpostgres.New(),
+			module.NewPostgres(),
 		},
 	}
 

@@ -10,29 +10,25 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/controller"
+	"github.com/typical-go/typical-rest-server/config"
 )
-
-// Config server configuration
-type Config struct {
-	Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
-}
 
 // Server server application
 type Server struct {
 	*echo.Echo
-	Config
+	config.AppConfig
 	bookController controller.BookController
 }
 
 // NewServer return instance of server
 func NewServer(
-	config Config,
+	config config.AppConfig,
 	bookController controller.BookController,
 ) *Server {
 
 	s := &Server{
 		Echo:           echo.New(),
-		Config:         config,
+		AppConfig:      config,
 		bookController: bookController,
 	}
 	initMiddlewares(s)

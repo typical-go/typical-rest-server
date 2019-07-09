@@ -22,7 +22,6 @@ func (t *TypicalCli) Run(arguments []string) error {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-
 	app.Commands = t.standardTypicalCommand()
 	for key := range t.Modules {
 		module := t.Modules[key]
@@ -36,6 +35,10 @@ func (t *TypicalCli) Run(arguments []string) error {
 		command := t.TypiCli.Commands[key]
 		app.Commands = append(app.Commands, command)
 	}
+
+	// NOTE: export the enviroment before run
+	ExportEnviroment()
+
 	return app.Run(arguments)
 }
 
