@@ -14,27 +14,31 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+const (
+	envFile     = ".env" // TODO: .env shoud be store in typienv
+	envTemplate = `{{range .}}export {{usage_key .}}={{usage_default .}}
+{{end}}`
+)
+
 func (t *TypicalCli) updateTypical(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", typienv.TypicalBinaryPath(), typienv.TypicalMainPackage())
 }
 
 func (t *TypicalCli) buildBinary(ctx *cli.Context) {
+	if _, err := os.Stat(envFile); os.IsNotExist(err) {
+		fmt.Println(err.Error())
+		fmt.Println("Generate new environment variable file.")
+		t.generateEnviromentFile(envFile)
+	}
+
 	runOrFatal(goCommand(), "build", "-o",
 		typienv.BinaryPath(t.TypiApp.BinaryName),
 		typienv.MainPackage(t.TypiApp.ApplicationPkg))
 }
 
 func (t *TypicalCli) runBinary(ctx *cli.Context) {
-	// TODO: .env should be store in typienv
-	err := setEnv(".env")
-	if err != nil {
-		fmt.Printf("Can't load .env:%s", err.Error())
-		fmt.Printf("Typically generate new .env file, please check the environment variable in .env before run again")
-		t.generateDotEnv(".env")
-	} else {
-		runOrFatal(typienv.BinaryPath(t.TypiApp.BinaryName), []string(ctx.Args())...)
-	}
-
+	setEnvironment(envFile)
+	runOrFatal(typienv.BinaryPath(t.TypiApp.BinaryName), []string(ctx.Args())...)
 }
 
 func (t *TypicalCli) runTest(ctx *cli.Context) {
@@ -59,22 +63,17 @@ func (t *TypicalCli) generateMock(ctx *cli.Context) {
 	}
 }
 
-func (t *TypicalCli) generateDotEnv(filename string) (err error) {
+func (t *TypicalCli) generateEnviromentFile(filename string) (err error) {
 	buf, err := os.Create(filename)
 	if err != nil {
 		return
 	}
 
-	// TODO: move it to constant
-	template := `{{range .}}export {{usage_key .}}={{usage_default .}}
-{{end}}`
-
-	buf.WriteString("// .env automtically reload when using `./typicalw run`\n\n")
-	envconfig.Usagef(t.TypiApp.ConfigPrefix, t.TypiApp.Config, buf, template)
+	envconfig.Usagef(t.TypiApp.ConfigPrefix, t.TypiApp.Config, buf, envTemplate)
 
 	for i := range t.Modules {
 		module := t.Modules[i]
-		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, template)
+		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, envTemplate)
 	}
 
 	return
@@ -84,7 +83,7 @@ func (t *TypicalCli) appPath(name string) string {
 	return fmt.Sprintf("./%s/%s", t.ApplicationPkg, name)
 }
 
-func setEnv(envfile string) (err error) {
+func setEnvironment(envfile string) (err error) {
 	file, err := os.Open(envfile)
 	if err != nil {
 		return
@@ -99,7 +98,7 @@ func setEnv(envfile string) (err error) {
 			pair := strings.Split(args, "=")
 			if len(pair) > 1 {
 				os.Setenv(pair[0], pair[1])
-				log.Printf("Set Environment %s\n", pair[0])
+				log.Printf("Set Environment '%s'\n", pair[0])
 			}
 		}
 	}
