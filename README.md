@@ -33,16 +33,16 @@ Application
 
 | Key | Type | Default | Request | Description |	
 |---|---|---|---|---|	
-|APP_ADDRESS|String||true||	
+|APP_ADDRESS|String|:8089|true||	
 
 Postgres
 
 | Key | Type | Default | Request | Description |	
 |---|---|---|---|---|	
-|PG_DBNAME|String||true||	
-|PG_USER|String||true||	
-|PG_PASSWORD|String||true||	
+|PG_DBNAME|String|typical-rest-server|true||	
+|PG_USER|String|default_user|true||	
+|PG_PASSWORD|String|default_password|true||	
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
-|PG_MIGRATIONSOURCE|String|scripts/migration|||	
+|PG_MIGRATIONSRC|String|scripts/migration|||	
 

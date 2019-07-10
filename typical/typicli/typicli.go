@@ -37,19 +37,18 @@ func (t *TypicalCli) Run(arguments []string) error {
 	}
 
 	// NOTE: export the enviroment before run
-	ExportEnviroment()
+	exportEnviroment()
 
 	return app.Run(arguments)
 }
 
 func (t *TypicalCli) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
-		{Name: "update", ShortName: "u", Usage: "Update the typical binary", Action: t.updateTypical},
+		{Name: "update", ShortName: "u", Usage: "Update the typical", Action: t.updateTypical},
 		{Name: "build", ShortName: "b", Usage: "Build the binary", Action: t.buildBinary},
-		{Name: "test", Usage: "Run the Test", Action: t.runTest},
 		{Name: "run", ShortName: "r", Usage: "Run the binary", Action: t.runBinary},
 		{Name: "release", Usage: "Release the distribution", Action: t.releaseDistribution},
 		{Name: "mock", Usage: "Generate mock class", Action: t.generateMock},
-		{Name: "readme", Usage: "Generate readme", Action: t.generateReadme},
+		{Name: "readme", Usage: "Generate readme document", Action: t.generateReadme},
 	}
 }

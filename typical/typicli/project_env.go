@@ -16,7 +16,7 @@ const (
 {{end}}`
 )
 
-func ExportEnviroment() (err error) {
+func exportEnviroment() (err error) {
 	file, err := os.Open(envFile)
 	if err != nil {
 		return
@@ -24,7 +24,7 @@ func ExportEnviroment() (err error) {
 	defer file.Close()
 
 	builder := strings.Builder{}
-	builder.WriteString("Export the enviroment: ")
+	builder.WriteString("Export the environment from " + envFile + ": ")
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -43,7 +43,7 @@ func ExportEnviroment() (err error) {
 	return
 }
 
-func GenerateNewEnviromentIfNotExist(ctx appctx.Context) (err error, isGenerated bool) {
+func generateNewEnviromentIfNotExist(ctx appctx.Context) (isGenerated bool, err error) {
 	_, err = os.Stat(envFile)
 	if !os.IsNotExist(err) {
 		isGenerated = false
