@@ -9,8 +9,12 @@ import (
 )
 
 func (t *TypicalCli) generateReadme(ctx *cli.Context) (err error) {
-	templ, err := template.New("readme").Parse(t.ReadmeTemplate)
-	readmeFile := "README.md" // TODO: put readmeFile at context
+
+	readmeFile := t.ReadmeFileOrDefault()
+	readmeTemplate := t.ReadmeTemplateOrDefault()
+
+	templ, err := template.New("readme").Parse(readmeTemplate)
+
 	if err != nil {
 		return
 	}

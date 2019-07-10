@@ -16,10 +16,9 @@ var Context appctx.Context
 func init() {
 	// TODO: create driver list
 	Context = appctx.Context{
-		Name:           "Typical-RESTful-Server",
-		Version:        "0.1.0",
-		Description:    "Example of typical and scalable RESTful API Server for Go",
-		ReadmeTemplate: readmeTemplate,
+		Name:        "Typical-RESTful-Server",
+		Version:     "0.1.0",
+		Description: "Example of typical and scalable RESTful API Server for Go",
 
 		TypiApp: appctx.TypiApp{
 			ConfigPrefix: "APP",
