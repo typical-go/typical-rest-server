@@ -44,11 +44,44 @@ func (t *TypicalCli) Run(arguments []string) error {
 
 func (t *TypicalCli) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
-		{Name: "update", ShortName: "u", Usage: "Update the typical", Action: t.updateTypical},
-		{Name: "build", ShortName: "b", Usage: "Build the binary", Action: t.buildBinary},
-		{Name: "run", ShortName: "r", Usage: "Run the binary", Action: t.runBinary},
-		{Name: "release", Usage: "Release the distribution", Action: t.releaseDistribution},
-		{Name: "mock", Usage: "Generate mock class", Action: t.generateMock},
-		{Name: "readme", Usage: "Generate readme document", Action: t.generateReadme},
+		{
+			Name:      "update",
+			ShortName: "u",
+			Usage:     "Update the typical",
+			Action:    t.updateTypical,
+		},
+		{
+			Name:      "build",
+			ShortName: "b",
+			Usage:     "Build the binary",
+			Action:    t.buildBinary,
+		},
+		{
+			Name:      "run",
+			ShortName: "r",
+			Usage:     "Run the binary",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-build",
+					Usage: "Run the binary without build",
+				},
+			},
+			Action: t.runBinary,
+		},
+		{
+			Name:   "release",
+			Usage:  "Release the distribution",
+			Action: t.releaseDistribution,
+		},
+		{
+			Name:   "mock",
+			Usage:  "Generate mock class",
+			Action: t.generateMock,
+		},
+		{
+			Name:   "readme",
+			Usage:  "Generate readme document",
+			Action: t.generateReadme,
+		},
 	}
 }

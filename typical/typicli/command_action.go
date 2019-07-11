@@ -31,6 +31,10 @@ func (t *TypicalCli) buildBinary(ctx *cli.Context) {
 }
 
 func (t *TypicalCli) runBinary(ctx *cli.Context) {
+	if !ctx.Bool("no-build") {
+		t.buildBinary(ctx)
+	}
+
 	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
 	log.Printf("Run the Binary '%s'", binaryPath)
 	runOrFatal(binaryPath, []string(ctx.Args())...)
