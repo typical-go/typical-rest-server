@@ -23,15 +23,15 @@ func (t *TypicalCli) buildBinary(ctx *cli.Context) {
 		log.Printf("Generate default enviroment at %s", envFile)
 	}
 
-	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryName)
-	mainPackage := typienv.MainPackage(t.TypiApp.ApplicationPkg)
+	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
+	mainPackage := typienv.MainPackage(t.TypiApp.ApplicationPkgOrDefault())
 
 	log.Printf("Build the Binary for '%s' at '%s'", mainPackage, binaryPath)
 	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
 }
 
 func (t *TypicalCli) runBinary(ctx *cli.Context) {
-	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryName)
+	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
 	log.Printf("Run the Binary '%s'", binaryPath)
 	runOrFatal(binaryPath, []string(ctx.Args())...)
 }
@@ -51,21 +51,23 @@ func (t *TypicalCli) releaseDistribution(ctx *cli.Context) {
 func (t *TypicalCli) generateMock(ctx *cli.Context) {
 	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
 
-	log.Printf("Clean mock package '%s'", t.MockPkg)
-	os.RemoveAll(t.MockPkg)
+	mockPkg := t.MockPkgOrDefault()
+
+	log.Printf("Clean mock package '%s'", mockPkg)
+	os.RemoveAll(mockPkg)
 	for _, mockTarget := range t.MockTargets {
-		dest := t.MockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
+		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Printf("Generate mock for '%s' at '%s'", mockTarget, dest)
 		runOrFatal(goBinary("mockgen"),
 			"-source", mockTarget,
 			"-destination", dest,
-			"-package", t.MockPkg)
+			"-package", mockPkg)
 	}
 }
 
 func (t *TypicalCli) appPath(name string) string {
-	return fmt.Sprintf("./%s/%s", t.ApplicationPkg, name)
+	return fmt.Sprintf("./%s/%s", t.ApplicationPkgOrDefault(), name)
 }
 
 func goBinary(name string) string {

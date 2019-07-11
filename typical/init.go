@@ -21,10 +21,9 @@ func init() {
 		Description: "Example of typical and scalable RESTful API Server for Go",
 
 		TypiApp: appctx.TypiApp{
-			ConfigPrefix: "APP",
-			Config:       &config.AppConfig{},
+			Config: &config.AppConfig{},
 			ConfigLoadFunc: func() (config config.AppConfig, err error) {
-				err = envconfig.Process(Context.TypiApp.ConfigPrefix, &config)
+				err = envconfig.Process(Context.ConfigPrefixOrDefault(), &config)
 				return
 			},
 			Constructors: []interface{}{
@@ -35,13 +34,10 @@ func init() {
 			Action: func(s *app.Server) error {
 				return s.Serve()
 			},
-			BinaryName:     "typical-rest-go",
-			ApplicationPkg: "app",
 			TestTargets: []string{
 				"./app/controller",
 				"./app/repository",
 			},
-			MockPkg: "mock",
 			MockTargets: []string{
 				"./app/repository/book_repo.go",
 			},
