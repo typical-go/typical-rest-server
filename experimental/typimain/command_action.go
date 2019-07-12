@@ -1,4 +1,4 @@
-package typicli
+package typimain
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalCli) updateTypical(ctx *cli.Context) {
+func (t *TypicalTask) updateTypical(ctx *cli.Context) {
 	log.Println("Update the typical")
 
 	t.bundleCliSideEffects()
@@ -19,7 +19,7 @@ func (t *TypicalCli) updateTypical(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", typienv.TypicalBinaryPath(), typienv.TypicalMainPackage())
 }
 
-func (t *TypicalCli) buildBinary(ctx *cli.Context) {
+func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 	isGenerated, _ := generateNewEnviromentIfNotExist(t.Context)
 	if isGenerated {
 		log.Printf("Generate default enviroment at %s", envFile)
@@ -34,7 +34,7 @@ func (t *TypicalCli) buildBinary(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
 }
 
-func (t *TypicalCli) runBinary(ctx *cli.Context) {
+func (t *TypicalTask) runBinary(ctx *cli.Context) {
 	if !ctx.Bool("no-build") {
 		t.buildBinary(ctx)
 	}
@@ -44,7 +44,7 @@ func (t *TypicalCli) runBinary(ctx *cli.Context) {
 	runOrFatal(binaryPath, []string(ctx.Args())...)
 }
 
-func (t *TypicalCli) runTest(ctx *cli.Context) {
+func (t *TypicalTask) runTest(ctx *cli.Context) {
 	log.Println("Run the Test")
 	args := []string{"test"}
 	args = append(args, t.TypiApp.TestTargets...)
@@ -52,11 +52,11 @@ func (t *TypicalCli) runTest(ctx *cli.Context) {
 	runOrFatal(goCommand(), args...)
 }
 
-func (t *TypicalCli) releaseDistribution(ctx *cli.Context) {
+func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
 	fmt.Println("Not implemented")
 }
 
-func (t *TypicalCli) generateMock(ctx *cli.Context) {
+func (t *TypicalTask) generateMock(ctx *cli.Context) {
 	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
 
 	mockPkg := t.MockPkgOrDefault()
@@ -74,7 +74,7 @@ func (t *TypicalCli) generateMock(ctx *cli.Context) {
 	}
 }
 
-func (t *TypicalCli) appPath(name string) string {
+func (t *TypicalTask) appPath(name string) string {
 	return fmt.Sprintf("./%s/%s", t.ApplicationPkgOrDefault(), name)
 }
 

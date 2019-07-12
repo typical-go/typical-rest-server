@@ -1,4 +1,4 @@
-package typicli
+package typimain
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalCli) generateReadme(ctx *cli.Context) (err error) {
+func (t *TypicalTask) generateReadme(ctx *cli.Context) (err error) {
 
 	readmeFile := t.ReadmeFileOrDefault()
 	readmeTemplate := t.ReadmeTemplateOrDefault()

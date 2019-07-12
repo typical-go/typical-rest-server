@@ -1,4 +1,4 @@
-package typicli
+package typimain
 
 import (
 	"io/ioutil"
@@ -11,7 +11,7 @@ const (
 	mainInitFile = "init.go"
 )
 
-func (t *TypicalCli) bundleCliSideEffects() error {
+func (t *TypicalTask) bundleCliSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
@@ -21,7 +21,7 @@ func (t *TypicalCli) bundleCliSideEffects() error {
 	return bundleSideEffects(filename, sideEffects)
 }
 
-func (t *TypicalCli) bundleAppSideEffects() error {
+func (t *TypicalTask) bundleAppSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)

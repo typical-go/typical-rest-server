@@ -1,22 +1,22 @@
-package typicli
+package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/experimental/typictx"
 	"gopkg.in/urfave/cli.v1"
 )
 
-// TypicalCli represent typical CLI
-type TypicalCli struct {
+// TypicalTask represent typical CLI
+type TypicalTask struct {
 	typictx.Context
 }
 
 // NewTypicalCli return new instance of TypicalCli
-func NewTypicalCli(context typictx.Context) *TypicalCli {
-	return &TypicalCli{context}
+func NewTypicalCli(context typictx.Context) *TypicalTask {
+	return &TypicalTask{context}
 }
 
 // Run the typical task cli
-func (t *TypicalCli) Run(arguments []string) error {
+func (t *TypicalTask) Run(arguments []string) error {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
@@ -42,7 +42,7 @@ func (t *TypicalCli) Run(arguments []string) error {
 	return app.Run(arguments)
 }
 
-func (t *TypicalCli) standardTypicalCommand() []cli.Command {
+func (t *TypicalTask) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
 		{
 			Name:      "update",
