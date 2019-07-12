@@ -20,6 +20,13 @@ func NewPostgres() *appctx.Module {
 		Usage:        "Postgres Database Module",
 		ConfigPrefix: "PG",
 		Config:       &config.PostgresConfig{},
+		SideEffects: []string{
+			"github.com/lib/pq",
+		},
+		TypiCliSideEffects: []string{
+			"github.com/golang-migrate/migrate/database/postgres",
+			"github.com/golang-migrate/migrate/source/file",
+		},
 	}
 	m.Command = &cli.Command{
 		Name:      m.Name,

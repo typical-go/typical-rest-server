@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"os"
-	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-rest-server/typical"
+
 	"github.com/typical-go/typical-rest-server/experimental/typiapp"
+	"github.com/typical-go/typical-rest-server/typical"
 )
 
 func main() {
