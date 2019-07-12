@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/typical-go/typical-rest-server/typical/typienv"
+	"github.com/typical-go/typical-rest-server/experimental/typienv"
 	"gopkg.in/urfave/cli.v1"
 )
 

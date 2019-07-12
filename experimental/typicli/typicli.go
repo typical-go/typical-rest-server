@@ -1,7 +1,7 @@
 package typicli
 
 import (
-	"github.com/typical-go/typical-rest-server/typical/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/appctx"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/typical/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/appctx"
 )
 
 const configTemplate = `
