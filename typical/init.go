@@ -30,9 +30,8 @@ func init() {
 				controller.NewBookController,
 				repository.NewBookRepository,
 			},
-			Action: func(s *app.Server) error {
-				return s.Serve()
-			},
+			StartFunc: startApplication,
+			StopFunc:  gracefulShutdown,
 			TestTargets: []string{
 				"./app/controller",
 				"./app/repository",

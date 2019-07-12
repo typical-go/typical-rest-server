@@ -5,17 +5,6 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// // Module in typical-go applicaiton
-// type Module interface {
-// 	Name() string
-// 	ShortName() string
-// 	ConfigPrefix() string
-// 	Config() interface{}
-// 	Constructors() []interface{}
-// 	Command() cli.Command
-// 	LoadFunc() interface{}
-// }
-
 // Module of typical-go application
 type Module struct {
 	Name               string

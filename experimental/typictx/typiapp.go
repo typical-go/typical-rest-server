@@ -8,7 +8,8 @@ import (
 // TypiApp contain information of Typical Application
 type TypiApp struct {
 	Constructors []interface{}
-	Action       interface{}
+	StartFunc    interface{}
+	StopFunc     interface{}
 	Commands     []Command
 
 	ConfigPrefix   string
