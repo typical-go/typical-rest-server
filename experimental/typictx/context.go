@@ -1,9 +1,10 @@
 package typictx
 
+import "gopkg.in/urfave/cli.v1"
+
 // Context of typical application
 type Context struct {
 	TypiApp
-	TypiCli
 
 	Name        string
 	Version     string
@@ -11,6 +12,8 @@ type Context struct {
 
 	ReadmeTemplate string
 	ReadmeFile     string
+
+	Commands []cli.Command
 
 	Modules []*Module
 }

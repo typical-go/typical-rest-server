@@ -31,8 +31,8 @@ func (t *TypicalTask) Run(arguments []string) error {
 
 	}
 
-	for key := range t.TypiCli.Commands {
-		command := t.TypiCli.Commands[key]
+	for key := range t.Commands {
+		command := t.Commands[key]
 		app.Commands = append(app.Commands, command)
 	}
 
