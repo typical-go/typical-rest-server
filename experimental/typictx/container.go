@@ -6,8 +6,8 @@ import "go.uber.org/dig"
 func (c Context) Container() *dig.Container {
 	container := dig.New()
 
-	for _, contructor := range c.ArcheType.GetConstructors() {
-		container.Provide(contructor)
+	for _, constructor := range c.ArcheType.GetConstructors() {
+		container.Provide(constructor)
 	}
 
 	for key := range c.Modules {
