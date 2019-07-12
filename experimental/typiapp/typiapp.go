@@ -1,10 +1,6 @@
 package typiapp
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/typical-go/typical-rest-server/experimental/typictx"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -26,10 +22,9 @@ func (t *TypicalApplication) Run(arguments []string) error {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = t.startApplication
+	app.Action = t.action
 
-	for i := range t.TypiApp.Commands {
-		cmd := t.TypiApp.Commands[i]
+	for _, cmd := range t.ArcheType.GetCommands() {
 		app.Commands = append(app.Commands, cli.Command{
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
@@ -40,24 +35,11 @@ func (t *TypicalApplication) Run(arguments []string) error {
 	return app.Run(arguments)
 }
 
-func (t *TypicalApplication) startApplication(ctx *cli.Context) {
-	container := t.Container()
-
-	if t.StopFunc != nil {
-		gracefulStop := make(chan os.Signal)
-		signal.Notify(gracefulStop, syscall.SIGTERM)
-		signal.Notify(gracefulStop, syscall.SIGINT)
-
-		// gracefull shutdown
-		go func() {
-			<-gracefulStop
-			container.Invoke(t.StopFunc)
-		}()
-	}
-
-	if t.StartFunc != nil {
-		container.Invoke(t.StartFunc)
-	}
+func (t *TypicalApplication) action(ctx *cli.Context) {
+	t.ArcheType.StartApplication(typictx.StartContext{
+		CliContext: ctx,
+		Context:    t.Context,
+	})
 }
 
 func (t *TypicalApplication) invoke(f interface{}) interface{} {

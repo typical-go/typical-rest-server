@@ -9,11 +9,10 @@ import (
 
 // Context of typical application
 type Context struct {
-	TypiApp
-
 	Name        string
 	Version     string
 	Description string
+	ArcheType   ArcheType
 
 	ReadmeTemplate string
 	ReadmeFile     string

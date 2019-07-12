@@ -47,7 +47,7 @@ func (t *TypicalTask) runBinary(ctx *cli.Context) {
 func (t *TypicalTask) runTest(ctx *cli.Context) {
 	log.Println("Run the Test")
 	args := []string{"test"}
-	args = append(args, t.TypiApp.TestTargets...)
+	args = append(args, t.ArcheType.GetTestTargets()...)
 	args = append(args, "-coverprofile=cover.out")
 	runOrFatal(goCommand(), args...)
 }
@@ -63,7 +63,7 @@ func (t *TypicalTask) generateMock(ctx *cli.Context) {
 
 	log.Printf("Clean mock package '%s'", mockPkg)
 	os.RemoveAll(mockPkg)
-	for _, mockTarget := range t.MockTargets {
+	for _, mockTarget := range t.ArcheType.GetMockTargets() {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Printf("Generate mock for '%s' at '%s'", mockTarget, dest)

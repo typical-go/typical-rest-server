@@ -55,7 +55,7 @@ func generateNewEnviromentIfNotExist(ctx typictx.Context) (isGenerated bool, err
 		return
 	}
 
-	envconfig.Usagef(ctx.TypiApp.ConfigPrefix, ctx.TypiApp.Config, buf, envTemplate)
+	envconfig.Usagef(ctx.ArcheType.GetConfigPrefix(), ctx.ArcheType.GetConfig(), buf, envTemplate)
 
 	for i := range ctx.Modules {
 		module := ctx.Modules[i]

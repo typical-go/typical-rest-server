@@ -6,9 +6,7 @@ import "go.uber.org/dig"
 func (c Context) Container() *dig.Container {
 	container := dig.New()
 
-	container.Provide(c.TypiApp.ConfigLoadFunc)
-
-	for _, contructor := range c.TypiApp.Constructors {
+	for _, contructor := range c.ArcheType.GetConstructors() {
 		container.Provide(contructor)
 	}
 

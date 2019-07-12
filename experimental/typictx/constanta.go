@@ -3,7 +3,6 @@ package typictx
 const (
 	defaultReadmeFile = "README.md"
 
-	defaultConfigPrefix   = "APP"
 	defaultApplicationPkg = "app"
 	defaultMockPkg        = "mock"
 )
