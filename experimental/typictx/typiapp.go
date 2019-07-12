@@ -1,4 +1,4 @@
-package appctx
+package typictx
 
 import (
 	"os"

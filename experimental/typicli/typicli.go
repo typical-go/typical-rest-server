@@ -1,17 +1,17 @@
 package typicli
 
 import (
-	"github.com/typical-go/typical-rest-server/experimental/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/typictx"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // TypicalCli represent typical CLI
 type TypicalCli struct {
-	appctx.Context
+	typictx.Context
 }
 
 // NewTypicalCli return new instance of TypicalCli
-func NewTypicalCli(context appctx.Context) *TypicalCli {
+func NewTypicalCli(context typictx.Context) *TypicalCli {
 	return &TypicalCli{context}
 }
 

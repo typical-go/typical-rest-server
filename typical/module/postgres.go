@@ -5,16 +5,17 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/config"
-	"github.com/typical-go/typical-rest-server/experimental/appctx"
+
+	"github.com/typical-go/typical-rest-server/experimental/typictx"
 	"github.com/typical-go/typical-rest-server/experimental/typidb"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // NewPostgres return new instance of Module for postgrs
-func NewPostgres() *appctx.Module {
+func NewPostgres() *typictx.Module {
 	tool := typidb.NewPostgresTool()
 
-	m := &appctx.Module{
+	m := &typictx.Module{
 		Name:         "postgres",
 		ShortName:    "pg",
 		Usage:        "Postgres Database Module",

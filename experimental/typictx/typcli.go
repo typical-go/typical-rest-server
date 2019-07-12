@@ -1,4 +1,4 @@
-package appctx
+package typictx
 
 import "gopkg.in/urfave/cli.v1"
 

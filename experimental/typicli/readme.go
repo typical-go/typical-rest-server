@@ -5,7 +5,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/experimental/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/typictx"
 )
 
 const configTemplate = `
@@ -16,7 +16,7 @@ const configTemplate = `
 
 // Readme represent readme structured data
 type Readme struct {
-	appctx.Context
+	typictx.Context
 }
 
 // ConfigDoc for configuration documentation

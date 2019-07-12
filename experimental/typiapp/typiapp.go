@@ -1,17 +1,17 @@
 package typiapp
 
 import (
-	"github.com/typical-go/typical-rest-server/experimental/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/typictx"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // TypicalApplication represent typical application
 type TypicalApplication struct {
-	appctx.Context
+	typictx.Context
 }
 
 // NewTypicalApplication return new instance of TypicalApplications
-func NewTypicalApplication(context appctx.Context) *TypicalApplication {
+func NewTypicalApplication(context typictx.Context) *TypicalApplication {
 	return &TypicalApplication{context}
 }
 

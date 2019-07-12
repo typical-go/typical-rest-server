@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/experimental/appctx"
+	"github.com/typical-go/typical-rest-server/experimental/typictx"
 )
 
 const (
@@ -43,7 +43,7 @@ func exportEnviroment() (err error) {
 	return
 }
 
-func generateNewEnviromentIfNotExist(ctx appctx.Context) (isGenerated bool, err error) {
+func generateNewEnviromentIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
 	_, err = os.Stat(envFile)
 	if !os.IsNotExist(err) {
 		isGenerated = false
