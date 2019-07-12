@@ -28,7 +28,7 @@ func (t *TypicalTask) bundleAppSideEffects() error {
 		sideEffects = append(sideEffects, module.TypiAppSideEffects...)
 	}
 
-	filename := typienv.MainPackage(t.TypiApp.ApplicationPkgOrDefault()) + "/" + mainInitFile
+	filename := typienv.MainPackage(t.AppPkgOrDefault()) + "/" + mainInitFile
 	return bundleSideEffects(filename, sideEffects)
 }
 

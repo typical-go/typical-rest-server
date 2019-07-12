@@ -27,8 +27,8 @@ func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 
 	t.bundleAppSideEffects()
 
-	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
-	mainPackage := typienv.MainPackage(t.TypiApp.ApplicationPkgOrDefault())
+	binaryPath := typienv.BinaryPath(t.BinaryNameOrDefault())
+	mainPackage := typienv.MainPackage(t.AppPkgOrDefault())
 
 	log.Printf("Build the Binary for '%s' at '%s'", mainPackage, binaryPath)
 	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
@@ -39,7 +39,7 @@ func (t *TypicalTask) runBinary(ctx *cli.Context) {
 		t.buildBinary(ctx)
 	}
 
-	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
+	binaryPath := typienv.BinaryPath(t.BinaryNameOrDefault())
 	log.Printf("Run the Binary '%s'", binaryPath)
 	runOrFatal(binaryPath, []string(ctx.Args())...)
 }
@@ -75,7 +75,7 @@ func (t *TypicalTask) generateMock(ctx *cli.Context) {
 }
 
 func (t *TypicalTask) appPath(name string) string {
-	return fmt.Sprintf("./%s/%s", t.ApplicationPkgOrDefault(), name)
+	return fmt.Sprintf("./%s/%s", t.AppPkgOrDefault(), name)
 }
 
 func runOrFatal(name string, args ...string) {

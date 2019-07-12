@@ -1,6 +1,11 @@
 package typictx
 
-import "gopkg.in/urfave/cli.v1"
+import (
+	"os"
+	"strings"
+
+	"gopkg.in/urfave/cli.v1"
+)
 
 // Context of typical application
 type Context struct {
@@ -13,9 +18,13 @@ type Context struct {
 	ReadmeTemplate string
 	ReadmeFile     string
 
-	Commands []cli.Command
+	AppPkg     string
+	MockPkg    string
+	BinaryName string
 
 	Modules []*Module
+
+	Commands []cli.Command
 }
 
 // ReadmeTemplateOrDefault return readme template field or the default template
@@ -33,4 +42,30 @@ func (c Context) ReadmeFileOrDefault() string {
 	}
 
 	return c.ReadmeFile
+}
+
+// BinaryNameOrDefault return binary name of typiapp or default value
+func (c Context) BinaryNameOrDefault() string {
+	if c.BinaryName == "" {
+		dir, _ := os.Getwd()
+		chunks := strings.Split(dir, "/")
+		return chunks[len(chunks)-1]
+	}
+	return c.BinaryName
+}
+
+// AppPkgOrDefault return application package of typiapp or default value
+func (c Context) AppPkgOrDefault() string {
+	if c.AppPkg == "" {
+		return defaultApplicationPkg
+	}
+	return c.AppPkg
+}
+
+// MockPkgOrDefault return mock package of typiapp or default value
+func (c Context) MockPkgOrDefault() string {
+	if c.MockPkg == "" {
+		return defaultMockPkg
+	}
+	return c.MockPkg
 }
