@@ -25,6 +25,8 @@ func (t *TypicalCli) buildBinary(ctx *cli.Context) {
 		log.Printf("Generate default enviroment at %s", envFile)
 	}
 
+	t.bundleAppSideEffects()
+
 	binaryPath := typienv.BinaryPath(t.TypiApp.BinaryNameOrDefault())
 	mainPackage := typienv.MainPackage(t.TypiApp.ApplicationPkgOrDefault())
 

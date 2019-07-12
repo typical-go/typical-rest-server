@@ -16,7 +16,7 @@ type TypiApp struct {
 	ConfigLoadFunc interface{}
 
 	BinaryName     string
-	ApplicationPkg string
+	ApplicationPkg string // TODO: subject to move to archetype
 	MockPkg        string
 
 	MockTargets []string

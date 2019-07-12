@@ -7,24 +7,43 @@ import (
 	"github.com/typical-go/typical-rest-server/experimental/typienv"
 )
 
-func (t *TypicalCli) bundleCliSideEffects() (err error) {
+const (
+	mainInitFile = "init.go"
+)
+
+func (t *TypicalCli) bundleCliSideEffects() error {
+	var sideEffects []string
+	for _, module := range t.Modules {
+		sideEffects = append(sideEffects, module.SideEffects...)
+		sideEffects = append(sideEffects, module.TypiCliSideEffects...)
+	}
+	filename := typienv.TypicalMainPackage() + "/" + mainInitFile
+	return bundleSideEffects(filename, sideEffects)
+}
+
+func (t *TypicalCli) bundleAppSideEffects() error {
+	var sideEffects []string
+	for _, module := range t.Modules {
+		sideEffects = append(sideEffects, module.SideEffects...)
+		sideEffects = append(sideEffects, module.TypiAppSideEffects...)
+	}
+
+	filename := typienv.MainPackage(t.TypiApp.ApplicationPkgOrDefault()) + "/" + mainInitFile
+	return bundleSideEffects(filename, sideEffects)
+}
+
+func bundleSideEffects(filename string, sideEffects []string) (err error) {
 
 	builder := &strings.Builder{}
 	builder.WriteString("package main\n")
 	builder.WriteString("import(\n")
 
-	for _, module := range t.Modules {
-		for _, sideEffect := range module.SideEffects {
-			builder.WriteString("_ \"" + sideEffect + "\"\n")
-		}
-
-		for _, sideEffect := range module.TypiCliSideEffects {
-			builder.WriteString("_ \"" + sideEffect + "\"\n")
-		}
+	for _, sideEffect := range sideEffects {
+		builder.WriteString("_ \"" + sideEffect + "\"\n")
 	}
+
 	builder.WriteString(")")
 
-	filename := typienv.TypicalMainPackage() + "/init.go"
 	err = ioutil.WriteFile(filename, []byte(builder.String()), 0644)
 	if err != nil {
 		return
