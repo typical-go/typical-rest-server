@@ -40,8 +40,8 @@ func (c Context) Container() *dig.Container {
 
 	container.Provide(c.TypiApp.ConfigLoadFunc)
 
-	for _, contructor := range c.TypiApp.Constructors {
-		container.Provide(contructor)
+	for _, constructor := range c.TypiApp.Constructors {
+		container.Provide(constructor)
 	}
 
 	for key := range c.Modules {
