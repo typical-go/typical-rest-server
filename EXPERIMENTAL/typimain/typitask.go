@@ -45,12 +45,6 @@ func (t *TypicalTask) Run(arguments []string) error {
 func (t *TypicalTask) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
 		{
-			Name:      "update",
-			ShortName: "u",
-			Usage:     "Update the typical",
-			Action:    t.updateTypical,
-		},
-		{
 			Name:      "build",
 			ShortName: "b",
 			Usage:     "Build the binary",

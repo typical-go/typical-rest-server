@@ -11,14 +11,6 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalTask) updateTypical(ctx *cli.Context) {
-	log.Println("Update the typical")
-
-	t.bundleCliSideEffects()
-
-	runOrFatal(goCommand(), "build", "-o", typienv.TypicalBinaryPath(), typienv.TypicalMainPackage())
-}
-
 func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 	isGenerated, _ := generateNewEnviromentIfNotExist(t.Context)
 	if isGenerated {
