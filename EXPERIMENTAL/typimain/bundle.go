@@ -47,11 +47,11 @@ func bundleSideEffects(filename string, sideEffects []string) (err error) {
 		}
 
 		builder.WriteString(")")
+	}
 
-		err = ioutil.WriteFile(filename, []byte(builder.String()), 0644)
-		if err != nil {
-			return
-		}
+	err = ioutil.WriteFile(filename, []byte(builder.String()), 0644)
+	if err != nil {
+		return
 	}
 
 	runOrFatalSilently(goCommand(), "fmt", filename)
