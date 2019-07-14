@@ -5,18 +5,18 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// TypicalTask represent typical CLI
-type TypicalTask struct {
+// TypicalTaskTool represent typical task tool application
+type TypicalTaskTool struct {
 	typictx.Context
 }
 
-// NewTypicalCli return new instance of TypicalCli
-func NewTypicalCli(context typictx.Context) *TypicalTask {
-	return &TypicalTask{context}
+// NewTypicalTaskTool return new instance of TypicalCli
+func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
+	return &TypicalTaskTool{context}
 }
 
 // Run the typical task cli
-func (t *TypicalTask) Run(arguments []string) error {
+func (t *TypicalTaskTool) Run(arguments []string) error {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
@@ -42,7 +42,7 @@ func (t *TypicalTask) Run(arguments []string) error {
 	return app.Run(arguments)
 }
 
-func (t *TypicalTask) standardTypicalCommand() []cli.Command {
+func (t *TypicalTaskTool) standardTypicalCommand() []cli.Command {
 	return []cli.Command{
 		{
 			Name:      "build",

@@ -11,7 +11,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalTask) buildBinary(ctx *cli.Context) {
+func (t *TypicalTaskTool) buildBinary(ctx *cli.Context) {
 	isGenerated, _ := generateNewEnviromentIfNotExist(t.Context)
 	if isGenerated {
 		log.Printf("Generate default enviroment at %s", envFile)
@@ -26,7 +26,7 @@ func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
 }
 
-func (t *TypicalTask) runBinary(ctx *cli.Context) {
+func (t *TypicalTaskTool) runBinary(ctx *cli.Context) {
 	if !ctx.Bool("no-build") {
 		t.buildBinary(ctx)
 	}
@@ -36,7 +36,7 @@ func (t *TypicalTask) runBinary(ctx *cli.Context) {
 	runOrFatal(binaryPath, []string(ctx.Args())...)
 }
 
-func (t *TypicalTask) runTest(ctx *cli.Context) {
+func (t *TypicalTaskTool) runTest(ctx *cli.Context) {
 	log.Println("Run the Test")
 	args := []string{"test"}
 	args = append(args, t.ArcheType.GetTestTargets()...)
@@ -44,11 +44,11 @@ func (t *TypicalTask) runTest(ctx *cli.Context) {
 	runOrFatal(goCommand(), args...)
 }
 
-func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
+func (t *TypicalTaskTool) releaseDistribution(ctx *cli.Context) {
 	fmt.Println("Not implemented")
 }
 
-func (t *TypicalTask) generateMock(ctx *cli.Context) {
+func (t *TypicalTaskTool) generateMock(ctx *cli.Context) {
 	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
 
 	mockPkg := t.MockPkgOrDefault()
@@ -66,7 +66,7 @@ func (t *TypicalTask) generateMock(ctx *cli.Context) {
 	}
 }
 
-func (t *TypicalTask) appPath(name string) string {
+func (t *TypicalTaskTool) appPath(name string) string {
 	return fmt.Sprintf("./%s/%s", t.AppPkgOrDefault(), name)
 }
 

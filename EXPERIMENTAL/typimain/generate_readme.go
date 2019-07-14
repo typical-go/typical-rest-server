@@ -8,7 +8,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalTask) generateReadme(ctx *cli.Context) (err error) {
+func (t *TypicalTaskTool) generateReadme(ctx *cli.Context) (err error) {
 
 	readmeFile := t.ReadmeFileOrDefault()
 	readmeTemplate := t.ReadmeTemplateOrDefault()

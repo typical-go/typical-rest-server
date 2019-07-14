@@ -11,7 +11,7 @@ const (
 	mainInitFile = "init.go"
 )
 
-func (t *TypicalTask) bundleCliSideEffects() error {
+func (t *TypicalTaskTool) bundleCliSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
@@ -21,7 +21,7 @@ func (t *TypicalTask) bundleCliSideEffects() error {
 	return bundleSideEffects(filename, sideEffects)
 }
 
-func (t *TypicalTask) bundleAppSideEffects() error {
+func (t *TypicalTaskTool) bundleAppSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
