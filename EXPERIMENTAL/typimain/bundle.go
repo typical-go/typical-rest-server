@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/typical-go/typical-rest-server/experimental/typienv"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
 const (

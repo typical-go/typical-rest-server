@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/typical-go/typical-rest-server/experimental/typimain"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typimain"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 

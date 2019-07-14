@@ -6,8 +6,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/config"
 
-	"github.com/typical-go/typical-rest-server/experimental/typictx"
-	"github.com/typical-go/typical-rest-server/experimental/typidb"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
 	"gopkg.in/urfave/cli.v1"
 )
 

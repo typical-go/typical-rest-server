@@ -6,7 +6,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
-	"github.com/typical-go/typical-rest-server/experimental/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/typical/module"
 )
 

@@ -1,7 +1,7 @@
 package typiapp
 
 import (
-	"github.com/typical-go/typical-rest-server/experimental/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"gopkg.in/urfave/cli.v1"
 )
 

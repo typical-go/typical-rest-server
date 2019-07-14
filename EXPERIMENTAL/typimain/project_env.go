@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/experimental/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
 const (
