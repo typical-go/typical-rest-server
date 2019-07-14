@@ -68,8 +68,14 @@ func (t *TypicalTaskTool) standardTypicalCommand() []cli.Command {
 			Action: t.releaseDistribution,
 		},
 		{
-			Name:   "mock",
-			Usage:  "Generate mock class",
+			Name:  "mock",
+			Usage: "Generate mock class",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "new",
+					Usage: "Clean the mock package as new generation",
+				},
+			},
 			Action: t.generateMock,
 		},
 		{

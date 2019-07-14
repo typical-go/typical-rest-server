@@ -50,11 +50,13 @@ func (t *TypicalTaskTool) releaseDistribution(ctx *cli.Context) {
 
 func (t *TypicalTaskTool) generateMock(ctx *cli.Context) {
 	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
-
 	mockPkg := t.MockPkgOrDefault()
 
-	log.Printf("Clean mock package '%s'", mockPkg)
-	os.RemoveAll(mockPkg)
+	if ctx.Bool("new") {
+		log.Printf("Clean mock package '%s'", mockPkg)
+		os.RemoveAll(mockPkg)
+	}
+
 	for _, mockTarget := range t.ArcheType.GetMockTargets() {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
