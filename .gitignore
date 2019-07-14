@@ -13,3 +13,6 @@ typical-rest-server
 
 # testing
 cover.out
+
+.idea
+.vscode
