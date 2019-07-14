@@ -2,9 +2,9 @@ package typimain
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -68,25 +68,33 @@ func (t *TypicalTaskTool) generateMock(ctx *cli.Context) {
 	}
 }
 
-func (t *TypicalTaskTool) appPath(name string) string {
-	return fmt.Sprintf("./%s/%s", t.AppPkgOrDefault(), name)
+func (t *TypicalTaskTool) generateReadme(ctx *cli.Context) (err error) {
+	readmeFile := t.ReadmeFileOrDefault()
+	readmeTemplate := t.ReadmeTemplateOrDefault()
+
+	templ, err := template.New("readme").Parse(readmeTemplate)
+
+	if err != nil {
+		return
+	}
+
+	file, err := os.Create(readmeFile)
+	if err != nil {
+		return
+	}
+
+	log.Printf("Generate ReadMe Document at '%s'", readmeFile)
+	err = templ.Execute(file, Readme{
+		Context: t.Context,
+	})
+	return nil
 }
 
-func runOrFatal(name string, args ...string) {
-	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
+func (t *TypicalTaskTool) cleanProject(ctx *cli.Context) {
+	log.Println("Remove bin folder")
+	os.RemoveAll(typienv.Bin())
 
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func runOrFatalSilently(name string, args ...string) {
-	cmd := exec.Command(name, args...)
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Println("Trigger go clean")
+	os.Setenv("GO111MODULE", "off") // NOTE:XXX: https://github.com/golang/go/issues/28680
+	runOrFatal(goCommand(), "clean", "-x", "-testcache", "-modcache")
 }

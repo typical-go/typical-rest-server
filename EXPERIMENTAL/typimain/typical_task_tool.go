@@ -83,5 +83,11 @@ func (t *TypicalTaskTool) standardTypicalCommand() []cli.Command {
 			Usage:  "Generate readme document",
 			Action: t.generateReadme,
 		},
+		{
+			Name:        "clean",
+			Usage:       "Clean project from generated file during build time",
+			Description: "Remove binary folder, trigger `go clean --modcache`",
+			Action:      t.cleanProject,
+		},
 	}
 }
