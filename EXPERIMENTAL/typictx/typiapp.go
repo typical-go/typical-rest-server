@@ -1,6 +1,7 @@
 package typictx
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -66,11 +67,17 @@ func (a TypiApp) StartApplication(ctx StartContext) {
 		// gracefull shutdown
 		go func() {
 			<-gracefulStop
-			container.Invoke(a.StopFunc)
+			err := container.Invoke(a.StopFunc)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 		}()
 	}
 
 	if a.StartFunc != nil {
-		container.Invoke(a.StartFunc)
+		err := container.Invoke(a.StartFunc)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 }
