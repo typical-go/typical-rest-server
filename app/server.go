@@ -1,12 +1,7 @@
 package app
 
 import (
-	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/controller"
@@ -48,17 +43,5 @@ func (s *Server) CRUDController(entity string, crud controller.CRUDController) {
 
 // Serve start serve http request
 func (s *Server) Serve() error {
-	gracefulStop := make(chan os.Signal)
-	signal.Notify(gracefulStop, syscall.SIGTERM)
-	signal.Notify(gracefulStop, syscall.SIGINT)
-
-	// gracefull shutdown
-	go func() {
-		<-gracefulStop
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		s.Shutdown(ctx)
-	}()
-
 	return s.Start(s.Address)
 }
