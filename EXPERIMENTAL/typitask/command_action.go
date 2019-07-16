@@ -14,10 +14,7 @@ import (
 )
 
 func (t *TypicalTask) buildBinary(ctx *cli.Context) {
-	isGenerated, _ := generateNewEnviromentIfNotExist(t.Context)
-	if isGenerated {
-		log.Printf("Generate default enviroment at %s", envFile)
-	}
+	typienv.GenerateProjectEnvIfNotExist(t.Context)
 
 	typigen.AppSideEffects(t.Context)
 

@@ -1,4 +1,4 @@
-package typitask
+package typienv
 
 import (
 	"bufio"
@@ -16,7 +16,7 @@ const (
 {{end}}`
 )
 
-func exportEnviroment() (err error) {
+func ExportProjectEnv() (err error) {
 	file, err := os.Open(envFile)
 	if err != nil {
 		return
@@ -43,7 +43,7 @@ func exportEnviroment() (err error) {
 	return
 }
 
-func generateNewEnviromentIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
+func GenerateProjectEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
 	_, err = os.Stat(envFile)
 	if !os.IsNotExist(err) {
 		isGenerated = false
@@ -63,6 +63,7 @@ func generateNewEnviromentIfNotExist(ctx typictx.Context) (isGenerated bool, err
 	}
 
 	isGenerated = true
+	log.Printf("Generate new project environment at '%s'", envFile)
 
 	return
 }

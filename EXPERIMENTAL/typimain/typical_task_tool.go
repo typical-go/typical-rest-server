@@ -2,6 +2,7 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typitask"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -41,8 +42,8 @@ func (t *TypicalTaskTool) Cli() *cli.App {
 		app.Commands = append(app.Commands, command)
 	}
 
-	// NOTE: export the enviroment before run
-	// exportEnviroment()
+	// TODO: put it at before run of cli.
+	typienv.ExportProjectEnv()
 
 	return app
 }
