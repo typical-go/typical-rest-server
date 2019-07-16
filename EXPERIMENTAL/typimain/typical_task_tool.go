@@ -13,7 +13,11 @@ type TypicalTaskTool struct {
 
 // NewTypicalTaskTool return new instance of TypicalCli
 func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
-	return &TypicalTaskTool{typitask.TypicalTask{context}}
+	return &TypicalTaskTool{
+		typitask.TypicalTask{
+			Context: context,
+		},
+	}
 }
 
 // Cli return the command line interface
