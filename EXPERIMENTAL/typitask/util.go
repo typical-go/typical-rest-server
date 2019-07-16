@@ -1,4 +1,4 @@
-package typimain
+package typitask
 
 import (
 	"fmt"

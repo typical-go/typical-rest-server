@@ -1,4 +1,4 @@
-package typimain
+package typitask
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalTaskTool) buildBinary(ctx *cli.Context) {
+func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 	isGenerated, _ := generateNewEnviromentIfNotExist(t.Context)
 	if isGenerated {
 		log.Printf("Generate default enviroment at %s", envFile)
@@ -26,7 +26,7 @@ func (t *TypicalTaskTool) buildBinary(ctx *cli.Context) {
 	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
 }
 
-func (t *TypicalTaskTool) runBinary(ctx *cli.Context) {
+func (t *TypicalTask) runBinary(ctx *cli.Context) {
 	if !ctx.Bool("no-build") {
 		t.buildBinary(ctx)
 	}
@@ -36,7 +36,7 @@ func (t *TypicalTaskTool) runBinary(ctx *cli.Context) {
 	runOrFatal(binaryPath, []string(ctx.Args())...)
 }
 
-func (t *TypicalTaskTool) runTest(ctx *cli.Context) {
+func (t *TypicalTask) runTest(ctx *cli.Context) {
 	log.Println("Run the Test")
 	args := []string{"test"}
 	args = append(args, t.ArcheType.GetTestTargets()...)
@@ -44,11 +44,11 @@ func (t *TypicalTaskTool) runTest(ctx *cli.Context) {
 	runOrFatal(goCommand(), args...)
 }
 
-func (t *TypicalTaskTool) releaseDistribution(ctx *cli.Context) {
+func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
 	fmt.Println("Not implemented")
 }
 
-func (t *TypicalTaskTool) generateMock(ctx *cli.Context) {
+func (t *TypicalTask) generateMock(ctx *cli.Context) {
 	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
 	mockPkg := t.MockPkgOrDefault()
 
@@ -68,7 +68,7 @@ func (t *TypicalTaskTool) generateMock(ctx *cli.Context) {
 	}
 }
 
-func (t *TypicalTaskTool) generateReadme(ctx *cli.Context) (err error) {
+func (t *TypicalTask) generateReadme(ctx *cli.Context) (err error) {
 	readmeFile := t.ReadmeFileOrDefault()
 	readmeTemplate := t.ReadmeTemplateOrDefault()
 
@@ -90,7 +90,7 @@ func (t *TypicalTaskTool) generateReadme(ctx *cli.Context) (err error) {
 	return nil
 }
 
-func (t *TypicalTaskTool) cleanProject(ctx *cli.Context) {
+func (t *TypicalTask) cleanProject(ctx *cli.Context) {
 	log.Println("Remove bin folder")
 	os.RemoveAll(typienv.Bin())
 

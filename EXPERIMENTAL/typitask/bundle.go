@@ -1,4 +1,4 @@
-package typimain
+package typitask
 
 import (
 	"io/ioutil"
@@ -11,7 +11,7 @@ const (
 	mainInitFile = "init.go"
 )
 
-func (t *TypicalTaskTool) bundleCliSideEffects() error {
+func (t *TypicalTask) bundleCliSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
@@ -21,7 +21,7 @@ func (t *TypicalTaskTool) bundleCliSideEffects() error {
 	return bundleSideEffects(filename, sideEffects)
 }
 
-func (t *TypicalTaskTool) bundleAppSideEffects() error {
+func (t *TypicalTask) bundleAppSideEffects() error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)

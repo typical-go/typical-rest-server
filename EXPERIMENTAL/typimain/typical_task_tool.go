@@ -2,17 +2,18 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typitask"
 	"gopkg.in/urfave/cli.v1"
 )
 
 // TypicalTaskTool represent typical task tool application
 type TypicalTaskTool struct {
-	typictx.Context
+	typitask.TypicalTask
 }
 
 // NewTypicalTaskTool return new instance of TypicalCli
 func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
-	return &TypicalTaskTool{context}
+	return &TypicalTaskTool{typitask.TypicalTask{context}}
 }
 
 // Cli return the command line interface
@@ -22,7 +23,7 @@ func (t *TypicalTaskTool) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Commands = t.standardTypicalCommand()
+	app.Commands = t.StandardCommands()
 	for key := range t.Modules {
 		module := t.Modules[key]
 		if module.Command != nil {
@@ -37,57 +38,7 @@ func (t *TypicalTaskTool) Cli() *cli.App {
 	}
 
 	// NOTE: export the enviroment before run
-	exportEnviroment()
+	// exportEnviroment()
 
 	return app
-}
-
-func (t *TypicalTaskTool) standardTypicalCommand() []cli.Command {
-	return []cli.Command{
-		{
-			Name:      "build",
-			ShortName: "b",
-			Usage:     "Build the binary",
-			Action:    t.buildBinary,
-		},
-		{
-			Name:      "run",
-			ShortName: "r",
-			Usage:     "Run the binary",
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "no-build",
-					Usage: "Run the binary without build",
-				},
-			},
-			Action: t.runBinary,
-		},
-		{
-			Name:   "release",
-			Usage:  "Release the distribution",
-			Action: t.releaseDistribution,
-		},
-		{
-			Name:  "mock",
-			Usage: "Generate mock class",
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "new",
-					Usage: "Clean the mock package as new generation",
-				},
-			},
-			Action: t.generateMock,
-		},
-		{
-			Name:   "readme",
-			Usage:  "Generate readme document",
-			Action: t.generateReadme,
-		},
-		{
-			Name:        "clean",
-			Usage:       "Clean project from generated file during build time",
-			Description: "Remove binary folder, trigger `go clean --modcache`",
-			Action:      t.cleanProject,
-		},
-	}
 }
