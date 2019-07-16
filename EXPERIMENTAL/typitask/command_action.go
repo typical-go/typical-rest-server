@@ -7,7 +7,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -17,13 +19,13 @@ func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 		log.Printf("Generate default enviroment at %s", envFile)
 	}
 
-	t.bundleAppSideEffects()
+	typigen.AppSideEffects(t.Context)
 
 	binaryPath := typienv.BinaryPath(t.BinaryNameOrDefault())
 	mainPackage := typienv.MainPackage(t.AppPkgOrDefault())
 
 	log.Printf("Build the Binary for '%s' at '%s'", mainPackage, binaryPath)
-	runOrFatal(goCommand(), "build", "-o", binaryPath, mainPackage)
+	util.RunOrFatal(util.GoCommand(), "build", "-o", binaryPath, mainPackage)
 }
 
 func (t *TypicalTask) runBinary(ctx *cli.Context) {
@@ -33,7 +35,7 @@ func (t *TypicalTask) runBinary(ctx *cli.Context) {
 
 	binaryPath := typienv.BinaryPath(t.BinaryNameOrDefault())
 	log.Printf("Run the Binary '%s'", binaryPath)
-	runOrFatal(binaryPath, []string(ctx.Args())...)
+	util.RunOrFatal(binaryPath, []string(ctx.Args())...)
 }
 
 func (t *TypicalTask) runTest(ctx *cli.Context) {
@@ -41,7 +43,7 @@ func (t *TypicalTask) runTest(ctx *cli.Context) {
 	args := []string{"test"}
 	args = append(args, t.ArcheType.GetTestTargets()...)
 	args = append(args, "-coverprofile=cover.out")
-	runOrFatal(goCommand(), args...)
+	util.RunOrFatal(util.GoCommand(), args...)
 }
 
 func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
@@ -49,7 +51,7 @@ func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
 }
 
 func (t *TypicalTask) generateMock(ctx *cli.Context) {
-	runOrFatal(goCommand(), "get", "github.com/golang/mock/mockgen")
+	util.RunOrFatal(util.GoCommand(), "get", "github.com/golang/mock/mockgen")
 	mockPkg := t.MockPkgOrDefault()
 
 	if ctx.Bool("new") {
@@ -61,7 +63,7 @@ func (t *TypicalTask) generateMock(ctx *cli.Context) {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Printf("Generate mock for '%s' at '%s'", mockTarget, dest)
-		runOrFatal(goBinary("mockgen"),
+		util.RunOrFatal(util.GoBinary("mockgen"),
 			"-source", mockTarget,
 			"-destination", dest,
 			"-package", mockPkg)
@@ -96,5 +98,5 @@ func (t *TypicalTask) cleanProject(ctx *cli.Context) {
 
 	log.Println("Trigger go clean")
 	os.Setenv("GO111MODULE", "off") // NOTE:XXX: https://github.com/golang/go/issues/28680
-	runOrFatal(goCommand(), "clean", "-x", "-testcache", "-modcache")
+	util.RunOrFatal(util.GoCommand(), "clean", "-x", "-testcache", "-modcache")
 }

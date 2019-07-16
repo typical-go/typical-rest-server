@@ -1,9 +1,12 @@
-package typitask
+package typigen
 
 import (
 	"io/ioutil"
+	"log"
 	"strings"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
@@ -11,7 +14,9 @@ const (
 	mainInitFile = "init.go"
 )
 
-func (t *TypicalTask) bundleCliSideEffects() error {
+// TaskToolSideEffects generate side effect for CLI
+func TaskToolSideEffects(t typictx.Context) error {
+	log.Println("Update task tool side effects")
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
@@ -21,7 +26,9 @@ func (t *TypicalTask) bundleCliSideEffects() error {
 	return bundleSideEffects(filename, sideEffects)
 }
 
-func (t *TypicalTask) bundleAppSideEffects() error {
+// AppSideEffects generate side effect for application
+func AppSideEffects(t typictx.Context) error {
+	log.Println("Update application side effects")
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
@@ -54,7 +61,7 @@ func bundleSideEffects(filename string, sideEffects []string) (err error) {
 		return
 	}
 
-	runOrFatalSilently(goCommand(), "fmt", filename)
+	util.RunOrFatalSilently(util.GoCommand(), "fmt", filename)
 
 	return
 
