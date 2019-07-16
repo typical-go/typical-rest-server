@@ -22,28 +22,25 @@ func (t *TypicalApplication) Run(arguments []string) error {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = t.action
+	app.Action = t.runActionFunc(t.ArcheType.GetAction())
 
 	for _, cmd := range t.ArcheType.GetCommands() {
 		app.Commands = append(app.Commands, cli.Command{
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
-			Action:    t.invoke(cmd.Action),
+			Action:    t.runActionFunc(cmd.Action),
 		})
 	}
 
 	return app.Run(arguments)
 }
 
-func (t *TypicalApplication) action(ctx *cli.Context) {
-	t.ArcheType.GetAction().Start(typictx.ActionContext{
-		CliContext: ctx,
-		Context:    t.Context,
-	})
-}
-
-func (t *TypicalApplication) invoke(f interface{}) interface{} {
+func (t TypicalApplication) runActionFunc(action typictx.Action) interface{} {
 	return func(ctx *cli.Context) error {
-		return t.Container().Invoke(f)
+		return action.Start(typictx.ActionContext{
+			CliContext: ctx,
+			Context:    t.Context,
+		})
+
 	}
 }
