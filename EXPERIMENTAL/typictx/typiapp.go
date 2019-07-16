@@ -1,18 +1,9 @@
 package typictx
 
-import (
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
-)
-
 // TypiApp contain information of Typical Application
 type TypiApp struct {
-	StartFunc interface{}
-	StopFunc  interface{}
-
 	Constructors []interface{}
+	Action       Action
 	Commands     []Command
 
 	ConfigPrefix   string
@@ -55,29 +46,7 @@ func (a TypiApp) GetCommands() []Command {
 	return a.Commands
 }
 
-// StartApplication to start the application
-func (a TypiApp) StartApplication(ctx StartContext) {
-	container := ctx.Container()
-
-	if a.StopFunc != nil {
-		gracefulStop := make(chan os.Signal)
-		signal.Notify(gracefulStop, syscall.SIGTERM)
-		signal.Notify(gracefulStop, syscall.SIGINT)
-
-		// gracefull shutdown
-		go func() {
-			<-gracefulStop
-			err := container.Invoke(a.StopFunc)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-		}()
-	}
-
-	if a.StartFunc != nil {
-		err := container.Invoke(a.StartFunc)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-	}
+// GetAction to get commands
+func (a TypiApp) GetAction() Action {
+	return a.Action
 }

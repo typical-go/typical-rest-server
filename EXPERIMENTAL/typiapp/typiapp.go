@@ -36,7 +36,7 @@ func (t *TypicalApplication) Run(arguments []string) error {
 }
 
 func (t *TypicalApplication) action(ctx *cli.Context) {
-	t.ArcheType.StartApplication(typictx.StartContext{
+	t.ArcheType.GetAction().Start(typictx.ActionContext{
 		CliContext: ctx,
 		Context:    t.Context,
 	})
