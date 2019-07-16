@@ -8,10 +8,6 @@ import (
 	"os/exec"
 )
 
-func (t *TypicalTaskTool) appPath(name string) string {
-	return fmt.Sprintf("./%s/%s", t.AppPkgOrDefault(), name)
-}
-
 func goBinary(name string) string {
 	return fmt.Sprintf("%s/%s/%s", build.Default.GOPATH, "bin", name)
 }
