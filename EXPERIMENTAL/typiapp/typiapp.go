@@ -15,8 +15,8 @@ func NewTypicalApplication(context typictx.Context) *TypicalApplication {
 	return &TypicalApplication{context}
 }
 
-// Run the typical application
-func (t *TypicalApplication) Run(arguments []string) error {
+// Cli return the command line interface
+func (t *TypicalApplication) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Name = t.Name
 	app.Usage = ""
@@ -32,7 +32,7 @@ func (t *TypicalApplication) Run(arguments []string) error {
 		})
 	}
 
-	return app.Run(arguments)
+	return app
 }
 
 func (t TypicalApplication) runActionFunc(action typictx.Action) interface{} {

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	cli := typimain.NewTypicalTaskTool(typical.Context)
-	err := cli.Run(os.Args)
+	err := cli.Cli().Run(os.Args)
 	if err != nil {
 		log.Fatalf("%s", err.Error())
 	}

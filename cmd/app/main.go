@@ -10,7 +10,7 @@ import (
 
 func main() {
 	app := typiapp.NewTypicalApplication(typical.Context)
-	err := app.Run(os.Args)
+	err := app.Cli().Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}

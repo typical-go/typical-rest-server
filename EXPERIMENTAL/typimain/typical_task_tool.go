@@ -15,8 +15,8 @@ func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
 	return &TypicalTaskTool{context}
 }
 
-// Run the typical task cli
-func (t *TypicalTaskTool) Run(arguments []string) error {
+// Cli return the command line interface
+func (t *TypicalTaskTool) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
@@ -39,7 +39,7 @@ func (t *TypicalTaskTool) Run(arguments []string) error {
 	// NOTE: export the enviroment before run
 	exportEnviroment()
 
-	return app.Run(arguments)
+	return app
 }
 
 func (t *TypicalTaskTool) standardTypicalCommand() []cli.Command {
