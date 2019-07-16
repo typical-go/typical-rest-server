@@ -1,4 +1,4 @@
-package typiapp
+package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
