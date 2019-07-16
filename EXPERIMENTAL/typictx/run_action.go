@@ -1,9 +1,12 @@
 package typictx
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 )
 
 type RunAction struct {
@@ -23,7 +26,20 @@ func (a RunAction) Start(ctx ActionContext) (err error) {
 		// gracefull shutdown
 		go func() {
 			<-gracefulStop
-			err = container.Invoke(a.StopFunc)
+
+			// NOTE: intentionally print new line after "^C"
+			fmt.Println()
+
+			var errs util.Errors
+			errs.Add(container.Invoke(a.StopFunc))
+
+			for _, module := range ctx.Modules {
+				if module.CloseFunc != nil {
+					errs.Add(container.Invoke(module.CloseFunc))
+				}
+			}
+
+			err = errs
 		}()
 	}
 

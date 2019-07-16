@@ -15,6 +15,7 @@ type Module struct {
 	Command            *cli.Command
 	LoadConfigFunc     interface{}
 	OpenFunc           interface{}
+	CloseFunc          interface{}
 	SideEffects        []string
 	TypiAppSideEffects []string
 	TypiCliSideEffects []string

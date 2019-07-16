@@ -2,6 +2,7 @@ package module
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/config"
@@ -46,7 +47,12 @@ func NewPostgres() *typictx.Module {
 		return &cfg, err
 	}
 	m.OpenFunc = func(cfg typidb.Config) (*sql.DB, error) {
+		log.Println("Open postgres connection")
 		return sql.Open(cfg.DriverName(), cfg.DataSource())
+	}
+	m.CloseFunc = func(db *sql.DB) error {
+		log.Println("Close postgres connection")
+		return db.Close()
 	}
 	return m
 }

@@ -33,7 +33,7 @@ func init() {
 			},
 			Action: typictx.RunAction{
 				StartFunc: startApplication,
-				StopFunc:  gracefulShutdown,
+				StopFunc:  stopApplication,
 			},
 			TestTargets: []string{
 				"./app/controller",
