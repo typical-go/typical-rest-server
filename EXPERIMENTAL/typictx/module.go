@@ -7,27 +7,39 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Name                string
-	ShortName           string
-	Usage               string
-	ConfigPrefix        string
-	Config              interface{}
-	Command             *cli.Command
-	LoadConfigFunc      interface{}
-	OpenFunc            interface{}
-	CloseFunc           interface{}
+	Name         string
+	ShortName    string
+	Usage        string
+	ConfigPrefix string
+	Config       interface{}
+
+	Command      *cli.Command
+	Constructors []interface{}
+
+	OpenFunc  interface{}
+	CloseFunc interface{}
+
 	SideEffects         []string
 	AppSideEffects      []string
 	TaskToolSideEffects []string
+}
+
+// Inject dependencies for the module
+func (m *Module) Inject(container *dig.Container) {
+	for _, constructor := range m.Constructors {
+		container.Provide(constructor)
+	}
+	container.Provide(m.OpenFunc)
+	return
 }
 
 // Invoke the function for CLI command
 func (m *Module) Invoke(invokeFunc interface{}) interface{} {
 	return func(ctx *cli.Context) error {
 		container := dig.New()
-		container.Provide(m.LoadConfigFunc)
-		container.Provide(m.OpenFunc)
-		container.Provide(ctx.Args)
+		container.Provide(ctx.Args) // NOTE: inject cli arguments
+		m.Inject(container)
+
 		return container.Invoke(invokeFunc)
 	}
 }

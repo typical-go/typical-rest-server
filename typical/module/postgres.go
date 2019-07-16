@@ -41,10 +41,12 @@ func NewPostgres() *typictx.Module {
 			{Name: "rollback", Usage: "Rollback Database", Action: m.Invoke(tool.RollbackDB)},
 		},
 	}
-	m.LoadConfigFunc = func() (typidb.Config, error) {
-		var cfg config.PostgresConfig
-		err := envconfig.Process(m.ConfigPrefix, &cfg)
-		return &cfg, err
+	m.Constructors = []interface{}{
+		func() (typidb.Config, error) {
+			var cfg config.PostgresConfig
+			err := envconfig.Process(m.ConfigPrefix, &cfg)
+			return &cfg, err
+		},
 	}
 	m.OpenFunc = func(cfg typidb.Config) (*sql.DB, error) {
 		log.Println("Open postgres connection")

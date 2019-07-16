@@ -10,10 +10,8 @@ func (c Context) Container() *dig.Container {
 		container.Provide(constructor)
 	}
 
-	for key := range c.Modules {
-		module := c.Modules[key]
-		container.Provide(module.LoadConfigFunc)
-		container.Provide(module.OpenFunc)
+	for _, module := range c.Modules {
+		module.Inject(container)
 	}
 
 	return container
