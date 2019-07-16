@@ -25,10 +25,16 @@ func (t *TypicalTask) StandardCommands() []cli.Command {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "no-build",
-					Usage: "Run the binary without build",
+					Usage: "Run the binary",
 				},
 			},
 			Action: t.runBinary,
+		},
+		{
+			Name:      "test",
+			ShortName: "t",
+			Usage:     "Run the testing",
+			Action:    t.runTest,
 		},
 		{
 			Name:   "release",
