@@ -7,18 +7,18 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Name               string
-	ShortName          string
-	Usage              string
-	ConfigPrefix       string
-	Config             interface{}
-	Command            *cli.Command
-	LoadConfigFunc     interface{}
-	OpenFunc           interface{}
-	CloseFunc          interface{}
-	SideEffects        []string
-	TypiAppSideEffects []string
-	TypiCliSideEffects []string
+	Name                string
+	ShortName           string
+	Usage               string
+	ConfigPrefix        string
+	Config              interface{}
+	Command             *cli.Command
+	LoadConfigFunc      interface{}
+	OpenFunc            interface{}
+	CloseFunc           interface{}
+	SideEffects         []string
+	AppSideEffects      []string
+	TaskToolSideEffects []string
 }
 
 // Invoke the function for CLI command

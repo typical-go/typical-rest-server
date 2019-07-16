@@ -25,7 +25,7 @@ func NewPostgres() *typictx.Module {
 		SideEffects: []string{
 			"github.com/lib/pq",
 		},
-		TypiCliSideEffects: []string{
+		TaskToolSideEffects: []string{
 			"github.com/golang-migrate/migrate/database/postgres",
 			"github.com/golang-migrate/migrate/source/file",
 		},

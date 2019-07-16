@@ -20,10 +20,10 @@ func TaskToolSideEffects(t typictx.Context) error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
-		sideEffects = append(sideEffects, module.TypiCliSideEffects...)
+		sideEffects = append(sideEffects, module.TaskToolSideEffects...)
 	}
 	filename := typienv.TypicalMainPackage() + "/" + mainInitFile
-	return bundleSideEffects(filename, sideEffects)
+	return generateSideEffects(filename, sideEffects)
 }
 
 // AppSideEffects generate side effect for application
@@ -32,14 +32,14 @@ func AppSideEffects(t typictx.Context) error {
 	var sideEffects []string
 	for _, module := range t.Modules {
 		sideEffects = append(sideEffects, module.SideEffects...)
-		sideEffects = append(sideEffects, module.TypiAppSideEffects...)
+		sideEffects = append(sideEffects, module.AppSideEffects...)
 	}
 
 	filename := typienv.MainPackage(t.AppPkgOrDefault()) + "/" + mainInitFile
-	return bundleSideEffects(filename, sideEffects)
+	return generateSideEffects(filename, sideEffects)
 }
 
-func bundleSideEffects(filename string, sideEffects []string) (err error) {
+func generateSideEffects(filename string, sideEffects []string) (err error) {
 
 	// TODO: make encapsulation so all generated code can be handle
 	builder := &strings.Builder{}
