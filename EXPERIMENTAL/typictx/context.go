@@ -4,6 +4,7 @@ import (
 	"os"
 	"strings"
 
+	"go.uber.org/dig"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -12,7 +13,7 @@ type Context struct {
 	Name        string
 	Version     string
 	Description string
-	ArcheType   ArcheType
+	AppModule   AppModule
 
 	ReadmeTemplate string
 	ReadmeFile     string
@@ -67,4 +68,19 @@ func (c Context) MockPkgOrDefault() string {
 		return defaultMockPkg
 	}
 	return c.MockPkg
+}
+
+// Container to return the depedency injection
+func (c Context) Container() *dig.Container {
+	container := dig.New()
+
+	for _, constructor := range c.AppModule.GetConstructors() {
+		container.Provide(constructor)
+	}
+
+	for _, module := range c.Modules {
+		module.Inject(container)
+	}
+
+	return container
 }

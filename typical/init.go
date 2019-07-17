@@ -19,7 +19,7 @@ func init() {
 		Version:     "0.1.0",
 		Description: "Example of typical and scalable RESTful API Server for Go",
 
-		ArcheType: typictx.TypiApp{
+		AppModule: typictx.TypiApp{
 			Config:       &config.AppConfig{},
 			ConfigPrefix: "APP",
 			ConfigLoadFunc: func() (config config.AppConfig, err error) {

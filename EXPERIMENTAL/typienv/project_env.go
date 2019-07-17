@@ -43,7 +43,7 @@ func ExportProjectEnv() (err error) {
 	return
 }
 
-func GenerateProjectEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
+func GenerateAppEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
 	_, err = os.Stat(envFile)
 	if !os.IsNotExist(err) {
 		isGenerated = false
@@ -55,7 +55,7 @@ func GenerateProjectEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err er
 		return
 	}
 
-	envconfig.Usagef(ctx.ArcheType.GetConfigPrefix(), ctx.ArcheType.GetConfig(), buf, envTemplate)
+	envconfig.Usagef(ctx.AppModule.GetConfigPrefix(), ctx.AppModule.GetConfig(), buf, envTemplate)
 
 	for i := range ctx.Modules {
 		module := ctx.Modules[i]

@@ -1,6 +1,6 @@
 package typictx
 
-type ArcheType interface {
+type AppModule interface {
 	GetMockTargets() []string
 	GetTestTargets() []string
 	GetConstructors() []interface{}

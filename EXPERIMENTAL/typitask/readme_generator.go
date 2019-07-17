@@ -24,7 +24,7 @@ func (r Readme) ConfigDoc() string {
 	buf := new(bytes.Buffer)
 
 	buf.WriteString("\nApplication\n")
-	envconfig.Usagef(r.ArcheType.GetConfigPrefix(), r.ArcheType.GetConfig(), buf, configTemplate)
+	envconfig.Usagef(r.AppModule.GetConfigPrefix(), r.AppModule.GetConfig(), buf, configTemplate)
 
 	for i := range r.Modules {
 		module := r.Modules[i]
