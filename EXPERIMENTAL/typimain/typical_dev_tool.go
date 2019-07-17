@@ -7,14 +7,14 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-// TypicalTaskTool represent typical task tool application
-type TypicalTaskTool struct {
+// TypicalDevTool represent typical task tool application
+type TypicalDevTool struct {
 	typitask.TypicalTask
 }
 
 // NewTypicalTaskTool return new instance of TypicalCli
-func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
-	return &TypicalTaskTool{
+func NewTypicalTaskTool(context typictx.Context) *TypicalDevTool {
+	return &TypicalDevTool{
 		typitask.TypicalTask{
 			Context: context,
 		},
@@ -22,7 +22,7 @@ func NewTypicalTaskTool(context typictx.Context) *TypicalTaskTool {
 }
 
 // Cli return the command line interface
-func (t *TypicalTaskTool) Cli() *cli.App {
+func (t *TypicalDevTool) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
