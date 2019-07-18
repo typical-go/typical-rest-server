@@ -4,5 +4,6 @@ package typictx
 type Command struct {
 	Name      string
 	ShortName string
+	Usage     string
 	Action    Action
 }

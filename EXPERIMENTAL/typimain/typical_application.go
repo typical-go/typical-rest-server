@@ -28,6 +28,7 @@ func (t *TypicalApplication) Cli() *cli.App {
 		app.Commands = append(app.Commands, cli.Command{
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
+			Usage:     cmd.Usage,
 			Action:    t.runActionFunc(cmd.Action),
 		})
 	}
