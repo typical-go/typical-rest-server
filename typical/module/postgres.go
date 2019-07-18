@@ -30,16 +30,11 @@ func NewPostgres() *typictx.Module {
 			"github.com/golang-migrate/migrate/source/file",
 		},
 	}
-	m.Command = &cli.Command{
-		Name:      m.Name,
-		ShortName: m.ShortName,
-		Usage:     m.Usage,
-		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: m.Invoke(tool.CreateDB)},
-			{Name: "drop", Usage: "Drop Database", Action: m.Invoke(tool.DropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: m.Invoke(tool.MigrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: m.Invoke(tool.RollbackDB)},
-		},
+	m.Commands = []cli.Command{
+		{Name: "create", Usage: "Create New Database", Action: m.Invoke(tool.CreateDB)},
+		{Name: "drop", Usage: "Drop Database", Action: m.Invoke(tool.DropDB)},
+		{Name: "migrate", Usage: "Migrate Database", Action: m.Invoke(tool.MigrateDB)},
+		{Name: "rollback", Usage: "Rollback Database", Action: m.Invoke(tool.RollbackDB)},
 	}
 	m.Constructors = []interface{}{
 		func() (typidb.Config, error) {

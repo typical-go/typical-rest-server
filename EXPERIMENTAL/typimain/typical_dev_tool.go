@@ -31,10 +31,15 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	app.Commands = t.StandardCommands()
 	for key := range t.Modules {
 		module := t.Modules[key]
-		if module.Command != nil {
-			app.Commands = append(app.Commands, *module.Command)
-		}
 
+		if len(module.Commands) > 0 {
+			app.Commands = append(app.Commands, cli.Command{
+				Name:        module.Name,
+				ShortName:   module.ShortName,
+				Usage:       module.Usage,
+				Subcommands: module.Commands,
+			})
+		}
 	}
 
 	for key := range t.Commands {
