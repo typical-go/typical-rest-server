@@ -19,9 +19,9 @@ type Module struct {
 	OpenFunc  interface{}
 	CloseFunc interface{}
 
-	SideEffects         []string
-	AppSideEffects      []string
-	TaskToolSideEffects []string
+	SideEffects        []string
+	AppSideEffects     []string
+	DevToolSideEffects []string
 }
 
 // Inject dependencies for the module
