@@ -1,5 +1,6 @@
 package typictx
 
+// AppModule is application module
 type AppModule interface {
 	GetMockTargets() []string
 	GetTestTargets() []string

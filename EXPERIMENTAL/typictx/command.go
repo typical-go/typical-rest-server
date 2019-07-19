@@ -2,8 +2,8 @@ package typictx
 
 // Command represent the command in CLI
 type Command struct {
-	Name      string
-	ShortName string
-	Usage     string
-	Action    Action
+	Name       string
+	ShortName  string
+	Usage      string
+	ActionFunc ActionFunc
 }
