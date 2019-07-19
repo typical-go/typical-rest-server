@@ -9,13 +9,14 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 )
 
-type RunAction struct {
+// MainAction hadling main process action
+type MainAction struct {
 	StartFunc interface{}
 	StopFunc  interface{}
 }
 
 // Start the action
-func (a RunAction) Start(ctx ActionContext) (err error) {
+func (a MainAction) Start(ctx ActionContext) (err error) {
 	container := ctx.Container()
 
 	if a.StopFunc != nil {

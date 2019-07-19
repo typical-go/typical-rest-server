@@ -31,7 +31,7 @@ func init() {
 				controller.NewBookController,
 				repository.NewBookRepository,
 			},
-			Action: typictx.RunAction{
+			Action: typictx.MainAction{
 				StartFunc: startApplication,
 				StopFunc:  stopApplication,
 			},
