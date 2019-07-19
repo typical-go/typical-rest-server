@@ -81,10 +81,10 @@ func (t *Tool) dropDB(config Config) (err error) {
 }
 
 func (t *Tool) migrateDB(config Config) error {
-	source := config.MigrationSource()
-	log.Printf("Migrate database from source '%s'\n", source)
+	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
+	log.Printf("Migrate database from source '%s'\n", sourceURL)
 
-	migration, err := migrate.New(source, config.DataSource())
+	migration, err := migrate.New(sourceURL, config.DataSource())
 	if err != nil {
 		return err
 	}
@@ -93,10 +93,10 @@ func (t *Tool) migrateDB(config Config) error {
 }
 
 func (t *Tool) rollbackDB(config Config) error {
-	source := config.MigrationSource()
-	log.Printf("Migrate database from source '%s'\n", source)
+	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
+	log.Printf("Migrate database from source '%s'\n", sourceURL)
 
-	migration, err := migrate.New(source, config.DataSource())
+	migration, err := migrate.New(sourceURL, config.DataSource())
 	if err != nil {
 		return err
 	}
