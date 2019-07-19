@@ -21,12 +21,10 @@ func NewPostgres() *typictx.Module {
 		Usage:        "Postgres Database Module",
 		ConfigPrefix: "PG",
 		Config:       &config.PostgresConfig{},
-		SideEffects: []string{
-			"github.com/lib/pq",
-		},
-		DevToolSideEffects: []string{
-			"github.com/golang-migrate/migrate/database/postgres",
-			"github.com/golang-migrate/migrate/source/file",
+		SideEffects: []*typictx.SideEffect{
+			typictx.NewSideEffect("github.com/lib/pq"),
+			typictx.NewSideEffect("github.com/golang-migrate/migrate/database/postgres").ExcludeApp(),
+			typictx.NewSideEffect("github.com/golang-migrate/migrate/source/file").ExcludeApp(),
 		},
 		Commands: []typictx.Command{
 			{Name: "create", Usage: "Create New Database", ActionFunc: tool.CreateDB},

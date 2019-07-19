@@ -11,7 +11,7 @@ const (
 	envName     = "TYPICAL_NAME"
 	defaultBin  = "bin"
 	defaultCmd  = "cmd"
-	defaultName = "typical"
+	defaultName = "typical-dev-tool"
 )
 
 // BinaryPath return complete path of typical binary
@@ -25,6 +25,7 @@ func MainPackage(name string) string {
 }
 
 // TypicalMainPackage return main package path of Typical CLI
+// TODO: rename to TypicalDevToolPackage()
 func TypicalMainPackage() string {
 	return MainPackage(Name())
 }

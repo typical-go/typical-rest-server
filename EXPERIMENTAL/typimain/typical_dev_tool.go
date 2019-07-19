@@ -3,6 +3,7 @@ package typimain
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typitask"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -57,6 +58,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	}
 
 	// TODO: put it at before run of cli.
+	typigen.TypicalDevToolSideEffects(t.Context)
 	typienv.ExportProjectEnv()
 
 	return app
