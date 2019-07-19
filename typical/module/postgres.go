@@ -9,7 +9,6 @@ import (
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
-	"gopkg.in/urfave/cli.v1"
 )
 
 // NewPostgres return new instance of Module for postgrs
@@ -30,11 +29,11 @@ func NewPostgres() *typictx.Module {
 			"github.com/golang-migrate/migrate/source/file",
 		},
 	}
-	m.Commands = []cli.Command{
-		{Name: "create", Usage: "Create New Database", Action: m.Invoke(tool.CreateDB)},
-		{Name: "drop", Usage: "Drop Database", Action: m.Invoke(tool.DropDB)},
-		{Name: "migrate", Usage: "Migrate Database", Action: m.Invoke(tool.MigrateDB)},
-		{Name: "rollback", Usage: "Rollback Database", Action: m.Invoke(tool.RollbackDB)},
+	m.Commands = []typictx.Command{
+		{Name: "create", Usage: "Create New Database", ActionFunc: tool.CreateDB},
+		{Name: "drop", Usage: "Drop Database", ActionFunc: tool.DropDB},
+		{Name: "migrate", Usage: "Migrate Database", ActionFunc: tool.MigrateDB},
+		{Name: "rollback", Usage: "Rollback Database", ActionFunc: tool.RollbackDB},
 	}
 	m.Constructors = []interface{}{
 		func() (typidb.Config, error) {

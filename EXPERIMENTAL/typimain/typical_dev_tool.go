@@ -33,12 +33,21 @@ func (t *TypicalDevTool) Cli() *cli.App {
 		module := t.Modules[key]
 
 		if len(module.Commands) > 0 {
-			app.Commands = append(app.Commands, cli.Command{
-				Name:        module.Name,
-				ShortName:   module.ShortName,
-				Usage:       module.Usage,
-				Subcommands: module.Commands,
-			})
+			command := cli.Command{
+				Name:      module.Name,
+				ShortName: module.ShortName,
+				Usage:     module.Usage,
+			}
+			for i := range module.Commands {
+				subCommand := module.Commands[i]
+				command.Subcommands = append(command.Subcommands, cli.Command{
+					Name:      subCommand.Name,
+					ShortName: subCommand.ShortName,
+					Usage:     subCommand.Usage,
+					Action:    runActionFunc(t.Context, subCommand.ActionFunc),
+				})
+			}
+			app.Commands = append(app.Commands, command)
 		}
 	}
 

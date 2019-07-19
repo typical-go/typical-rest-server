@@ -13,7 +13,7 @@ type Module struct {
 	ConfigPrefix string
 	Config       interface{}
 
-	Commands     []cli.Command
+	Commands     []Command
 	Constructors []interface{}
 
 	OpenFunc  interface{}

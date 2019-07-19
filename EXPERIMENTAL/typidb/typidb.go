@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/golang-migrate/migrate"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
 // Config for database configuration
@@ -32,7 +33,26 @@ func NewPostgresTool() *Tool {
 }
 
 // CreateDB is tool to create new database
-func (t *Tool) CreateDB(config Config) (err error) {
+func (t *Tool) CreateDB(context typictx.ActionContext) (err error) {
+	return context.Context.Container().Invoke(t.createDB)
+}
+
+// DropDB is tool to drop database
+func (t *Tool) DropDB(context typictx.ActionContext) (err error) {
+	return context.Context.Container().Invoke(t.dropDB)
+}
+
+// MigrateDB is tool to migrate database
+func (t *Tool) MigrateDB(context typictx.ActionContext) (err error) {
+	return context.Context.Container().Invoke(t.migrateDB)
+}
+
+// RollbackDB is tool to rollback database
+func (t *Tool) RollbackDB(context typictx.ActionContext) (err error) {
+	return context.Context.Container().Invoke(t.rollbackDB)
+}
+
+func (t *Tool) createDB(config Config) (err error) {
 	query := fmt.Sprintf(t.CreateDatabaseScriptTemplate, config.DatabaseName())
 	log.Printf(query)
 
@@ -46,8 +66,7 @@ func (t *Tool) CreateDB(config Config) (err error) {
 	return
 }
 
-// DropDB is tool to drop database
-func (t *Tool) DropDB(config Config) (err error) {
+func (t *Tool) dropDB(config Config) (err error) {
 	query := fmt.Sprintf(t.DropDatabaseScriptTemplate, config.DatabaseName())
 	log.Printf(query)
 
@@ -61,8 +80,7 @@ func (t *Tool) DropDB(config Config) (err error) {
 	return
 }
 
-// MigrateDB is tool to migrate database
-func (t *Tool) MigrateDB(config Config) error {
+func (t *Tool) migrateDB(config Config) error {
 	source := config.MigrationSource()
 	log.Printf("Migrate database from source '%s'\n", source)
 
@@ -74,8 +92,7 @@ func (t *Tool) MigrateDB(config Config) error {
 	return migration.Up()
 }
 
-// RollbackDB is tool to rollback database
-func (t *Tool) RollbackDB(config Config) error {
+func (t *Tool) rollbackDB(config Config) error {
 	source := config.MigrationSource()
 	log.Printf("Migrate database from source '%s'\n", source)
 
