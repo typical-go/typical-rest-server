@@ -100,22 +100,13 @@ func (t *TypicalTask) cleanProject(ctx *cli.Context) {
 }
 
 func (t *TypicalTask) checkStatus(ctx *cli.Context) {
-	statusReport := map[string]string{}
-	for _, module := range t.Context.Modules {
-		err := t.Container().Invoke(module.StatusFunc)
-		if err != nil {
-			statusReport[module.Name] = err.Error()
-		} else {
-			statusReport[module.Name] = "ok"
-		}
-	}
-
+	statusReport := t.Context.CheckModuleStatus()
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Module Name", "Status"})
 
 	for moduleName, status := range statusReport {
 		table.Append([]string{moduleName, status})
 	}
-	table.Render() // Send output
+	table.Render()
 
 }

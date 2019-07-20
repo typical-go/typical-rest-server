@@ -1,6 +1,10 @@
 package typical
 
 import (
+	"context"
+	"log"
+	"time"
+
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
@@ -32,8 +36,17 @@ func init() {
 				repository.NewBookRepository,
 			},
 			Action: typictx.MainAction{
-				StartFunc: startApplication,
-				StopFunc:  stopApplication,
+				StartFunc: func(s *app.Server) error {
+					log.Println("Start the application")
+					return s.Serve()
+				},
+				StopFunc: func(s *app.Server) (err error) {
+					log.Println("Stop the application")
+					ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+					defer cancel()
+					s.Shutdown(ctx)
+					return
+				},
 			},
 			TestTargets: []string{
 				"./app/controller",
@@ -43,7 +56,6 @@ func init() {
 				"./app/repository/book_repo.go",
 			},
 		},
-
 		Modules: []*typictx.Module{
 			module.NewPostgres(),
 		},
