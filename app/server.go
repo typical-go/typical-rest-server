@@ -31,6 +31,8 @@ func NewServer(
 		bookController:        bookController,
 		applicationController: applicationController,
 	}
+	
+	initLogger(s)
 	initMiddlewares(s)
 	initRoutes(s)
 
