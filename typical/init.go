@@ -31,6 +31,7 @@ func init() {
 			Constructors: []interface{}{
 				app.NewServer,
 				controller.NewBookController,
+				controller.NewApplicationController,
 				repository.NewBookRepository,
 			},
 			Action: typictx.MainAction{

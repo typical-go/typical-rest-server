@@ -14,19 +14,22 @@ import (
 type Server struct {
 	*echo.Echo
 	config.AppConfig
-	bookController controller.BookController
+	bookController        controller.BookController
+	applicationController controller.ApplicationController
 }
 
 // NewServer return instance of server
 func NewServer(
 	config config.AppConfig,
 	bookController controller.BookController,
+	applicationController controller.ApplicationController,
 ) *Server {
 
 	s := &Server{
-		Echo:           echo.New(),
-		AppConfig:      config,
-		bookController: bookController,
+		Echo:                  echo.New(),
+		AppConfig:             config,
+		bookController:        bookController,
+		applicationController: applicationController,
 	}
 	initMiddlewares(s)
 	initRoutes(s)
