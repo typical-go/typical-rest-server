@@ -47,5 +47,8 @@ func NewPostgres() *typictx.Module {
 			log.Println("Close postgres connection")
 			return db.Close()
 		},
+		StatusFunc: func(db *sql.DB) error {
+			return db.Ping()
+		},
 	}
 }

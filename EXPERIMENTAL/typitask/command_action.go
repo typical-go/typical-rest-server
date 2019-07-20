@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
@@ -95,5 +96,26 @@ func (t *TypicalTask) cleanProject(ctx *cli.Context) {
 
 	log.Println("Trigger go clean")
 	os.Setenv("GO111MODULE", "off") // NOTE:XXX: https://github.com/golang/go/issues/28680
-	util.RunOrFatal(util.GoCommand(), "clean", "-x", "-testcache", "-modcache")
+	util.RunOrFatal(util.GoCommand(), "clean", "-x", "-testcache", "-modcachœœe")
+}
+
+func (t *TypicalTask) checkStatus(ctx *cli.Context) {
+	statusReport := map[string]string{}
+	for _, module := range t.Context.Modules {
+		err := t.Container().Invoke(module.StatusFunc)
+		if err != nil {
+			statusReport[module.Name] = err.Error()
+		} else {
+			statusReport[module.Name] = "ok"
+		}
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Module Name", "Status"})
+
+	for moduleName, status := range statusReport {
+		table.Append([]string{moduleName, status})
+	}
+	table.Render() // Send output
+
 }

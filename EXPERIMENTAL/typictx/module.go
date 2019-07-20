@@ -16,8 +16,9 @@ type Module struct {
 	Commands     []Command
 	Constructors []interface{}
 
-	OpenFunc  interface{}
-	CloseFunc interface{}
+	OpenFunc   interface{}
+	CloseFunc  interface{}
+	StatusFunc interface{}
 
 	SideEffects []*SideEffect
 }
