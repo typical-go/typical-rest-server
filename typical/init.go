@@ -1,9 +1,7 @@
 package typical
 
 import (
-	"context"
 	"log"
-	"time"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -42,10 +40,7 @@ func init() {
 				},
 				StopFunc: func(s *app.Server) (err error) {
 					log.Println("Stop the application")
-					ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-					defer cancel()
-					s.Shutdown(ctx)
-					return
+					return s.Shutdown()
 				},
 			},
 			TestTargets: []string{

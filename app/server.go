@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/controller"
@@ -41,7 +43,14 @@ func (s *Server) CRUDController(entity string, crud controller.CRUDController) {
 	s.DELETE(fmt.Sprintf("/%s/:id", entity), crud.Delete)
 }
 
-// Serve start serve http request
+// Serve to start to serve
 func (s *Server) Serve() error {
-	return s.Start(s.Address)
+	return s.Echo.Start(s.Address)
+}
+
+// Shutdown the server
+func (s *Server) Shutdown() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	return s.Echo.Shutdown(ctx)
 }
