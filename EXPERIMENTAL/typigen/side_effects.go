@@ -2,12 +2,12 @@ package typigen
 
 import (
 	"io/ioutil"
-	"log"
 	"strings"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 
 // TypicalDevToolSideEffects generate side effect for typical-dev-tool
 func TypicalDevToolSideEffects(t typictx.Context) error {
-	log.Println("Update typical dev tool side effects")
+	log.Info("Update typical dev tool side effects")
 	var libraries []string
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {
@@ -31,7 +31,7 @@ func TypicalDevToolSideEffects(t typictx.Context) error {
 
 // AppSideEffects generate side effect for application
 func AppSideEffects(t typictx.Context) error {
-	log.Println("Update application side effects")
+	log.Info("Update application side effects")
 	var libraries []string
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {

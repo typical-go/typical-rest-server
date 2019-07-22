@@ -2,12 +2,12 @@ package typienv
 
 import (
 	"bufio"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -39,7 +39,7 @@ func ExportProjectEnv() (err error) {
 		}
 	}
 
-	log.Println(builder.String())
+	log.Info(builder.String())
 	return
 }
 
@@ -63,7 +63,7 @@ func GenerateAppEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error)
 	}
 
 	isGenerated = true
-	log.Printf("Generate new project environment at '%s'", envFile)
+	log.Infof("Generate new project environment at '%s'", envFile)
 
 	return
 }

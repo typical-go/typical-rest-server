@@ -2,13 +2,13 @@ package module
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/config"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
+	log "github.com/sirupsen/logrus"
 )
 
 // NewPostgres return new instance of Module for postgrs
@@ -40,11 +40,11 @@ func NewPostgres() *typictx.Module {
 			},
 		},
 		OpenFunc: func(cfg typidb.Config) (*sql.DB, error) {
-			log.Println("Open postgres connection")
+			log.Info("Open postgres connection")
 			return sql.Open(cfg.DriverName(), cfg.DataSource())
 		},
 		CloseFunc: func(db *sql.DB) error {
-			log.Println("Close postgres connection")
+			log.Info("Close postgres connection")
 			return db.Close()
 		},
 		StatusFunc: func(db *sql.DB) error {

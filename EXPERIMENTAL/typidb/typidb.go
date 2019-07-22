@@ -3,10 +3,10 @@ package typidb
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	log "github.com/sirupsen/logrus"
 )
 
 // Config for database configuration
@@ -54,7 +54,7 @@ func (t *Tool) RollbackDB(context typictx.ActionContext) (err error) {
 
 func (t *Tool) createDB(config Config) (err error) {
 	query := fmt.Sprintf(t.CreateDatabaseScriptTemplate, config.DatabaseName())
-	log.Printf(query)
+	log.Infof(query)
 
 	conn, err := sql.Open(config.DriverName(), config.AdminDataSource())
 	if err != nil {
@@ -68,7 +68,7 @@ func (t *Tool) createDB(config Config) (err error) {
 
 func (t *Tool) dropDB(config Config) (err error) {
 	query := fmt.Sprintf(t.DropDatabaseScriptTemplate, config.DatabaseName())
-	log.Printf(query)
+	log.Infof(query)
 
 	conn, err := sql.Open(config.DriverName(), config.AdminDataSource())
 	if err != nil {
@@ -82,7 +82,7 @@ func (t *Tool) dropDB(config Config) (err error) {
 
 func (t *Tool) migrateDB(config Config) error {
 	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
-	log.Printf("Migrate database from source '%s'\n", sourceURL)
+	log.Infof("Migrate database from source '%s'\n", sourceURL)
 
 	migration, err := migrate.New(sourceURL, config.DataSource())
 	if err != nil {
@@ -94,7 +94,7 @@ func (t *Tool) migrateDB(config Config) error {
 
 func (t *Tool) rollbackDB(config Config) error {
 	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
-	log.Printf("Migrate database from source '%s'\n", sourceURL)
+	log.Infof("Migrate database from source '%s'\n", sourceURL)
 
 	migration, err := migrate.New(sourceURL, config.DataSource())
 	if err != nil {

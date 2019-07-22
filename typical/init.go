@@ -1,8 +1,6 @@
 package typical
 
 import (
-	"log"
-
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
@@ -10,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/typical/module"
+	log "github.com/sirupsen/logrus"
 )
 
 // Context instance of Context
@@ -36,11 +35,11 @@ func init() {
 			},
 			Action: typictx.MainAction{
 				StartFunc: func(s *app.Server) error {
-					log.Println("Start the application")
+					log.Info("Start the application")
 					return s.Serve()
 				},
 				StopFunc: func(s *app.Server) (err error) {
-					log.Println("Stop the application")
+					log.Info("Stop the application")
 					return s.Shutdown()
 				},
 			},
