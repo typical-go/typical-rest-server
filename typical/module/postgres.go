@@ -3,12 +3,11 @@ package module
 import (
 	"database/sql"
 
-	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/config"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
-	log "github.com/sirupsen/logrus"
 )
 
 // NewPostgres return new instance of Module for postgrs
@@ -32,14 +31,7 @@ func NewPostgres() *typictx.Module {
 			{Name: "migrate", Usage: "Migrate Database", ActionFunc: tool.MigrateDB},
 			{Name: "rollback", Usage: "Rollback Database", ActionFunc: tool.RollbackDB},
 		},
-		Constructors: []interface{}{
-			func() (typidb.Config, error) {
-				var cfg config.PostgresConfig
-				err := envconfig.Process("PG", &cfg)
-				return &cfg, err
-			},
-		},
-		OpenFunc: func(cfg typidb.Config) (*sql.DB, error) {
+		OpenFunc: func(cfg config.PostgresConfig) (*sql.DB, error) {
 			log.Info("Open postgres connection")
 			return sql.Open(cfg.DriverName(), cfg.DataSource())
 		},

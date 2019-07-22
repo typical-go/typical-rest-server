@@ -22,7 +22,8 @@ type Context struct {
 	MockPkg    string
 	BinaryName string
 
-	Modules []*Module
+	Modules      []*Module
+	Constructors []interface{}
 
 	Commands []cli.Command
 }
@@ -73,6 +74,10 @@ func (c Context) MockPkgOrDefault() string {
 // Container to return the depedency injection
 func (c Context) Container() *dig.Container {
 	container := dig.New()
+
+	for _, constructor := range c.Constructors {
+		container.Provide(constructor)
+	}
 
 	for _, constructor := range c.AppModule.GetConstructors() {
 		container.Provide(constructor)

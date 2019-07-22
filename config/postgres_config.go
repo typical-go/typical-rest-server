@@ -1,9 +1,15 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
+)
 
 // PostgresConfig contain postgres database configuration
 type PostgresConfig struct {
+	typidb.Config
+
 	DbName       string `required:"true" default:"typical-rest-server"`
 	User         string `required:"true" default:"default_user"`
 	Password     string `required:"true" default:"default_password"`
