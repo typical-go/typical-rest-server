@@ -4,10 +4,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
+	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -67,8 +67,6 @@ func generateSideEffects(filename string, libraries []string) (err error) {
 		return
 	}
 
-	util.RunOrFatalSilently(util.GoCommand(), "fmt", filename)
-
+	bash.GoFmt(filename)
 	return
-
 }
