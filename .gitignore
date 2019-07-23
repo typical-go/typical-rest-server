@@ -1,11 +1,11 @@
-# binary name
-typical-rest-server
-
-# dependencies folder
+# local dependencies folder
 /vendor
 
 # binaries folder
 /bin
+
+# release folder 
+/release
 
 # local environment variable
 .envrc
@@ -14,5 +14,6 @@ typical-rest-server
 # testing
 cover.out
 
+# text editor/IDE
 .idea
 .vscode

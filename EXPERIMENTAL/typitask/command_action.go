@@ -2,9 +2,9 @@ package typitask
 
 import (
 	"fmt"
-	"html/template"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
@@ -43,8 +43,27 @@ func (t *TypicalTask) runTest(ctx *cli.Context) {
 }
 
 func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
+
 	t.runTest(ctx)
-	fmt.Println("Not implemented")
+	t.generateReadme(ctx)
+
+	goos := []string{"linux", "darwin"}
+	goarch := []string{"amd64"}
+
+	mainPackage := typienv.AppMainPackage()
+
+	for _, os1 := range goos {
+		os.Setenv("GOOS", os1)
+		for _, arch := range goarch {
+			// TODO: using ldflags
+			binaryName := fmt.Sprintf("%s/%s_%s_%s", typienv.Release(), t.BinaryNameOrDefault(), os1, arch)
+			os.Setenv("GOARCH", arch)
+
+			log.Infof("Create release for %s/%s: %s", os1, arch, binaryName)
+			bash.GoBuild(binaryName, mainPackage)
+		}
+	}
+
 }
 
 func (t *TypicalTask) generateMock(ctx *cli.Context) {

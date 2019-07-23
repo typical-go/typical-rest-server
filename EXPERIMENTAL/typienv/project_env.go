@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
 const (

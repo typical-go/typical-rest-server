@@ -10,12 +10,14 @@ const (
 	envBin     = "TYPICAL_BIN"
 	envCmd     = "TYPICAL_CMD"
 	envMock    = "TYPICAL_MOCK"
+	envRelease = "TYPICAL_RELEASE"
 	envDevTool = "TYPICAL_DEV_TOOL"
 
 	defaultBin            = "bin"
 	defaultCmd            = "cmd"
 	defaultMock           = "mock"
 	defaultApp            = "app"
+	defaultRelease        = "release"
 	defaultTypicalDevTool = "typical-dev-tool"
 )
 
@@ -92,4 +94,13 @@ func Mock() string {
 		mock = defaultMock
 	}
 	return mock
+}
+
+// Release to return release package
+func Release() string {
+	release := os.Getenv(envApp)
+	if release == "" {
+		release = defaultRelease
+	}
+	return release
 }
