@@ -19,8 +19,8 @@ func (t *TypicalTask) buildBinary(ctx *cli.Context) {
 
 	typigen.AppSideEffects(t.Context)
 
-	binaryName := typienv.BinaryPath(t.BinaryNameOrDefault())
-	mainPackage := typienv.MainPackage(t.AppPkgOrDefault())
+	binaryName := typienv.Binary(t.BinaryNameOrDefault())
+	mainPackage := typienv.AppMainPackage()
 
 	log.Infof("Build the Binary for '%s' at '%s'", mainPackage, binaryName)
 	bash.GoBuild(binaryName, mainPackage)
@@ -31,7 +31,7 @@ func (t *TypicalTask) runBinary(ctx *cli.Context) {
 		t.buildBinary(ctx)
 	}
 
-	binaryPath := typienv.BinaryPath(t.BinaryNameOrDefault())
+	binaryPath := typienv.Binary(t.BinaryNameOrDefault())
 
 	log.Infof("Run the Binary '%s'", binaryPath)
 	bash.Run(binaryPath, []string(ctx.Args())...)
@@ -43,13 +43,14 @@ func (t *TypicalTask) runTest(ctx *cli.Context) {
 }
 
 func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
+	t.runTest(ctx)
 	fmt.Println("Not implemented")
 }
 
 func (t *TypicalTask) generateMock(ctx *cli.Context) {
 	bash.GoGet("github.com/golang/mock/mockgen")
 
-	mockPkg := t.MockPkgOrDefault()
+	mockPkg := typienv.Mock()
 
 	if ctx.Bool("new") {
 		log.Infof("Clean mock package '%s'", mockPkg)

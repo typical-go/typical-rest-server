@@ -18,8 +18,6 @@ type Context struct {
 	ReadmeTemplate string
 	ReadmeFile     string
 
-	AppPkg     string
-	MockPkg    string
 	BinaryName string
 
 	Modules      []*Module
@@ -53,22 +51,6 @@ func (c Context) BinaryNameOrDefault() string {
 		return chunks[len(chunks)-1]
 	}
 	return c.BinaryName
-}
-
-// AppPkgOrDefault return application package of typiapp or default value
-func (c Context) AppPkgOrDefault() string {
-	if c.AppPkg == "" {
-		return defaultApplicationPkg
-	}
-	return c.AppPkg
-}
-
-// MockPkgOrDefault return mock package of typiapp or default value
-func (c Context) MockPkgOrDefault() string {
-	if c.MockPkg == "" {
-		return defaultMockPkg
-	}
-	return c.MockPkg
 }
 
 // Container to return the depedency injection

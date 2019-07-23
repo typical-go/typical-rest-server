@@ -25,7 +25,7 @@ func TypicalDevToolSideEffects(t typictx.Context) error {
 			}
 		}
 	}
-	filename := typienv.TypicalMainPackage() + "/" + mainInitFile
+	filename := typienv.TypicalDevToolMainPackage() + "/" + mainInitFile
 	return generateSideEffects(filename, libraries)
 }
 
@@ -41,7 +41,7 @@ func AppSideEffects(t typictx.Context) error {
 		}
 	}
 
-	filename := typienv.MainPackage(t.AppPkgOrDefault()) + "/" + mainInitFile
+	filename := typienv.AppMainPackage() + "/" + mainInitFile
 	return generateSideEffects(filename, libraries)
 }
 
