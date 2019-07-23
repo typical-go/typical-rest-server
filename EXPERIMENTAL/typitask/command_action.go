@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"gopkg.in/urfave/cli.v1"
-	log "github.com/sirupsen/logrus"
 )
 
 func (t *TypicalTask) buildBinary(ctx *cli.Context) {

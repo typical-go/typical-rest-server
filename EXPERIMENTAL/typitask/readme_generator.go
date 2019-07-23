@@ -9,7 +9,7 @@ import (
 )
 
 const configTemplate = `
-| Key | Type | Default | Request | Description |	
+| Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 {{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
 {{end}}`
