@@ -59,6 +59,11 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 		}
 	}
 
+	note := ctx.Cli.String("note")
+	if note == "" {
+		// TODO: generate default note from git log
+	}
+
 	githubKey := ctx.Cli.String("github-token")
 	if githubKey != "" {
 		err = releaseToGithub(
@@ -69,7 +74,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 				Binaries:        binaries,
 				Version:         version,
 				Alpha:           alpha,
-				Body:            "", // TODO: create good release description from git log
+				Note:            note,
 			},
 			ctx.Cli.Bool("force"),
 		)
@@ -106,7 +111,7 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 		}
 	}
 
-	log.Info("Create github release for %s/%s", owner, name)
+	log.Infof("Create github release for %s/%s", owner, name)
 	release, _, err = client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
 	if err != nil {
 		return
@@ -132,7 +137,6 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 			},
 			file,
 		)
-
 	}
 
 	return
@@ -143,14 +147,14 @@ type githubReleaseInfo struct {
 	Binaries        []string
 	Version         string
 	Alpha           bool
-	Body            string
+	Note            string
 }
 
 func (i *githubReleaseInfo) Data() *github.RepositoryRelease {
 	return &github.RepositoryRelease{
 		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, i.Version)),
 		TagName:    github.String(i.Version),
-		Body:       github.String(i.Body),
+		Body:       github.String(i.Note),
 		Draft:      github.Bool(false),
 		Prerelease: github.Bool(i.Alpha),
 	}
