@@ -18,14 +18,20 @@ import (
 
 // ReleaseDistribution to release binary distribution
 func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
-	// RunTest(ctx)
-	// GenerateReadme(ctx)
+	if !ctx.Cli.Bool("no-test") {
+		RunTest(ctx)
+	}
+
+	if !ctx.Cli.Bool("no-readme") {
+		GenerateReadme(ctx)
+		// TODO: check git diff and commit if readme is updated
+	}
 
 	goos := []string{"linux", "darwin"}
 	goarch := []string{"amd64"}
 	mainPackage := typienv.AppMainPackage()
-	alpha := ctx.Cli.Bool("alpha")
 
+	alpha := ctx.Cli.Bool("alpha")
 	version := ctx.Typical.Version
 	if alpha {
 		version = fmt.Sprintf("%s-alpha", version)
@@ -44,7 +50,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 			binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
 
-			log.Infof("Create release for %s/%s: %s", os1, arch, binary)
+			log.Infof("Create release binary for %s/%s at %s", os1, arch, binary)
 			os.Setenv("GOOS", os1)
 			os.Setenv("GOARCH", arch)
 			bash.GoBuild(binaryPath, mainPackage)
@@ -68,8 +74,6 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo GithubReleaseInfo) (err error) {
-	log.Info("Release to Github")
-
 	if githubDetail == nil {
 		return fmt.Errorf("Missing Github in typical context")
 	}
@@ -83,6 +87,7 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo Git
 	owner := githubDetail.Owner
 	name := githubDetail.Name
 
+	log.Info("Create github release for '%s/%s", owner, name)
 	release, _, err := client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
 	if err != nil {
 		return

@@ -101,6 +101,14 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 					Name:  "alpha",
 					Usage: "release as alpha version (pre-release)",
 				},
+				cli.BoolFlag{
+					Name:  "no-test",
+					Usage: "release without run automated test",
+				},
+				cli.BoolFlag{
+					Name:  "no-readme",
+					Usage: "release without generate readme",
+				},
 			},
 			Action: t.execCommand(typitask.ReleaseDistribution),
 		},
