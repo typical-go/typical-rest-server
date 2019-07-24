@@ -90,8 +90,14 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Action:    t.execCommand(typitask.RunTest),
 		},
 		{
-			Name:   "release",
-			Usage:  "Release the distribution",
+			Name:  "release",
+			Usage: "Release the distribution",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "github-token",
+					Usage: "release to gitub using github-token",
+				},
+			},
 			Action: t.execCommand(typitask.ReleaseDistribution),
 		},
 		{
