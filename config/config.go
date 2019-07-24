@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/dbtool"
 )
 
 // TODO: to be generated
@@ -25,6 +25,6 @@ func GetPgConfig(cfg Config) PostgresConfig {
 	return cfg.Pg
 }
 
-func GetDBToolConfig(cfg PostgresConfig) typidb.Config {
+func GetDBToolConfig(cfg PostgresConfig) dbtool.Config {
 	return &cfg
 }

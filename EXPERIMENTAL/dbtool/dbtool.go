@@ -1,4 +1,4 @@
-package typidb
+package dbtool
 
 import (
 	"database/sql"

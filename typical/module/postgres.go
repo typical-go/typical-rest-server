@@ -6,13 +6,13 @@ import (
 	"github.com/typical-go/typical-rest-server/config"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/dbtool"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
 )
 
 // NewPostgres return new instance of Module for postgrs
 func NewPostgres() *typictx.Module {
-	tool := typidb.NewPostgresTool()
+	tool := dbtool.NewPostgresTool()
 
 	return &typictx.Module{
 		Name:         "postgres",

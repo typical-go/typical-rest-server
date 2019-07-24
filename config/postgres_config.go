@@ -3,12 +3,12 @@ package config
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typidb"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/dbtool"
 )
 
 // PostgresConfig contain postgres database configuration
 type PostgresConfig struct {
-	typidb.Config
+	dbtool.Config
 
 	DbName       string `required:"true" default:"typical-rest-server"`
 	User         string `required:"true" default:"default_user"`
