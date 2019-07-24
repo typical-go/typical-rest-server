@@ -24,6 +24,8 @@ type Context struct {
 	Constructors []interface{}
 
 	Commands []cli.Command
+
+	Github *Github
 }
 
 // ReadmeTemplateOrDefault return readme template field or the default template

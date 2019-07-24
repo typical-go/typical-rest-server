@@ -49,14 +49,18 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 	githubKey := ctx.Cli.String("github-token")
 	if githubKey != "" {
-		err = releaseToGithub(githubKey, binaries)
+		err = releaseToGithub(ctx.Typical, githubKey, binaries)
 	}
 
-	return nil
+	return
 }
 
-func releaseToGithub(token string, binaries []string) (err error) {
+func releaseToGithub(tctx typictx.Context, token string, binaries []string) (err error) {
 	log.Info("Release to Github")
+
+	if tctx.Github == nil {
+		return fmt.Errorf("Missing Github in typical context")
+	}
 
 	ctx := context.Background()
 
@@ -64,12 +68,13 @@ func releaseToGithub(token string, binaries []string) (err error) {
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
 
-	// TOOD: get from typical context
-	title := "Typical Go Server - v0.0.1-alpha"
-	currentTag := "v0.0.1-alpha"
+	currentTag := fmt.Sprintf("v%s", tctx.Version)
+	title := fmt.Sprintf("%s - %s", tctx.Name, currentTag)
+	owner := tctx.Github.Owner
+	name := tctx.Github.Name
+
+	// TODO: get from cli flag
 	preRelease := true
-	owner := "typical-go"
-	name := "typical-rest-server"
 
 	// TODO: list of commit message
 	body := ""
