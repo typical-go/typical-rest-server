@@ -32,7 +32,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	mainPackage := typienv.AppMainPackage()
 
 	alpha := ctx.Cli.Bool("alpha")
-	version := ctx.Typical.Version
+	version := fmt.Sprintf("v%s", ctx.Typical.Version)
 	if alpha {
 		version = fmt.Sprintf("%s-alpha", version)
 	}
@@ -87,8 +87,15 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo Git
 	owner := githubDetail.Owner
 	name := githubDetail.Name
 
-	log.Info("Create github release for '%s/%s", owner, name)
-	release, _, err := client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
+	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, name, releaseInfo.Version)
+	if err == nil {
+		log.Infof("Release for %s/%s with version %s already exist",
+			owner, name, releaseInfo.Version)
+		return nil
+	}
+
+	log.Info("Create github release for %s/%s", owner, name)
+	release, _, err = client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
 	if err != nil {
 		return
 	}
@@ -128,10 +135,9 @@ type GithubReleaseInfo struct {
 }
 
 func (i *GithubReleaseInfo) Data() *github.RepositoryRelease {
-	currentTag := fmt.Sprintf("v%s", i.Version)
 	return &github.RepositoryRelease{
-		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, currentTag)),
-		TagName:    github.String(currentTag),
+		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, i.Version)),
+		TagName:    github.String(i.Version),
 		Body:       github.String(i.Body),
 		Draft:      github.Bool(false),
 		Prerelease: github.Bool(i.Alpha),
