@@ -95,7 +95,11 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "github-token",
-					Usage: "release to gitub using github-token",
+					Usage: "release to github using github-token",
+				},
+				cli.BoolFlag{
+					Name:  "alpha",
+					Usage: "release as alpha version (pre-release)",
 				},
 			},
 			Action: t.execCommand(typitask.ReleaseDistribution),

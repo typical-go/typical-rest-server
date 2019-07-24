@@ -16,7 +16,7 @@ var Context typictx.Context
 func init() {
 	Context = typictx.Context{
 		Name:        "Typical-RESTful-Server",
-		Version:     "0.1.0",
+		Version:     "0.2.0",
 		Description: "Example of typical and scalable RESTful API Server for Go",
 
 		Github: &typictx.Github{

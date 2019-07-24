@@ -24,15 +24,21 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	goos := []string{"linux", "darwin"}
 	goarch := []string{"amd64"}
 	mainPackage := typienv.AppMainPackage()
+	alpha := ctx.Cli.Bool("alpha")
+
+	version := ctx.Typical.Version
+	if alpha {
+		version = fmt.Sprintf("%s-alpha", version)
+	}
 
 	var binaries []string
 
 	for _, os1 := range goos {
 		for _, arch := range goarch {
-			// TODO: using ldflags
+			// TODO: consider to using ldflags
 			binary := fmt.Sprintf("%s_%s_%s_%s",
 				ctx.Typical.BinaryNameOrDefault(),
-				ctx.Typical.Version,
+				version,
 				os1,
 				arch)
 
@@ -49,16 +55,22 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 	githubKey := ctx.Cli.String("github-token")
 	if githubKey != "" {
-		err = releaseToGithub(ctx.Typical, githubKey, binaries)
+		err = releaseToGithub(ctx.Typical.Github, githubKey, GithubReleaseInfo{
+			ApplicationName: ctx.Typical.Name,
+			Binaries:        binaries,
+			Version:         version,
+			Alpha:           alpha,
+			Body:            "", // TODO: create good release description from git log
+		})
 	}
 
 	return
 }
 
-func releaseToGithub(tctx typictx.Context, token string, binaries []string) (err error) {
+func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo GithubReleaseInfo) (err error) {
 	log.Info("Release to Github")
 
-	if tctx.Github == nil {
+	if githubDetail == nil {
 		return fmt.Errorf("Missing Github in typical context")
 	}
 
@@ -68,34 +80,15 @@ func releaseToGithub(tctx typictx.Context, token string, binaries []string) (err
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
 
-	currentTag := fmt.Sprintf("v%s", tctx.Version)
-	title := fmt.Sprintf("%s - %s", tctx.Name, currentTag)
-	owner := tctx.Github.Owner
-	name := tctx.Github.Name
+	owner := githubDetail.Owner
+	name := githubDetail.Name
 
-	// TODO: get from cli flag
-	preRelease := true
-
-	// TODO: list of commit message
-	body := ""
-
-	var release *github.RepositoryRelease
-
-	var data = &github.RepositoryRelease{
-		Name:       github.String(title),
-		TagName:    github.String(currentTag),
-		Body:       github.String(body),
-		Draft:      github.Bool(false),
-		Prerelease: github.Bool(preRelease),
-	}
-
-	release, _, err = client.Repositories.CreateRelease(ctx, owner, name, data)
-
+	release, _, err := client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
 	if err != nil {
 		return
 	}
 
-	for _, binary := range binaries {
+	for _, binary := range releaseInfo.Binaries {
 		var file *os.File
 		binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
 		log.Info("Upload release asset: " + binaryPath)
@@ -119,4 +112,23 @@ func releaseToGithub(tctx typictx.Context, token string, binaries []string) (err
 	}
 
 	return
+}
+
+type GithubReleaseInfo struct {
+	ApplicationName string
+	Binaries        []string
+	Version         string
+	Alpha           bool
+	Body            string
+}
+
+func (i *GithubReleaseInfo) Data() *github.RepositoryRelease {
+	currentTag := fmt.Sprintf("v%s", i.Version)
+	return &github.RepositoryRelease{
+		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, currentTag)),
+		TagName:    github.String(currentTag),
+		Body:       github.String(i.Body),
+		Draft:      github.Bool(false),
+		Prerelease: github.Bool(i.Alpha),
+	}
 }
