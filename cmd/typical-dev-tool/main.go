@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typimain"
 	"github.com/typical-go/typical-rest-server/typical"
