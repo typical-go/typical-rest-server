@@ -10,15 +10,13 @@ import (
 
 // TypicalDevTool represent typical task tool application
 type TypicalDevTool struct {
-	typitask.TypicalTask
+	typictx.Context
 }
 
 // NewTypicalTaskTool return new instance of TypicalCli
 func NewTypicalTaskTool(context typictx.Context) *TypicalDevTool {
 	return &TypicalDevTool{
-		typitask.TypicalTask{
-			Context: context,
-		},
+		Context: context,
 	}
 }
 
@@ -62,4 +60,75 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	typienv.ExportProjectEnv()
 
 	return app
+}
+
+// StandardCommands return standard commands for typical task tool
+func (t *TypicalDevTool) StandardCommands() []cli.Command {
+	return []cli.Command{
+		{
+			Name:      "build",
+			ShortName: "b",
+			Usage:     "Build the binary",
+			Action:    t.execCommand(typitask.BuildBinary),
+		},
+		{
+			Name:      "run",
+			ShortName: "r",
+			Usage:     "Run the binary",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-build",
+					Usage: "Run the binary",
+				},
+			},
+			Action: t.execCommand(typitask.RunBinary),
+		},
+		{
+			Name:      "test",
+			ShortName: "t",
+			Usage:     "Run the testing",
+			Action:    t.execCommand(typitask.RunTest),
+		},
+		{
+			Name:   "release",
+			Usage:  "Release the distribution",
+			Action: t.execCommand(typitask.ReleaseDistribution),
+		},
+		{
+			Name:  "mock",
+			Usage: "Generate mock class",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "new",
+					Usage: "Clean the mock package as new generation",
+				},
+			},
+			Action: t.execCommand(typitask.GenerateMock),
+		},
+		{
+			Name:   "readme",
+			Usage:  "Generate readme document",
+			Action: t.execCommand(typitask.GenerateReadme),
+		},
+		{
+			Name:        "clean",
+			Usage:       "Clean project from generated file during build time",
+			Description: "Remove binary folder, trigger `go clean --modcache`",
+			Action:      t.execCommand(typitask.CleanProject),
+		},
+		{
+			Name:   "check",
+			Usage:  "Checks all module status that required by the application",
+			Action: t.execCommand(typitask.CheckStatus),
+		},
+	}
+}
+
+func (t *TypicalDevTool) execCommand(fn typictx.ActionFunc) interface{} {
+	return func(cliCtx *cli.Context) error {
+		return fn(typictx.ActionContext{
+			Typical: t.Context,
+			Cli:     cliCtx,
+		})
+	}
 }
