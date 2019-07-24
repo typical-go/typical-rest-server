@@ -109,6 +109,10 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 					Name:  "no-readme",
 					Usage: "release without generate readme",
 				},
+				cli.BoolFlag{
+					Name:  "force",
+					Usage: "release even if it already exist",
+				},
 			},
 			Action: t.execCommand(typitask.ReleaseDistribution),
 		},

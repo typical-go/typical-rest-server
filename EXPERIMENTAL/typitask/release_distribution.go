@@ -61,19 +61,24 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 	githubKey := ctx.Cli.String("github-token")
 	if githubKey != "" {
-		err = releaseToGithub(ctx.Typical.Github, githubKey, GithubReleaseInfo{
-			ApplicationName: ctx.Typical.Name,
-			Binaries:        binaries,
-			Version:         version,
-			Alpha:           alpha,
-			Body:            "", // TODO: create good release description from git log
-		})
+		err = releaseToGithub(
+			ctx.Typical.Github,
+			githubKey,
+			githubReleaseInfo{
+				ApplicationName: ctx.Typical.Name,
+				Binaries:        binaries,
+				Version:         version,
+				Alpha:           alpha,
+				Body:            "", // TODO: create good release description from git log
+			},
+			ctx.Cli.Bool("force"),
+		)
 	}
 
 	return
 }
 
-func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo GithubReleaseInfo) (err error) {
+func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
 	if githubDetail == nil {
 		return fmt.Errorf("Missing Github in typical context")
 	}
@@ -89,9 +94,16 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo Git
 
 	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, name, releaseInfo.Version)
 	if err == nil {
-		log.Infof("Release for %s/%s with version %s already exist",
-			owner, name, releaseInfo.Version)
-		return nil
+		if force {
+			log.Infof("Force release detected; Delete existing release for %s/%s (%s)", owner, name, releaseInfo.Version)
+			_, err = client.Repositories.DeleteRelease(ctx, owner, name, *release.ID)
+			if err != nil {
+				return
+			}
+		} else {
+			log.Infof("Release for %s/%s (%s) already exist", owner, name, releaseInfo.Version)
+			return nil
+		}
 	}
 
 	log.Info("Create github release for %s/%s", owner, name)
@@ -126,7 +138,7 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo Git
 	return
 }
 
-type GithubReleaseInfo struct {
+type githubReleaseInfo struct {
 	ApplicationName string
 	Binaries        []string
 	Version         string
@@ -134,7 +146,7 @@ type GithubReleaseInfo struct {
 	Body            string
 }
 
-func (i *GithubReleaseInfo) Data() *github.RepositoryRelease {
+func (i *githubReleaseInfo) Data() *github.RepositoryRelease {
 	return &github.RepositoryRelease{
 		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, i.Version)),
 		TagName:    github.String(i.Version),
