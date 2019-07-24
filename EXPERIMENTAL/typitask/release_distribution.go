@@ -23,13 +23,18 @@ func ReleaseDistribution(ctx typictx.ActionContext) error {
 		os.Setenv("GOOS", os1)
 		for _, arch := range goarch {
 			// TODO: using ldflags
-			binaryName := fmt.Sprintf("%s/%s_%s_%s",
-				typienv.Release(), ctx.Typical.BinaryNameOrDefault(), os1, arch)
+			binaryName := fmt.Sprintf("%s/%s_%s_%s_%s",
+				typienv.Release(),
+				ctx.Typical.BinaryNameOrDefault(),
+				ctx.Typical.Version,
+				os1,
+				arch)
 			os.Setenv("GOARCH", arch)
 
 			log.Infof("Create release for %s/%s: %s", os1, arch, binaryName)
 			bash.GoBuild(binaryName, mainPackage)
 		}
 	}
+
 	return nil
 }
