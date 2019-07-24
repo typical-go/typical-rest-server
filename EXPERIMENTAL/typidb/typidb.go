@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
 // Config for database configuration
@@ -33,23 +33,23 @@ func NewPostgresTool() *Tool {
 }
 
 // CreateDB is tool to create new database
-func (t *Tool) CreateDB(context typictx.ActionContext) (err error) {
-	return context.Context.Container().Invoke(t.createDB)
+func (t *Tool) CreateDB(ctx typictx.ActionContext) (err error) {
+	return ctx.Typical.Container().Invoke(t.createDB)
 }
 
 // DropDB is tool to drop database
-func (t *Tool) DropDB(context typictx.ActionContext) (err error) {
-	return context.Context.Container().Invoke(t.dropDB)
+func (t *Tool) DropDB(ctx typictx.ActionContext) (err error) {
+	return ctx.Typical.Container().Invoke(t.dropDB)
 }
 
 // MigrateDB is tool to migrate database
-func (t *Tool) MigrateDB(context typictx.ActionContext) (err error) {
-	return context.Context.Container().Invoke(t.migrateDB)
+func (t *Tool) MigrateDB(ctx typictx.ActionContext) (err error) {
+	return ctx.Typical.Container().Invoke(t.migrateDB)
 }
 
 // RollbackDB is tool to rollback database
-func (t *Tool) RollbackDB(context typictx.ActionContext) (err error) {
-	return context.Context.Container().Invoke(t.rollbackDB)
+func (t *Tool) RollbackDB(ctx typictx.ActionContext) (err error) {
+	return ctx.Typical.Container().Invoke(t.rollbackDB)
 }
 
 func (t *Tool) createDB(config Config) (err error) {

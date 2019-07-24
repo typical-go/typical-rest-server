@@ -8,8 +8,8 @@ import (
 func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) interface{} {
 	return func(ctx *cli.Context) error {
 		return actionFunc(typictx.ActionContext{
-			CliContext: ctx,
-			Context:    context,
+			Cli:     ctx,
+			Typical: context,
 		})
 
 	}
@@ -18,8 +18,8 @@ func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) inter
 func runAction(context typictx.Context, action typictx.Action) interface{} {
 	return func(ctx *cli.Context) error {
 		return action.Start(typictx.ActionContext{
-			CliContext: ctx,
-			Context:    context,
+			Cli:     ctx,
+			Typical: context,
 		})
 	}
 }

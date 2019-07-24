@@ -5,6 +5,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
+// TypicalTask contain typical command
 type TypicalTask struct {
 	typictx.Context
 }
@@ -16,7 +17,7 @@ func (t *TypicalTask) StandardCommands() []cli.Command {
 			Name:      "build",
 			ShortName: "b",
 			Usage:     "Build the binary",
-			Action:    t.buildBinary,
+			Action:    t.execCommand(BuildBinary),
 		},
 		{
 			Name:      "run",
@@ -28,18 +29,18 @@ func (t *TypicalTask) StandardCommands() []cli.Command {
 					Usage: "Run the binary",
 				},
 			},
-			Action: t.runBinary,
+			Action: t.execCommand(RunBinary),
 		},
 		{
 			Name:      "test",
 			ShortName: "t",
 			Usage:     "Run the testing",
-			Action:    t.runTest,
+			Action:    t.execCommand(RunTest),
 		},
 		{
 			Name:   "release",
 			Usage:  "Release the distribution",
-			Action: t.releaseDistribution,
+			Action: t.execCommand(ReleaseDistribution),
 		},
 		{
 			Name:  "mock",
@@ -50,23 +51,32 @@ func (t *TypicalTask) StandardCommands() []cli.Command {
 					Usage: "Clean the mock package as new generation",
 				},
 			},
-			Action: t.generateMock,
+			Action: t.execCommand(GenerateMock),
 		},
 		{
 			Name:   "readme",
 			Usage:  "Generate readme document",
-			Action: t.generateReadme,
+			Action: t.execCommand(GenerateReadme),
 		},
 		{
 			Name:        "clean",
 			Usage:       "Clean project from generated file during build time",
 			Description: "Remove binary folder, trigger `go clean --modcache`",
-			Action:      t.cleanProject,
+			Action:      t.execCommand(CleanProject),
 		},
 		{
 			Name:   "check",
 			Usage:  "Checks all module status that required by the application",
-			Action: t.checkStatus,
+			Action: t.execCommand(CheckStatus),
 		},
+	}
+}
+
+func (t *TypicalTask) execCommand(fn typictx.ActionFunc) interface{} {
+	return func(cliCtx *cli.Context) error {
+		return fn(typictx.ActionContext{
+			Typical: t.Context,
+			Cli:     cliCtx,
+		})
 	}
 }

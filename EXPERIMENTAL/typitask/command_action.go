@@ -9,74 +9,78 @@ import (
 	"github.com/olekukonko/tablewriter"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
-	"gopkg.in/urfave/cli.v1"
 )
 
-func (t *TypicalTask) buildBinary(ctx *cli.Context) {
-	typienv.GenerateAppEnvIfNotExist(t.Context)
+// BuildBinary for typical application
+func BuildBinary(ctx typictx.ActionContext) error {
+	typienv.GenerateAppEnvIfNotExist(ctx.Typical)
+	typigen.AppSideEffects(ctx.Typical)
 
-	typigen.AppSideEffects(t.Context)
-
-	binaryName := typienv.Binary(t.BinaryNameOrDefault())
+	binaryName := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
 	mainPackage := typienv.AppMainPackage()
 
 	log.Infof("Build the Binary for '%s' at '%s'", mainPackage, binaryName)
 	bash.GoBuild(binaryName, mainPackage)
+
+	return nil
 }
 
-func (t *TypicalTask) runBinary(ctx *cli.Context) {
-	if !ctx.Bool("no-build") {
-		t.buildBinary(ctx)
+// RunBinary for run typical binary
+func RunBinary(ctx typictx.ActionContext) error {
+	if !ctx.Cli.Bool("no-build") {
+		BuildBinary(ctx)
 	}
 
-	binaryPath := typienv.Binary(t.BinaryNameOrDefault())
+	binaryPath := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
 
 	log.Infof("Run the Binary '%s'", binaryPath)
-	bash.Run(binaryPath, []string(ctx.Args())...)
+	bash.Run(binaryPath, []string(ctx.Cli.Args())...)
+	return nil
 }
 
-func (t *TypicalTask) runTest(ctx *cli.Context) {
+func RunTest(ctx typictx.ActionContext) error {
 	log.Info("Run the Test")
-	bash.GoTest(t.AppModule.GetTestTargets())
+	bash.GoTest(ctx.Typical.AppModule.GetTestTargets())
+	return nil
 }
 
-func (t *TypicalTask) releaseDistribution(ctx *cli.Context) {
-
-	t.runTest(ctx)
-	t.generateReadme(ctx)
+func ReleaseDistribution(ctx typictx.ActionContext) error {
+	RunTest(ctx)
+	GenerateReadme(ctx)
 
 	goos := []string{"linux", "darwin"}
 	goarch := []string{"amd64"}
-
 	mainPackage := typienv.AppMainPackage()
 
 	for _, os1 := range goos {
 		os.Setenv("GOOS", os1)
 		for _, arch := range goarch {
 			// TODO: using ldflags
-			binaryName := fmt.Sprintf("%s/%s_%s_%s", typienv.Release(), t.BinaryNameOrDefault(), os1, arch)
+			binaryName := fmt.Sprintf("%s/%s_%s_%s",
+				typienv.Release(), ctx.Typical.BinaryNameOrDefault(), os1, arch)
 			os.Setenv("GOARCH", arch)
 
 			log.Infof("Create release for %s/%s: %s", os1, arch, binaryName)
 			bash.GoBuild(binaryName, mainPackage)
 		}
 	}
-
+	return nil
 }
 
-func (t *TypicalTask) generateMock(ctx *cli.Context) {
+func GenerateMock(ctx typictx.ActionContext) error {
 	bash.GoGet("github.com/golang/mock/mockgen")
 
 	mockPkg := typienv.Mock()
 
-	if ctx.Bool("new") {
+	if ctx.Cli.Bool("new") {
 		log.Infof("Clean mock package '%s'", mockPkg)
 		os.RemoveAll(mockPkg)
 	}
 
-	for _, mockTarget := range t.AppModule.GetMockTargets() {
+	for _, mockTarget := range ctx.Typical.AppModule.GetMockTargets() {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Infof("Generate mock for '%s' at '%s'", mockTarget, dest)
@@ -85,11 +89,13 @@ func (t *TypicalTask) generateMock(ctx *cli.Context) {
 			"-destination", dest,
 			"-package", mockPkg)
 	}
+	return nil
 }
 
-func (t *TypicalTask) generateReadme(ctx *cli.Context) (err error) {
-	readmeFile := t.ReadmeFileOrDefault()
-	readmeTemplate := t.ReadmeTemplateOrDefault()
+// GenerateReadme for generate typical applical readme
+func GenerateReadme(ctx typictx.ActionContext) (err error) {
+	readmeFile := ctx.Typical.ReadmeFileOrDefault()
+	readmeTemplate := ctx.Typical.ReadmeTemplateOrDefault()
 
 	templ, err := template.New("readme").Parse(readmeTemplate)
 
@@ -104,22 +110,23 @@ func (t *TypicalTask) generateReadme(ctx *cli.Context) (err error) {
 
 	log.Infof("Generate ReadMe Document at '%s'", readmeFile)
 	err = templ.Execute(file, Readme{
-		Context: t.Context,
+		Context: ctx.Typical,
 	})
 	return nil
 }
 
-func (t *TypicalTask) cleanProject(ctx *cli.Context) {
+func CleanProject(ctx typictx.ActionContext) error {
 	log.Info("Remove bin folder")
 	os.RemoveAll(typienv.Bin())
 
 	log.Info("Go clean")
 	os.Setenv("GO111MODULE", "off") // NOTE:XXX: https://github.com/golang/go/issues/28680
 	bash.GoClean("-x", "-testcache", "-modcachœœe")
+	return nil
 }
 
-func (t *TypicalTask) checkStatus(ctx *cli.Context) {
-	statusReport := t.Context.CheckModuleStatus()
+func CheckStatus(ctx typictx.ActionContext) error {
+	statusReport := ctx.Typical.CheckModuleStatus()
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Module Name", "Status"})
 
@@ -127,5 +134,5 @@ func (t *TypicalTask) checkStatus(ctx *cli.Context) {
 		table.Append([]string{moduleName, status})
 	}
 	table.Render()
-
+	return nil
 }

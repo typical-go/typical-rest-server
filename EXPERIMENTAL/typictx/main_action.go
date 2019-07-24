@@ -17,7 +17,7 @@ type MainAction struct {
 
 // Start the action
 func (a MainAction) Start(ctx ActionContext) (err error) {
-	container := ctx.Container()
+	container := ctx.Typical.Container()
 
 	if a.StopFunc != nil {
 		gracefulStop := make(chan os.Signal)
@@ -34,7 +34,7 @@ func (a MainAction) Start(ctx ActionContext) (err error) {
 			var errs util.Errors
 			errs.Add(container.Invoke(a.StopFunc))
 
-			for _, module := range ctx.Modules {
+			for _, module := range ctx.Typical.Modules {
 				if module.CloseFunc != nil {
 					errs.Add(container.Invoke(module.CloseFunc))
 				}
