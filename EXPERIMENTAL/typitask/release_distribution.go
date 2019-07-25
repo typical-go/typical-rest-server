@@ -127,8 +127,13 @@ func defaultNote(gitRepo *git.Repository) string {
 }
 
 func ignoredMessage(message string) bool {
+	lowerMessage := strings.ToLower(message)
+
 	// TODO: ignore everything start with small-case character
-	return strings.HasPrefix(message, "Merge")
+
+	return strings.HasPrefix(lowerMessagesage, "merge") ||
+		strings.HasPrefix(lowerMessage, "bump") ||
+	
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
