@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
@@ -24,6 +25,20 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	gitRepo, err := git.PlainOpen(".")
 	if err != nil {
 		return
+	}
+
+	// NOTE: git fetch in beginning and after to make local is up2date
+	exec.Command("git", "fetch").Run()
+	defer exec.Command("git", "fetch").Run()
+
+	changes := changeLogs(gitRepo)
+	if len(changes) < 1 {
+		log.Info("No change to be released")
+		return nil
+	}
+
+	for _, change := range changes {
+		log.Infof("Change Log: %s", change)
 	}
 
 	if !ctx.Cli.Bool("no-test") {
@@ -69,8 +84,8 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 	note := ctx.Cli.String("note")
 	if note == "" {
-		log.Info("Generate default note from git logs.")
-		note = defaultNote(gitRepo)
+		log.Info("Using git change log as release note.")
+		note = strings.Join(changes, "")
 	}
 
 	githubKey := ctx.Cli.String("github-token")
@@ -92,9 +107,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	return
 }
 
-func defaultNote(gitRepo *git.Repository) string {
-	var builder strings.Builder
-
+func changeLogs(gitRepo *git.Repository) (changes []string) {
 	tagrefs, _ := gitRepo.Tags()
 	var latestTag *plumbing.Reference
 	tagrefs.ForEach(func(tagRef *plumbing.Reference) error {
@@ -119,11 +132,12 @@ func defaultNote(gitRepo *git.Repository) string {
 		message := strings.TrimSpace(commit.Message)
 
 		if !ignoredMessage(message) {
-			builder.WriteString(fmt.Sprintf("%s %s\n", shortHash, message))
+			change := fmt.Sprintf("%s %s\n", shortHash, message)
+			changes = append(changes, change)
 		}
 	}
 
-	return builder.String()
+	return
 }
 
 func ignoredMessage(message string) bool {
