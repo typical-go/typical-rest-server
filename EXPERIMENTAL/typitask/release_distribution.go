@@ -9,6 +9,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 
 	"golang.org/x/oauth2"
 
@@ -95,7 +96,11 @@ func defaultNote(gitRepo *git.Repository) string {
 	var builder strings.Builder
 
 	tagrefs, _ := gitRepo.Tags()
-	latestTag, _ := tagrefs.Next()
+	var latestTag *plumbing.Reference
+	tagrefs.ForEach(func(tagRef *plumbing.Reference) error {
+		latestTag = tagRef
+		return nil
+	})
 	tagrefs.Close()
 
 	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
