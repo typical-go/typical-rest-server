@@ -132,7 +132,8 @@ func ignoredMessage(message string) bool {
 	// TODO: ignore everything start with small-case character
 
 	return strings.HasPrefix(lowerMessage, "merge") ||
-		strings.HasPrefix(lowerMessage, "bump")
+		strings.HasPrefix(lowerMessage, "bump") ||
+		strings.HasPrefix(lowerMessage, "revision")
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
