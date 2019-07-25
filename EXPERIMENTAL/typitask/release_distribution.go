@@ -138,24 +138,24 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 	client := github.NewClient(tc)
 
 	owner := githubDetail.Owner
-	name := githubDetail.Name
+	repo := githubDetail.RepoName
 
-	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, name, releaseInfo.Version)
+	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, repo, releaseInfo.Version)
 	if err == nil {
 		if force {
-			log.Infof("Force release detected; Delete existing release for %s/%s (%s)", owner, name, releaseInfo.Version)
-			_, err = client.Repositories.DeleteRelease(ctx, owner, name, *release.ID)
+			log.Infof("Force release detected; Delete existing release for %s/%s (%s)", owner, repo, releaseInfo.Version)
+			_, err = client.Repositories.DeleteRelease(ctx, owner, repo, *release.ID)
 			if err != nil {
 				return
 			}
 		} else {
-			log.Infof("Release for %s/%s (%s) already exist", owner, name, releaseInfo.Version)
+			log.Infof("Release for %s/%s (%s) already exist", owner, repo, releaseInfo.Version)
 			return nil
 		}
 	}
 
-	log.Infof("Create github release for %s/%s", owner, name)
-	release, _, err = client.Repositories.CreateRelease(ctx, owner, name, releaseInfo.Data())
+	log.Infof("Create github release for %s/%s", owner, repo)
+	release, _, err = client.Repositories.CreateRelease(ctx, owner, repo, releaseInfo.Data())
 	if err != nil {
 		return
 	}
@@ -173,7 +173,7 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 		_, _, err = client.Repositories.UploadReleaseAsset(
 			ctx,
 			owner,
-			name,
+			repo,
 			release.GetID(),
 			&github.UploadOptions{
 				Name: binary,

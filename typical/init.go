@@ -20,8 +20,8 @@ func init() {
 		Description: "Example of typical and scalable RESTful API Server for Go",
 
 		Github: &typictx.Github{
-			Owner: "typical-go",
-			Name:  "typical-rest-server",
+			Owner:    "typical-go",
+			RepoName: "typical-rest-server",
 		},
 
 		Constructors: []interface{}{
