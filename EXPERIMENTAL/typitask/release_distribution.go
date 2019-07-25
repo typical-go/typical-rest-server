@@ -107,6 +107,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	return
 }
 
+// TODO: change logs should be unfiltered
 func changeLogs(gitRepo *git.Repository) (changes []string) {
 	tagrefs, _ := gitRepo.Tags()
 	var latestTag *plumbing.Reference
@@ -143,11 +144,12 @@ func changeLogs(gitRepo *git.Repository) (changes []string) {
 func ignoredMessage(message string) bool {
 	lowerMessage := strings.ToLower(message)
 
-	// TODO: ignore everything start with small-case character
+	// TODO: consider to ignore message if start with small-case character
 
 	return strings.HasPrefix(lowerMessage, "merge") ||
 		strings.HasPrefix(lowerMessage, "bump") ||
-		strings.HasPrefix(lowerMessage, "revision")
+		strings.HasPrefix(lowerMessage, "revision") ||
+		strings.HasPrefix(lowerMessage, "generate")
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
