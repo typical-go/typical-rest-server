@@ -7,6 +7,7 @@ import (
 	"github.com/golang-migrate/migrate"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
 // Config for database configuration
@@ -53,6 +54,8 @@ func (t *Tool) RollbackDB(ctx typictx.ActionContext) (err error) {
 }
 
 func (t *Tool) createDB(config Config) (err error) {
+	typienv.ExportProjectEnv()
+
 	query := fmt.Sprintf(t.CreateDatabaseScriptTemplate, config.DatabaseName())
 	log.Infof(query)
 
@@ -67,6 +70,8 @@ func (t *Tool) createDB(config Config) (err error) {
 }
 
 func (t *Tool) dropDB(config Config) (err error) {
+	typienv.ExportProjectEnv()
+
 	query := fmt.Sprintf(t.DropDatabaseScriptTemplate, config.DatabaseName())
 	log.Infof(query)
 
@@ -81,6 +86,8 @@ func (t *Tool) dropDB(config Config) (err error) {
 }
 
 func (t *Tool) migrateDB(config Config) error {
+	typienv.ExportProjectEnv()
+
 	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 
@@ -93,6 +100,8 @@ func (t *Tool) migrateDB(config Config) error {
 }
 
 func (t *Tool) rollbackDB(config Config) error {
+	typienv.ExportProjectEnv()
+
 	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 

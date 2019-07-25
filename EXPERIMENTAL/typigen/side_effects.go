@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	mainInitFile = "init.go"
+	sideEffectTarget = "t_side_effects.go"
 )
 
 // TypicalDevToolSideEffects generate side effect for typical-dev-tool
 func TypicalDevToolSideEffects(t typictx.Context) error {
-	log.Info("Update typical dev tool side effects")
+	log.Infof("Generate typical dev tool side effects: %s", sideEffectTarget)
 	var libraries []string
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {
@@ -25,13 +25,13 @@ func TypicalDevToolSideEffects(t typictx.Context) error {
 			}
 		}
 	}
-	filename := typienv.TypicalDevToolMainPackage() + "/" + mainInitFile
+	filename := typienv.TypicalDevToolMainPackage() + "/" + sideEffectTarget
 	return generateSideEffects(filename, libraries)
 }
 
 // AppSideEffects generate side effect for application
 func AppSideEffects(t typictx.Context) error {
-	log.Info("Update application side effects")
+	log.Infof("Generate application side effects: %s", sideEffectTarget)
 	var libraries []string
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {
@@ -41,7 +41,7 @@ func AppSideEffects(t typictx.Context) error {
 		}
 	}
 
-	filename := typienv.AppMainPackage() + "/" + mainInitFile
+	filename := typienv.AppMainPackage() + "/" + sideEffectTarget
 	return generateSideEffects(filename, libraries)
 }
 

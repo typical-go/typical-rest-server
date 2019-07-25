@@ -2,7 +2,6 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typitask"
 	"gopkg.in/urfave/cli.v1"
@@ -27,6 +26,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
+	app.Before = t.beforeAction
 	app.Commands = t.StandardCommands()
 	for key := range t.Modules {
 		module := t.Modules[key]
@@ -55,11 +55,14 @@ func (t *TypicalDevTool) Cli() *cli.App {
 		app.Commands = append(app.Commands, command)
 	}
 
-	// TODO: put it at before run of cli.
-	typigen.TypicalDevToolSideEffects(t.Context)
-	typienv.ExportProjectEnv()
-
 	return app
+}
+
+func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
+	typigen.AppSideEffects(t.Context)
+	typigen.TypicalDevToolSideEffects(t.Context)
+
+	return
 }
 
 // StandardCommands return standard commands for typical task tool
