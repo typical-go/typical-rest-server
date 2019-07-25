@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"gopkg.in/src-d/go-git.v4"
 
 	"golang.org/x/oauth2"
 
@@ -18,6 +20,11 @@ import (
 
 // ReleaseDistribution to release binary distribution
 func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
+	gitRepo, err := git.PlainOpen(".")
+	if err != nil {
+		return
+	}
+
 	if !ctx.Cli.Bool("no-test") {
 		RunTest(ctx)
 	}
@@ -61,7 +68,8 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 
 	note := ctx.Cli.String("note")
 	if note == "" {
-		// TODO: generate default note from git log
+		log.Info("Generate default note from git logs.")
+		note = defaultNote(gitRepo)
 	}
 
 	githubKey := ctx.Cli.String("github-token")
@@ -81,6 +89,41 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	}
 
 	return
+}
+
+func defaultNote(gitRepo *git.Repository) string {
+	var builder strings.Builder
+
+	tagrefs, _ := gitRepo.Tags()
+	latestTag, _ := tagrefs.Next()
+	tagrefs.Close()
+
+	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
+	defer gitLogs.Close()
+	for {
+		commit, err := gitLogs.Next()
+		if err != nil {
+			break
+		}
+
+		if commit.Hash == latestTag.Hash() {
+			break
+		}
+
+		shortHash := commit.Hash.String()[0:8]
+		message := strings.TrimSpace(commit.Message)
+
+		if !ignoredMessage(message) {
+			builder.WriteString(fmt.Sprintf("%s %s\n", shortHash, message))
+		}
+	}
+
+	return builder.String()
+}
+
+func ignoredMessage(message string) bool {
+	// TODO: ignore everything start with small-case character
+	return strings.HasPrefix(message, "Merge")
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
