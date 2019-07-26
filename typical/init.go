@@ -15,6 +15,7 @@ var Context = typictx.Context{
 	Name:        "Typical-RESTful-Server",
 	Version:     "0.2.2",
 	Description: "Example of typical and scalable RESTful API Server for Go",
+	ModuleName:  "github.com/typical-go/typical-rest-server",
 
 	Github: &typictx.Github{
 		Owner:    "typical-go",

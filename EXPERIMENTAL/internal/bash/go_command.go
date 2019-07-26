@@ -14,6 +14,11 @@ func GoFmt(filename string) {
 	Silent(goCommand, "fmt", filename)
 }
 
+// GoImports for `goimports`
+func GoImports(filename string) {
+	RunGoBin("goimports", "-w", filename)
+}
+
 // GoBuild for `go build`
 func GoBuild(binaryName, mainPackage string) {
 	Run(goCommand, "build", "-o", binaryName, mainPackage)

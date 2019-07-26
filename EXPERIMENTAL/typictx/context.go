@@ -15,6 +15,7 @@ type Context struct {
 	Description string
 	AppModule   AppModule
 	BinaryName  string
+	ModuleName  string
 
 	ReadmeTemplate string
 	ReadmeFile     string

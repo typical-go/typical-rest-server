@@ -63,7 +63,7 @@ func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
 	typienv.GenerateAppEnvIfNotExist(t.Context)
 	typigen.GenerateAppSideEffects(t.Context)
 	typigen.GenerateDevToolSideEffects(t.Context)
-	typigen.GenerateConfig(t.Context)
+	typigen.GenerateInitialization(t.Context)
 
 	return
 }
