@@ -11,59 +11,47 @@ import (
 )
 
 // Context instance of Context
-var Context typictx.Context
+var Context = typictx.Context{
+	Name:        "Typical-RESTful-Server",
+	Version:     "0.2.2",
+	Description: "Example of typical and scalable RESTful API Server for Go",
 
-func init() {
-	Context = typictx.Context{
-		Name:        "Typical-RESTful-Server",
-		Version:     "0.2.2",
-		Description: "Example of typical and scalable RESTful API Server for Go",
+	Github: &typictx.Github{
+		Owner:    "typical-go",
+		RepoName: "typical-rest-server",
+	},
 
-		Github: &typictx.Github{
-			Owner:    "typical-go",
-			RepoName: "typical-rest-server",
-		},
+	Configs: []typictx.Config{
+		{Prefix: "APP", Spec: &config.AppConfig{}, Description: "Application configuration"},
+		{Prefix: "PG", Spec: &config.PostgresConfig{}, Description: "Postgres configuration"},
+	},
 
-		Configs: []typictx.Config{
-			{Prefix: "APP", Spec: &config.AppConfig{}, Description: "Application configuration"},
-			{Prefix: "PG", Spec: &config.PostgresConfig{}, Description: "Postgres configuration"},
-		},
-
+	AppModule: typictx.TypiApp{
 		Constructors: []interface{}{
-			config.LoadConfig,
-			config.GetAppConfig,
-			config.GetPgConfig,
-			config.GetDBToolConfig,
+			app.NewServer,
+			controller.NewBookController,
+			controller.NewApplicationController,
+			repository.NewBookRepository,
 		},
-
-		AppModule: typictx.TypiApp{
-			Constructors: []interface{}{
-				app.NewServer,
-				controller.NewBookController,
-				controller.NewApplicationController,
-				repository.NewBookRepository,
+		Action: typictx.MainAction{
+			StartFunc: func(s *app.Server) error {
+				log.Info("Start the application")
+				return s.Serve()
 			},
-			Action: typictx.MainAction{
-				StartFunc: func(s *app.Server) error {
-					log.Info("Start the application")
-					return s.Serve()
-				},
-				StopFunc: func(s *app.Server) (err error) {
-					log.Info("Stop the application")
-					return s.Shutdown()
-				},
-			},
-			TestTargets: []string{
-				"./app/controller",
-				"./app/repository",
-			},
-			MockTargets: []string{
-				"./app/repository/book_repo.go",
+			StopFunc: func(s *app.Server) (err error) {
+				log.Info("Stop the application")
+				return s.Shutdown()
 			},
 		},
-		Modules: []*typictx.Module{
-			module.NewPostgres(),
+		TestTargets: []string{
+			"./app/controller",
+			"./app/repository",
 		},
-	}
-
+		MockTargets: []string{
+			"./app/repository/book_repo.go",
+		},
+	},
+	Modules: []*typictx.Module{
+		module.NewPostgres(),
+	},
 }

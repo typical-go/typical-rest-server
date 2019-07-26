@@ -28,7 +28,7 @@ type Context struct {
 }
 
 // ReadmeTemplateOrDefault return readme template field or the default template
-func (c Context) ReadmeTemplateOrDefault() string {
+func (c *Context) ReadmeTemplateOrDefault() string {
 	if c.ReadmeTemplate == "" {
 		return defaultReadmeTemplate
 	}
@@ -36,7 +36,7 @@ func (c Context) ReadmeTemplateOrDefault() string {
 }
 
 // ReadmeFileOrDefault return readme file field or default template
-func (c Context) ReadmeFileOrDefault() string {
+func (c *Context) ReadmeFileOrDefault() string {
 	if c.ReadmeFile == "" {
 		return defaultReadmeFile
 	}
@@ -45,7 +45,7 @@ func (c Context) ReadmeFileOrDefault() string {
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
-func (c Context) BinaryNameOrDefault() string {
+func (c *Context) BinaryNameOrDefault() string {
 	if c.BinaryName == "" {
 		dir, _ := os.Getwd()
 		chunks := strings.Split(dir, "/")
@@ -55,7 +55,7 @@ func (c Context) BinaryNameOrDefault() string {
 }
 
 // Container to return the depedency injection
-func (c Context) Container() *dig.Container {
+func (c *Context) Container() *dig.Container {
 	container := dig.New()
 
 	for _, constructor := range c.Constructors {
@@ -74,7 +74,7 @@ func (c Context) Container() *dig.Container {
 }
 
 // CheckModuleStatus to check module availability status
-func (c Context) CheckModuleStatus() (statusReport map[string]string) {
+func (c *Context) CheckModuleStatus() (statusReport map[string]string) {
 	statusReport = make(map[string]string)
 	for _, module := range c.Modules {
 		err := c.Container().Invoke(module.StatusFunc)
@@ -85,4 +85,9 @@ func (c Context) CheckModuleStatus() (statusReport map[string]string) {
 		}
 	}
 	return
+}
+
+// AddConstructor to add constructor
+func (c *Context) AddConstructor(constructor interface{}) {
+	c.Constructors = append(c.Constructors, constructor)
 }
