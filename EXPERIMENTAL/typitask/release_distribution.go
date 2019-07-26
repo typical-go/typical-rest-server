@@ -125,7 +125,7 @@ func changeLogs(gitRepo *git.Repository) (changes []string) {
 			break
 		}
 
-		if commit.Hash == latestTag.Hash() {
+		if latestTag != nil && commit.Hash == latestTag.Hash() {
 			break
 		}
 
