@@ -13,14 +13,14 @@ import (
 // Server server application
 type Server struct {
 	*echo.Echo
-	config.AppConfig
+	*config.AppConfig
 	bookController        controller.BookController
 	applicationController controller.ApplicationController
 }
 
 // NewServer return instance of server
 func NewServer(
-	config config.AppConfig,
+	config *config.AppConfig,
 	bookController controller.BookController,
 	applicationController controller.ApplicationController,
 ) *Server {
@@ -31,7 +31,7 @@ func NewServer(
 		bookController:        bookController,
 		applicationController: applicationController,
 	}
-	
+
 	initLogger(s)
 	initMiddlewares(s)
 	initRoutes(s)

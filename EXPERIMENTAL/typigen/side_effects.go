@@ -10,12 +10,8 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
-const (
-	sideEffectTarget = "t_side_effects.go"
-)
-
-// TypicalDevToolSideEffects generate side effect for typical-dev-tool
-func TypicalDevToolSideEffects(t typictx.Context) error {
+// GenerateDevToolSideEffects generate side effect for typical-dev-tool
+func GenerateDevToolSideEffects(t typictx.Context) error {
 	log.Infof("Generate typical dev tool side effects: %s", sideEffectTarget)
 	var libraries []string
 	for _, module := range t.Modules {
@@ -29,8 +25,8 @@ func TypicalDevToolSideEffects(t typictx.Context) error {
 	return generateSideEffects(filename, libraries)
 }
 
-// AppSideEffects generate side effect for application
-func AppSideEffects(t typictx.Context) error {
+// GenerateAppSideEffects generate side effect for application
+func GenerateAppSideEffects(t typictx.Context) error {
 	log.Infof("Generate application side effects: %s", sideEffectTarget)
 	var libraries []string
 	for _, module := range t.Modules {

@@ -31,7 +31,7 @@ func NewPostgres() *typictx.Module {
 			{Name: "migrate", Usage: "Migrate Database", ActionFunc: tool.MigrateDB},
 			{Name: "rollback", Usage: "Rollback Database", ActionFunc: tool.RollbackDB},
 		},
-		OpenFunc: func(cfg config.PostgresConfig) (*sql.DB, error) {
+		OpenFunc: func(cfg *config.PostgresConfig) (*sql.DB, error) {
 			log.Info("Open postgres connection")
 			return sql.Open(cfg.DriverName(), cfg.DataSource())
 		},

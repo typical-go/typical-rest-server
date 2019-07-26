@@ -59,8 +59,9 @@ func (t *TypicalDevTool) Cli() *cli.App {
 }
 
 func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
-	typigen.AppSideEffects(t.Context)
-	typigen.TypicalDevToolSideEffects(t.Context)
+	typigen.GenerateAppSideEffects(t.Context)
+	typigen.GenerateDevToolSideEffects(t.Context)
+	typigen.GenerateConfig(t.Context)
 
 	return
 }
