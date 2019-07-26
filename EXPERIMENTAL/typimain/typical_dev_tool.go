@@ -2,6 +2,7 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typitask"
 	"gopkg.in/urfave/cli.v1"
@@ -59,6 +60,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 }
 
 func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
+	typienv.GenerateAppEnvIfNotExist(t.Context)
 	typigen.GenerateAppSideEffects(t.Context)
 	typigen.GenerateDevToolSideEffects(t.Context)
 	typigen.GenerateConfig(t.Context)

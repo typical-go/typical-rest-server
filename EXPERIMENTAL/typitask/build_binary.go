@@ -9,8 +9,6 @@ import (
 
 // BuildBinary for typical application
 func BuildBinary(ctx typictx.ActionContext) error {
-	typienv.GenerateAppEnvIfNotExist(ctx.Typical)
-
 	binaryName := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
 	mainPackage := typienv.AppMainPackage()
 

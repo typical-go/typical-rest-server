@@ -14,16 +14,15 @@ type Context struct {
 	Version     string
 	Description string
 	AppModule   AppModule
+	BinaryName  string
 
 	ReadmeTemplate string
 	ReadmeFile     string
 
-	BinaryName string
-
+	Configs      []Config
 	Modules      []*Module
 	Constructors []interface{}
-
-	Commands []cli.Command
+	Commands     []cli.Command
 
 	Github *Github
 }

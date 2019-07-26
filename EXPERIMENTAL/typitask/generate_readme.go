@@ -5,7 +5,6 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/iancoleman/strcase"
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -47,16 +46,11 @@ type Readme struct {
 func (r Readme) ConfigDoc() string {
 	buf := new(bytes.Buffer)
 
-	buf.WriteString("\nApplication\n")
-	envconfig.Usagef(r.AppModule.GetConfigPrefix(), r.AppModule.GetConfig(), buf, configTemplate)
-
-	for i := range r.Modules {
-		module := r.Modules[i]
+	for _, cfg := range r.Context.Configs {
 		buf.WriteString("\n")
-		buf.WriteString(strcase.ToCamel(module.Name))
+		buf.WriteString(cfg.Description)
 		buf.WriteString("\n")
-
-		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, configTemplate)
+		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, configTemplate)
 	}
 
 	return buf.String()

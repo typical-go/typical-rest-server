@@ -5,23 +5,8 @@ type TypiApp struct {
 	Constructors []interface{}
 	Action       Action
 	Commands     []Command
-
-	ConfigPrefix   string
-	Config         interface{}
-	ConfigLoadFunc interface{}
-
-	MockTargets []string
-	TestTargets []string
-}
-
-// GetConfig to get config
-func (a TypiApp) GetConfig() interface{} {
-	return a.Config
-}
-
-// GetConfigPrefix to get config
-func (a TypiApp) GetConfigPrefix() string {
-	return a.ConfigPrefix
+	MockTargets  []string
+	TestTargets  []string
 }
 
 // GetMockTargets to get mock targets
@@ -36,9 +21,7 @@ func (a TypiApp) GetTestTargets() []string {
 
 // GetConstructors to get constructors
 func (a TypiApp) GetConstructors() []interface{} {
-	constructors := a.Constructors
-	constructors = append(constructors, a.ConfigLoadFunc)
-	return constructors
+	return a.Constructors
 }
 
 // GetCommands to get commands

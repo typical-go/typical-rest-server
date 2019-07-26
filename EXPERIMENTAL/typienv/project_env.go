@@ -55,11 +55,8 @@ func GenerateAppEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error)
 		return
 	}
 
-	envconfig.Usagef(ctx.AppModule.GetConfigPrefix(), ctx.AppModule.GetConfig(), buf, envTemplate)
-
-	for i := range ctx.Modules {
-		module := ctx.Modules[i]
-		envconfig.Usagef(module.ConfigPrefix, module.Config, buf, envTemplate)
+	for _, cfg := range ctx.Configs {
+		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, envTemplate)
 	}
 
 	isGenerated = true

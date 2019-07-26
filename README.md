@@ -29,13 +29,13 @@ There is no specific requirement to deploy the application. Please find the stab
 
 Please set the configuration using [Environment Variable](https://12factor.net/config). 
 
-Application
+Application configuration
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |APP_ADDRESS|String|:8089|true||	
 
-Postgres
+Postgres configuration
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	

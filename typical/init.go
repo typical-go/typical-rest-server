@@ -24,6 +24,11 @@ func init() {
 			RepoName: "typical-rest-server",
 		},
 
+		Configs: []typictx.Config{
+			{Prefix: "APP", Spec: &config.AppConfig{}, Description: "Application configuration"},
+			{Prefix: "PG", Spec: &config.PostgresConfig{}, Description: "Postgres configuration"},
+		},
+
 		Constructors: []interface{}{
 			config.LoadConfig,
 			config.GetAppConfig,
@@ -32,8 +37,6 @@ func init() {
 		},
 
 		AppModule: typictx.TypiApp{
-			Config:       &config.AppConfig{},
-			ConfigPrefix: "APP",
 			Constructors: []interface{}{
 				app.NewServer,
 				controller.NewBookController,

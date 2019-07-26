@@ -15,11 +15,9 @@ func NewPostgres() *typictx.Module {
 	tool := dbtool.NewPostgresTool()
 
 	return &typictx.Module{
-		Name:         "postgres",
-		ShortName:    "pg",
-		Usage:        "Postgres Database Module",
-		ConfigPrefix: "PG",
-		Config:       &config.PostgresConfig{},
+		Name:      "postgres",
+		ShortName: "pg",
+		Usage:     "Postgres Database Module",
 		SideEffects: []*typictx.SideEffect{
 			typictx.NewSideEffect("github.com/lib/pq"),
 			typictx.NewSideEffect("github.com/golang-migrate/migrate/database/postgres").ExcludeApp(),
