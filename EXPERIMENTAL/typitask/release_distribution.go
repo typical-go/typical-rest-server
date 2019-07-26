@@ -107,7 +107,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	return
 }
 
-// TODO: change logs should be unfiltered
+// TODO: change logs should be unfiltered. Filter only when generate release page
 func changeLogs(gitRepo *git.Repository) (changes []string) {
 	tagrefs, _ := gitRepo.Tags()
 	var latestTag *plumbing.Reference
@@ -149,7 +149,8 @@ func ignoredMessage(message string) bool {
 	return strings.HasPrefix(lowerMessage, "merge") ||
 		strings.HasPrefix(lowerMessage, "bump") ||
 		strings.HasPrefix(lowerMessage, "revision") ||
-		strings.HasPrefix(lowerMessage, "generate")
+		strings.HasPrefix(lowerMessage, "generate") ||
+		strings.HasPrefix(lowerMessage, "wip")
 }
 
 func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
