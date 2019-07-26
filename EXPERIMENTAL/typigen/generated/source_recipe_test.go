@@ -1,4 +1,4 @@
-package typigen
+package generated
 
 import (
 	"reflect"
@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGeneratedModel(t *testing.T) {
-	model := GeneratedModel{
+func TestInitializationModel(t *testing.T) {
+	model := SourceRecipe{
 		PackageName: "typical",
 		Imports: map[string]string{
 			"fmt":                              "",

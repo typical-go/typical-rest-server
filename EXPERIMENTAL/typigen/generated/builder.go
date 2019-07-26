@@ -1,4 +1,4 @@
-package typigen
+package generated
 
 import (
 	"fmt"

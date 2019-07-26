@@ -10,6 +10,10 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
+const (
+	sideEffectTarget = "t_side_effects.go"
+)
+
 // GenerateDevToolSideEffects generate side effect for typical-dev-tool
 func GenerateDevToolSideEffects(t typictx.Context) error {
 	log.Infof("Generate typical dev tool side effects: %s", sideEffectTarget)

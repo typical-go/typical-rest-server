@@ -7,6 +7,7 @@ import (
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/generated"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -16,15 +17,16 @@ func GenerateInitialization(ctx typictx.Context) (err error) {
 	// TODO:
 	log.Info("Generate typical initialization source code")
 
-	generated := GeneratedModel{
+	recipe := generated.SourceRecipe{
 		PackageName: "typical",
 	}
 
-	configStruct := StructPogo{Name: "Config"}
+	configStructName := "Config"
+	configStruct := generated.StructPogo{Name: configStructName}
 
-	generated.AddConstructors = append(generated.AddConstructors, FunctionPogo{
+	recipe.AddConstructors = append(recipe.AddConstructors, generated.FunctionPogo{
 		FuncParams:   map[string]string{},
-		ReturnValues: []string{"*Config", "error"},
+		ReturnValues: []string{"*" + configStructName, "error"},
 		FuncBody: fmt.Sprintf(`var cfg Config
 err := envconfig.Process("", &cfg)
 return &cfg, err`),
@@ -36,16 +38,16 @@ return &cfg, err`),
 			Name: config.CamelPrefix(),
 			Type: typeConfig,
 		})
-		generated.AddConstructors = append(generated.AddConstructors, FunctionPogo{
+		recipe.AddConstructors = append(recipe.AddConstructors, generated.FunctionPogo{
 			FuncParams: map[string]string{
-				"cfg": configStruct.Name,
+				"cfg": "*" + configStructName,
 			},
 			ReturnValues: []string{typeConfig.String()},
 			FuncBody:     fmt.Sprintf(`return cfg.%s`, config.CamelPrefix()),
 		})
 
 		for _, typ := range GetCompositionType(config.Spec) {
-			generated.AddConstructors = append(generated.AddConstructors, FunctionPogo{
+			recipe.AddConstructors = append(recipe.AddConstructors, generated.FunctionPogo{
 				FuncParams: map[string]string{
 					"cfg": reflect.TypeOf(config.Spec).String(),
 				},
@@ -55,10 +57,10 @@ return &cfg, err`),
 		}
 	}
 
-	generated.Structs = append(generated.Structs, configStruct)
+	recipe.Structs = append(recipe.Structs, configStruct)
 
 	filename := "typical/generated.go"
-	err = ioutil.WriteFile(filename, []byte(generated.String()), 0644)
+	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {
 		return
 	}

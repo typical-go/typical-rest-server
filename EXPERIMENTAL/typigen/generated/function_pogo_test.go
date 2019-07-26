@@ -1,4 +1,4 @@
-package typigen
+package generated
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ func TestFunctionPogo(t *testing.T) {
 		FuncParams: map[string]string{
 			"message": "string",
 		},
-		ReturnParams: []string{"string", "error"},
+		ReturnValues: []string{"string", "error"},
 		FuncBody:     `return "world", nil`,
 	}
 

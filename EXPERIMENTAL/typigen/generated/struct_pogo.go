@@ -1,7 +1,8 @@
-package typigen
+package generated
 
 import "reflect"
 
+// StructPogo is plain old go object for struct
 type StructPogo struct {
 	Name   string
 	Fields []reflect.StructField

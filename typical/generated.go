@@ -18,10 +18,10 @@ func init() {
 		err := envconfig.Process("", &cfg)
 		return &cfg, err
 	})
-	Context.AddConstructor(func(cfg Config) *config.AppConfig {
+	Context.AddConstructor(func(cfg *Config) *config.AppConfig {
 		return cfg.App
 	})
-	Context.AddConstructor(func(cfg Config) *config.PostgresConfig {
+	Context.AddConstructor(func(cfg *Config) *config.PostgresConfig {
 		return cfg.Pg
 	})
 }
