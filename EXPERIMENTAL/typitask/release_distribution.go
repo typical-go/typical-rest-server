@@ -130,7 +130,7 @@ func changeLogs(gitRepo *git.Repository) (changes []string) {
 		}
 
 		shortHash := commit.Hash.String()[0:8]
-		message := strings.TrimSpace(commit.Message)
+		message := cleanMessage(commit.Message)
 
 		if !ignoredMessage(message) {
 			change := fmt.Sprintf("%s %s\n", shortHash, message)
@@ -139,6 +139,15 @@ func changeLogs(gitRepo *git.Repository) (changes []string) {
 	}
 
 	return
+}
+
+func cleanMessage(message string) string {
+	iCoAuthor := strings.Index(message, "Co-Authored-By")
+	if iCoAuthor > 0 {
+		message = message[0:strings.Index(message, "Co-Authored-By")]
+	}
+	message = strings.TrimSpace(message)
+	return message
 }
 
 func ignoredMessage(message string) bool {
