@@ -3,6 +3,7 @@ package bash
 import (
 	"fmt"
 	"go/build"
+	"strings"
 )
 
 var (
@@ -20,8 +21,14 @@ func GoImports(filename string) {
 }
 
 // GoBuild for `go build`
-func GoBuild(binaryName, mainPackage string) {
-	Run(goCommand, "build", "-o", binaryName, mainPackage)
+func GoBuild(binaryName, mainPackage string, ldflags ...string) {
+	args := []string{"build"}
+
+	args = append(args, "-o", binaryName)
+	args = append(args, "-ldflags", strings.Join(ldflags, " "))
+	args = append(args, mainPackage)
+
+	Run(goCommand, args...)
 }
 
 // GoTest for `go test` with coverprofile

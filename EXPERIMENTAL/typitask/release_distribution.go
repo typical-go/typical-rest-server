@@ -76,7 +76,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 			log.Infof("Create release binary for %s/%s at %s", os1, arch, binary)
 			os.Setenv("GOOS", os1)
 			os.Setenv("GOARCH", arch)
-			bash.GoBuild(binaryPath, mainPackage)
+			bash.GoBuild(binaryPath, mainPackage, "-w", "-s")
 
 			binaries = append(binaries, binary)
 		}
