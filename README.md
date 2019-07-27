@@ -39,7 +39,6 @@ Postgres configuration
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
-|PG_CONFIG|dbtool.Config||||	
 |PG_DBNAME|String|typical-rest-server|true||	
 |PG_USER|String|default_user|true||	
 |PG_PASSWORD|String|default_password|true||	
