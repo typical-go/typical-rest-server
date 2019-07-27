@@ -9,10 +9,14 @@ import (
 	"strings"
 )
 
-func Parse(paths []string) (autowireFuncs []string, automockFiles []string, err error) {
+// Parse the source code to get autowire and automock
+func Parse(appPath string) (autowireFuncs []string, automockFiles []string, err error) {
+	dirPaths := []string{appPath}
+	AllDirectories(appPath, &dirPaths)
+
 	fset := token.NewFileSet() // positions are relative to fset
 
-	for _, path := range paths {
+	for _, path := range dirPaths {
 		var pkgs map[string]*ast.Package
 		pkgs, err = parser.ParseDir(fset, path, directoryFilter, parser.ParseComments)
 		if err != nil {

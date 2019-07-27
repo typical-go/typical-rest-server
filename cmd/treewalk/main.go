@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	paths := []string{"app", "app/controller", "app/helper", "app/repository", "app/service"}
-	autowireFuncs, automockFiles, err := typiparser.Parse(paths)
+	autowireFuncs, automockFiles, err := typiparser.Parse("app")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
