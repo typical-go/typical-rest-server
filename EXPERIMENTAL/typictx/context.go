@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"go.uber.org/dig"
-	"gopkg.in/urfave/cli.v1"
 )
 
 // Context of typical application
@@ -13,17 +12,21 @@ type Context struct {
 	Name        string
 	Version     string
 	Description string
-	AppModule   AppModule
-	BinaryName  string
-	ModuleName  string
+
+	BinaryName string
+
+	AppAction   Action
+	AppCommands []Command
 
 	ReadmeTemplate string
 	ReadmeFile     string
 
-	Configs      []Config
-	Modules      []*Module
+	Configs []Config
+	Modules []*Module
+
 	Constructors []interface{}
-	Commands     []cli.Command
+	TestTargets  []string
+	MockTargets  []string
 
 	Github *Github
 }
@@ -63,7 +66,7 @@ func (c *Context) Container() *dig.Container {
 		container.Provide(constructor)
 	}
 
-	for _, constructor := range c.AppModule.GetConstructors() {
+	for _, constructor := range c.Constructors {
 		container.Provide(constructor)
 	}
 

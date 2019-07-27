@@ -21,7 +21,7 @@ func GenerateMock(ctx typictx.ActionContext) error {
 		os.RemoveAll(mockPkg)
 	}
 
-	for _, mockTarget := range ctx.Typical.AppModule.GetMockTargets() {
+	for _, mockTarget := range ctx.Typical.MockTargets {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Infof("Generate mock for '%s' at '%s'", mockTarget, dest)

@@ -9,6 +9,6 @@ import (
 // RunTest to run automate testing
 func RunTest(ctx typictx.ActionContext) error {
 	log.Info("Run the Test")
-	bash.GoTest(ctx.Typical.AppModule.GetTestTargets())
+	bash.GoTest(ctx.Typical.TestTargets)
 	return nil
 }

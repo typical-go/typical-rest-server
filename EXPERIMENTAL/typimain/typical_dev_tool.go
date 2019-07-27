@@ -51,11 +51,6 @@ func (t *TypicalDevTool) Cli() *cli.App {
 		}
 	}
 
-	for key := range t.Commands {
-		command := t.Commands[key]
-		app.Commands = append(app.Commands, command)
-	}
-
 	return app
 }
 

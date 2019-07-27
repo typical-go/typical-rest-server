@@ -22,9 +22,9 @@ func (t *TypicalApplication) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = runAction(t.Context, t.AppModule.GetAction())
+	app.Action = runAction(t.Context, t.AppAction)
 
-	for _, cmd := range t.AppModule.GetCommands() {
+	for _, cmd := range t.AppCommands {
 		app.Commands = append(app.Commands, cli.Command{
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
