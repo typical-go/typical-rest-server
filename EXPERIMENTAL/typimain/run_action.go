@@ -11,7 +11,6 @@ func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) inter
 			Cli:     ctx,
 			Typical: context,
 		})
-
 	}
 }
 

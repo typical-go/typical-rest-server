@@ -12,10 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	filename = "typical/generated.go"
-)
-
 // TypicalGenerated to generate code in typical package
 func TypicalGenerated(ctx typictx.Context) (err error) {
 	log.Info("Generate typical initialization source code")
@@ -30,6 +26,8 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	}
 	recipe.AddConstructors = append(recipe.AddConstructors, configConstructors...)
 
+	// TODO: add typical folder in typienv
+	filename := "typical/generated.go"
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {
 		return
