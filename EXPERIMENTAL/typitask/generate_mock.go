@@ -11,8 +11,11 @@ import (
 )
 
 // GenerateMock to generate mock for interface as defined in mockTarget
-func GenerateMock(ctx typictx.ActionContext) error {
-	bash.GoGet("github.com/golang/mock/mockgen")
+func GenerateMock(ctx typictx.ActionContext) (err error) {
+	err = bash.GoGet("github.com/golang/mock/mockgen")
+	if err != nil {
+		return
+	}
 
 	mockPkg := typienv.Mock()
 
@@ -25,10 +28,10 @@ func GenerateMock(ctx typictx.ActionContext) error {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 
 		log.Infof("Generate mock for '%s' at '%s'", mockTarget, dest)
-		bash.RunGoBin("mockgen",
+		err = bash.RunGoBin("mockgen",
 			"-source", mockTarget,
 			"-destination", dest,
 			"-package", mockPkg)
 	}
-	return nil
+	return
 }

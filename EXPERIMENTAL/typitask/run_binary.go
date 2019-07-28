@@ -16,6 +16,5 @@ func RunBinary(ctx typictx.ActionContext) error {
 	binaryPath := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
 
 	log.Infof("Run the Binary '%s'", binaryPath)
-	bash.Run(binaryPath, []string(ctx.Cli.Args())...)
-	return nil
+	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
 }

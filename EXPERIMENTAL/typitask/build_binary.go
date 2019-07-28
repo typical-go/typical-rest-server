@@ -13,7 +13,5 @@ func BuildBinary(ctx typictx.ActionContext) error {
 	mainPackage := typienv.AppMainPackage()
 
 	log.Infof("Build the Binary for '%s' at '%s'", mainPackage, binaryName)
-	bash.GoBuild(binaryName, mainPackage)
-
-	return nil
+	return bash.GoBuild(binaryName, mainPackage)
 }

@@ -16,6 +16,5 @@ func CleanProject(ctx typictx.ActionContext) error {
 
 	log.Info("Go clean")
 	os.Setenv("GO111MODULE", "off") // NOTE:XXX: https://github.com/golang/go/issues/28680
-	bash.GoClean("-x", "-testcache", "-modcachœœe")
-	return nil
+	return bash.GoClean("-x", "-testcache", "-modcachœœe")
 }
