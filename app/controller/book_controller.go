@@ -11,7 +11,11 @@ import (
 
 // BookController handle input related to Book
 type BookController interface {
-	CRUDController
+	Create(c echo.Context) error
+	Get(c echo.Context) error
+	List(c echo.Context) error
+	Update(c echo.Context) error
+	Delete(c echo.Context) error
 }
 
 type bookController struct {

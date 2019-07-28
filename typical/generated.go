@@ -28,7 +28,9 @@ func init() {
 		return cfg.Pg
 	})
 	Context.AddConstructor(app.NewServer)
-	Context.AddConstructor(controller.NewApplicationController)
 	Context.AddConstructor(controller.NewBookController)
+	Context.AddConstructor(controller.NewApplicationController)
 	Context.AddConstructor(repository.NewBookRepository)
+	Context.AddMockTarget("app/controller/book_controller.go")
+	Context.AddMockTarget("app/repository/book_repo.go")
 }

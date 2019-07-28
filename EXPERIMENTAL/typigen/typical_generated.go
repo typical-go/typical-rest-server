@@ -21,7 +21,7 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	log.Infof("Typical Generated Code: %s", filename)
 
 	mainConfig, configConstructors := constructConfig(ctx)
-	autowireFuncs, _, err := typiparser.Parse("app")
+	autowireFuncs, automockFiles, err := typiparser.Parse("app")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -34,6 +34,7 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	}
 	recipe.AddConstructorPogos(configConstructors...)
 	recipe.AddConstructors(autowireFuncs...)
+	recipe.AddMockTargets(automockFiles...)
 
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {

@@ -94,3 +94,8 @@ func (c *Context) CheckModuleStatus() (statusReport map[string]string) {
 func (c *Context) AddConstructor(constructor interface{}) {
 	c.Constructors = append(c.Constructors, constructor)
 }
+
+// AddMockTarget to add mock target
+func (c *Context) AddMockTarget(mockTarget string) {
+	c.MockTargets = append(c.MockTargets, mockTarget)
+}

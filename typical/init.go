@@ -42,9 +42,7 @@ var Context = typictx.Context{
 		"./app/controller",
 		"./app/repository",
 	},
-	MockTargets: []string{
-		"./app/repository/book_repo.go",
-	},
+
 	Modules: []*typictx.Module{
 		module.NewPostgres(),
 	},

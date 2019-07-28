@@ -6,6 +6,7 @@ type SourceRecipe struct {
 	Imports      map[string]string
 	Structs      []StructPogo
 	Constructors []string
+	MockTargets  []string
 }
 
 func (r SourceRecipe) String() string {
@@ -25,6 +26,9 @@ func (r SourceRecipe) String() string {
 	for _, constructor := range r.Constructors {
 		builder.Printlnf("Context.AddConstructor(%s)", constructor)
 	}
+	for _, mockTarget := range r.MockTargets {
+		builder.Printlnf("Context.AddMockTarget(\"%s\")", mockTarget)
+	}
 	builder.Printlnf("}")
 
 	return builder.String()
@@ -40,4 +44,9 @@ func (r *SourceRecipe) AddConstructorPogos(pogos ...FunctionPogo) {
 // AddConstructors to add constructors
 func (r *SourceRecipe) AddConstructors(constructors ...string) {
 	r.Constructors = append(r.Constructors, constructors...)
+}
+
+// AddMockTargets to add constructors
+func (r *SourceRecipe) AddMockTargets(mockTargets ...string) {
+	r.MockTargets = append(r.MockTargets, mockTargets...)
 }
