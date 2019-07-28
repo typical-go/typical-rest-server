@@ -18,16 +18,16 @@ func (r SourceRecipe) String() string {
 		builder.Printlnf(`import %s "%s"`, r.Imports[packageName], packageName)
 	}
 
-	for _, stru := range r.Structs {
-		builder.Printlnf("%s", stru)
+	for i := range r.Structs {
+		builder.Printlnf("%s", r.Structs[i])
 	}
 
 	builder.Printlnf("func init() {")
-	for _, constructor := range r.Constructors {
-		builder.Printlnf("Context.AddConstructor(%s)", constructor)
+	for i := range r.Constructors {
+		builder.Printlnf("Context.AddConstructor(%s)", r.Constructors[i])
 	}
-	for _, mockTarget := range r.MockTargets {
-		builder.Printlnf("Context.AddMockTarget(\"%s\")", mockTarget)
+	for i := range r.MockTargets {
+		builder.Printlnf("Context.AddMockTarget(\"%s\")", r.MockTargets[i])
 	}
 	builder.Printlnf("}")
 
