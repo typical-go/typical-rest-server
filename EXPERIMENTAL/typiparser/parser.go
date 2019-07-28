@@ -11,7 +11,7 @@ import (
 
 // Parse the source code to get autowire and automock
 func Parse(appPath string) (projCtx ProjectContext, err error) {
-	var paths []string
+	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
 
 	AllDirectories(appPath, &paths)

@@ -4,6 +4,7 @@ package typical
 
 import (
 	"github.com/kelseyhightower/envconfig"
+	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
@@ -15,6 +16,7 @@ type Config struct {
 }
 
 func init() {
+	Context.AddConstructor(app.NewServer)
 	Context.AddConstructor(controller.NewApplicationController)
 	Context.AddConstructor(controller.NewBookController)
 	Context.AddConstructor(func() (*Config, error) {
@@ -33,6 +35,7 @@ func init() {
 	Context.AddMockTarget("app/controller/book_controller.go")
 	Context.AddMockTarget("app/repository/book_repo.go")
 
+	Context.AddTestTarget("./app")
 	Context.AddTestTarget("./app/controller")
 	Context.AddTestTarget("./app/helper/echokit")
 	Context.AddTestTarget("./app/helper/envkit")
