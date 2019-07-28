@@ -43,24 +43,22 @@ func ExportProjectEnv() (err error) {
 	return
 }
 
-func GenerateAppEnvIfNotExist(ctx typictx.Context) (isGenerated bool, err error) {
+func GenerateAppEnvIfNotExist(ctx typictx.Context) (err error) {
 	_, err = os.Stat(envFile)
 	if !os.IsNotExist(err) {
-		isGenerated = false
 		return
 	}
+	log.Infof("Generate new project environment at '%s'", envFile)
 
 	buf, err := os.Create(envFile)
 	if err != nil {
 		return
 	}
+	defer buf.Close()
 
 	for _, cfg := range ctx.Configs {
 		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, envTemplate)
 	}
-
-	isGenerated = true
-	log.Infof("Generate new project environment at '%s'", envFile)
 
 	return
 }

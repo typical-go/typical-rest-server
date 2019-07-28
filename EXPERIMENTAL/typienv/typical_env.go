@@ -23,12 +23,12 @@ const (
 
 // Binary return complete path of typical binary
 func Binary(name string) string {
-	return fmt.Sprintf("./%s/%s", Bin(), name)
+	return fmt.Sprintf("%s/%s", Bin(), name)
 }
 
 // MainPackage return main package path
 func MainPackage(name string) string {
-	return fmt.Sprintf("./%s/%s", Cmd(), name)
+	return fmt.Sprintf("%s/%s", Cmd(), name)
 }
 
 // Bin to return typical bin folder

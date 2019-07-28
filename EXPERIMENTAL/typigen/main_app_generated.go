@@ -3,6 +3,7 @@ package typigen
 import (
 	"io/ioutil"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -11,6 +12,8 @@ import (
 
 // MainAppGenerated to generate code in typical package
 func MainAppGenerated(t typictx.Context) (err error) {
+	filename := typienv.AppMainPackage() + "/generated.go"
+	log.Infof("Main App Generated Code: %s", filename)
 
 	recipe := generated.SourceRecipe{
 		PackageName: "main",
@@ -21,7 +24,6 @@ func MainAppGenerated(t typictx.Context) (err error) {
 		recipe.Imports[lib] = "_"
 	}
 
-	filename := typienv.AppMainPackage() + "/generated.go"
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {
 		return

@@ -1,6 +1,7 @@
 package typimain
 
 import (
+	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
@@ -55,13 +56,12 @@ func (t *TypicalDevTool) Cli() *cli.App {
 }
 
 func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
-	typienv.GenerateAppEnvIfNotExist(t.Context)
-
-	typigen.MainAppGenerated(t.Context)
-	typigen.MainDevToolGenerated(t.Context)
-	typigen.TypicalGenerated(t.Context)
-
-	return
+	return runn.Execute(
+		typienv.GenerateAppEnvIfNotExist(t.Context),
+		typigen.MainAppGenerated(t.Context),
+		typigen.MainDevToolGenerated(t.Context),
+		typigen.TypicalGenerated(t.Context),
+	)
 }
 
 // StandardCommands return standard commands for typical task tool
