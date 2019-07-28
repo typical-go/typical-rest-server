@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/util"
+	"github.com/typical-go/runn"
 )
 
 // MainAction hadling main process action
@@ -31,7 +31,7 @@ func (a MainAction) Start(ctx ActionContext) (err error) {
 			// NOTE: intentionally print new line after "^C"
 			fmt.Println()
 
-			var errs util.Errors
+			var errs runn.Errors
 			errs.Add(container.Invoke(a.StopFunc))
 
 			for _, module := range ctx.Typical.Modules {
