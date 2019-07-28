@@ -18,11 +18,10 @@ func MainDevToolGenerated(t typictx.Context) (err error) {
 
 	recipe := generated.SourceRecipe{
 		PackageName: "main",
-		Imports:     make(map[string]string),
 	}
 
 	for _, lib := range devtoolSideEffects(t) {
-		recipe.Imports[lib] = "_"
+		recipe.AddImportPogo(generated.ImportPogo{Alias: "_", PackageName: lib})
 	}
 
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
