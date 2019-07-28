@@ -25,14 +25,16 @@ var Context = typictx.Context{
 		{Prefix: "PG", Spec: &config.PostgresConfig{}, Description: "Postgres configuration"},
 	},
 
-	AppAction: typictx.MainAction{
-		StartFunc: func(s *app.Server) error {
-			log.Info("Start the application")
-			return s.Serve()
-		},
-		StopFunc: func(s *app.Server) (err error) {
-			log.Info("Stop the application")
-			return s.Shutdown()
+	App: typictx.Application{
+		Action: typictx.MainAction{
+			StartFunc: func(s *app.Server) error {
+				log.Info("Start the application")
+				return s.Serve()
+			},
+			StopFunc: func(s *app.Server) (err error) {
+				log.Info("Stop the application")
+				return s.Shutdown()
+			},
 		},
 	},
 

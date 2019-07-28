@@ -15,8 +15,7 @@ type Context struct {
 
 	BinaryName string
 
-	AppAction   Action
-	AppCommands []Command
+	App Application
 
 	ReadmeTemplate string
 	ReadmeFile     string
