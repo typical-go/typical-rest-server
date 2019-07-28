@@ -13,6 +13,8 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Printf("%+v", projCtx)
+	for _, layout := range projCtx.Layouts {
+		fmt.Println(layout)
+	}
 
 }

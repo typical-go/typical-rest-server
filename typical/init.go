@@ -15,11 +15,6 @@ var Context = typictx.Context{
 	Version:     "0.2.2",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
-	Github: &typictx.Github{
-		Owner:    "typical-go",
-		RepoName: "typical-rest-server",
-	},
-
 	Configs: []typictx.Config{
 		{Prefix: "APP", Spec: &config.AppConfig{}, Description: "Application configuration"},
 		{Prefix: "PG", Spec: &config.PostgresConfig{}, Description: "Postgres configuration"},
@@ -38,12 +33,13 @@ var Context = typictx.Context{
 		},
 	},
 
-	TestTargets: []string{
-		"./app/controller",
-		"./app/repository",
-	},
-
 	Modules: []*typictx.Module{
 		module.NewPostgres(),
 	},
+
+	Github: &typictx.Github{
+		Owner:    "typical-go",
+		RepoName: "typical-rest-server",
+	},
+
 }

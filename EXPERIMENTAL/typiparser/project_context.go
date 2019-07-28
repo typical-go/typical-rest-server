@@ -3,7 +3,7 @@ package typiparser
 // ProjectContext is project context
 type ProjectContext struct {
 	// Layouts contain project layout and folders
-	Layouts []string
+	Packages []string
 
 	// Autowires is list of function what eligible to automatic add to DI
 	Autowires []string

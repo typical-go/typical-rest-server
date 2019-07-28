@@ -7,4 +7,5 @@ import _ "github.com/golang-migrate/migrate/database/postgres"
 import _ "github.com/golang-migrate/migrate/source/file"
 
 func init() {
+
 }

@@ -35,6 +35,7 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	recipe.AddConstructorPogos(configConstructors...)
 	recipe.AddConstructors(projCtx.Autowires...)
 	recipe.AddMockTargets(projCtx.Automocks...)
+	recipe.AddTestTargets(projCtx.Packages...)
 
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {

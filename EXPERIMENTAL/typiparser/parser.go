@@ -11,12 +11,13 @@ import (
 
 // Parse the source code to get autowire and automock
 func Parse(appPath string) (projCtx ProjectContext, err error) {
-	projCtx.Layouts = append(projCtx.Layouts, appPath)
-	AllDirectories(appPath, &projCtx.Layouts)
+	var paths []string
+	testTargets := make(map[string]struct{})
 
+	AllDirectories(appPath, &paths)
 	fset := token.NewFileSet() // positions are relative to fset
 
-	for _, path := range projCtx.Layouts {
+	for _, path := range paths {
 		var pkgs map[string]*ast.Package
 		pkgs, err = parser.ParseDir(fset, path, directoryFilter, parser.ParseComments)
 		if err != nil {
@@ -25,6 +26,7 @@ func Parse(appPath string) (projCtx ProjectContext, err error) {
 
 		// Print the imports from the file's AST.
 		for pkgName, pkg := range pkgs {
+			testTargets[path] = struct{}{}
 			for fileName, file := range pkg.Files {
 				for objName, obj := range file.Scope.Objects {
 					switch obj.Decl.(type) {
@@ -54,6 +56,10 @@ func Parse(appPath string) (projCtx ProjectContext, err error) {
 				}
 			}
 		}
+	}
+
+	for key := range testTargets {
+		projCtx.Packages = append(projCtx.Packages, key)
 	}
 
 	return

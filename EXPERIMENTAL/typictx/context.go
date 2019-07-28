@@ -99,3 +99,8 @@ func (c *Context) AddConstructor(constructor interface{}) {
 func (c *Context) AddMockTarget(mockTarget string) {
 	c.MockTargets = append(c.MockTargets, mockTarget)
 }
+
+// AddTestTarget to add test target
+func (c *Context) AddTestTarget(testTarget string) {
+	c.TestTargets = append(c.TestTargets, testTarget)
+}
