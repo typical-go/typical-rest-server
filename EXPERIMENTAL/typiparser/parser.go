@@ -10,13 +10,13 @@ import (
 )
 
 // Parse the source code to get autowire and automock
-func Parse(appPath string) (autowireFuncs []string, automockFiles []string, err error) {
-	dirPaths := []string{appPath}
-	AllDirectories(appPath, &dirPaths)
+func Parse(appPath string) (projCtx ProjectContext, err error) {
+	projCtx.Layouts = append(projCtx.Layouts, appPath)
+	AllDirectories(appPath, &projCtx.Layouts)
 
 	fset := token.NewFileSet() // positions are relative to fset
 
-	for _, path := range dirPaths {
+	for _, path := range projCtx.Layouts {
 		var pkgs map[string]*ast.Package
 		pkgs, err = parser.ParseDir(fset, path, directoryFilter, parser.ParseComments)
 		if err != nil {
@@ -35,7 +35,7 @@ func Parse(appPath string) (autowireFuncs []string, automockFiles []string, err 
 							godoc = funcDecl.Doc.Text()
 						}
 						if isAutoWire(objName, godoc) {
-							autowireFuncs = append(autowireFuncs, fmt.Sprintf("%s.%s", pkgName, objName))
+							projCtx.Autowires = append(projCtx.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
 						}
 					case *ast.TypeSpec:
 						typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -47,7 +47,7 @@ func Parse(appPath string) (autowireFuncs []string, automockFiles []string, err 
 								doc = typeSpec.Doc.Text()
 							}
 							if isAutoMock(doc) {
-								automockFiles = append(automockFiles, fileName)
+								projCtx.Automocks = append(projCtx.Automocks, fileName)
 							}
 						}
 					}
@@ -55,6 +55,7 @@ func Parse(appPath string) (autowireFuncs []string, automockFiles []string, err 
 			}
 		}
 	}
+
 	return
 }
 

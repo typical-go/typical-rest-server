@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	autowireFuncs, automockFiles, err := typiparser.Parse("app")
+	projCtx, err := typiparser.Parse("app")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println(autowireFuncs)
-	fmt.Println(automockFiles)
+	fmt.Printf("%+v", projCtx)
+
 }
