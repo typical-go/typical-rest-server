@@ -4,6 +4,9 @@ package typical
 
 import (
 	"github.com/kelseyhightower/envconfig"
+	"github.com/typical-go/typical-rest-server/app"
+	"github.com/typical-go/typical-rest-server/app/controller"
+	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
 )
 
@@ -24,4 +27,8 @@ func init() {
 	Context.AddConstructor(func(cfg *Config) *config.PostgresConfig {
 		return cfg.Pg
 	})
+	Context.AddConstructor(app.NewServer)
+	Context.AddConstructor(controller.NewApplicationController)
+	Context.AddConstructor(controller.NewBookController)
+	Context.AddConstructor(repository.NewBookRepository)
 }

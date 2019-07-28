@@ -2,10 +2,10 @@ package generated
 
 // SourceRecipe is source code recipe for generated.go in typical package
 type SourceRecipe struct {
-	PackageName     string
-	Imports         map[string]string
-	Structs         []StructPogo
-	AddConstructors []FunctionPogo
+	PackageName  string
+	Imports      map[string]string
+	Structs      []StructPogo
+	Constructors []string
 }
 
 func (r SourceRecipe) String() string {
@@ -22,10 +22,22 @@ func (r SourceRecipe) String() string {
 	}
 
 	builder.Printlnf("func init() {")
-	for _, funcPogo := range r.AddConstructors {
-		builder.Printlnf("Context.AddConstructor(%s)", funcPogo)
+	for _, constructor := range r.Constructors {
+		builder.Printlnf("Context.AddConstructor(%s)", constructor)
 	}
 	builder.Printlnf("}")
 
 	return builder.String()
+}
+
+// AddConstructorPogos to add FunctionPogo to constructor
+func (r *SourceRecipe) AddConstructorPogos(pogos ...FunctionPogo) {
+	for _, pogo := range pogos {
+		r.Constructors = append(r.Constructors, pogo.String())
+	}
+}
+
+// AddConstructors to add constructors
+func (r *SourceRecipe) AddConstructors(constructors ...string) {
+	r.Constructors = append(r.Constructors, constructors...)
 }

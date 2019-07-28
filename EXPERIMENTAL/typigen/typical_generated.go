@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/generated"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -15,26 +16,31 @@ import (
 // TypicalGenerated to generate code in typical package
 func TypicalGenerated(ctx typictx.Context) (err error) {
 	// TODO: add typical folder in typienv
-	filename := "typical/generated.go"
+	packageName := "typical"
+	filename := packageName + "/generated.go"
 	log.Infof("Typical Generated Code: %s", filename)
 
 	mainConfig, configConstructors := constructConfig(ctx)
+	autowireFuncs, _, err := typiparser.Parse("app")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	recipe := generated.SourceRecipe{
-		PackageName: "typical",
+		PackageName: packageName,
 		Structs: []generated.StructPogo{
 			mainConfig,
 		},
 	}
-	recipe.AddConstructors = append(recipe.AddConstructors, configConstructors...)
+	recipe.AddConstructorPogos(configConstructors...)
+	recipe.AddConstructors(autowireFuncs...)
 
 	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
 	if err != nil {
 		return
 	}
 
-	bash.GoImports(filename)
-	return
+	return bash.GoImports(packageName)
 }
 
 func constructConfig(ctx typictx.Context) (mainConfig generated.StructPogo, configConstructors []generated.FunctionPogo) {
