@@ -15,6 +15,8 @@ type Config struct {
 }
 
 func init() {
+	Context.AddConstructor(controller.NewApplicationController)
+	Context.AddConstructor(controller.NewBookController)
 	Context.AddConstructor(func() (*Config, error) {
 		var cfg Config
 		err := envconfig.Process("", &cfg)
@@ -26,17 +28,15 @@ func init() {
 	Context.AddConstructor(func(cfg *Config) *config.PostgresConfig {
 		return cfg.Pg
 	})
-	Context.AddConstructor(controller.NewApplicationController)
-	Context.AddConstructor(controller.NewBookController)
 	Context.AddConstructor(repository.NewBookRepository)
 
 	Context.AddMockTarget("app/controller/book_controller.go")
 	Context.AddMockTarget("app/repository/book_repo.go")
 
-	Context.AddTestTarget("./app/helper/strkit")
-	Context.AddTestTarget("./app/helper/timekit")
-	Context.AddTestTarget("./app/repository")
 	Context.AddTestTarget("./app/controller")
 	Context.AddTestTarget("./app/helper/echokit")
 	Context.AddTestTarget("./app/helper/envkit")
+	Context.AddTestTarget("./app/helper/strkit")
+	Context.AddTestTarget("./app/helper/timekit")
+	Context.AddTestTarget("./app/repository")
 }

@@ -41,5 +41,4 @@ var Context = typictx.Context{
 		Owner:    "typical-go",
 		RepoName: "typical-rest-server",
 	},
-
 }
