@@ -31,10 +31,8 @@ func init() {
 		return cfg.Pg
 	})
 	Context.AddConstructor(repository.NewBookRepository)
-
 	Context.AddMockTarget("app/controller/book_controller.go")
 	Context.AddMockTarget("app/repository/book_repo.go")
-
 	Context.AddTestTarget("./app")
 	Context.AddTestTarget("./app/controller")
 	Context.AddTestTarget("./app/helper/echokit")

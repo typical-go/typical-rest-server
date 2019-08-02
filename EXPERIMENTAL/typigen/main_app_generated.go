@@ -1,9 +1,8 @@
 package typigen
 
 import (
-	"io/ioutil"
-
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -23,13 +22,10 @@ func MainAppGenerated(t typictx.Context) (err error) {
 		recipe.AddImportPogo(generated.ImportPogo{Alias: "_", PackageName: lib})
 	}
 
-	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
-	if err != nil {
-		return
-	}
-
-	bash.GoFmt(filename)
-	return
+	return runn.Execute(
+		recipe.Cook(filename), recipe.Cook(filename),
+		bash.GoFmt(filename),
+	)
 }
 
 func appSideEffects(t typictx.Context) (sideEffects []string) {

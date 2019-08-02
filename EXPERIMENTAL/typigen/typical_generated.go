@@ -2,9 +2,9 @@ package typigen
 
 import (
 	"fmt"
-	"io/ioutil"
 	"reflect"
 
+	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/generated"
@@ -37,12 +37,10 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	recipe.AddMockTargets(projCtx.Automocks...)
 	recipe.AddTestTargets(projCtx.Packages...)
 
-	err = ioutil.WriteFile(filename, []byte(recipe.String()), 0644)
-	if err != nil {
-		return
-	}
-
-	return bash.GoImports(packageName)
+	return runn.Execute(
+		recipe.Cook(filename),
+		bash.GoImports(packageName),
+	)
 }
 
 func constructConfig(ctx typictx.Context) (mainConfig generated.StructPogo, configConstructors []generated.FunctionPogo) {

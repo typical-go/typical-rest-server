@@ -2,17 +2,20 @@ package generated
 
 import (
 	"fmt"
-	"strings"
+	"io"
 )
 
-type Builder struct {
-	strings.Builder
+func write(w io.Writer, str string) (n int, err error) {
+	return w.Write([]byte(str))
+}
+func writef(w io.Writer, format string, args ...interface{}) (n int, err error) {
+	return write(w, fmt.Sprintf(format, args...))
 }
 
-func (b *Builder) Printlnf(format string, args ...interface{}) {
-	b.WriteString(fmt.Sprintf(format+"\n", args...))
+func writelnf(w io.Writer, format string, args ...interface{}) (n int, err error) {
+	return write(w, fmt.Sprintf(format, args...)+"\n")
 }
 
-func (b *Builder) Printf(format string, args ...interface{}) {
-	b.WriteString(fmt.Sprintf(format, args...))
+func writeln(w io.Writer, s string) (n int, err error) {
+	return write(w, s+"\n")
 }

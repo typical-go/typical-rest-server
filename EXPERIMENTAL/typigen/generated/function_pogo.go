@@ -1,9 +1,11 @@
 package generated
 
 import (
+	"io"
 	"strings"
 )
 
+// FunctionPogo is plain old go object for function
 type FunctionPogo struct {
 	Name         string
 	FuncParams   map[string]string
@@ -11,15 +13,19 @@ type FunctionPogo struct {
 	FuncBody     string
 }
 
-func (p FunctionPogo) String() string {
-	var builder Builder
-	builder.Printlnf("func %s(%s) (%s){ ",
+func (p FunctionPogo) Write(w io.Writer) {
+	writelnf(w, "func %s(%s) (%s){ ",
 		p.Name,
 		p.funcParamsString(),
 		strings.Join(p.ReturnValues, ","),
 	)
-	builder.Printlnf(p.FuncBody)
-	builder.WriteString("}")
+	writelnf(w, p.FuncBody)
+	write(w, "}")
+}
+
+func (p FunctionPogo) String() string {
+	var builder strings.Builder
+	p.Write(&builder)
 	return builder.String()
 }
 

@@ -1,6 +1,7 @@
 package generated
 
-type ImportPogo struct{
-	Alias string
+// ImportPogo is plain old go object for import
+type ImportPogo struct {
+	Alias       string
 	PackageName string
 }

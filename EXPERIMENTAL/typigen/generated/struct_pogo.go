@@ -1,6 +1,10 @@
 package generated
 
-import "reflect"
+import (
+	"io"
+	"reflect"
+	"strings"
+)
 
 // StructPogo is plain old go object for struct
 type StructPogo struct {
@@ -8,14 +12,16 @@ type StructPogo struct {
 	Fields []reflect.StructField
 }
 
-func (s StructPogo) String() string {
-	var builder Builder
-	builder.Printlnf("type %s struct{", s.Name)
+func (s StructPogo) Write(w io.Writer) {
+	writelnf(w, "type %s struct{", s.Name)
 	for _, field := range s.Fields {
-		builder.Printlnf("%s %s", field.Name, field.Type.String())
+		writelnf(w, "%s %s", field.Name, field.Type.String())
 	}
+	writeln(w, "}")
+}
 
-	builder.Printlnf("}")
-
+func (s StructPogo) String() string {
+	var builder strings.Builder
+	s.Write(&builder)
 	return builder.String()
 }

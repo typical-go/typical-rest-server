@@ -1,6 +1,7 @@
 package generated
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,8 +17,10 @@ func TestFunctionPogo(t *testing.T) {
 		FuncBody:     `return "world", nil`,
 	}
 
+	var builder strings.Builder
+	pogo.Write(&builder)
+
 	require.Equal(t, `func hello(message string,) (string,error){ 
 return "world", nil
-}
-`, pogo.String())
+}`, builder.String())
 }
