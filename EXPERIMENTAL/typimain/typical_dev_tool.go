@@ -14,8 +14,8 @@ type TypicalDevTool struct {
 	typictx.Context
 }
 
-// NewTypicalTaskTool return new instance of TypicalCli
-func NewTypicalTaskTool(context typictx.Context) *TypicalDevTool {
+// NewTypicalDevTool return new instance of TypicalCli
+func NewTypicalDevTool(context typictx.Context) *TypicalDevTool {
 	return &TypicalDevTool{
 		Context: context,
 	}
