@@ -21,6 +21,7 @@ require (
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/google/go-github/v27 v27.0.1
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
+	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kevinburke/ssh_config v0.0.0-20190724205821-6cfae18c12b8 // indirect
 	github.com/labstack/echo v3.3.10+incompatible

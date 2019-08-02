@@ -9,7 +9,7 @@ import (
 
 // RunBinary for run typical binary
 func RunBinary(ctx typictx.ActionContext) error {
-	typienv.ExportProjectEnv()
+	typienv.LoadEnv()
 	if !ctx.Cli.Bool("no-build") {
 		BuildBinary(ctx)
 	}

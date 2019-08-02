@@ -57,7 +57,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 
 func (t *TypicalDevTool) beforeAction(cliCtx *cli.Context) (err error) {
 	return runn.Execute(
-		typienv.GenerateAppEnvIfNotExist(t.Context),
+		typienv.WriteEnvIfNotExist(t.Context),
 		typigen.MainAppGenerated(t.Context),
 		typigen.MainDevToolGenerated(t.Context),
 		typigen.TypicalGenerated(t.Context),
