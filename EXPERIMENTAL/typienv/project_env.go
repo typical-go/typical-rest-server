@@ -1,6 +1,7 @@
 package typienv
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -11,21 +12,28 @@ import (
 )
 
 const (
-	envFile     = ".env" // TODO: .env shoud be store in typienv
-	envTemplate = `{{range .}}{{usage_key .}}={{usage_default .}}
+	defaultDotEnv = ".env"
+	configKey     = "CONFIG"
+	envTemplate   = `{{range .}}{{usage_key .}}={{usage_default .}}
 {{end}}`
 )
 
 // LoadEnv load environment from .env file
 func LoadEnv() (err error) {
-
-	envMap, err := godotenv.Read(envFile)
+	configSource := os.Getenv(configKey)
+	var configs []string
+	if configSource == "" {
+		configs = []string{defaultDotEnv}
+	} else {
+		configs = strings.Split(configSource, ",")
+	}
+	envMap, err := godotenv.Read(configs...)
 	if err != nil {
 		return
 	}
 
 	var builder strings.Builder
-	builder.WriteString("Read the environment from '" + envFile + "':")
+	builder.WriteString(fmt.Sprintf("Read the environment from '%+v':", configs))
 	for key, value := range envMap {
 		err = os.Setenv(key, value)
 		builder.WriteString(" +" + key)
@@ -37,13 +45,13 @@ func LoadEnv() (err error) {
 
 // WriteEnvIfNotExist will write .env file if not exist
 func WriteEnvIfNotExist(ctx typictx.Context) (err error) {
-	_, err = os.Stat(envFile)
+	_, err = os.Stat(defaultDotEnv)
 	if !os.IsNotExist(err) {
 		return
 	}
-	log.Infof("Generate new project environment at '%s'", envFile)
+	log.Infof("Generate new project environment at '%s'", defaultDotEnv)
 
-	buf, err := os.Create(envFile)
+	buf, err := os.Create(defaultDotEnv)
 	if err != nil {
 		return
 	}
