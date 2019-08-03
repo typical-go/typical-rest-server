@@ -33,7 +33,7 @@ func TestIsAutoMock(t *testing.T) {
 		automock bool
 	}{
 		{"some doc", true},
-		{"some doc [nomock]", true},
+		{"some doc [nomock]", false},
 	}
 
 	for _, tt := range testcase {
