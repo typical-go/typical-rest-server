@@ -17,9 +17,6 @@ type Context struct {
 
 	App Application
 
-	ReadmeTemplate string
-	ReadmeFile     string
-
 	Configs []Config
 	Modules []*Module
 
@@ -28,23 +25,6 @@ type Context struct {
 	MockTargets  []string
 
 	Github *Github
-}
-
-// ReadmeTemplateOrDefault return readme template field or the default template
-func (c *Context) ReadmeTemplateOrDefault() string {
-	if c.ReadmeTemplate == "" {
-		return defaultReadmeTemplate
-	}
-	return c.ReadmeTemplate
-}
-
-// ReadmeFileOrDefault return readme file field or default template
-func (c *Context) ReadmeFileOrDefault() string {
-	if c.ReadmeFile == "" {
-		return defaultReadmeFile
-	}
-
-	return c.ReadmeFile
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
