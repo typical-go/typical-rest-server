@@ -8,8 +8,8 @@ import (
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/gosrc"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/gosrc"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,13 +27,13 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 		log.Fatal(err.Error())
 	}
 
-	recipe := gosrc.SourceRecipe{
+	recipe := gosrc.Recipe{
 		PackageName: packageName,
-		Structs: []gosrc.StructPogo{
+		Structs: []gosrc.Struct{
 			mainConfig,
 		},
 	}
-	recipe.AddConstructorPogos(configConstructors...)
+	recipe.AddConstructorFunction(configConstructors...)
 	recipe.AddConstructors(projCtx.Autowires...)
 	recipe.AddMockTargets(projCtx.Automocks...)
 	recipe.AddTestTargets(projCtx.Packages...)
@@ -49,13 +49,13 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	)
 }
 
-func constructConfig(ctx typictx.Context) (mainConfig gosrc.StructPogo, configConstructors []gosrc.FunctionPogo) {
+func constructConfig(ctx typictx.Context) (mainConfig gosrc.Struct, configConstructors []gosrc.Function) {
 	mainConfigStruct := "Config"
 	ptrMainConfigStruct := "*" + mainConfigStruct
 
 	mainConfig.Name = mainConfigStruct
 
-	configConstructors = append(configConstructors, gosrc.FunctionPogo{
+	configConstructors = append(configConstructors, gosrc.Function{
 		FuncParams:   map[string]string{},
 		ReturnValues: []string{ptrMainConfigStruct, "error"},
 		FuncBody: fmt.Sprintf(`var cfg Config
@@ -69,7 +69,7 @@ return &cfg, err`),
 			Name: config.CamelPrefix(),
 			Type: typeConfig,
 		})
-		configConstructors = append(configConstructors, gosrc.FunctionPogo{
+		configConstructors = append(configConstructors, gosrc.Function{
 			FuncParams:   map[string]string{"cfg": ptrMainConfigStruct},
 			ReturnValues: []string{typeConfig.String()},
 			FuncBody:     fmt.Sprintf(`return cfg.%s`, config.CamelPrefix()),
@@ -77,5 +77,4 @@ return &cfg, err`),
 	}
 
 	return
-
 }

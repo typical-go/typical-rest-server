@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFunctionPogo(t *testing.T) {
-	pogo := FunctionPogo{
+func TestFunction(t *testing.T) {
+	pogo := Function{
 		Name: "hello",
 		FuncParams: map[string]string{
 			"message": "string",

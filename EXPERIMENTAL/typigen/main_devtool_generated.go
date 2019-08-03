@@ -7,7 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/gosrc"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/gosrc"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -16,12 +16,12 @@ import (
 func MainDevToolGenerated(t typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
 
-	recipe := gosrc.SourceRecipe{
+	recipe := gosrc.Recipe{
 		PackageName: "main",
 	}
 
 	for _, lib := range devtoolSideEffects(t) {
-		recipe.AddImportPogo(gosrc.ImportPogo{Alias: "_", PackageName: lib})
+		recipe.AddImport(gosrc.Import{Alias: "_", PackageName: lib})
 	}
 
 	if recipe.Blank() {

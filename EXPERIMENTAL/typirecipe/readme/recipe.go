@@ -3,17 +3,19 @@ package readme
 import (
 	"io"
 	"text/template"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 )
 
-// ReadmeRecipe is recipe to generate readme
-type ReadmeRecipe struct {
+// Recipe is recipe to generate readme
+type Recipe struct {
 	Title       string
 	Description string
-	Sections    []SectionPogo
+	Sections    []Section
 }
 
-func (r ReadmeRecipe) Write(w io.Writer) (err error) {
-	write(w, "<!-- Autogenerate by Typical-Go. DO NOT EDIT.--> \n\n")
+func (r Recipe) Write(w io.Writer) (err error) {
+	write(w, "<!-- "+typirecipe.WaterMark+" -->\n\n")
 	write(w, "# "+r.Title+"\n\n")
 	write(w, r.Description+"\n\n")
 

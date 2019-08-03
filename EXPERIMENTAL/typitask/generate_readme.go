@@ -7,7 +7,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/readme"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/readme"
 )
 
 const (
@@ -26,10 +26,10 @@ const (
 
 // GenerateReadme for generate typical applical readme
 func GenerateReadme(ctx typictx.ActionContext) (err error) {
-	recipe := readme.ReadmeRecipe{
+	recipe := readme.Recipe{
 		Title:       ctx.Typical.Name,
 		Description: ctx.Typical.Description,
-		Sections: []readme.SectionPogo{
+		Sections: []readme.Section{
 			{Title: "Getting Started", Content: gettingStartedInstruction},
 			{Title: "Usage", Content: usageInstruction},
 			{Title: "Development Tool", Content: devToolInstruction},
