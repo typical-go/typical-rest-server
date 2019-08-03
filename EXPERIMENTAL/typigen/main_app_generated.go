@@ -1,6 +1,8 @@
 package typigen
 
 import (
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
@@ -12,7 +14,6 @@ import (
 // MainAppGenerated to generate code in typical package
 func MainAppGenerated(t typictx.Context) (err error) {
 	filename := typienv.AppMainPackage() + "/generated.go"
-	log.Infof("Main App Generated Code: %s", filename)
 
 	recipe := generated.SourceRecipe{
 		PackageName: "main",
@@ -22,8 +23,14 @@ func MainAppGenerated(t typictx.Context) (err error) {
 		recipe.AddImportPogo(generated.ImportPogo{Alias: "_", PackageName: lib})
 	}
 
+	if recipe.Blank() {
+		os.Remove(filename)
+		return
+	}
+
+	log.Infof("Generate recipe for App: %s", filename)
 	return runn.Execute(
-		recipe.Cook(filename), recipe.Cook(filename),
+		recipe.Cook(filename),
 		bash.GoFmt(filename),
 	)
 }

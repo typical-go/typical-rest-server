@@ -2,6 +2,7 @@ package typigen
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 
 	"github.com/typical-go/runn"
@@ -36,6 +37,11 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	recipe.AddConstructors(projCtx.Autowires...)
 	recipe.AddMockTargets(projCtx.Automocks...)
 	recipe.AddTestTargets(projCtx.Packages...)
+
+	if recipe.Blank() {
+		os.Remove(filename)
+		return
+	}
 
 	return runn.Execute(
 		recipe.Cook(filename),
