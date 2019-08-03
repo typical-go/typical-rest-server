@@ -1,4 +1,4 @@
-package generated
+package gosrc
 
 import (
 	"strings"

@@ -8,19 +8,19 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/generated"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/gosrc"
 )
 
 // MainAppGenerated to generate code in typical package
 func MainAppGenerated(t typictx.Context) (err error) {
 	filename := typienv.AppMainPackage() + "/generated.go"
 
-	recipe := generated.SourceRecipe{
+	recipe := gosrc.SourceRecipe{
 		PackageName: "main",
 	}
 
 	for _, lib := range appSideEffects(t) {
-		recipe.AddImportPogo(generated.ImportPogo{Alias: "_", PackageName: lib})
+		recipe.AddImportPogo(gosrc.ImportPogo{Alias: "_", PackageName: lib})
 	}
 
 	if recipe.Blank() {

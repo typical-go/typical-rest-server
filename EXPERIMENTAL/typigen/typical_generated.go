@@ -8,7 +8,7 @@ import (
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/generated"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen/gosrc"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
 
 	log "github.com/sirupsen/logrus"
@@ -27,9 +27,9 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 		log.Fatal(err.Error())
 	}
 
-	recipe := generated.SourceRecipe{
+	recipe := gosrc.SourceRecipe{
 		PackageName: packageName,
-		Structs: []generated.StructPogo{
+		Structs: []gosrc.StructPogo{
 			mainConfig,
 		},
 	}
@@ -49,13 +49,13 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	)
 }
 
-func constructConfig(ctx typictx.Context) (mainConfig generated.StructPogo, configConstructors []generated.FunctionPogo) {
+func constructConfig(ctx typictx.Context) (mainConfig gosrc.StructPogo, configConstructors []gosrc.FunctionPogo) {
 	mainConfigStruct := "Config"
 	ptrMainConfigStruct := "*" + mainConfigStruct
 
 	mainConfig.Name = mainConfigStruct
 
-	configConstructors = append(configConstructors, generated.FunctionPogo{
+	configConstructors = append(configConstructors, gosrc.FunctionPogo{
 		FuncParams:   map[string]string{},
 		ReturnValues: []string{ptrMainConfigStruct, "error"},
 		FuncBody: fmt.Sprintf(`var cfg Config
@@ -69,7 +69,7 @@ return &cfg, err`),
 			Name: config.CamelPrefix(),
 			Type: typeConfig,
 		})
-		configConstructors = append(configConstructors, generated.FunctionPogo{
+		configConstructors = append(configConstructors, gosrc.FunctionPogo{
 			FuncParams:   map[string]string{"cfg": ptrMainConfigStruct},
 			ReturnValues: []string{typeConfig.String()},
 			FuncBody:     fmt.Sprintf(`return cfg.%s`, config.CamelPrefix()),
