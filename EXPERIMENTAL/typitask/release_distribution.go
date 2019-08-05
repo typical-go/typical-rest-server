@@ -22,16 +22,47 @@ import (
 
 // ReleaseDistribution to release binary distribution
 func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
+	// NOTE: git fetch in beginning and after to make local is up2date
+	exec.Command("git", "fetch").Run()
+	defer exec.Command("git", "fetch").Run()
+
+	goos := []string{"linux", "darwin"}
+	goarch := []string{"amd64"}
+	mainPackage := typienv.AppMainPackage()
+
+	alpha := ctx.Cli.Bool("alpha")
+	version := fmt.Sprintf("v%s", ctx.Typical.Version)
+	if alpha {
+		version = fmt.Sprintf("%s-alpha", version)
+	}
+
 	gitRepo, err := git.PlainOpen(".")
 	if err != nil {
 		return
 	}
 
-	// NOTE: git fetch in beginning and after to make local is up2date
-	exec.Command("git", "fetch").Run()
-	defer exec.Command("git", "fetch").Run()
+	worktree, err := gitRepo.Worktree()
+	if err != nil {
+		return
+	}
 
-	changes := changeLogs(gitRepo)
+	status, err := worktree.Status()
+	if err != nil {
+		return
+	}
+
+	latestTag := latestTag(gitRepo)
+	if latestTag.Name().Short() == version {
+		log.Infof("%s already released", version)
+		return nil
+	}
+
+	if !status.IsClean() {
+		log.Info("Please submit uncommitted change first")
+		return nil
+	}
+
+	changes := changeLogs(gitRepo, latestTag)
 	if len(changes) < 1 {
 		log.Info("No change to be released")
 		return nil
@@ -48,16 +79,6 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	if !ctx.Cli.Bool("no-readme") {
 		GenerateReadme(ctx)
 		// TODO: check git diff and commit if readme is updated
-	}
-
-	goos := []string{"linux", "darwin"}
-	goarch := []string{"amd64"}
-	mainPackage := typienv.AppMainPackage()
-
-	alpha := ctx.Cli.Bool("alpha")
-	version := fmt.Sprintf("v%s", ctx.Typical.Version)
-	if alpha {
-		version = fmt.Sprintf("%s-alpha", version)
 	}
 
 	var binaries []string
@@ -110,15 +131,19 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	return
 }
 
-// TODO: change logs should be unfiltered. Filter only when generate release page
-func changeLogs(gitRepo *git.Repository) (changes []string) {
+func latestTag(gitRepo *git.Repository) (latestTag *plumbing.Reference) {
 	tagrefs, _ := gitRepo.Tags()
-	var latestTag *plumbing.Reference
+	defer tagrefs.Close()
 	tagrefs.ForEach(func(tagRef *plumbing.Reference) error {
 		latestTag = tagRef
 		return nil
 	})
-	tagrefs.Close()
+
+	return
+}
+
+// TODO: change logs should be unfiltered. Filter only when generate release page
+func changeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (changes []string) {
 
 	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
 	defer gitLogs.Close()
