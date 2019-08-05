@@ -22,23 +22,26 @@ const (
 func LoadEnv() (err error) {
 	configSource := os.Getenv(configKey)
 	var configs []string
+	var envMap map[string]string
 	if configSource == "" {
-		configs = []string{defaultDotEnv}
+		envMap, _ = godotenv.Read()
 	} else {
 		configs = strings.Split(configSource, ",")
-	}
-	envMap, err := godotenv.Read(configs...)
-	if err != nil {
-		return
+		envMap, err = godotenv.Read(configs...)
+		if err != nil {
+			return
+		}
 	}
 
 	var builder strings.Builder
-	builder.WriteString(fmt.Sprintf("Read the environment from '%+v':", configs))
-	for key, value := range envMap {
-		err = os.Setenv(key, value)
-		builder.WriteString(" +" + key)
+	if len(envMap) > 0 {
+		builder.WriteString(fmt.Sprintf("Read the environment %s\n", configSource))
+		for key, value := range envMap {
+			err = os.Setenv(key, value)
+			builder.WriteString(" +" + key)
+		}
+		log.Info(builder.String())
 	}
-	log.Info(builder.String())
 
 	return
 }
