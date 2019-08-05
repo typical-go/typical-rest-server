@@ -2,6 +2,7 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -23,6 +24,7 @@ func (t *TypicalApplication) Cli() *cli.App {
 	app.Description = t.Description
 	app.Version = t.Version
 	app.Action = runAction(t.Context, t.App.Action)
+	app.Before = t.beforeApplication
 
 	for _, cmd := range t.App.Commands {
 		app.Commands = append(app.Commands, cli.Command{
@@ -34,4 +36,8 @@ func (t *TypicalApplication) Cli() *cli.App {
 	}
 
 	return app
+}
+
+func (t *TypicalApplication) beforeApplication(ctx *cli.Context) error {
+	return typienv.LoadEnv()
 }
