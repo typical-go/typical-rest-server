@@ -52,7 +52,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	}
 
 	latestTag := latestTag(gitRepo)
-	if latestTag.Name().Short() == version {
+	if latestTag != nil && latestTag.Name().Short() == version {
 		log.Infof("%s already released", version)
 		return nil
 	}
