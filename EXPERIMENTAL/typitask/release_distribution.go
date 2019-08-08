@@ -73,12 +73,17 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	}
 
 	if !ctx.Cli.Bool("no-test") {
-		RunTest(ctx)
+		err = RunTest(ctx)
+		if err != nil {
+			return
+		}
 	}
 
 	if !ctx.Cli.Bool("no-readme") {
-		GenerateReadme(ctx)
-		// TODO: check git diff and commit if readme is updated
+		err = GenerateReadme(ctx)
+		if err != nil {
+			return
+		}
 	}
 
 	var binaries []string
@@ -196,10 +201,10 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 	}
 
 	ctx := context.Background()
-
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
+	client := github.NewClient(oauth2.NewClient(
+		ctx,
+		oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token}),
+	))
 
 	owner := githubDetail.Owner
 	repo := githubDetail.RepoName

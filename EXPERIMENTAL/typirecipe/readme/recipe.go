@@ -2,6 +2,7 @@ package readme
 
 import (
 	"io"
+	"os"
 	"text/template"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
@@ -37,6 +38,16 @@ func (r Recipe) Write(w io.Writer) (err error) {
 	}
 
 	return
+}
+
+// WriteToFile to write the recipe to file
+func (r Recipe) WriteToFile(filename string) (err error) {
+	file, err := os.Create(filename)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+	return r.Write(file)
 }
 
 func write(w io.Writer, s string) {

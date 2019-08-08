@@ -31,9 +31,11 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1
+	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.3.0
+	github.com/tcnksm/go-gitconfig v0.1.2
 	github.com/typical-go/runn v1.0.0
 	go.uber.org/dig v1.7.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect

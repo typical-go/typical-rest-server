@@ -2,13 +2,17 @@ package typitask
 
 import (
 	"bytes"
-	"os"
+	"os/exec"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
+	"github.com/tcnksm/go-gitconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/readme"
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 const (
@@ -32,15 +36,41 @@ func GenerateReadme(ctx typictx.ActionContext) (err error) {
 			{Title: "Configurations", Content: configDoc(ctx.Typical)},
 		},
 	}
-	log.Infof("Generate README.md")
 
-	file, err := os.Create("README.md")
+	log.Infof("Generate README.md")
+	err = recipe.WriteToFile("README.md")
 	if err != nil {
 		return
 	}
-	defer file.Close()
 
-	return recipe.Write(file)
+	token := ctx.Cli.String("github-token")
+	if token != "" {
+		gitRepo, _ := git.PlainOpen(".")
+		worktree, _ := gitRepo.Worktree()
+		status, _ := worktree.Status()
+
+		fileStatus := status.File("README.md")
+		if fileStatus.Worktree == git.Modified {
+			user, _ := gitconfig.Username()
+			email, _ := gitconfig.Email()
+
+			worktree.Add("README.md")
+			_, err = worktree.Commit("Generate latest README.md", &git.CommitOptions{
+				Author: &object.Signature{
+					Name:  user,
+					Email: email,
+					When:  time.Now(),
+				},
+			})
+			if err != nil {
+				return
+			}
+
+			return exec.Command("git", "push").Run()
+		}
+	}
+
+	return
 }
 
 func configDoc(ctx typictx.Context) string {
