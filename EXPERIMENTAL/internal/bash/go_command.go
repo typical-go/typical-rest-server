@@ -57,3 +57,8 @@ func GoClean(cleanArgs ...string) error {
 	args = append(args, cleanArgs...)
 	return Run(goCommand, args...)
 }
+
+// GoModTidy for `go mod tidy`
+func GoModTidy() error {
+	return Run(goCommand, "mod", "tidy")
+}

@@ -26,8 +26,6 @@ func GenerateMock(ctx typictx.ActionContext) (err error) {
 
 	for _, mockTarget := range ctx.Typical.MockTargets {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
-
-		log.Infof("Generate mock for '%s' at '%s'", mockTarget, dest)
 		err = bash.RunGoBin("mockgen",
 			"-source", mockTarget,
 			"-destination", dest,

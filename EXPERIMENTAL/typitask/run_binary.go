@@ -1,7 +1,6 @@
 package typitask
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -14,7 +13,5 @@ func RunBinary(ctx typictx.ActionContext) error {
 	}
 
 	binaryPath := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
-
-	log.Infof("Run the Binary '%s'", binaryPath)
 	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
 }
