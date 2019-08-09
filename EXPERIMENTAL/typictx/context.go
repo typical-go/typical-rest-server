@@ -15,10 +15,9 @@ type Context struct {
 
 	BinaryName string
 
-	App Application
-
-	Configs []Config
-	Modules []*Module
+	Application    Application
+	Configurations []*Config
+	Modules        []*Module
 
 	Constructors []interface{}
 	TestTargets  []string

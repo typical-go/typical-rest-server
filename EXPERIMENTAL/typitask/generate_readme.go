@@ -76,7 +76,7 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 func configDoc(ctx typictx.Context) string {
 	buf := new(bytes.Buffer)
 
-	for i, cfg := range ctx.Configs {
+	for i, cfg := range ctx.Configurations {
 		if i > 0 {
 			buf.WriteString("\n")
 		}

@@ -23,10 +23,10 @@ func (t *TypicalApplication) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = runAction(t.Context, t.App.Action)
+	app.Action = runAction(t.Context, t.Application.Action)
 	app.Before = t.beforeApplication
 
-	for _, cmd := range t.App.Commands {
+	for _, cmd := range t.Application.Commands {
 		app.Commands = append(app.Commands, cli.Command{
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,

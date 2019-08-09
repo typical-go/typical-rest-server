@@ -63,7 +63,7 @@ err := envconfig.Process("", &cfg)
 return &cfg, err`),
 	})
 
-	for _, config := range ctx.Configs {
+	for _, config := range ctx.Configurations {
 		typeConfig := reflect.TypeOf(config.Spec)
 		mainConfig.Fields = append(mainConfig.Fields, reflect.StructField{
 			Name: config.CamelPrefix(),

@@ -1,17 +1,15 @@
-package module
+package postgres
 
 import (
 	"database/sql"
-
-	"github.com/typical-go/typical-rest-server/config"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/dbtool"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
-// NewPostgres return new instance of Module for postgrs
-func NewPostgres() *typictx.Module {
+// Module for postgres
+func Module() *typictx.Module {
 	tool := dbtool.NewPostgresTool()
 
 	return &typictx.Module{
@@ -29,16 +27,13 @@ func NewPostgres() *typictx.Module {
 			{Name: "migrate", Usage: "Migrate Database", ActionFunc: tool.MigrateDB},
 			{Name: "rollback", Usage: "Rollback Database", ActionFunc: tool.RollbackDB},
 		},
-		OpenFunc: func(cfg *config.PostgresConfig) (*sql.DB, error) {
+		OpenFunc: func(cfg *Config) (*sql.DB, error) {
 			log.Info("Open postgres connection")
 			return sql.Open(cfg.DriverName(), cfg.DataSource())
 		},
 		CloseFunc: func(db *sql.DB) error {
 			log.Info("Close postgres connection")
 			return db.Close()
-		},
-		StatusFunc: func(db *sql.DB) error {
-			return db.Ping()
 		},
 	}
 }
