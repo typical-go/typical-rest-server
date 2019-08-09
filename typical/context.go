@@ -23,11 +23,9 @@ var Context = typictx.Context{
 	},
 
 	Application: typictx.Application{
-		Action: typictx.MainAction{
-			StartFunc: func(s *app.Server, cfg *config.Config) error {
-				log.Info("Start the application")
-				return s.Start(cfg.Address)
-			},
+		StartFunc: func(s *app.Server, cfg *config.Config) error {
+			log.Info("Start the application")
+			return s.Start(cfg.Address)
 		},
 	},
 
