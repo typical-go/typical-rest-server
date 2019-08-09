@@ -2,6 +2,11 @@
 
 BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
-NAME=${TYPICAL_NAME:-typical-dev-tool}
+DEV_TOOL=${TYPICAL_DEV:-typical-dev-tool}
+GENERATOR=${TYPICAL_GEN:-typical-generator}
 
-go run ./$CMD/$NAME/* $@
+rm -f typical/generated.go
+rm -f cmd/*/generated.go
+
+go run ./$CMD/$GENERATOR/main.go
+go run ./$CMD/$DEV_TOOL/*.go $@

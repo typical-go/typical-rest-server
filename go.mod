@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/Masterminds/squirrel v1.1.0
-	github.com/Microsoft/go-winio v0.4.13 // indirect
+	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/bakatz/echo-logrusmiddleware v1.1.1
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1 // indirect
