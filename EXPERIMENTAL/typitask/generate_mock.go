@@ -11,7 +11,7 @@ import (
 )
 
 // GenerateMock to generate mock for interface as defined in mockTarget
-func GenerateMock(ctx typictx.ActionContext) (err error) {
+func GenerateMock(ctx *typictx.ActionContext) (err error) {
 	err = bash.GoGet("github.com/golang/mock/mockgen")
 	if err != nil {
 		return

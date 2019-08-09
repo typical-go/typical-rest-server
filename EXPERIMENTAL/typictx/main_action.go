@@ -16,7 +16,7 @@ type MainAction struct {
 }
 
 // Start the action
-func (a MainAction) Start(ctx ActionContext) (err error) {
+func (a MainAction) Start(ctx *ActionContext) (err error) {
 	container := ctx.Typical.Container()
 
 	if a.StopFunc != nil {

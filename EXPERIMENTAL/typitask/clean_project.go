@@ -10,7 +10,7 @@ import (
 )
 
 // CleanProject to remove file from build processs
-func CleanProject(ctx typictx.ActionContext) error {
+func CleanProject(ctx *typictx.ActionContext) error {
 	log.Info("Remove bin folder")
 	os.RemoveAll(typienv.Bin())
 

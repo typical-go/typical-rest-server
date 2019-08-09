@@ -7,7 +7,7 @@ import (
 )
 
 // RunBinary for run typical binary
-func RunBinary(ctx typictx.ActionContext) error {
+func RunBinary(ctx *typictx.ActionContext) error {
 	if !ctx.Cli.Bool("no-build") {
 		BuildBinary(ctx)
 	}

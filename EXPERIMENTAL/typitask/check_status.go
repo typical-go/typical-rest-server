@@ -8,7 +8,7 @@ import (
 )
 
 // CheckStatus to check if application ready to start
-func CheckStatus(ctx typictx.ActionContext) error {
+func CheckStatus(ctx *typictx.ActionContext) error {
 	statusReport := ctx.Typical.CheckModuleStatus()
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Module Name", "Status"})

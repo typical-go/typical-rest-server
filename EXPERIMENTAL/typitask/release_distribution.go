@@ -1,7 +1,6 @@
 package typitask
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,7 +20,7 @@ import (
 )
 
 // ReleaseDistribution to release binary distribution
-func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
+func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 	// NOTE: git fetch in beginning and after to make local is up2date
 	exec.Command("git", "fetch").Run()
 	defer exec.Command("git", "fetch").Run()
@@ -120,7 +119,7 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 	githubKey := ctx.Cli.String("github-token")
 	if githubKey != "" {
 		err = releaseToGithub(
-			ctx.Typical.Github,
+			ctx,
 			githubKey,
 			githubReleaseInfo{
 				ApplicationName: ctx.Typical.Name,
@@ -129,7 +128,6 @@ func ReleaseDistribution(ctx typictx.ActionContext) (err error) {
 				Alpha:           alpha,
 				Note:            note,
 			},
-			ctx.Cli.Bool("force"),
 		)
 	}
 
@@ -195,12 +193,12 @@ func ignoredMessage(message string) bool {
 		strings.HasPrefix(lowerMessage, "wip")
 }
 
-func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo githubReleaseInfo, force bool) (err error) {
+func releaseToGithub(ctx *typictx.ActionContext, token string, releaseInfo githubReleaseInfo) (err error) {
+	githubDetail := ctx.Typical.Github
 	if githubDetail == nil {
 		return fmt.Errorf("Missing Github in typical context")
 	}
 
-	ctx := context.Background()
 	client := github.NewClient(oauth2.NewClient(
 		ctx,
 		oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token}),
@@ -211,7 +209,7 @@ func releaseToGithub(githubDetail *typictx.Github, token string, releaseInfo git
 
 	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, repo, releaseInfo.Version)
 	if err == nil {
-		if force {
+		if ctx.Cli.Bool("force") {
 			log.Infof("Force release detected; Delete existing release for %s/%s (%s)", owner, repo, releaseInfo.Version)
 			_, err = client.Repositories.DeleteRelease(ctx, owner, repo, *release.ID)
 			if err != nil {

@@ -24,7 +24,7 @@ const (
 )
 
 // GenerateReadme for generate typical applical readme
-func GenerateReadme(ctx typictx.ActionContext) (err error) {
+func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 	recipe := readme.Recipe{
 		Title:       ctx.Typical.Name,
 		Description: ctx.Typical.Description,

@@ -7,7 +7,7 @@ import (
 )
 
 // RunTest to run automate testing
-func RunTest(ctx typictx.ActionContext) error {
+func RunTest(ctx *typictx.ActionContext) error {
 	return runn.Execute(
 		bash.GoModTidy(),
 		bash.GoTest(ctx.Typical.TestTargets),
