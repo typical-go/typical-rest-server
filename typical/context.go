@@ -5,6 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/typical/module/postgres"
+	"github.com/typical-go/typical-rest-server/typical/module/server"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -16,24 +17,22 @@ var Context = typictx.Context{
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	Configurations: []*typictx.Config{
-		{Prefix: "APP", Spec: &config.AppConfig{}, Description: "Application configuration"},
+		{Prefix: "APP", Spec: &config.Config{}, Description: "Application configuration"},
+		{Prefix: "SERVER", Spec: &server.Config{}, Description: "Application configuration"},
 		{Prefix: "PG", Spec: &postgres.Config{}, Description: "Postgres configuration"},
 	},
 
 	Application: typictx.Application{
 		Action: typictx.MainAction{
-			StartFunc: func(s *app.Server) error {
+			StartFunc: func(s *app.Server, cfg *config.Config) error {
 				log.Info("Start the application")
-				return s.Serve()
-			},
-			StopFunc: func(s *app.Server) (err error) {
-				log.Info("Stop the application")
-				return s.Shutdown()
+				return s.Start(cfg.Address)
 			},
 		},
 	},
 
 	Modules: []*typictx.Module{
+		server.Module(),
 		postgres.Module(),
 	},
 

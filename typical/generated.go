@@ -9,11 +9,13 @@ import (
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/typical/module/postgres"
+	"github.com/typical-go/typical-rest-server/typical/module/server"
 )
 
 type Config struct {
-	App *config.AppConfig
-	Pg  *postgres.Config
+	App    *config.Config
+	Server *server.Config
+	Pg     *postgres.Config
 }
 
 func init() {
@@ -25,11 +27,14 @@ func init() {
 		err := envconfig.Process("", &cfg)
 		return &cfg, err
 	})
-	Context.AddConstructor(func(cfg *Config) *config.AppConfig {
+	Context.AddConstructor(func(cfg *Config) *config.Config {
 		return cfg.App
 	})
 	Context.AddConstructor(func(cfg *Config) *postgres.Config {
 		return cfg.Pg
+	})
+	Context.AddConstructor(func(cfg *Config) *server.Config {
+		return cfg.Server
 	})
 	Context.AddConstructor(repository.NewBookRepository)
 	Context.AddMockTarget("app/controller/book_controller.go")
