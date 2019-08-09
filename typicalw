@@ -4,7 +4,4 @@ BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
 NAME=${TYPICAL_NAME:-typical-dev-tool}
 
-rm -f typical/generated.go
-rm -f cmd/*/generated.go
-
 go run ./$CMD/$NAME/* $@
