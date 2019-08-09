@@ -55,20 +55,6 @@ func (c *Context) Container() *dig.Container {
 	return container
 }
 
-// CheckModuleStatus to check module availability status
-func (c *Context) CheckModuleStatus() (statusReport map[string]string) {
-	statusReport = make(map[string]string)
-	for _, module := range c.Modules {
-		err := c.Container().Invoke(module.StatusFunc)
-		if err != nil {
-			statusReport[module.Name] = err.Error()
-		} else {
-			statusReport[module.Name] = "ok"
-		}
-	}
-	return
-}
-
 // AddConstructor to add constructor
 func (c *Context) AddConstructor(constructor interface{}) {
 	c.Constructors = append(c.Constructors, constructor)

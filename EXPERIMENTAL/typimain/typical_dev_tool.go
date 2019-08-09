@@ -144,11 +144,6 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Description: "Remove binary folder, trigger `go clean --modcache`",
 			Action:      t.execCommand(typitask.CleanProject),
 		},
-		{
-			Name:   "check",
-			Usage:  "Checks all module status that required by the application",
-			Action: t.execCommand(typitask.CheckStatus),
-		},
 	}
 }
 
