@@ -63,16 +63,18 @@ err := envconfig.Process("", &cfg)
 return &cfg, err`),
 	})
 
-	for _, config := range ctx.Configurations {
-		typeConfig := reflect.TypeOf(config.Spec)
+	for _, mod := range ctx.ModulesWithConfig() {
+		camelConfigPrefix := mod.CamelConfigPrefix()
+		typeConfig := reflect.TypeOf(mod.ConfigSpec)
+
 		mainConfig.Fields = append(mainConfig.Fields, reflect.StructField{
-			Name: config.CamelPrefix(),
+			Name: camelConfigPrefix,
 			Type: typeConfig,
 		})
 		configConstructors = append(configConstructors, gosrc.Function{
 			FuncParams:   map[string]string{"cfg": ptrMainConfigStruct},
 			ReturnValues: []string{typeConfig.String()},
-			FuncBody:     fmt.Sprintf(`return cfg.%s`, config.CamelPrefix()),
+			FuncBody:     fmt.Sprintf(`return cfg.%s`, camelConfigPrefix),
 		})
 	}
 

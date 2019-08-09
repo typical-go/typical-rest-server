@@ -12,9 +12,9 @@ type SampleConfigType2 struct{}
 
 func TestConstructConfig(t *testing.T) {
 	mainConfig, configConstructors := constructConfig(typictx.Context{
-		Configurations: []*typictx.Config{
-			{Prefix: "APP", Spec: &SampleConfigType1{}, Description: "Application configuration"},
-			{Prefix: "PG", Spec: &SampleConfigType2{}, Description: "Postgres configuration"},
+		Modules: []*typictx.Module{
+			{ConfigPrefix: "APP", ConfigSpec: &SampleConfigType1{}, Name: "Application configuration"},
+			{ConfigPrefix: "PG", ConfigSpec: &SampleConfigType2{}, Name: "Postgres configuration"},
 		},
 	})
 

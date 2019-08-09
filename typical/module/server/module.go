@@ -13,7 +13,9 @@ import (
 // Module for postgres
 func Module(logHooks ...log.Hook) *typictx.Module {
 	return &typictx.Module{
-		Name: "Echo Server with Logrus",
+		Name:         "Echo Server with Logrus",
+		ConfigPrefix: "SERVER",
+		ConfigSpec:   &Config{},
 		OpenFunc: func(cfg *Config) (server *echo.Echo, err error) {
 			server = echo.New()
 			server.HideBanner = true

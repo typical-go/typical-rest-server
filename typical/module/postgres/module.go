@@ -10,7 +10,9 @@ import (
 // Module for postgres
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name: "Postgres Database",
+		Name:         "Postgres Database",
+		ConfigPrefix: "PG",
+		ConfigSpec:   &Config{},
 
 		SideEffects: []*typictx.SideEffect{
 			typictx.NewSideEffect("github.com/lib/pq"),

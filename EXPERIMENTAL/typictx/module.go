@@ -1,6 +1,9 @@
 package typictx
 
 import (
+	"strings"
+
+	"github.com/iancoleman/strcase"
 	"go.uber.org/dig"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -9,13 +12,16 @@ import (
 type Module struct {
 	Name string
 
-	Command      *Command
-	Constructors []interface{}
+	ConfigPrefix string
+	ConfigSpec   interface{}
 
 	OpenFunc  interface{}
 	CloseFunc interface{}
 
-	SideEffects []*SideEffect
+	Command *Command
+
+	Constructors []interface{}
+	SideEffects  []*SideEffect
 }
 
 // Inject dependencies for the module
@@ -36,4 +42,12 @@ func (m *Module) Invoke(invokeFunc interface{}) interface{} {
 
 		return container.Invoke(invokeFunc)
 	}
+}
+
+// CamelConfigPrefix return config prefix in camel case
+func (m *Module) CamelConfigPrefix() string {
+	if m.ConfigPrefix == "" {
+		return ""
+	}
+	return strcase.ToCamel(strings.ToLower(m.ConfigPrefix))
 }

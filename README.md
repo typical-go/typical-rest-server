@@ -20,23 +20,27 @@ Use `./typicalw` to execute development task
 
 ## Make a release
 
-Use `./typicalw release -github=[TOKEN]` to make the release. You can found the release in `release` folder or github release page
+Use `./typicalw release -github-token=[TOKEN]` to make the release. You can found the release in `release` folder or github release page
 
 ## Configurations
-
-Application configuration
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |APP_ADDRESS|String|:8089|true||	
 
-Postgres configuration
+Echo Server with Logrus
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
-|PG_DBNAME|String|typical-rest-server|true||	
-|PG_USER|String|default_user|true||	
-|PG_PASSWORD|String|default_password|true||	
+|SERVER_DEBUG|True or False||||	
+
+Postgres Database
+
+| Key | Type | Default | Required | Description |	
+|---|---|---|---|---|	
+|PG_DBNAME|String||true||	
+|PG_USER|String||true||	
+|PG_PASSWORD|String||true||	
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
 |PG_MIGRATIONSRC|String|scripts/migration|||	

@@ -16,8 +16,7 @@ import (
 )
 
 const (
-	configTemplate = `
-| Key | Type | Default | Required | Description |	
+	configTemplate = `| Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 {{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
 {{end}}`
@@ -76,14 +75,17 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 func configDoc(ctx typictx.Context) string {
 	buf := new(bytes.Buffer)
 
-	for i, cfg := range ctx.Configurations {
-		if i > 0 {
-			buf.WriteString("\n")
+	for i, mod := range ctx.ModulesWithConfig() {
+		if mod.Name != "" {
+			if i > 0 {
+				buf.WriteString("\n")
+			}
+
+			buf.WriteString(mod.Name)
+			buf.WriteString("\n\n")
 		}
 
-		buf.WriteString(cfg.Description)
-		buf.WriteString("\n")
-		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, configTemplate)
+		envconfig.Usagef(mod.ConfigPrefix, mod.ConfigSpec, buf, configTemplate)
 	}
 
 	return buf.String()

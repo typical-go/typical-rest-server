@@ -16,10 +16,10 @@ var Context = typictx.Context{
 	Version:     "0.4.4",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
-	Configurations: []*typictx.Config{
-		{Prefix: "APP", Spec: &config.Config{}, Description: "Application configuration"},
-		{Prefix: "SERVER", Spec: &server.Config{}, Description: "Application configuration"},
-		{Prefix: "PG", Spec: &postgres.Config{}, Description: "Postgres configuration"},
+	Modules: []*typictx.Module{
+		{ConfigPrefix: "APP", ConfigSpec: &config.Config{}},
+		server.Module(),
+		postgres.Module(),
 	},
 
 	Application: typictx.Application{
@@ -29,11 +29,6 @@ var Context = typictx.Context{
 				return s.Start(cfg.Address)
 			},
 		},
-	},
-
-	Modules: []*typictx.Module{
-		server.Module(),
-		postgres.Module(),
 	},
 
 	Github: &typictx.Github{

@@ -15,9 +15,8 @@ type Context struct {
 
 	BinaryName string
 
-	Application    Application
-	Configurations []*Config
-	Modules        []*Module
+	Application Application
+	Modules     []*Module
 
 	Constructors []interface{}
 	TestTargets  []string
@@ -68,4 +67,14 @@ func (c *Context) AddMockTarget(mockTarget string) {
 // AddTestTarget to add test target
 func (c *Context) AddTestTarget(testTarget string) {
 	c.TestTargets = append(c.TestTargets, testTarget)
+}
+
+// ModulesWithConfig return module that have config
+func (c *Context) ModulesWithConfig() (modules []*Module) {
+	for _, module := range c.Modules {
+		if module.ConfigSpec != nil {
+			modules = append(modules, module)
+		}
+	}
+	return
 }
