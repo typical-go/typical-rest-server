@@ -108,5 +108,5 @@ func buildToolInstruction() string {
 }
 
 func releaseInstruction() string {
-	return "Use `./typicalw release -github=[TOKEN]` to make the release. You can found the release in `release` folder or github release page"
+	return "Use `./typicalw release -github-token=[TOKEN]` to make the release. You can found the release in `release` folder or github release page"
 }
