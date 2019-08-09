@@ -19,30 +19,31 @@ type MainAction struct {
 func (a MainAction) Start(ctx *ActionContext) (err error) {
 	container := ctx.Typical.Container()
 
-	if a.StopFunc != nil {
-		gracefulStop := make(chan os.Signal)
-		signal.Notify(gracefulStop, syscall.SIGTERM)
-		signal.Notify(gracefulStop, syscall.SIGINT)
+	gracefulStop := make(chan os.Signal)
+	signal.Notify(gracefulStop, syscall.SIGTERM)
+	signal.Notify(gracefulStop, syscall.SIGINT)
 
-		// gracefull shutdown
-		go func() {
-			<-gracefulStop
+	// gracefull shutdown
+	go func() {
+		<-gracefulStop
 
-			// NOTE: intentionally print new line after "^C"
-			fmt.Println()
+		// NOTE: intentionally print new line after "^C"
+		fmt.Println()
+		fmt.Println("Graceful Shutdown...")
 
-			var errs runn.Errors
+		var errs runn.Errors
+		if a.StopFunc != nil {
 			errs.Add(container.Invoke(a.StopFunc))
+		}
 
-			for _, module := range ctx.Typical.Modules {
-				if module.CloseFunc != nil {
-					errs.Add(container.Invoke(module.CloseFunc))
-				}
+		for _, module := range ctx.Typical.Modules {
+			if module.CloseFunc != nil {
+				errs.Add(container.Invoke(module.CloseFunc))
 			}
+		}
 
-			err = errs
-		}()
-	}
+		err = errs
+	}()
 
 	if a.StartFunc != nil {
 		err = container.Invoke(a.StartFunc)
