@@ -8,9 +8,9 @@ import (
 type Config struct {
 	// dbtool.Config
 
-	DbName       string `required:"true" default:"typical-rest-server"`
-	User         string `required:"true" default:"default_user"`
-	Password     string `required:"true" default:"default_password"`
+	DbName       string `required:"true"`
+	User         string `required:"true"`
+	Password     string `required:"true"`
 	Host         string `default:"localhost"`
 	Port         int    `default:"5432"`
 	MigrationSrc string `default:"scripts/migration"`
