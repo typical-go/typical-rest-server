@@ -7,11 +7,9 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Name      string
-	ShortName string
-	Usage     string
+	Name string
 
-	Commands     []Command
+	Command      *Command
 	Constructors []interface{}
 
 	OpenFunc  interface{}

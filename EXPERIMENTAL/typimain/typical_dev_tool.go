@@ -33,14 +33,14 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	for key := range t.Modules {
 		module := t.Modules[key]
 
-		if len(module.Commands) > 0 {
+		if module.Command != nil {
 			command := cli.Command{
-				Name:      module.Name,
-				ShortName: module.ShortName,
-				Usage:     module.Usage,
+				Name:      module.Command.Name,
+				ShortName: module.Command.ShortName,
+				Usage:     module.Command.Usage,
 			}
-			for i := range module.Commands {
-				subCommand := module.Commands[i]
+			for i := range module.Command.SubCommands {
+				subCommand := module.Command.SubCommands[i]
 				command.Subcommands = append(command.Subcommands, cli.Command{
 					Name:      subCommand.Name,
 					ShortName: subCommand.ShortName,
