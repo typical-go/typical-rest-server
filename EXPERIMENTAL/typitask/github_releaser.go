@@ -31,7 +31,7 @@ func (r *githubReleaser) CreateRelease(service *github.RepositoriesService, rele
 		r.Release.Github.RepoName,
 		&github.RepositoryRelease{
 			Name:       github.String(fmt.Sprintf("%s - %s", r.Name, r.ReleaseVersion())),
-			TagName:    github.String(r.Version),
+			TagName:    github.String(r.ReleaseVersion()),
 			Body:       github.String(releaseNote),
 			Draft:      github.Bool(false),
 			Prerelease: github.Bool(r.Release.Alpha),
