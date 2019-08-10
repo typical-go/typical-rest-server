@@ -27,34 +27,32 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 	exec.Command("git", "fetch").Run()
 	defer exec.Command("git", "fetch").Run()
 
-	version := ctx.ReleaseVersion()
-
 	gitRepo, err := git.PlainOpen(".")
 	if err != nil {
 		return
 	}
 
 	latestTag := latestTag(gitRepo)
-	if latestTag != nil && latestTag.Name().Short() == version {
-		log.Infof("%s already released", version)
+	if latestTag != nil && latestTag.Name().Short() == ctx.ReleaseVersion() {
+		log.Infof("%s already released", ctx.ReleaseVersion())
 		return nil
 	}
 
-	// worktree, _ := gitRepo.Worktree()
-	// status, _ := worktree.Status()
-	// if !status.IsClean() {
-	// 	log.Info("Please submit uncommitted change first")
-	// 	return nil
-	// }
+	worktree, _ := gitRepo.Worktree()
+	status, _ := worktree.Status()
+	if !status.IsClean() {
+		log.Info("Please submit uncommitted change first")
+		return nil
+	}
 
-	changes := changeLogs(gitRepo, latestTag)
-	if len(changes) < 1 {
+	changelogs := listChangeLogs(gitRepo, latestTag)
+	if len(changelogs) < 1 {
 		log.Info("No change to be released")
 		return nil
 	}
 
-	for _, change := range changes {
-		log.Infof("Change Log: %s", change)
+	for _, changelog := range changelogs {
+		log.Infof("Change Log: %s", changelog)
 	}
 
 	if !ctx.Cli.Bool("no-test") {
@@ -97,17 +95,17 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		}
 
 		log.Info("Generate release note")
-		var filteredChange []string
-		for _, change := range changes {
-			if !ignoring(change) {
-				filteredChange = append(filteredChange, change)
+		var releaseNote strings.Builder
+		for _, changelog := range changelogs {
+			if !ignoring(changelog.Message) {
+				releaseNote.WriteString(changelog.String())
+				releaseNote.WriteString("\n")
 			}
 		}
-		releaseNote := strings.Join(filteredChange, "")
 
 		log.Infof("Create github release for %s/%s", owner, repo)
 		var release *github.RepositoryRelease
-		release, err = releaser.CreateRelease(client.Repositories, releaseNote)
+		release, err = releaser.CreateRelease(client.Repositories, releaseNote.String())
 		if err != nil {
 			return
 		}
@@ -172,7 +170,7 @@ func latestTag(gitRepo *git.Repository) (latestTag *plumbing.Reference) {
 	return
 }
 
-func changeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (changes []string) {
+func listChangeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (logs []changelog) {
 	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
 	defer gitLogs.Close()
 	for {
@@ -185,7 +183,11 @@ func changeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (changes
 		}
 		shortHash := commit.Hash.String()[0:8]
 		message := cleanMessage(commit.Message)
-		changes = append(changes, fmt.Sprintf("%s %s\n", shortHash, message))
+
+		logs = append(logs, changelog{
+			Hash:    shortHash,
+			Message: message,
+		})
 	}
 	return
 }
@@ -207,4 +209,13 @@ func ignoring(message string) bool {
 		strings.HasPrefix(lowerMessage, "revision") ||
 		strings.HasPrefix(lowerMessage, "generate") ||
 		strings.HasPrefix(lowerMessage, "wip")
+}
+
+type changelog struct {
+	Hash    string
+	Message string
+}
+
+func (l changelog) String() string {
+	return l.Hash + " " + l.Message
 }
