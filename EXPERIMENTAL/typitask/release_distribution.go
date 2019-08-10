@@ -76,12 +76,6 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		return
 	}
 
-	note := ctx.Cli.String("note")
-	if note == "" {
-		log.Info("Using git change log as release note.")
-		note = strings.Join(changes, "")
-	}
-
 	if ctx.Release.Github != nil {
 		token := os.Getenv("GITHUB_TOKEN")
 		if token == "" {
@@ -102,9 +96,18 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 			return
 		}
 
+		log.Info("Generate release note")
+		var filteredChange []string
+		for _, change := range changes {
+			if filterChange(change) {
+				filteredChange = append(filteredChange, change)
+			}
+		}
+		releaseNote := strings.Join(filteredChange, "\n")
+
 		log.Infof("Create github release for %s/%s", owner, repo)
 		var release *github.RepositoryRelease
-		release, err = releaser.CreateRelease(client.Repositories, note)
+		release, err = releaser.CreateRelease(client.Repositories, releaseNote)
 		if err != nil {
 			return
 		}
@@ -169,9 +172,7 @@ func latestTag(gitRepo *git.Repository) (latestTag *plumbing.Reference) {
 	return
 }
 
-// TODO: change logs should be unfiltered. Filter only when generate release page
 func changeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (changes []string) {
-
 	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
 	defer gitLogs.Close()
 	for {
@@ -179,20 +180,13 @@ func changeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (changes
 		if err != nil {
 			break
 		}
-
 		if latestTag != nil && commit.Hash == latestTag.Hash() {
 			break
 		}
-
 		shortHash := commit.Hash.String()[0:8]
 		message := cleanMessage(commit.Message)
-
-		if !ignoredMessage(message) {
-			change := fmt.Sprintf("%s %s\n", shortHash, message)
-			changes = append(changes, change)
-		}
+		changes = append(changes, fmt.Sprintf("%s %s\n", shortHash, message))
 	}
-
 	return
 }
 
@@ -205,10 +199,8 @@ func cleanMessage(message string) string {
 	return message
 }
 
-func ignoredMessage(message string) bool {
+func filterChange(message string) bool {
 	lowerMessage := strings.ToLower(message)
-
-	// TODO: consider to ignore message if start with small-case character
 
 	return strings.HasPrefix(lowerMessage, "merge") ||
 		strings.HasPrefix(lowerMessage, "bump") ||
