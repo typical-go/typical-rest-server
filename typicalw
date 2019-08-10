@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
