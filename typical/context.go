@@ -13,7 +13,7 @@ import (
 // Context instance of Context
 var Context = typictx.Context{
 	Name:        "Typical-RESTful-Server",
-	Version:     "0.4.4",
+	Version:     "0.5.0",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	Modules: []*typictx.Module{
@@ -29,8 +29,12 @@ var Context = typictx.Context{
 		},
 	},
 
-	Github: &typictx.Github{
-		Owner:    "typical-go",
-		RepoName: "typical-rest-server",
+	Release: typictx.Release{
+		GoOS:   []string{"linux", "darwin"},
+		GoArch: []string{"amd64"},
+		Github: &typictx.Github{
+			Owner:    "typical-go",
+			RepoName: "typical-rest-server",
+		},
 	},
 }

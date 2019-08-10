@@ -9,7 +9,7 @@ func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) inter
 	return func(ctx *cli.Context) error {
 		return actionFunc(&typictx.ActionContext{
 			Cli:     ctx,
-			Typical: context,
+			Context: context,
 		})
 	}
 }
@@ -18,7 +18,7 @@ func runAction(context typictx.Context, action typictx.Action) interface{} {
 	return func(ctx *cli.Context) error {
 		return action.Start(&typictx.ActionContext{
 			Cli:     ctx,
-			Typical: context,
+			Context: context,
 		})
 	}
 }

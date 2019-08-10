@@ -9,7 +9,7 @@ import (
 
 // BuildBinary for typical application
 func BuildBinary(ctx *typictx.ActionContext) error {
-	binaryName := typienv.Binary(ctx.Typical.BinaryNameOrDefault())
+	binaryName := typienv.Binary(ctx.BinaryNameOrDefault())
 	mainPackage := typienv.AppMainPackage()
 
 	return runn.Execute(

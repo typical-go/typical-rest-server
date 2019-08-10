@@ -1,14 +1,18 @@
 package typictx
 
 import (
+	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"go.uber.org/dig"
 )
 
 // Context of typical application
 type Context struct {
+	Release
+
 	Name        string
 	Version     string
 	Description string
@@ -21,8 +25,6 @@ type Context struct {
 	Constructors []interface{}
 	TestTargets  []string
 	MockTargets  []string
-
-	Github *Github
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
@@ -77,4 +79,33 @@ func (c *Context) ModulesWithConfig() (modules []*Module) {
 		}
 	}
 	return
+}
+
+// ReleaseVersion to return release version
+func (c *Context) ReleaseVersion() (version string) {
+	version = fmt.Sprintf("v%s", c.Version)
+	if c.Release.Alpha {
+		version = fmt.Sprintf("%s-alpha", version)
+	}
+	return
+}
+
+// Deadline implementation
+func (*Context) Deadline() (deadline time.Time, ok bool) {
+	return
+}
+
+// Done implementation
+func (*Context) Done() <-chan struct{} {
+	return nil
+}
+
+// Err implementation
+func (*Context) Err() error {
+	return nil
+}
+
+// Value implementation
+func (*Context) Value(key interface{}) interface{} {
+	return nil
 }

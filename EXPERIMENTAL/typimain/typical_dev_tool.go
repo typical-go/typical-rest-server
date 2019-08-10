@@ -137,7 +137,7 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 func (t *TypicalDevTool) execCommand(fn typictx.ActionFunc) interface{} {
 	return func(cliCtx *cli.Context) error {
 		return fn(&typictx.ActionContext{
-			Typical: t.Context,
+			Context: t.Context,
 			Cli:     cliCtx,
 		})
 	}

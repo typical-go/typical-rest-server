@@ -1,6 +1,7 @@
 package typitask
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,31 +22,14 @@ import (
 
 // ReleaseDistribution to release binary distribution
 func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
+
 	// NOTE: git fetch in beginning and after to make local is up2date
 	exec.Command("git", "fetch").Run()
 	defer exec.Command("git", "fetch").Run()
 
-	goos := []string{"linux", "darwin"}
-	goarch := []string{"amd64"}
-	mainPackage := typienv.AppMainPackage()
-
-	alpha := ctx.Cli.Bool("alpha")
-	version := fmt.Sprintf("v%s", ctx.Typical.Version)
-	if alpha {
-		version = fmt.Sprintf("%s-alpha", version)
-	}
+	version := ctx.ReleaseVersion()
 
 	gitRepo, err := git.PlainOpen(".")
-	if err != nil {
-		return
-	}
-
-	worktree, err := gitRepo.Worktree()
-	if err != nil {
-		return
-	}
-
-	status, err := worktree.Status()
 	if err != nil {
 		return
 	}
@@ -56,6 +40,8 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		return nil
 	}
 
+	worktree, _ := gitRepo.Worktree()
+	status, _ := worktree.Status()
 	if !status.IsClean() {
 		log.Info("Please submit uncommitted change first")
 		return nil
@@ -85,14 +71,74 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		}
 	}
 
-	var binaries []string
+	binaries, err := buildReleaseBinaries(ctx.Context)
+	if err != nil {
+		return
+	}
 
-	for _, os1 := range goos {
-		for _, arch := range goarch {
+	note := ctx.Cli.String("note")
+	if note == "" {
+		log.Info("Using git change log as release note.")
+		note = strings.Join(changes, "")
+	}
+
+	if ctx.Release.Github != nil {
+		token := os.Getenv("GITHUB_TOKEN")
+		if token == "" {
+			return errors.New("Environment 'GITHUB_TOKEN' is missing")
+		}
+
+		owner := ctx.Release.Github.Owner
+		repo := ctx.Release.Github.RepoName
+
+		client := github.NewClient(oauth2.NewClient(
+			ctx,
+			oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token}),
+		))
+
+		releaser := githubReleaser{ctx.Context}
+		if releaser.IsReleased(client.Repositories) {
+			log.Infof("Release for %s/%s (%s) already exist", owner, repo, ctx.ReleaseVersion())
+			return
+		}
+
+		log.Infof("Create github release for %s/%s", owner, repo)
+		var release *github.RepositoryRelease
+		release, err = releaser.CreateRelease(client.Repositories, note)
+		if err != nil {
+			return
+		}
+
+		for _, binary := range binaries {
+			log.Infof("Upload asset: %s", binary)
+			err = releaser.Upload(client.Repositories, *release.ID, binary)
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	return
+}
+
+func buildReleaseBinaries(ctx typictx.Context) (binaries []string, err error) {
+	if len(ctx.GoOS) < 0 {
+		err = errors.New("Missing 'GoOS' in Typical Context")
+		return
+	}
+
+	if len(ctx.GoArch) < 0 {
+		err = errors.New("Missing 'GoArch' in Typical Context")
+		return
+	}
+
+	mainPackage := typienv.AppMainPackage()
+	for _, os1 := range ctx.GoOS {
+		for _, arch := range ctx.GoArch {
 			// TODO: consider to using ldflags
 			binary := fmt.Sprintf("%s_%s_%s_%s",
-				ctx.Typical.BinaryNameOrDefault(),
-				version,
+				ctx.BinaryNameOrDefault(),
+				ctx.ReleaseVersion(),
 				os1,
 				arch)
 
@@ -109,28 +155,6 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 			binaries = append(binaries, binary)
 		}
 	}
-
-	note := ctx.Cli.String("note")
-	if note == "" {
-		log.Info("Using git change log as release note.")
-		note = strings.Join(changes, "")
-	}
-
-	githubKey := ctx.Cli.String("github-token")
-	if githubKey != "" {
-		err = releaseToGithub(
-			ctx,
-			githubKey,
-			githubReleaseInfo{
-				ApplicationName: ctx.Typical.Name,
-				Binaries:        binaries,
-				Version:         version,
-				Alpha:           alpha,
-				Note:            note,
-			},
-		)
-	}
-
 	return
 }
 
@@ -191,81 +215,4 @@ func ignoredMessage(message string) bool {
 		strings.HasPrefix(lowerMessage, "revision") ||
 		strings.HasPrefix(lowerMessage, "generate") ||
 		strings.HasPrefix(lowerMessage, "wip")
-}
-
-func releaseToGithub(ctx *typictx.ActionContext, token string, releaseInfo githubReleaseInfo) (err error) {
-	githubDetail := ctx.Typical.Github
-	if githubDetail == nil {
-		return fmt.Errorf("Missing Github in typical context")
-	}
-
-	client := github.NewClient(oauth2.NewClient(
-		ctx,
-		oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token}),
-	))
-
-	owner := githubDetail.Owner
-	repo := githubDetail.RepoName
-
-	release, _, err := client.Repositories.GetReleaseByTag(ctx, owner, repo, releaseInfo.Version)
-	if err == nil {
-		if ctx.Cli.Bool("force") {
-			log.Infof("Force release detected; Delete existing release for %s/%s (%s)", owner, repo, releaseInfo.Version)
-			_, err = client.Repositories.DeleteRelease(ctx, owner, repo, *release.ID)
-			if err != nil {
-				return
-			}
-		} else {
-			log.Infof("Release for %s/%s (%s) already exist", owner, repo, releaseInfo.Version)
-			return nil
-		}
-	}
-
-	log.Infof("Create github release for %s/%s", owner, repo)
-	release, _, err = client.Repositories.CreateRelease(ctx, owner, repo, releaseInfo.Data())
-	if err != nil {
-		return
-	}
-
-	for _, binary := range releaseInfo.Binaries {
-		var file *os.File
-		binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
-		log.Info("Upload release asset: " + binaryPath)
-
-		file, err = os.Open(binaryPath)
-		if err != nil {
-			return
-		}
-
-		_, _, err = client.Repositories.UploadReleaseAsset(
-			ctx,
-			owner,
-			repo,
-			release.GetID(),
-			&github.UploadOptions{
-				Name: binary,
-			},
-			file,
-		)
-	}
-
-	return
-}
-
-type githubReleaseInfo struct {
-	ApplicationName string
-	Binaries        []string
-	Version         string
-	Alpha           bool
-	Note            string
-}
-
-func (i *githubReleaseInfo) Data() *github.RepositoryRelease {
-	return &github.RepositoryRelease{
-		Name:       github.String(fmt.Sprintf("%s - %s", i.ApplicationName, i.Version)),
-		TagName:    github.String(i.Version),
-		Body:       github.String(i.Note),
-		Draft:      github.Bool(false),
-		Prerelease: github.Bool(i.Alpha),
-	}
 }

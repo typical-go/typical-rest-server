@@ -25,14 +25,14 @@ const (
 // GenerateReadme for generate typical applical readme
 func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 	recipe := readme.Recipe{
-		Title:       ctx.Typical.Name,
-		Description: ctx.Typical.Description,
+		Title:       ctx.Name,
+		Description: ctx.Description,
 		Sections: []readme.Section{
 			{Title: "Getting Started", Content: gettingStartedInstruction()},
 			{Title: "Usage", Content: usageInstruction()},
 			{Title: "Build Tool", Content: buildToolInstruction()},
 			{Title: "Make a release", Content: releaseInstruction()},
-			{Title: "Configurations", Content: configDoc(ctx.Typical)},
+			{Title: "Configurations", Content: configDoc(ctx.Context)},
 		},
 	}
 

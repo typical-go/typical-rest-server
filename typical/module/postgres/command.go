@@ -16,7 +16,7 @@ const (
 
 // CreateDB is tool to create new database
 func CreateDB(ctx *typictx.ActionContext) (err error) {
-	return ctx.Typical.Container().Invoke(createDB)
+	return ctx.Container().Invoke(createDB)
 }
 
 func createDB(config *Config) (err error) {
@@ -35,7 +35,7 @@ func createDB(config *Config) (err error) {
 
 // DropDB is tool to drop database
 func DropDB(ctx *typictx.ActionContext) (err error) {
-	return ctx.Typical.Container().Invoke(dropDB)
+	return ctx.Container().Invoke(dropDB)
 }
 
 func dropDB(config *Config) (err error) {
@@ -54,7 +54,7 @@ func dropDB(config *Config) (err error) {
 
 // MigrateDB is tool to migrate database
 func MigrateDB(ctx *typictx.ActionContext) (err error) {
-	return ctx.Typical.Container().Invoke(migrateDB)
+	return ctx.Container().Invoke(migrateDB)
 }
 
 func migrateDB(config *Config) error {
@@ -71,7 +71,7 @@ func migrateDB(config *Config) error {
 
 // RollbackDB is tool to rollback database
 func RollbackDB(ctx *typictx.ActionContext) (err error) {
-	return ctx.Typical.Container().Invoke(rollbackDB)
+	return ctx.Container().Invoke(rollbackDB)
 }
 
 func rollbackDB(config *Config) error {

@@ -18,7 +18,7 @@ type Application struct {
 
 // Start the action
 func (a Application) Start(ctx *ActionContext) (err error) {
-	container := ctx.Typical.Container()
+	container := ctx.Container()
 
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
@@ -37,7 +37,7 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 			errs.Add(container.Invoke(a.StopFunc))
 		}
 
-		for _, module := range ctx.Typical.Modules {
+		for _, module := range ctx.Modules {
 			if module.CloseFunc != nil {
 				errs.Add(container.Invoke(module.CloseFunc))
 			}

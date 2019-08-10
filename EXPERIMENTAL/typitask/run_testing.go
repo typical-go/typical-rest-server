@@ -10,6 +10,6 @@ import (
 func RunTest(ctx *typictx.ActionContext) error {
 	return runn.Execute(
 		bash.GoModTidy(),
-		bash.GoTest(ctx.Typical.TestTargets),
+		bash.GoTest(ctx.TestTargets),
 	)
 }
