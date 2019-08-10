@@ -40,12 +40,12 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		return nil
 	}
 
-	worktree, _ := gitRepo.Worktree()
-	status, _ := worktree.Status()
-	if !status.IsClean() {
-		log.Info("Please submit uncommitted change first")
-		return nil
-	}
+	// worktree, _ := gitRepo.Worktree()
+	// status, _ := worktree.Status()
+	// if !status.IsClean() {
+	// 	log.Info("Please submit uncommitted change first")
+	// 	return nil
+	// }
 
 	changes := changeLogs(gitRepo, latestTag)
 	if len(changes) < 1 {
@@ -99,11 +99,11 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		log.Info("Generate release note")
 		var filteredChange []string
 		for _, change := range changes {
-			if filterChange(change) {
+			if !ignoring(change) {
 				filteredChange = append(filteredChange, change)
 			}
 		}
-		releaseNote := strings.Join(filteredChange, "\n")
+		releaseNote := strings.Join(filteredChange, "")
 
 		log.Infof("Create github release for %s/%s", owner, repo)
 		var release *github.RepositoryRelease
@@ -199,7 +199,7 @@ func cleanMessage(message string) string {
 	return message
 }
 
-func filterChange(message string) bool {
+func ignoring(message string) bool {
 	lowerMessage := strings.ToLower(message)
 
 	return strings.HasPrefix(lowerMessage, "merge") ||
