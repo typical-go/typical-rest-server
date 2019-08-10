@@ -11,17 +11,15 @@ import (
 
 // Context of typical application
 type Context struct {
+	Application
 	Release
 
 	Name        string
 	Version     string
 	Description string
+	BinaryName  string
 
-	BinaryName string
-
-	Application Application
-	Modules     []*Module
-
+	Modules      []*Module
 	Constructors []interface{}
 	TestTargets  []string
 	MockTargets  []string
