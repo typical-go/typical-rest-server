@@ -82,14 +82,6 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Name:  "release",
 			Usage: "Release the distribution",
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "github-token",
-					Usage: "Release to github using github-token",
-				},
-				cli.BoolFlag{
-					Name:  "alpha",
-					Usage: "Release as alpha version (pre-release)",
-				},
 				cli.BoolFlag{
 					Name:  "no-test",
 					Usage: "Release without run automated test",
@@ -97,14 +89,6 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 				cli.BoolFlag{
 					Name:  "no-readme",
 					Usage: "Release without generate readme",
-				},
-				cli.BoolFlag{
-					Name:  "force",
-					Usage: "Release even if it already exist",
-				},
-				cli.StringFlag{
-					Name:  "note",
-					Usage: "Note for this release",
 				},
 			},
 			Action: t.execCommand(typitask.ReleaseDistribution),
