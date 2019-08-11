@@ -17,9 +17,3 @@ func Run(name string, args ...string) error {
 
 	return cmd.Run()
 }
-
-// Silent same with `Run()` without print any output
-func Silent(name string, args ...string) error {
-	cmd := exec.Command(name, args...)
-	return cmd.Run()
-}

@@ -3,6 +3,7 @@ package bash
 import (
 	"fmt"
 	"go/build"
+	"os/exec"
 	"strings"
 )
 
@@ -12,7 +13,7 @@ var (
 
 // GoFmt for `go fmt`
 func GoFmt(filename string) error {
-	return Silent(goCommand, "fmt", filename)
+	return exec.Command(goCommand, "fmt", filename).Run()
 }
 
 // GoImports for `goimports`
