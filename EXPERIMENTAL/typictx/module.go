@@ -18,7 +18,8 @@ type Module struct {
 	OpenFunc  interface{}
 	CloseFunc interface{}
 
-	Command *Command
+	Command       *Command
+	DockerCompose *DockerCompose
 
 	Constructors []interface{}
 	SideEffects  []*SideEffect
