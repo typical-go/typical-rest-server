@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/golang-migrate/migrate"
 	log "github.com/sirupsen/logrus"
@@ -94,8 +95,8 @@ func Console(ctx *typictx.ActionContext) (err error) {
 }
 
 func console(config *Config) (err error) {
-	os.Setenv("PGPASSWORD", "changeme")
-	cmd := exec.Command("psql", "-h", "localhost", "-p", "5432", "-U", "postgres")
+	os.Setenv("PGPASSWORD", config.Password)
+	cmd := exec.Command("psql", "-h", config.Host, "-p", strconv.Itoa(config.Port), "-U", config.User)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
