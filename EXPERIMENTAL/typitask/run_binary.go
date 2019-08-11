@@ -1,7 +1,7 @@
 package typitask
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )

@@ -6,11 +6,9 @@ import (
 
 // Config is postgres configuration
 type Config struct {
-	// dbtool.Config
-
 	DbName       string `required:"true"`
-	User         string `required:"true"`
-	Password     string `required:"true"`
+	User         string `required:"true" default:"postgres"`
+	Password     string `required:"true" default:"changeme"`
 	Host         string `default:"localhost"`
 	Port         int    `default:"5432"`
 	MigrationSrc string `default:"scripts/migration"`

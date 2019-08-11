@@ -29,6 +29,7 @@ func Module() *typictx.Module {
 				{Name: "drop", Usage: "Drop Database", ActionFunc: DropDB},
 				{Name: "migrate", Usage: "Migrate Database", ActionFunc: MigrateDB},
 				{Name: "rollback", Usage: "Rollback Database", ActionFunc: RollbackDB},
+				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: Console},
 			},
 		},
 

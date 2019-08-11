@@ -3,6 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/golang-migrate/migrate"
 	log "github.com/sirupsen/logrus"
@@ -84,4 +86,19 @@ func rollbackDB(config *Config) error {
 	}
 	defer migration.Close()
 	return migration.Down()
+}
+
+// Console to run psql with username/password as in configuration
+func Console(ctx *typictx.ActionContext) (err error) {
+	return ctx.Container().Invoke(console)
+}
+
+func console(config *Config) (err error) {
+	os.Setenv("PGPASSWORD", "changeme")
+	cmd := exec.Command("psql", "-h", "localhost", "-p", "5432", "-U", "postgres")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
+	cmd.Stdin = os.Stdin
+
+	return cmd.Run()
 }

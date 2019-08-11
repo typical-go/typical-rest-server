@@ -2,7 +2,7 @@ package typitask
 
 import (
 	"github.com/typical-go/runn"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 

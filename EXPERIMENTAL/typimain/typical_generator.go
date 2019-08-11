@@ -26,7 +26,6 @@ func (t *TypicalGenerator) Cli() *cli.App {
 	app.Action = func(ctx *cli.Context) error {
 		return runn.Execute(
 			typienv.WriteEnvIfNotExist(t.Context),
-			typienv.LoadEnv(),
 			typigen.MainAppGenerated(t.Context),
 			typigen.MainDevToolGenerated(t.Context),
 			typigen.TypicalGenerated(t.Context),

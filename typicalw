@@ -8,6 +8,6 @@ GENERATOR=${TYPICAL_GEN:-typical-generator}
 
 rm -f typical/generated.go
 rm -f cmd/*/generated.go
-
 go run ./$CMD/$GENERATOR/main.go
+
 go run ./$CMD/$DEV_TOOL/*.go $@

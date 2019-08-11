@@ -6,7 +6,7 @@ import (
 	"reflect"
 
 	"github.com/typical-go/runn"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/internal/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/gosrc"
