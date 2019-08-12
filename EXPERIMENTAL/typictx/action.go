@@ -1,7 +1,7 @@
 package typictx
 
 import (
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 // ActionFunc represented the action

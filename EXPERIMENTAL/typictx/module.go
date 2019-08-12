@@ -5,7 +5,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"go.uber.org/dig"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 // Module of typical-go application

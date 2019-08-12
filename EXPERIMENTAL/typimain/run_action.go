@@ -2,7 +2,7 @@ package typimain
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) interface{} {
