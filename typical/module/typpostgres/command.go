@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"strconv"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+
 	"github.com/golang-migrate/migrate"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -19,6 +21,7 @@ const (
 
 // CreateDB is tool to create new database
 func CreateDB(ctx *typictx.ActionContext) (err error) {
+	typienv.LoadEnv()
 	return ctx.Container().Invoke(createDB)
 }
 
@@ -38,6 +41,7 @@ func createDB(config *Config) (err error) {
 
 // DropDB is tool to drop database
 func DropDB(ctx *typictx.ActionContext) (err error) {
+	typienv.LoadEnv()
 	return ctx.Container().Invoke(dropDB)
 }
 
@@ -57,6 +61,7 @@ func dropDB(config *Config) (err error) {
 
 // MigrateDB is tool to migrate database
 func MigrateDB(ctx *typictx.ActionContext) (err error) {
+	typienv.LoadEnv()
 	return ctx.Container().Invoke(migrateDB)
 }
 
@@ -74,6 +79,7 @@ func migrateDB(config *Config) error {
 
 // RollbackDB is tool to rollback database
 func RollbackDB(ctx *typictx.ActionContext) (err error) {
+	typienv.LoadEnv()
 	return ctx.Container().Invoke(rollbackDB)
 }
 
@@ -91,6 +97,7 @@ func rollbackDB(config *Config) error {
 
 // Console to run psql with username/password as in configuration
 func Console(ctx *typictx.ActionContext) (err error) {
+	typienv.LoadEnv()
 	return ctx.Container().Invoke(console)
 }
 
