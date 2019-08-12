@@ -20,7 +20,7 @@ Use `./typicalw` to execute development task
 
 ## Make a release
 
-Use `./typicalw release -github-token=[TOKEN]` to make the release. You can found the release in `release` folder or github release page
+Use `./typicalw release` to make the release. More information check [here](https://typical-go.github.io/release.html)
 
 ## Configurations
 
