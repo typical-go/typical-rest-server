@@ -3,8 +3,11 @@ package typictx
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"go.uber.org/dig"
 )
@@ -19,10 +22,13 @@ type Context struct {
 	Description string
 	BinaryName  string
 
-	Modules      []*Module
+	Modules []*Module
+
+	TestTargets []string
+	MockTargets []string
+
 	Constructors []interface{}
-	TestTargets  []string
-	MockTargets  []string
+	Initiations  []interface{}
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
@@ -38,20 +44,29 @@ func (c *Context) BinaryNameOrDefault() string {
 // Container to return the depedency injection
 func (c *Context) Container() *dig.Container {
 	container := dig.New()
-
 	for _, constructor := range c.Constructors {
 		container.Provide(constructor)
 	}
-
 	for _, constructor := range c.Constructors {
 		container.Provide(constructor)
 	}
-
 	for _, module := range c.Modules {
 		module.Inject(container)
 	}
-
 	return container
+}
+
+// InvokeInitiation to invoke initiation functions
+func (c *Context) InvokeInitiation() (err error) {
+	container := c.Container()
+	for _, initiation := range c.Initiations {
+		log.Info("Invoke initiation: " + reflect.TypeOf(initiation).String())
+		err = container.Invoke(initiation)
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 // AddConstructor to add constructor
