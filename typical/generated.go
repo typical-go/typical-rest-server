@@ -8,14 +8,14 @@ import (
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/config"
-	"github.com/typical-go/typical-rest-server/typical/module/postgres"
-	"github.com/typical-go/typical-rest-server/typical/module/server"
+	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/typical/module/typserver"
 )
 
 type Config struct {
 	App    *config.Config
-	Server *server.Config
-	Pg     *postgres.Config
+	Server *typserver.Config
+	Pg     *typpostgres.Config
 }
 
 func init() {
@@ -30,10 +30,10 @@ func init() {
 	Context.AddConstructor(func(cfg *Config) *config.Config {
 		return cfg.App
 	})
-	Context.AddConstructor(func(cfg *Config) *postgres.Config {
+	Context.AddConstructor(func(cfg *Config) *typpostgres.Config {
 		return cfg.Pg
 	})
-	Context.AddConstructor(func(cfg *Config) *server.Config {
+	Context.AddConstructor(func(cfg *Config) *typserver.Config {
 		return cfg.Server
 	})
 	Context.AddConstructor(repository.NewBookRepository)

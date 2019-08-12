@@ -1,4 +1,4 @@
-package server
+package typserver
 
 // Config is server configuration
 type Config struct {

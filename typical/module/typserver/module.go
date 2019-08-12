@@ -1,4 +1,4 @@
-package server
+package typserver
 
 import (
 	"context"

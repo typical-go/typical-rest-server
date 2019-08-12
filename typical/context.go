@@ -4,8 +4,8 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/config"
-	"github.com/typical-go/typical-rest-server/typical/module/postgres"
-	"github.com/typical-go/typical-rest-server/typical/module/server"
+	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/typical/module/typserver"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -13,13 +13,13 @@ import (
 // Context instance of Context
 var Context = typictx.Context{
 	Name:        "Typical-RESTful-Server",
-	Version:     "0.5.3",
+	Version:     "0.5.4",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	Modules: []*typictx.Module{
 		{ConfigPrefix: "APP", ConfigSpec: &config.Config{}},
-		server.Module(),
-		postgres.Module(),
+		typserver.Module(),
+		typpostgres.Module(),
 	},
 
 	Application: typictx.Application{
