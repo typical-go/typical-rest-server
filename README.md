@@ -32,15 +32,15 @@ Echo Server with Logrus
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
-|SERVER_DEBUG|True or False||||	
+|SERVER_DEBUG|True or False|false|||	
 
 Postgres Database
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |PG_DBNAME|String||true||	
-|PG_USER|String||true||	
-|PG_PASSWORD|String||true||	
+|PG_USER|String|postgres|true||	
+|PG_PASSWORD|String|changeme|true||	
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
 |PG_MIGRATIONSRC|String|scripts/migration|||	
