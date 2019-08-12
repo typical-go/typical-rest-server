@@ -69,7 +69,7 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "no-build",
-					Usage: "Run the binary",
+					Usage: "Run the binary without build",
 				},
 			},
 			Action: t.execCommand(typitask.RunBinary),
@@ -107,8 +107,14 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Action: t.execCommand(typitask.GenerateMock),
 		},
 		{
-			Name:   "readme",
-			Usage:  "Generate readme document",
+			Name:  "readme",
+			Usage: "Generate readme document",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-auto-commit",
+					Usage: "Generate readme without auto commit",
+				},
+			},
 			Action: t.execCommand(typitask.GenerateReadme),
 		},
 		{

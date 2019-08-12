@@ -42,31 +42,33 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 		return
 	}
 
-	token := ctx.Cli.String("github-token")
-	if token != "" {
+	if !ctx.Cli.Bool("no-auto-commit") {
 		gitRepo, _ := git.PlainOpen(".")
 		worktree, _ := gitRepo.Worktree()
 		status, _ := worktree.Status()
 
 		fileStatus := status.File("README.md")
-		if fileStatus.Worktree == git.Modified {
-			user, _ := gitconfig.Username()
-			email, _ := gitconfig.Email()
-
-			worktree.Add("README.md")
-			_, err = worktree.Commit("Generate latest README.md", &git.CommitOptions{
-				Author: &object.Signature{
-					Name:  user,
-					Email: email,
-					When:  time.Now(),
-				},
-			})
-			if err != nil {
-				return
-			}
-
-			return exec.Command("git", "push").Run()
+		if fileStatus.Worktree != git.Modified {
+			log.Info("No change at README.md")
+			return
 		}
+
+		user, _ := gitconfig.Username()
+		email, _ := gitconfig.Email()
+
+		worktree.Add("README.md")
+		_, err = worktree.Commit("Generate latest README.md", &git.CommitOptions{
+			Author: &object.Signature{
+				Name:  user,
+				Email: email,
+				When:  time.Now(),
+			},
+		})
+		if err != nil {
+			return
+		}
+		log.Info("Push change at README.md")
+		return exec.Command("git", "push").Run()
 	}
 
 	return
