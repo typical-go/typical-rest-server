@@ -37,6 +37,7 @@ func GoTest(targets []string) error {
 	args := []string{"test"}
 	args = append(args, targets...)
 	args = append(args, "-coverprofile=cover.out")
+	args = append(args, "-race")
 	return Run(goCommand, args...)
 }
 
