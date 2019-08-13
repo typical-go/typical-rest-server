@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"go.uber.org/dig"
 	"github.com/urfave/cli"
+	"go.uber.org/dig"
 )
 
 // Module of typical-go application

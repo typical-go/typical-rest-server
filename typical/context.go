@@ -37,4 +37,6 @@ var Context = typictx.Context{
 			RepoName: "typical-rest-server",
 		},
 	},
+
+	DockerCompose: typictx.NewDockerCompose("3"),
 }

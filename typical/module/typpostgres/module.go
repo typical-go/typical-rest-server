@@ -41,5 +41,28 @@ func Module() *typictx.Module {
 			log.Info("Close postgres connection")
 			return db.Close()
 		},
+		DockerCompose: typictx.NewDockerCompose("").
+			RegisterService("postgres", map[string]interface{}{
+				"image": "postgres",
+				"environment": map[string]string{
+					"POSTGRES":          "${PG_USER:-postgres}",
+					"POSTGRES_PASSWORD": "${PG_PASSWORD:-pgpass}",
+					"PGDATA":            "/data/postgres",
+				},
+				"volumes": []string{
+					"postgres:/data/postgres",
+				},
+				"ports": []string{
+					"${PG_PORT:-5432}:5432",
+				},
+				"networks": []string{
+					"postgres",
+				},
+				"restart": "unless-stopped",
+			}).
+			RegisterNetwork("postgres", map[string]string{
+				"driver": "bridge",
+			}).
+			RegisterVolume("postgres", nil),
 	}
 }

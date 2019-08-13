@@ -28,7 +28,6 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	app.Commands = t.StandardCommands()
 	for key := range t.Modules {
 		module := t.Modules[key]
-
 		if module.Command != nil {
 			command := cli.Command{
 				Name:      module.Command.Name,
@@ -71,6 +70,28 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 				},
 			},
 			Action: t.execCommand(typitask.RunBinary),
+		},
+		{
+			Name:      "docker",
+			ShortName: "d",
+			Usage:     "docker",
+			Subcommands: []cli.Command{
+				{
+					Name:   "compose",
+					Usage:  "Generate docker-compose.yaml",
+					Action: t.execCommand(typitask.GenerateDockerCompose),
+				},
+				{
+					Name:   "up",
+					Usage:  "Create and start containers",
+					Action: t.execCommand(typitask.DockerUp),
+				},
+				{
+					Name:   "down",
+					Usage:  "Stop and remove containers, networks, images, and volumes",
+					Action: t.execCommand(typitask.DockerDown),
+				},
+			},
 		},
 		{
 			Name:      "test",

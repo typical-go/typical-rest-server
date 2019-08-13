@@ -29,6 +29,8 @@ type Context struct {
 
 	Constructors []interface{}
 	Initiations  []interface{}
+
+	DockerCompose *DockerCompose
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
