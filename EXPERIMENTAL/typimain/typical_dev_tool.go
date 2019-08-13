@@ -85,6 +85,12 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 					Name:   "up",
 					Usage:  "Create and start containers",
 					Action: t.execCommand(typitask.DockerUp),
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "no-gen",
+							Usage: "Create and start containers without generate docker-compose.yaml",
+						},
+					},
 				},
 				{
 					Name:   "down",

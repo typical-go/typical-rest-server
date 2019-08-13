@@ -2,6 +2,8 @@ package typitask
 
 import (
 	"io/ioutil"
+	"os"
+	"os/exec"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -31,17 +33,28 @@ func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
 		}
 	}
 	d1, _ := yaml.Marshal(mainDocker)
+	log.Info("Generate docker-compose.yml")
 	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
 }
 
 // DockerUp to create and start containers
 func DockerUp(ctx *typictx.ActionContext) (err error) {
-	// TODO:
-	return
+	if !ctx.Cli.Bool("no-gen") {
+		err = GenerateDockerCompose(ctx)
+		if err != nil {
+			return
+		}
+	}
+	cmd := exec.Command("docker-compose", "up", "--remove-orphans", "-d")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }
 
 // DockerDown to stop and remove containers, networks, images, and volumes
 func DockerDown(ctx *typictx.ActionContext) (err error) {
-	// TODO:
-	return
+	cmd := exec.Command("docker-compose", "down")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }
