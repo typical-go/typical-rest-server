@@ -40,7 +40,7 @@ Postgres Database
 |---|---|---|---|---|	
 |PG_DBNAME|String||true||	
 |PG_USER|String|postgres|true||	
-|PG_PASSWORD|String|changeme|true||	
+|PG_PASSWORD|String|pgpass|true||	
 |PG_HOST|String|localhost|||	
 |PG_PORT|Integer|5432|||	
 |PG_MIGRATIONSRC|String|scripts/migration|||	
