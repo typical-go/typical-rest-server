@@ -41,7 +41,7 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 	worktree, _ := gitRepo.Worktree()
 	status, _ := worktree.Status()
 	if !status.IsClean() {
-		log.Info("Please submit uncommitted change first")
+		log.Infof("Please submit uncommitted change first: %s", status.String())
 		return nil
 	}
 
