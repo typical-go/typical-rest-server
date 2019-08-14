@@ -14,7 +14,7 @@ import (
 // Context instance of Context
 var Context = typictx.Context{
 	Name:        "Typical-RESTful-Server",
-	Version:     "0.5.8",
+	Version:     "0.5.9",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	Modules: []*typictx.Module{
