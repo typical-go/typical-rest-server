@@ -28,11 +28,11 @@ func Module() *typictx.Module {
 			Usage:      "Postgres Database Tool",
 			BeforeFunc: typienv.LoadEnv,
 			SubCommands: []*typictx.Command{
-				{Name: "create", Usage: "Create New Database", ActionFunc: CreateDB},
-				{Name: "drop", Usage: "Drop Database", ActionFunc: DropDB},
-				{Name: "migrate", Usage: "Migrate Database", ActionFunc: MigrateDB},
-				{Name: "rollback", Usage: "Rollback Database", ActionFunc: RollbackDB},
-				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: Console},
+				{Name: "create", Usage: "Create New Database", ActionFunc: typictx.ActionFunction(createDB)},
+				{Name: "drop", Usage: "Drop Database", ActionFunc: typictx.ActionFunction(dropDB)},
+				{Name: "migrate", Usage: "Migrate Database", ActionFunc: typictx.ActionFunction(migrateDB)},
+				{Name: "rollback", Usage: "Rollback Database", ActionFunc: typictx.ActionFunction(rollbackDB)},
+				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: typictx.ActionFunction(console)},
 			},
 		},
 

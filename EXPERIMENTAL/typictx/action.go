@@ -17,3 +17,10 @@ type ActionContext struct {
 	Context
 	Cli *cli.Context
 }
+
+// ActionFunction to convert function to ActionFunction
+func ActionFunction(function interface{}) ActionFunc {
+	return func(ctx *ActionContext) (err error) {
+		return ctx.Container().Invoke(function)
+	}
+}
