@@ -29,21 +29,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	for key := range t.Modules {
 		module := t.Modules[key]
 		if module.Command != nil {
-			command := cli.Command{
-				Name:      module.Command.Name,
-				ShortName: module.Command.ShortName,
-				Usage:     module.Command.Usage,
-			}
-			for i := range module.Command.SubCommands {
-				subCommand := module.Command.SubCommands[i]
-				command.Subcommands = append(command.Subcommands, cli.Command{
-					Name:      subCommand.Name,
-					ShortName: subCommand.ShortName,
-					Usage:     subCommand.Usage,
-					Action:    runActionFunc(t.Context, subCommand.ActionFunc),
-				})
-			}
-			app.Commands = append(app.Commands, command)
+			app.Commands = append(app.Commands, typictx.ConvertToCLICommand(t.Context, module.Command))
 		}
 	}
 

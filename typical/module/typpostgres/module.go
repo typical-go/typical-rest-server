@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
 // Module for postgres
@@ -22,10 +23,11 @@ func Module() *typictx.Module {
 		},
 
 		Command: &typictx.Command{
-			Name:      "postgres",
-			ShortName: "pg",
-			Usage:     "Postgres Database Tool",
-			SubCommands: []typictx.Command{
+			Name:       "postgres",
+			ShortName:  "pg",
+			Usage:      "Postgres Database Tool",
+			BeforeFunc: typienv.LoadEnv,
+			SubCommands: []*typictx.Command{
 				{Name: "create", Usage: "Create New Database", ActionFunc: CreateDB},
 				{Name: "drop", Usage: "Drop Database", ActionFunc: DropDB},
 				{Name: "migrate", Usage: "Migrate Database", ActionFunc: MigrateDB},
