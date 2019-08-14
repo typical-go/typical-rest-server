@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
+
 	log "github.com/sirupsen/logrus"
 
 	"go.uber.org/dig"
@@ -30,7 +32,7 @@ type Context struct {
 	Constructors []interface{}
 	Initiations  []interface{}
 
-	DockerCompose *DockerCompose
+	DockerCompose *docker.Compose
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value

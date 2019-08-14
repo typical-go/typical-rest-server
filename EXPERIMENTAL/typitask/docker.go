@@ -22,14 +22,14 @@ func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
 		if moduleDocker == nil {
 			continue
 		}
-		for name, service := range moduleDocker.Services {
-			mainDocker.RegisterService(name, service)
+		for _, name := range moduleDocker.ServiceKeys {
+			mainDocker.RegisterService(name, moduleDocker.Services[name])
 		}
-		for name, network := range moduleDocker.Networks {
-			mainDocker.RegisterNetwork(name, network)
+		for _, name := range moduleDocker.NetworkKeys {
+			mainDocker.RegisterNetwork(name, moduleDocker.Networks[name])
 		}
-		for name, volume := range moduleDocker.Volumes {
-			mainDocker.RegisterVolume(name, volume)
+		for _, name := range moduleDocker.VolumeKeys {
+			mainDocker.RegisterVolume(name, moduleDocker.Volumes[name])
 		}
 	}
 	d1, _ := yaml.Marshal(mainDocker)

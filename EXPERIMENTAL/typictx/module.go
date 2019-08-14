@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -19,7 +20,7 @@ type Module struct {
 	CloseFunc interface{}
 
 	Command       *Command
-	DockerCompose *DockerCompose
+	DockerCompose *docker.Compose
 
 	Constructors []interface{}
 	SideEffects  []*SideEffect

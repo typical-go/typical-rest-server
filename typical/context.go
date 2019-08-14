@@ -1,6 +1,7 @@
 package typical
 
 import (
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/config"
@@ -13,7 +14,7 @@ import (
 // Context instance of Context
 var Context = typictx.Context{
 	Name:        "Typical-RESTful-Server",
-	Version:     "0.5.7",
+	Version:     "0.5.8",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	Modules: []*typictx.Module{
@@ -38,5 +39,5 @@ var Context = typictx.Context{
 		},
 	},
 
-	DockerCompose: typictx.NewDockerCompose("3"),
+	DockerCompose: docker.NewCompose("3"),
 }
