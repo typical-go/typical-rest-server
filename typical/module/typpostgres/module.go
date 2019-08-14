@@ -61,8 +61,8 @@ func Module() *typictx.Module {
 				},
 				Restart: "unless-stopped",
 			}).
-			RegisterNetwork("postgres", map[string]string{
-				"driver": "bridge",
+			RegisterNetwork("postgres", &docker.Network{
+				Driver: "bridge",
 			}).
 			RegisterVolume("postgres", nil),
 	}
