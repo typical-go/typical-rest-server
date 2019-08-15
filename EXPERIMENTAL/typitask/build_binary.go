@@ -1,7 +1,6 @@
 package typitask
 
 import (
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -12,8 +11,5 @@ func BuildBinary(ctx *typictx.ActionContext) error {
 	binaryName := typienv.Binary(ctx.BinaryNameOrDefault())
 	mainPackage := typienv.AppMainPackage()
 
-	return runn.Execute(
-		bash.GoModTidy(),
-		bash.GoBuild(binaryName, mainPackage),
-	)
+	return bash.GoBuild(binaryName, mainPackage)
 }
