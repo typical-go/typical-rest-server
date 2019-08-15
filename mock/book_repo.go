@@ -5,10 +5,9 @@
 package mock
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	repository "github.com/typical-go/typical-rest-server/app/repository"
+	reflect "reflect"
 )
 
 // MockBookRepository is a mock of BookRepository interface

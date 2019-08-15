@@ -5,6 +5,7 @@ const (
 	bookTable = "books"
 )
 
+// TODO: rethinking whether the constant really to centralize
 // Table Column Names
 const (
 	idColumn        = "id"

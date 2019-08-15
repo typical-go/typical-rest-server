@@ -7,6 +7,15 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
+// Book represented database model
+type Book struct {
+	ID        int64     `json:"id"`
+	Title     string    `json:"title" validate:"required"`
+	Author    string    `json:"author" validate:"required"`
+	UpdatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"-"`
+}
+
 // BookRepository to get book data from databasesa
 type BookRepository interface {
 	Find(id int64) (*Book, error)
@@ -102,4 +111,13 @@ func (r *bookRepository) Update(book Book) (err error) {
 
 	_, err = builder.RunWith(r.conn).Exec()
 	return
+}
+
+func scanBook(rows *sql.Rows) (*Book, error) {
+	var book Book
+	err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &book, nil
 }

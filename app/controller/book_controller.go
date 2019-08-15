@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/pkg/strkit"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 // BookController is controller to book entity
@@ -37,7 +38,7 @@ func (c *BookController) Create(ctx echo.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	err = book.Validate()
+	err = validator.New().Struct(book)
 	if err != nil {
 		return invalidMessage(ctx, err)
 	}
@@ -96,7 +97,7 @@ func (c *BookController) Update(ctx echo.Context) (err error) {
 	if book.ID <= 0 {
 		return invalidID(ctx, err)
 	}
-	err = book.Validate()
+	err = validator.New().Struct(book)
 	if err != nil {
 		return invalidMessage(ctx, err)
 	}
