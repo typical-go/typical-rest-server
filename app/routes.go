@@ -4,16 +4,21 @@ import (
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/app/controller"
+	"go.uber.org/dig"
 )
 
+// Controllers is collection fo controller
+type Controllers struct {
+	dig.In
+
+	Book *controller.BookController
+	App  *controller.ApplicationController
+}
+
 // Routes of API
-func Routes(
-	server *echo.Echo,
-	bookCntlr *controller.BookController,
-	appCntlr *controller.ApplicationController,
-) {
+func Routes(server *echo.Echo, c Controllers) {
 	log.Info("Initiate API Routes")
 
-	bookCntlr.Route(server)
-	appCntlr.Route(server)
+	c.Book.Route(server)
+	c.App.Route(server)
 }
