@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/pkg/strkit"
+	"github.com/typical-go/typical-rest-server/pkg/utility/strkit"
 	"gopkg.in/go-playground/validator.v9"
 )
 

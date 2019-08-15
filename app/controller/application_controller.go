@@ -3,7 +3,7 @@ package controller
 import (
 	"database/sql"
 
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/utility/echokit"
 
 	"github.com/labstack/echo"
 )

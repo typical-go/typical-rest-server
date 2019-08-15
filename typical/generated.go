@@ -7,8 +7,8 @@ import (
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
-	"github.com/typical-go/typical-rest-server/typical/module/typserver"
+	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
 )
 
 type Config struct {
