@@ -111,8 +111,8 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Usage: "Generate mock class",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
-					Name:  "new",
-					Usage: "Clean the mock package as new generation",
+					Name:  "no-delete",
+					Usage: "Generate mock class with delete previous generation",
 				},
 			},
 			Action: t.execCommand(typitask.GenerateMock),

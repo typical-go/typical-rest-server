@@ -19,7 +19,7 @@ func GenerateMock(ctx *typictx.ActionContext) (err error) {
 
 	mockPkg := typienv.Mock()
 
-	if ctx.Cli.Bool("new") {
+	if !ctx.Cli.Bool("no-delete") {
 		log.Infof("Clean mock package '%s'", mockPkg)
 		os.RemoveAll(mockPkg)
 	}
