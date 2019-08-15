@@ -8,24 +8,12 @@ import (
 	"github.com/labstack/echo"
 )
 
-// Request return echo.Context and httptest.ResponseRecorder
-func Request(req *http.Request) (ctx echo.Context, rec *httptest.ResponseRecorder) {
+func doRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	rec = httptest.NewRecorder()
 
 	e := echo.New()
-	ctx = e.NewContext(req, rec)
-	return
-}
+	ctx := e.NewContext(req, rec)
 
-// RequestGET return echo.Context and httptest.ResponseRecorder for GET Request
-func RequestGET(url string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
-	ctx, rec = Request(httptest.NewRequest(http.MethodGet, url, nil))
-	return
-}
-
-// RequestGETWithParam return echo.Context and httptest.ResponseRecorder for GET Request with URL Param
-func RequestGETWithParam(url string, urlParams map[string]string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
-	ctx, rec = RequestGET(url)
 	if urlParams != nil {
 		var keys []string
 		var values []string
@@ -36,43 +24,33 @@ func RequestGETWithParam(url string, urlParams map[string]string) (ctx echo.Cont
 		ctx.SetParamNames(keys...)
 		ctx.SetParamValues(values...)
 	}
+
+	err = handler(ctx)
 	return
 }
 
-// RequestPOST return echo.Context and httptest.ResponseRecorder for POST Request
-func RequestPOST(url string, json string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
+// DoGET return echo.Context and httptest.ResponseRecorder for GET Request
+func DoGET(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	return doRequest(handler, req, urlParams)
+}
+
+// DoPOST return echo.Context and httptest.ResponseRecorder for POST Request
+func DoPOST(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPost, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	return Request(req)
+	return doRequest(handler, req, nil)
 }
 
-// RequestPUT return echo.Context and httptest.ResponseRecorder for POST Request
-func RequestPUT(url string, json string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
+// DoPUT return echo.Context and httptest.ResponseRecorder for POST Request
+func DoPUT(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPut, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	return Request(req)
+	return doRequest(handler, req, nil)
 }
 
-// RequestDELETE return echo.Context and httptest.ResponseRecorder for DELETE Request
-func RequestDELETE(url string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
-	ctx, rec = Request(httptest.NewRequest(http.MethodDelete, url, nil))
-	return
-}
-
-// RequestDELETEWithParam return echo.Context and httptest.ResponseRecorder for DELETE Request with URL Param
-func RequestDELETEWithParam(url string, urlParams map[string]string) (ctx echo.Context, rec *httptest.ResponseRecorder) {
-	ctx, rec = RequestDELETE(url)
-	if urlParams != nil {
-		var keys []string
-		var values []string
-		for key, value := range urlParams {
-			keys = append(keys, key)
-			values = append(values, value)
-		}
-		ctx.SetParamNames(keys...)
-		ctx.SetParamValues(values...)
-	}
-	return
+// DoDELETE return echo.Context and httptest.ResponseRecorder for DELETE Request
+func DoDELETE(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
+	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	return doRequest(handler, req, urlParams)
 }
