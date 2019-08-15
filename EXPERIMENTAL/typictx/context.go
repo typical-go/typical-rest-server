@@ -33,6 +33,7 @@ type Context struct {
 	Initiations  []interface{}
 
 	DockerCompose *docker.Compose
+	container     *dig.Container
 }
 
 // BinaryNameOrDefault return binary name of typiapp or default value
@@ -47,17 +48,16 @@ func (c *Context) BinaryNameOrDefault() string {
 
 // Container to return the depedency injection
 func (c *Context) Container() *dig.Container {
-	container := dig.New()
-	for _, constructor := range c.Constructors {
-		container.Provide(constructor)
+	if c.container == nil {
+		c.container = dig.New()
+		for _, module := range c.Modules {
+			module.Inject(c.container)
+		}
+		for _, constructor := range c.Constructors {
+			c.container.Provide(constructor)
+		}
 	}
-	for _, constructor := range c.Constructors {
-		container.Provide(constructor)
-	}
-	for _, module := range c.Modules {
-		module.Inject(container)
-	}
-	return container
+	return c.container
 }
 
 // InvokeInitiation to invoke initiation functions
