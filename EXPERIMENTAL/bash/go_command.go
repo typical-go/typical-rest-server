@@ -26,7 +26,9 @@ func GoBuild(binaryName, mainPackage string, ldflags ...string) error {
 	args := []string{"build"}
 
 	args = append(args, "-o", binaryName)
-	args = append(args, "-ldflags", strings.Join(ldflags, " "))
+	if len(ldflags) > 0 {
+		args = append(args, "-ldflags", strings.Join(ldflags, " "))
+	}
 	args = append(args, mainPackage)
 
 	return Run(goCommand, args...)
