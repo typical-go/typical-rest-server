@@ -1,12 +1,19 @@
 package app
 
-func initRoutes(s *Server) {
+import (
+	"github.com/labstack/echo"
+	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/app/controller"
+)
 
-	s.GET("book", s.bookController.List)
-	s.POST("book", s.bookController.Create)
-	s.GET("book/:id", s.bookController.Get)
-	s.PUT("book", s.bookController.Update)
-	s.DELETE("book/:id", s.bookController.Delete)
+// Routes of API
+func Routes(
+	server *echo.Echo,
+	bookCntlr *controller.BookController,
+	appCntlr *controller.ApplicationController,
+) {
+	log.Info("Initiate API Routes")
 
-	s.Any("application/health-check", s.applicationController.Health)
+	bookCntlr.Route(server)
+	appCntlr.Route(server)
 }

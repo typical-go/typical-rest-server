@@ -14,6 +14,8 @@ var server *echo.Echo
 // Create new server
 func Create(cfg *Config) *echo.Echo {
 	if server == nil {
+		log.Infof("Create http server; DEBUG=%t", cfg.Debug)
+
 		server = echo.New()
 		server.HideBanner = true
 		server.Debug = cfg.Debug
@@ -25,7 +27,6 @@ func Create(cfg *Config) *echo.Echo {
 			log.SetLevel(log.InfoLevel)
 			logrusMwConfig.IncludeRequestBodies = true
 			logrusMwConfig.IncludeResponseBodies = true
-			log.Info("Configure logger for debug mode")
 		} else {
 			log.SetLevel(log.WarnLevel)
 			log.SetFormatter(&log.JSONFormatter{})

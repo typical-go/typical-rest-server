@@ -7,8 +7,6 @@ import (
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/typical/module/typserver"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // Context instance of Context
@@ -24,10 +22,12 @@ var Context = typictx.Context{
 	},
 
 	Application: typictx.Application{
-		StartFunc: func(s *app.Server, cfg *config.Config) error {
-			log.Info("Start the application")
-			return s.Start(cfg.Address)
-		},
+		StartFunc: app.Start,
+	},
+
+	Initiations: []interface{}{
+		app.Middlewares,
+		app.Routes,
 	},
 
 	Release: typictx.Release{

@@ -14,10 +14,13 @@ type ApplicationController struct {
 }
 
 // NewApplicationController return new instance of ApplicationController
-func NewApplicationController(conn *sql.DB) ApplicationController {
-	return ApplicationController{
-		conn: conn,
-	}
+func NewApplicationController(conn *sql.DB) *ApplicationController {
+	return &ApplicationController{conn: conn}
+}
+
+// Route to define API Route
+func (c *ApplicationController) Route(e *echo.Echo) {
+	e.Any("application/health", c.Health)
 }
 
 // Health end point for health check
