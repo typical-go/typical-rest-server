@@ -4,7 +4,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
-	"github.com/typical-go/typical-rest-server/config"
+	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/typical/module/typserver"
 

@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/golang-migrate/migrate v3.5.4+incompatible
+	github.com/golang/mock v1.3.1
 	github.com/google/go-github/v27 v27.0.4
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/joho/godotenv v1.3.0
@@ -17,6 +18,7 @@ require (
 	github.com/lib/pq v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/sirupsen/logrus v1.4.2
+	github.com/stretchr/testify v1.3.0
 	github.com/tcnksm/go-gitconfig v0.1.2
 	github.com/typical-go/runn v1.0.0
 	github.com/urfave/cli v1.21.0

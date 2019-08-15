@@ -5,9 +5,9 @@ package typical
 import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app"
+	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/config"
 	"github.com/typical-go/typical-rest-server/typical/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/typical/module/typserver"
 )
@@ -40,10 +40,7 @@ func init() {
 	Context.AddMockTarget("app/controller/book_controller.go")
 	Context.AddMockTarget("app/repository/book_repo.go")
 	Context.AddTestTarget("./app")
+	Context.AddTestTarget("./app/config")
 	Context.AddTestTarget("./app/controller")
-	Context.AddTestTarget("./app/helper/echokit")
-	Context.AddTestTarget("./app/helper/envkit")
-	Context.AddTestTarget("./app/helper/strkit")
-	Context.AddTestTarget("./app/helper/timekit")
 	Context.AddTestTarget("./app/repository")
 }

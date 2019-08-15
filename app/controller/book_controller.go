@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/app/helper/strkit"
+	"github.com/typical-go/typical-rest-server/pkg/strkit"
 	"github.com/typical-go/typical-rest-server/app/repository"
 )
 

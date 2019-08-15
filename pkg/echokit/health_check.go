@@ -1,7 +1,13 @@
-package utility
+package echokit
 
-// StatusOK is status when no error
-const StatusOK = "OK"
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+)
+
+// OK is status when no error
+const OK = "OK"
 
 // HealthCheck is key-value store that contain health check information
 type HealthCheck map[string]string
@@ -13,7 +19,7 @@ func NewHealthCheck() HealthCheck {
 
 // Add name and error to register as heath check
 func (c HealthCheck) Add(name string, err error) HealthCheck {
-	status := StatusOK
+	status := OK
 	if err != nil {
 		status = err.Error()
 	}
@@ -25,10 +31,20 @@ func (c HealthCheck) Add(name string, err error) HealthCheck {
 // NotOK return true is some error registered
 func (c HealthCheck) NotOK() bool {
 	for _, value := range c {
-		if value != StatusOK {
+		if value != OK {
 			return true
 		}
 	}
-
 	return false
+}
+
+// Send healthcheck response
+func (c HealthCheck) Send(ctx echo.Context) error {
+	var status int
+	if c.NotOK() {
+		status = http.StatusServiceUnavailable
+	} else {
+		status = http.StatusOK
+	}
+	return ctx.JSON(status, c)
 }
