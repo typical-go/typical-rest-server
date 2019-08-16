@@ -1,9 +1,6 @@
 package typpostgres
 
 import (
-	"database/sql"
-
-	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -15,13 +12,13 @@ func Module() *typictx.Module {
 		Name:         "Postgres Database",
 		ConfigPrefix: "PG",
 		ConfigSpec:   &Config{},
-
 		SideEffects: []*typictx.SideEffect{
 			typictx.NewSideEffect("github.com/lib/pq"),
 			typictx.NewSideEffect("github.com/golang-migrate/migrate/database/postgres").ExcludeApp(),
 			typictx.NewSideEffect("github.com/golang-migrate/migrate/source/file").ExcludeApp(),
 		},
-
+		OpenFunc:  openConnection,
+		CloseFunc: closeConnection,
 		Command: &typictx.Command{
 			Name:       "postgres",
 			ShortName:  "pg",
@@ -34,15 +31,6 @@ func Module() *typictx.Module {
 				{Name: "rollback", Usage: "Rollback Database", ActionFunc: typictx.ActionFunction(rollbackDB)},
 				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: typictx.ActionFunction(console)},
 			},
-		},
-
-		OpenFunc: func(cfg *Config) (*sql.DB, error) {
-			log.Info("Open postgres connection")
-			return sql.Open(cfg.DriverName(), cfg.DataSource())
-		},
-		CloseFunc: func(db *sql.DB) error {
-			log.Info("Close postgres connection")
-			return db.Close()
 		},
 		DockerCompose: docker.NewCompose("").
 			RegisterService("postgres", &docker.Service{

@@ -16,6 +16,21 @@ const (
 	dropDatabaseScriptTemplate   = `DROP DATABASE IF EXISTS "%s"`
 )
 
+func openConnection(cfg *Config) (db *sql.DB, err error) {
+	log.Info("Open postgres connection")
+	db, err = sql.Open(cfg.DriverName(), cfg.DataSource())
+	if err != nil {
+		return
+	}
+	err = db.Ping()
+	return
+}
+
+func closeConnection(db *sql.DB) error {
+	log.Info("Close postgres connection")
+	return db.Close()
+}
+
 func createDB(config *Config) (err error) {
 	query := fmt.Sprintf(createDatabaseScriptTemplate, config.DatabaseName())
 	log.Infof("Postgres: %s", query)
