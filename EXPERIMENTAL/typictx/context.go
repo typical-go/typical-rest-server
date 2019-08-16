@@ -46,8 +46,8 @@ func (c *Context) BinaryNameOrDefault() string {
 	return c.BinaryName
 }
 
-// Container to return the depedency injection
-func (c *Context) Container() *dig.Container {
+// Invoke the function
+func (c *Context) Invoke(function interface{}) error {
 	if c.container == nil {
 		c.container = dig.New()
 		for _, module := range c.Modules {
@@ -57,14 +57,14 @@ func (c *Context) Container() *dig.Container {
 			c.container.Provide(constructor)
 		}
 	}
-	return c.container
+	return c.container.Invoke(function)
 }
 
 // InvokeInitiation to invoke initiation functions
 func (c *Context) InvokeInitiation() (err error) {
 	for _, initiation := range c.Initiations {
 		log.Info("Invoke initiation: " + reflect.TypeOf(initiation).String())
-		err = c.Container().Invoke(initiation)
+		err = c.Invoke(initiation)
 		if err != nil {
 			return
 		}

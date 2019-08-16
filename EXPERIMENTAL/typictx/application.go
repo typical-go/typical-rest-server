@@ -32,12 +32,12 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 
 		var errs runn.Errors
 		if a.StopFunc != nil {
-			errs.Add(ctx.Container().Invoke(a.StopFunc))
+			errs.Add(ctx.Invoke(a.StopFunc))
 		}
 
 		for _, module := range ctx.Modules {
 			if module.CloseFunc != nil {
-				errs.Add(ctx.Container().Invoke(module.CloseFunc))
+				errs.Add(ctx.Invoke(module.CloseFunc))
 			}
 		}
 
@@ -45,7 +45,7 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	}()
 
 	if a.StartFunc != nil {
-		err = ctx.Container().Invoke(a.StartFunc)
+		err = ctx.Invoke(a.StartFunc)
 	}
 
 	return
