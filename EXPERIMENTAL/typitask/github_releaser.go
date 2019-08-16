@@ -11,7 +11,7 @@ import (
 )
 
 type githubReleaser struct {
-	typictx.Context
+	*typictx.Context
 }
 
 func (r *githubReleaser) IsReleased(service *github.RepositoriesService) bool {

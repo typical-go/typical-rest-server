@@ -9,11 +9,11 @@ import (
 
 // TypicalApplication represent typical application
 type TypicalApplication struct {
-	typictx.Context
+	*typictx.Context
 }
 
 // NewTypicalApplication return new instance of TypicalApplications
-func NewTypicalApplication(context typictx.Context) *TypicalApplication {
+func NewTypicalApplication(context *typictx.Context) *TypicalApplication {
 	return &TypicalApplication{context}
 }
 

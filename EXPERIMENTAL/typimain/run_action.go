@@ -5,7 +5,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) interface{} {
+func runActionFunc(context *typictx.Context, actionFunc typictx.ActionFunc) interface{} {
 	return func(ctx *cli.Context) error {
 		return actionFunc(&typictx.ActionContext{
 			Cli:     ctx,
@@ -14,7 +14,7 @@ func runActionFunc(context typictx.Context, actionFunc typictx.ActionFunc) inter
 	}
 }
 
-func runAction(context typictx.Context, action typictx.Action) interface{} {
+func runAction(context *typictx.Context, action typictx.Action) interface{} {
 	return func(ctx *cli.Context) error {
 		return action.Start(&typictx.ActionContext{
 			Cli:     ctx,

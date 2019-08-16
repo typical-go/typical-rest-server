@@ -10,11 +10,11 @@ import (
 
 // TypicalGenerator represent typical generator
 type TypicalGenerator struct {
-	typictx.Context
+	*typictx.Context
 }
 
 // NewTypicalGenerator return new instance of TypicalCli
-func NewTypicalGenerator(context typictx.Context) *TypicalGenerator {
+func NewTypicalGenerator(context *typictx.Context) *TypicalGenerator {
 	return &TypicalGenerator{
 		Context: context,
 	}

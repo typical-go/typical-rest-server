@@ -62,10 +62,9 @@ func (c *Context) Container() *dig.Container {
 
 // InvokeInitiation to invoke initiation functions
 func (c *Context) InvokeInitiation() (err error) {
-	container := c.Container()
 	for _, initiation := range c.Initiations {
 		log.Info("Invoke initiation: " + reflect.TypeOf(initiation).String())
-		err = container.Invoke(initiation)
+		err = c.Container().Invoke(initiation)
 		if err != nil {
 			return
 		}

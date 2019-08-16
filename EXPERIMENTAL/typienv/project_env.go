@@ -47,7 +47,7 @@ func LoadEnv() (err error) {
 }
 
 // WriteEnvIfNotExist will write .env file if not exist
-func WriteEnvIfNotExist(ctx typictx.Context) (err error) {
+func WriteEnvIfNotExist(ctx *typictx.Context) (err error) {
 	_, err = os.Stat(defaultDotEnv)
 	if !os.IsNotExist(err) {
 		return

@@ -13,7 +13,7 @@ import (
 )
 
 // MainAppGenerated to generate code in typical package
-func MainAppGenerated(t typictx.Context) (err error) {
+func MainAppGenerated(t *typictx.Context) (err error) {
 	filename := typienv.AppMainPackage() + "/generated.go"
 
 	recipe := gosrc.Recipe{
@@ -36,7 +36,7 @@ func MainAppGenerated(t typictx.Context) (err error) {
 	)
 }
 
-func appSideEffects(t typictx.Context) (sideEffects []string) {
+func appSideEffects(t *typictx.Context) (sideEffects []string) {
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {
 			if sideEffect.AppFlag {

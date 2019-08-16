@@ -122,7 +122,7 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 	return
 }
 
-func buildReleaseBinaries(ctx typictx.Context) (binaries []string, err error) {
+func buildReleaseBinaries(ctx *typictx.Context) (binaries []string, err error) {
 	if len(ctx.GoOS) < 0 {
 		err = errors.New("Missing 'GoOS' in Typical Context")
 		return

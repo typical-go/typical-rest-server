@@ -18,8 +18,6 @@ type Application struct {
 
 // Start the action
 func (a Application) Start(ctx *ActionContext) (err error) {
-	container := ctx.Container()
-
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
@@ -34,12 +32,12 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 
 		var errs runn.Errors
 		if a.StopFunc != nil {
-			errs.Add(container.Invoke(a.StopFunc))
+			errs.Add(ctx.Container().Invoke(a.StopFunc))
 		}
 
 		for _, module := range ctx.Modules {
 			if module.CloseFunc != nil {
-				errs.Add(container.Invoke(module.CloseFunc))
+				errs.Add(ctx.Container().Invoke(module.CloseFunc))
 			}
 		}
 
@@ -47,7 +45,7 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	}()
 
 	if a.StartFunc != nil {
-		err = container.Invoke(a.StartFunc)
+		err = ctx.Container().Invoke(a.StartFunc)
 	}
 
 	return

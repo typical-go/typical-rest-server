@@ -13,7 +13,7 @@ import (
 )
 
 // MainDevToolGenerated to generate code in typical package
-func MainDevToolGenerated(t typictx.Context) (err error) {
+func MainDevToolGenerated(t *typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
 
 	recipe := gosrc.Recipe{
@@ -36,7 +36,7 @@ func MainDevToolGenerated(t typictx.Context) (err error) {
 	)
 }
 
-func devtoolSideEffects(t typictx.Context) (sideEffects []string) {
+func devtoolSideEffects(t *typictx.Context) (sideEffects []string) {
 	for _, module := range t.Modules {
 		for _, sideEffect := range module.SideEffects {
 			if sideEffect.TypicalDevToolFlag {

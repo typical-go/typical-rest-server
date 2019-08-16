@@ -15,7 +15,7 @@ import (
 )
 
 // TypicalGenerated to generate code in typical package
-func TypicalGenerated(ctx typictx.Context) (err error) {
+func TypicalGenerated(ctx *typictx.Context) (err error) {
 	// TODO: add typical folder in typienv
 	packageName := "typical"
 	filename := packageName + "/generated.go"
@@ -49,7 +49,7 @@ func TypicalGenerated(ctx typictx.Context) (err error) {
 	)
 }
 
-func constructConfig(ctx typictx.Context) (mainConfig gosrc.Struct, configConstructors []gosrc.Function) {
+func constructConfig(ctx *typictx.Context) (mainConfig gosrc.Struct, configConstructors []gosrc.Function) {
 	mainConfigStruct := "Config"
 	ptrMainConfigStruct := "*" + mainConfigStruct
 

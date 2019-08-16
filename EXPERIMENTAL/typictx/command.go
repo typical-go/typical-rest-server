@@ -13,7 +13,7 @@ type Command struct {
 }
 
 // ConvertToCLICommand to convert command ti cli.Command
-func ConvertToCLICommand(ctx Context, cmd *Command) (cliCmd cli.Command) {
+func ConvertToCLICommand(ctx *Context, cmd *Command) (cliCmd cli.Command) {
 	cliCmd.Name = cmd.Name
 	cliCmd.ShortName = cmd.ShortName
 	cliCmd.Usage = cmd.Usage

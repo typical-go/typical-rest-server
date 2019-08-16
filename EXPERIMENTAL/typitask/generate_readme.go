@@ -74,7 +74,7 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 	return
 }
 
-func configDoc(ctx typictx.Context) string {
+func configDoc(ctx *typictx.Context) string {
 	buf := new(bytes.Buffer)
 
 	for i, mod := range ctx.ModulesWithConfig() {

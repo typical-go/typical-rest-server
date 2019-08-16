@@ -14,7 +14,7 @@ type Action interface {
 
 // ActionContext contain typical context and cli context
 type ActionContext struct {
-	Context
+	*Context
 	Cli *cli.Context
 }
 
