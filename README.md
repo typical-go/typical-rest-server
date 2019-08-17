@@ -7,7 +7,8 @@ Example of typical and scalable RESTful API Server for Go
 ## Getting Started
 
 This is intruction to start working with the project:
-0. Install [Go](https://golang.org/doc/install) or using homebrew if you're using macOS `brew install go`
+
+1. Install [Go](https://golang.org/doc/install) or using homebrew if you're using macOS `brew install go`
 
 
 ## Usage

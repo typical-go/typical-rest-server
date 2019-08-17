@@ -110,7 +110,3 @@ func (*Context) Err() error {
 func (*Context) Value(key interface{}) interface{} {
 	return nil
 }
-
-func (c *Context) GetName() string {
-	return c.Name
-}

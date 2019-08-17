@@ -12,8 +12,9 @@ type Markdown struct {
 
 // OrderedList to create ordered list
 func (m *Markdown) OrderedList(list ...string) {
+	m.Writeln("")
 	for i, item := range list {
-		m.Writef("%d. %s\n", i, item)
+		m.Writef("%d. %s\n", i+1, item)
 	}
 }
 
