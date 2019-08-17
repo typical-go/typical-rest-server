@@ -9,14 +9,13 @@ import (
 
 func TestReadmeRecipe(t *testing.T) {
 
-	recipe := Readme{
+	recipe := &Readme{
 		Title:       "some-title",
 		Description: "some-descrption",
-		Sections: []Section{
-			{Title: "section-title1", Content: "section-content"},
-			{Title: "section-title1", Content: "{{.Field1}}", Data: struct{ Field1 string }{"some-field1"}},
-		},
 	}
+	recipe.SetSection("section-title1", Section{Content: "some-content"})
+	recipe.SetSection("section-title2", Section{Content: "{{.Field1}}", Data: struct{ Field1 string }{"some-field1"}})
+	recipe.SetSection("section-title1", Section{Content: "revision-content"})
 
 	var builder strings.Builder
 	recipe.Write(&builder)
@@ -29,9 +28,9 @@ some-descrption
 
 ## section-title1
 
-section-content
+revision-content
 
-## section-title1
+## section-title2
 
 some-field1
 

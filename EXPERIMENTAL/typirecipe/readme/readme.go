@@ -12,7 +12,21 @@ import (
 type Readme struct {
 	Title       string
 	Description string
-	Sections    []Section
+	Sections    map[string]Section
+	Titles      []string
+}
+
+// SetSection to set section
+func (r *Readme) SetSection(title string, section Section) *Readme {
+	if r.Sections == nil {
+		r.Sections = make(map[string]Section)
+	}
+	_, ok := r.Sections[title]
+	if !ok {
+		r.Titles = append(r.Titles, title)
+	}
+	r.Sections[title] = section
+	return r
 }
 
 func (r Readme) Write(w io.Writer) (err error) {
@@ -20,12 +34,13 @@ func (r Readme) Write(w io.Writer) (err error) {
 	write(w, "# "+r.Title+"\n\n")
 	write(w, r.Description+"\n\n")
 
-	for _, section := range r.Sections {
-		write(w, "## "+section.Title+"\n\n")
+	for _, title := range r.Titles {
+		write(w, "## "+title+"\n\n")
 
+		section := r.Sections[title]
 		if section.Data != nil {
 			var tmpl *template.Template
-			tmpl, err = template.New(section.Title).Parse(section.Content)
+			tmpl, err = template.New(title).Parse(section.Content)
 			if err != nil {
 				return
 			}
