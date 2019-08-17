@@ -27,9 +27,15 @@ Use `./typicalw release` to make the release. More information check [here](http
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |APP_ADDRESS|String|:8089|true||	
+
+Echo Server with Logrus
+
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |SERVER_DEBUG|True or False|false|||	
+
+Postgres Database
+
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |PG_DBNAME|String||true||	
