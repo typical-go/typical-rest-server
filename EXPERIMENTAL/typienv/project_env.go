@@ -60,8 +60,8 @@ func WriteEnvIfNotExist(ctx *typictx.Context) (err error) {
 	}
 	defer buf.Close()
 
-	for _, mod := range ctx.ModulesWithConfig() {
-		envconfig.Usagef(mod.ConfigPrefix, mod.ConfigSpec, buf, envTemplate)
+	for _, cfg := range ctx.ConfigAccessors() {
+		envconfig.Usagef(cfg.GetConfigPrefix(), cfg.GetConfigSpec(), buf, envTemplate)
 	}
 
 	return

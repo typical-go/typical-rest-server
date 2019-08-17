@@ -7,10 +7,13 @@ import (
 // Module for postgres
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name:         "Echo Server with Logrus",
-		ConfigPrefix: "SERVER",
-		ConfigSpec:   &Config{},
-		OpenFunc:     Create,
-		CloseFunc:    Shutdown,
+		Name:      "Echo Server with Logrus",
+		OpenFunc:  Create,
+		CloseFunc: Shutdown,
+
+		Config: typictx.Config{
+			Prefix: "SERVER",
+			Spec:   &Config{},
+		},
 	}
 }

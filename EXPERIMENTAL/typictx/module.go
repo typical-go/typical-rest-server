@@ -1,9 +1,6 @@
 package typictx
 
 import (
-	"strings"
-
-	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
@@ -11,10 +8,9 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Name string
+	Config
 
-	ConfigPrefix string
-	ConfigSpec   interface{}
+	Name string
 
 	OpenFunc  interface{}
 	CloseFunc interface{}
@@ -46,10 +42,7 @@ func (m *Module) Invoke(invokeFunc interface{}) interface{} {
 	}
 }
 
-// CamelConfigPrefix return config prefix in camel case
-func (m *Module) CamelConfigPrefix() string {
-	if m.ConfigPrefix == "" {
-		return ""
-	}
-	return strcase.ToCamel(strings.ToLower(m.ConfigPrefix))
+// GetName to get name
+func (m *Module) GetName() string {
+	return m.Name
 }

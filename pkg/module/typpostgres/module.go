@@ -9,14 +9,19 @@ import (
 // Module for postgres
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name:         "Postgres Database",
-		ConfigPrefix: "PG",
-		ConfigSpec:   &Config{},
+		Name: "Postgres Database",
+
+		Config: typictx.Config{
+			Prefix: "PG",
+			Spec:   &Config{},
+		},
+
 		SideEffects: []*typictx.SideEffect{
 			typictx.NewSideEffect("github.com/lib/pq"),
 			typictx.NewSideEffect("github.com/golang-migrate/migrate/database/postgres").ExcludeApp(),
 			typictx.NewSideEffect("github.com/golang-migrate/migrate/source/file").ExcludeApp(),
 		},
+
 		OpenFunc:  openConnection,
 		CloseFunc: closeConnection,
 		Command: &typictx.Command{
@@ -32,6 +37,7 @@ func Module() *typictx.Module {
 				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: typictx.ActionFunction(console)},
 			},
 		},
+
 		DockerCompose: docker.NewCompose("").
 			RegisterService("postgres", &docker.Service{
 				Image: "postgres",

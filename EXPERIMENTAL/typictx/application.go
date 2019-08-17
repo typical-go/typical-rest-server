@@ -11,6 +11,9 @@ import (
 
 // Application is represent the application
 type Application struct {
+	Config
+
+	Name        string
 	StartFunc   interface{}
 	StopFunc    interface{}
 	Commands    []Command
@@ -22,6 +25,8 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
+
+	// TODO: run the initiations
 
 	// gracefull shutdown
 	go func() {
@@ -50,4 +55,9 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	}
 
 	return
+}
+
+// GetName to get name
+func (a *Application) GetName() string {
+	return a.Name
 }

@@ -15,18 +15,23 @@ var Context = &typictx.Context{
 	Version:     "0.6.1",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
-	Modules: []*typictx.Module{
-		{ConfigPrefix: "APP", ConfigSpec: &config.Config{}},
-		typserver.Module(),
-		typpostgres.Module(),
-	},
-
 	Application: typictx.Application{
 		StartFunc: app.Start,
+
+		Config: typictx.Config{
+			Prefix: "APP",
+			Spec:   &config.Config{},
+		},
+
 		Initiations: []interface{}{
 			app.Middlewares,
 			app.Routes,
 		},
+	},
+
+	Modules: []*typictx.Module{
+		typserver.Module(),
+		typpostgres.Module(),
 	},
 
 	Release: typictx.Release{

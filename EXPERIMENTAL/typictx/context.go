@@ -86,11 +86,12 @@ func (c *Context) AddTestTarget(testTarget string) {
 	c.TestTargets = append(c.TestTargets, testTarget)
 }
 
-// ModulesWithConfig return module that have config
-func (c *Context) ModulesWithConfig() (modules []*Module) {
+// ConfigAccessors return list of config accessor
+func (c *Context) ConfigAccessors() (accessors []ConfigAccessor) {
+	accessors = append(accessors, &c.Application)
 	for _, module := range c.Modules {
-		if module.ConfigSpec != nil {
-			modules = append(modules, module)
+		if module.Spec != nil {
+			accessors = append(accessors, module)
 		}
 	}
 	return
@@ -123,4 +124,8 @@ func (*Context) Err() error {
 // Value implementation
 func (*Context) Value(key interface{}) interface{} {
 	return nil
+}
+
+func (c *Context) GetName() string {
+	return c.Name
 }

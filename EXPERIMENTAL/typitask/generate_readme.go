@@ -70,26 +70,22 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 		log.Info("Push change at README.md")
 		return exec.Command("git", "push").Run()
 	}
-
 	return
 }
 
 func configDoc(ctx *typictx.Context) string {
 	buf := new(bytes.Buffer)
-
-	for i, mod := range ctx.ModulesWithConfig() {
-		if mod.Name != "" {
+	for i, acc := range ctx.ConfigAccessors() {
+		name := acc.GetName()
+		if name != "" {
 			if i > 0 {
 				buf.WriteString("\n")
 			}
-
-			buf.WriteString(mod.Name)
+			buf.WriteString(name)
 			buf.WriteString("\n\n")
 		}
-
-		envconfig.Usagef(mod.ConfigPrefix, mod.ConfigSpec, buf, configTemplate)
+		envconfig.Usagef(acc.GetConfigPrefix(), acc.GetConfigSpec(), buf, configTemplate)
 	}
-
 	return buf.String()
 }
 
@@ -99,7 +95,6 @@ func gettingStartedInstruction() string {
 	md.OrderedList(
 		"Install [Go](https://golang.org/doc/install) or using homebrew if you're using macOS `brew install go`",
 	)
-
 	return md.String()
 }
 
