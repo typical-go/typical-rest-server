@@ -1,7 +1,6 @@
 package typimain
 
 import (
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/urfave/cli"
@@ -39,8 +38,5 @@ func (t *TypicalApplication) Cli() *cli.App {
 }
 
 func (t *TypicalApplication) beforeApplication(ctx *cli.Context) error {
-	return runn.Execute(
-		typienv.LoadEnv(),
-		t.InvokeInitiation(),
-	)
+	return typienv.LoadEnv()
 }

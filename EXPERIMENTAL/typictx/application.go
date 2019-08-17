@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/runn"
 )
 
@@ -26,7 +27,15 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
 
-	// TODO: run the initiations
+	log.Info("------------- Application Start -------------")
+	defer log.Info("-------------- Application End --------------")
+
+	for _, initiation := range a.Initiations {
+		err = ctx.Invoke(initiation)
+		if err != nil {
+			return
+		}
+	}
 
 	// gracefull shutdown
 	go func() {

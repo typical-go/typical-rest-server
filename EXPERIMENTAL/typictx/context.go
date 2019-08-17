@@ -3,13 +3,10 @@ package typictx
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
-
-	log "github.com/sirupsen/logrus"
 
 	"go.uber.org/dig"
 )
@@ -57,18 +54,6 @@ func (c *Context) Invoke(function interface{}) error {
 		}
 	}
 	return c.container.Invoke(function)
-}
-
-// InvokeInitiation to invoke initiation functions
-func (c *Context) InvokeInitiation() (err error) {
-	for _, initiation := range c.Initiations {
-		log.Info("Invoke initiation: " + reflect.TypeOf(initiation).String())
-		err = c.Invoke(initiation)
-		if err != nil {
-			return
-		}
-	}
-	return
 }
 
 // AddConstructor to add constructor
