@@ -29,13 +29,13 @@ Use `./typicalw release` to make the release. More information check [here](http
 |---|---|---|---|---|	
 |APP_ADDRESS|String|:8089|true||	
 
-Echo Server with Logrus
+### Echo Server with Logrus
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |SERVER_DEBUG|True or False|false|||	
 
-Postgres Database
+### Postgres Database
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	

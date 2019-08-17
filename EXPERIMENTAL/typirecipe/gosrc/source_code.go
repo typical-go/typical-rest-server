@@ -8,8 +8,8 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 )
 
-// Recipe is source code recipe for generated.go in typical package
-type Recipe struct {
+// SourceCode is source code recipe for generated.go in typical package
+type SourceCode struct {
 	PackageName  string
 	Imports      []Import
 	Structs      []Struct
@@ -18,7 +18,7 @@ type Recipe struct {
 	TestTargets  []string
 }
 
-func (r Recipe) Write(w io.Writer) {
+func (r SourceCode) Write(w io.Writer) {
 	writelnf(w, "// "+typirecipe.WaterMark+"\n")
 	writelnf(w, "package %s", r.PackageName)
 
@@ -44,7 +44,7 @@ func (r Recipe) Write(w io.Writer) {
 }
 
 // Cook to generate the recipe into file
-func (r Recipe) Cook(file string) (err error) {
+func (r SourceCode) Cook(file string) (err error) {
 	var f *os.File
 	f, err = os.Create(file)
 	if err != nil {
@@ -59,7 +59,7 @@ func (r Recipe) Cook(file string) (err error) {
 }
 
 // Blank is nothing to generate for recipe
-func (r Recipe) Blank() bool {
+func (r SourceCode) Blank() bool {
 	return len(r.Imports) < 1 &&
 		len(r.Structs) < 1 &&
 		len(r.MockTargets) < 1 &&
@@ -68,35 +68,35 @@ func (r Recipe) Blank() bool {
 
 }
 
-func (r Recipe) sortOut() {
+func (r SourceCode) sortOut() {
 	sort.Strings(r.Constructors)
 	sort.Strings(r.MockTargets)
 	sort.Strings(r.TestTargets)
 }
 
 // AddConstructorFunction to add FunctionPogo to constructor
-func (r *Recipe) AddConstructorFunction(pogos ...Function) {
+func (r *SourceCode) AddConstructorFunction(pogos ...Function) {
 	for _, pogo := range pogos {
 		r.Constructors = append(r.Constructors, pogo.String())
 	}
 }
 
 // AddConstructors to add constructors
-func (r *Recipe) AddConstructors(constructors ...string) {
+func (r *SourceCode) AddConstructors(constructors ...string) {
 	r.Constructors = append(r.Constructors, constructors...)
 }
 
 // AddMockTargets to add constructors
-func (r *Recipe) AddMockTargets(mockTargets ...string) {
+func (r *SourceCode) AddMockTargets(mockTargets ...string) {
 	r.MockTargets = append(r.MockTargets, mockTargets...)
 }
 
 // AddTestTargets to add constructors
-func (r *Recipe) AddTestTargets(testTargets ...string) {
+func (r *SourceCode) AddTestTargets(testTargets ...string) {
 	r.TestTargets = append(r.TestTargets, testTargets...)
 }
 
 // AddImport to add import POGO
-func (r *Recipe) AddImport(pogos ...Import) {
+func (r *SourceCode) AddImport(pogos ...Import) {
 	r.Imports = append(r.Imports, pogos...)
 }

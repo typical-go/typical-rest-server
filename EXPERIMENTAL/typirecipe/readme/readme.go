@@ -8,14 +8,14 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 )
 
-// Recipe is recipe to generate readme
-type Recipe struct {
+// Readme detail
+type Readme struct {
 	Title       string
 	Description string
 	Sections    []Section
 }
 
-func (r Recipe) Write(w io.Writer) (err error) {
+func (r Readme) Write(w io.Writer) (err error) {
 	write(w, "<!-- "+typirecipe.WaterMark+" -->\n\n")
 	write(w, "# "+r.Title+"\n\n")
 	write(w, r.Description+"\n\n")
@@ -41,7 +41,7 @@ func (r Recipe) Write(w io.Writer) (err error) {
 }
 
 // WriteToFile to write the recipe to file
-func (r Recipe) WriteToFile(filename string) (err error) {
+func (r Readme) WriteToFile(filename string) (err error) {
 	file, err := os.Create(filename)
 	if err != nil {
 		return

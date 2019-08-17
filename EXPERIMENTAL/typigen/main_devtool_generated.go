@@ -16,7 +16,7 @@ import (
 func MainDevToolGenerated(t *typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
 
-	recipe := gosrc.Recipe{
+	recipe := gosrc.SourceCode{
 		PackageName: "main",
 	}
 

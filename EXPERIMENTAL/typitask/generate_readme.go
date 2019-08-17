@@ -24,7 +24,7 @@ const (
 
 // GenerateReadme for generate typical applical readme
 func GenerateReadme(ctx *typictx.ActionContext) (err error) {
-	recipe := readme.Recipe{
+	recipe := readme.Readme{
 		Title:       ctx.Name,
 		Description: ctx.Description,
 		Sections: []readme.Section{
@@ -79,7 +79,7 @@ func configDoc(ctx *typictx.Context) string {
 		name := acc.GetName()
 		if name != "" {
 			if i > 0 {
-				buf.WriteString("\n")
+				buf.WriteString("\n### ")
 			}
 			buf.WriteString(name)
 			buf.WriteString("\n\n")

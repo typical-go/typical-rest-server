@@ -16,7 +16,7 @@ import (
 func MainAppGenerated(t *typictx.Context) (err error) {
 	filename := typienv.AppMainPackage() + "/generated.go"
 
-	recipe := gosrc.Recipe{
+	recipe := gosrc.SourceCode{
 		PackageName: "main",
 	}
 

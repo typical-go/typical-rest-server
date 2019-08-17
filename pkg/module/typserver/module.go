@@ -7,7 +7,7 @@ import (
 // Module for postgres
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name:      "Echo Server with Logrus",
+		Name:      "Server",
 		OpenFunc:  Create,
 		CloseFunc: Shutdown,
 

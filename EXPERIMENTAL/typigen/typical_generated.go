@@ -27,7 +27,7 @@ func TypicalGenerated(ctx *typictx.Context) (err error) {
 		log.Fatal(err.Error())
 	}
 
-	recipe := gosrc.Recipe{
+	recipe := gosrc.SourceCode{
 		PackageName: packageName,
 		Structs: []gosrc.Struct{
 			mainConfig,

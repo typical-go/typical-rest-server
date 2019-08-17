@@ -9,7 +9,7 @@ import (
 
 func TestReadmeRecipe(t *testing.T) {
 
-	recipe := Recipe{
+	recipe := Readme{
 		Title:       "some-title",
 		Description: "some-descrption",
 		Sections: []Section{

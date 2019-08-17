@@ -9,7 +9,7 @@ import (
 )
 
 func TestInitializationModel(t *testing.T) {
-	recipe := Recipe{
+	recipe := SourceCode{
 		PackageName: "typical",
 		Imports: []Import{
 			{"", "fmt"},
@@ -40,19 +40,19 @@ func TestInitializationModel(t *testing.T) {
 
 func TestBlank(t *testing.T) {
 	testcase := []struct {
-		recipe Recipe
-		blank  bool
+		src   SourceCode
+		blank bool
 	}{
-		{recipe: Recipe{}, blank: true},
-		{recipe: Recipe{Imports: []Import{Import{}}}, blank: false},
-		{recipe: Recipe{Structs: []Struct{Struct{}}}, blank: false},
-		{recipe: Recipe{Constructors: []string{""}}, blank: false},
-		{recipe: Recipe{MockTargets: []string{""}}, blank: false},
-		{recipe: Recipe{TestTargets: []string{""}}, blank: false},
+		{src: SourceCode{}, blank: true},
+		{src: SourceCode{Imports: []Import{Import{}}}, blank: false},
+		{src: SourceCode{Structs: []Struct{Struct{}}}, blank: false},
+		{src: SourceCode{Constructors: []string{""}}, blank: false},
+		{src: SourceCode{MockTargets: []string{""}}, blank: false},
+		{src: SourceCode{TestTargets: []string{""}}, blank: false},
 	}
 
 	for i, tt := range testcase {
-		require.Equal(t, tt.blank, tt.recipe.Blank(), "%d: %+v", i, tt.recipe)
+		require.Equal(t, tt.blank, tt.src.Blank(), "%d: %+v", i, tt.src)
 	}
 
 }
