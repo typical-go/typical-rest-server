@@ -30,7 +30,6 @@ type Context struct {
 	MockTargets []string
 
 	Constructors []interface{}
-	Initiations  []interface{}
 
 	DockerCompose *docker.Compose
 	container     *dig.Container

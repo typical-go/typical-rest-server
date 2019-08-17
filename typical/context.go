@@ -23,11 +23,10 @@ var Context = &typictx.Context{
 
 	Application: typictx.Application{
 		StartFunc: app.Start,
-	},
-
-	Initiations: []interface{}{
-		app.Middlewares,
-		app.Routes,
+		Initiations: []interface{}{
+			app.Middlewares,
+			app.Routes,
+		},
 	},
 
 	Release: typictx.Release{

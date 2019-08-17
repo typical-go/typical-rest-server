@@ -11,9 +11,10 @@ import (
 
 // Application is represent the application
 type Application struct {
-	StartFunc interface{}
-	StopFunc  interface{}
-	Commands  []Command
+	StartFunc   interface{}
+	StopFunc    interface{}
+	Commands    []Command
+	Initiations []interface{}
 }
 
 // Start the action
