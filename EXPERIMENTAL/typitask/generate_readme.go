@@ -1,8 +1,8 @@
 package typitask
 
 import (
-	"bytes"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -18,31 +18,26 @@ import (
 const (
 	configTemplate = `| Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
-{{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|	
-{{end}}`
+{{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|{{end}}`
 )
 
 // GenerateReadme for generate typical applical readme
-func GenerateReadme(ctx *typictx.ActionContext) (err error) {
-	recipe := readme.Readme{
-		Title:       ctx.Name,
-		Description: ctx.Description,
-		Sections: []readme.Section{
-			{Title: "Getting Started", Content: gettingStartedInstruction()},
-			{Title: "Usage", Content: usageInstruction()},
-			{Title: "Build Tool", Content: buildToolInstruction()},
-			{Title: "Make a release", Content: releaseInstruction()},
-			{Title: "Configurations", Content: configDoc(ctx.Context)},
-		},
-	}
+func GenerateReadme(a *typictx.ActionContext) (err error) {
+
+	configDoc := ConfigDoc{Context: a.Context}
+
+	readme0 := readme.DefaultReadme().
+		SetTitle(a.Name).
+		SetDescription(a.Description).
+		SetSection("Configuration", configDoc.Section)
 
 	log.Infof("Generate README.md")
-	err = recipe.WriteToFile("README.md")
+	err = readme0.OutputToFile("README.md")
 	if err != nil {
 		return
 	}
 
-	if !ctx.Cli.Bool("no-auto-commit") {
+	if !a.Cli.Bool("no-auto-commit") {
 		gitRepo, _ := git.PlainOpen(".")
 		worktree, _ := gitRepo.Worktree()
 		status, _ := worktree.Status()
@@ -73,39 +68,23 @@ func GenerateReadme(ctx *typictx.ActionContext) (err error) {
 	return
 }
 
-func configDoc(ctx *typictx.Context) string {
-	buf := new(bytes.Buffer)
-	for i, acc := range ctx.ConfigAccessors() {
+type ConfigDoc struct {
+	*typictx.Context
+}
+
+func (d ConfigDoc) Section(md *typirecipe.Markdown) (err error) {
+	for i, acc := range d.Context.ConfigAccessors() {
 		name := acc.GetName()
 		if name != "" {
 			if i > 0 {
-				buf.WriteString("\n### ")
+
 			}
-			buf.WriteString(name)
-			buf.WriteString("\n\n")
+			md.Heading3(name)
 		}
-		envconfig.Usagef(acc.GetConfigPrefix(), acc.GetConfigSpec(), buf, configTemplate)
+
+		var builder strings.Builder
+		envconfig.Usagef(acc.GetConfigPrefix(), acc.GetConfigSpec(), &builder, configTemplate)
+		md.Writeln(builder.String())
 	}
-	return buf.String()
-}
-
-func gettingStartedInstruction() string {
-	var md typirecipe.Markdown
-	md.Writeln("This is intruction to start working with the project:")
-	md.OrderedList(
-		"Install [Go](https://golang.org/doc/install) or using homebrew if you're using macOS `brew install go`",
-	)
-	return md.String()
-}
-
-func usageInstruction() string {
-	return `There is no specific requirement to run the application. `
-}
-
-func buildToolInstruction() string {
-	return "Use `./typicalw` to execute development task"
-}
-
-func releaseInstruction() string {
-	return "Use `./typicalw release` to make the release. More information check [here](https://typical-go.github.io/release.html)"
+	return
 }

@@ -3,10 +3,11 @@ package readme
 import (
 	"io"
 	"os"
-	"text/template"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 )
+
+type Section func(md *typirecipe.Markdown) error
 
 // Readme detail
 type Readme struct {
@@ -14,6 +15,23 @@ type Readme struct {
 	Description string
 	Sections    map[string]Section
 	Titles      []string
+}
+
+// NewReadme return new instance of Readme
+func NewReadme() *Readme {
+	return &Readme{}
+}
+
+// SetTitle to set the title
+func (r *Readme) SetTitle(title string) *Readme {
+	r.Title = title
+	return r
+}
+
+// SetDescription to set the description
+func (r *Readme) SetDescription(description string) *Readme {
+	r.Description = description
+	return r
 }
 
 // SetSection to set section
@@ -29,42 +47,31 @@ func (r *Readme) SetSection(title string, section Section) *Readme {
 	return r
 }
 
-func (r Readme) Write(w io.Writer) (err error) {
-	write(w, "<!-- "+typirecipe.WaterMark+" -->\n\n")
-	write(w, "# "+r.Title+"\n\n")
-	write(w, r.Description+"\n\n")
+// Output to write the output
+func (r *Readme) Output(w io.Writer) (err error) {
+	md := typirecipe.NewMarkdown(w)
+	md.Comment(typirecipe.WaterMark)
+	md.Heading1(r.Title)
+	md.Writeln(r.Description)
 
 	for _, title := range r.Titles {
-		write(w, "## "+title+"\n\n")
+		md.Heading2(title)
 
-		section := r.Sections[title]
-		if section.Data != nil {
-			var tmpl *template.Template
-			tmpl, err = template.New(title).Parse(section.Content)
-			if err != nil {
-				return
-			}
-
-			tmpl.Execute(w, section.Data)
-			write(w, "\n\n")
-		} else {
-			write(w, section.Content+"\n\n")
+		err = r.Sections[title](md)
+		if err != nil {
+			return
 		}
 	}
 
 	return
 }
 
-// WriteToFile to write the recipe to file
-func (r Readme) WriteToFile(filename string) (err error) {
+// OutputToFile to write the recipe to file
+func (r *Readme) OutputToFile(filename string) (err error) {
 	file, err := os.Create(filename)
 	if err != nil {
 		return
 	}
 	defer file.Close()
-	return r.Write(file)
-}
-
-func write(w io.Writer, s string) {
-	w.Write([]byte(s))
+	return r.Output(file)
 }
