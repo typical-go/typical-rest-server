@@ -1,6 +1,7 @@
 package typitask
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -21,7 +22,7 @@ import (
 )
 
 // ReleaseDistribution to release binary distribution
-func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
+func ReleaseDistribution(action *typictx.ActionContext) (err error) {
 
 	// NOTE: git fetch in beginning and after to make local is up2date
 	exec.Command("git", "fetch").Run()
@@ -33,8 +34,8 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 	}
 
 	latestTag := latestTag(gitRepo)
-	if latestTag != nil && latestTag.Name().Short() == ctx.ReleaseVersion() {
-		log.Infof("%s already released", ctx.ReleaseVersion())
+	if latestTag != nil && latestTag.Name().Short() == action.ReleaseVersion() {
+		log.Infof("%s already released", action.ReleaseVersion())
 		return nil
 	}
 
@@ -55,42 +56,43 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 		log.Infof("Change Log: %s", changelog)
 	}
 
-	if !ctx.Cli.Bool("no-test") {
-		err = RunTest(ctx)
+	if !action.Cli.Bool("no-test") {
+		err = RunTest(action)
 		if err != nil {
 			return
 		}
 	}
 
-	if !ctx.Cli.Bool("no-readme") {
-		err = GenerateReadme(ctx)
+	if !action.Cli.Bool("no-readme") {
+		err = GenerateReadme(action)
 		if err != nil {
 			return
 		}
 	}
 
-	binaries, err := buildReleaseBinaries(ctx.Context)
+	binaries, err := buildReleaseBinaries(action.Context)
 	if err != nil {
 		return
 	}
 
-	if ctx.Release.Github != nil {
+	if action.Release.Github != nil {
 		token := os.Getenv("GITHUB_TOKEN")
 		if token == "" {
 			return errors.New("Environment 'GITHUB_TOKEN' is missing")
 		}
 
-		owner := ctx.Release.Github.Owner
-		repo := ctx.Release.Github.RepoName
+		owner := action.Release.Github.Owner
+		repo := action.Release.Github.RepoName
 
+		ctx := context.Background()
 		client := github.NewClient(oauth2.NewClient(
 			ctx,
 			oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token}),
 		))
 
-		releaser := githubReleaser{ctx.Context}
-		if releaser.IsReleased(client.Repositories) {
-			log.Infof("Release for %s/%s (%s) already exist", owner, repo, ctx.ReleaseVersion())
+		releaser := githubReleaser{action.Context}
+		if releaser.IsReleased(ctx, client.Repositories) {
+			log.Infof("Release for %s/%s (%s) already exist", owner, repo, action.ReleaseVersion())
 			return
 		}
 
@@ -105,14 +107,14 @@ func ReleaseDistribution(ctx *typictx.ActionContext) (err error) {
 
 		log.Infof("Create github release for %s/%s", owner, repo)
 		var release *github.RepositoryRelease
-		release, err = releaser.CreateRelease(client.Repositories, releaseNote.String())
+		release, err = releaser.CreateRelease(ctx, client.Repositories, releaseNote.String())
 		if err != nil {
 			return
 		}
 
 		for _, binary := range binaries {
 			log.Infof("Upload asset: %s", binary)
-			err = releaser.Upload(client.Repositories, *release.ID, binary)
+			err = releaser.Upload(ctx, client.Repositories, *release.ID, binary)
 			if err != nil {
 				return
 			}

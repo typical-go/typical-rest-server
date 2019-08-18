@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 
@@ -89,24 +88,4 @@ func (c *Context) ReleaseVersion() (version string) {
 		version = fmt.Sprintf("%s-alpha", version)
 	}
 	return
-}
-
-// Deadline implementation
-func (*Context) Deadline() (deadline time.Time, ok bool) {
-	return
-}
-
-// Done implementation
-func (*Context) Done() <-chan struct{} {
-	return nil
-}
-
-// Err implementation
-func (*Context) Err() error {
-	return nil
-}
-
-// Value implementation
-func (*Context) Value(key interface{}) interface{} {
-	return nil
 }

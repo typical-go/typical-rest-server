@@ -1,6 +1,7 @@
 package typitask
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -14,8 +15,8 @@ type githubReleaser struct {
 	*typictx.Context
 }
 
-func (r *githubReleaser) IsReleased(service *github.RepositoriesService) bool {
-	_, _, err := service.GetReleaseByTag(r,
+func (r *githubReleaser) IsReleased(ctx context.Context, service *github.RepositoriesService) bool {
+	_, _, err := service.GetReleaseByTag(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
 		r.ReleaseVersion())
@@ -25,8 +26,8 @@ func (r *githubReleaser) IsReleased(service *github.RepositoriesService) bool {
 	return false
 }
 
-func (r *githubReleaser) CreateRelease(service *github.RepositoriesService, releaseNote string) (release *github.RepositoryRelease, err error) {
-	release, _, err = service.CreateRelease(r,
+func (r *githubReleaser) CreateRelease(ctx context.Context, service *github.RepositoriesService, releaseNote string) (release *github.RepositoryRelease, err error) {
+	release, _, err = service.CreateRelease(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
 		&github.RepositoryRelease{
@@ -40,7 +41,7 @@ func (r *githubReleaser) CreateRelease(service *github.RepositoriesService, rele
 	return
 }
 
-func (r *githubReleaser) Upload(service *github.RepositoriesService, repoID int64, binary string) (err error) {
+func (r *githubReleaser) Upload(ctx context.Context, service *github.RepositoriesService, repoID int64, binary string) (err error) {
 	binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
 
 	var file *os.File
@@ -49,7 +50,7 @@ func (r *githubReleaser) Upload(service *github.RepositoriesService, repoID int6
 		return
 	}
 
-	_, _, err = service.UploadReleaseAsset(r,
+	_, _, err = service.UploadReleaseAsset(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
 		repoID,
