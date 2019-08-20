@@ -8,7 +8,8 @@ import (
 	"github.com/labstack/echo"
 )
 
-func doRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
+// DoRequest return echo.Context and httptest.ResponseRecorder for Request
+func DoRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	rec = httptest.NewRecorder()
 
 	e := echo.New()
@@ -32,25 +33,25 @@ func doRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string
 // DoGET return echo.Context and httptest.ResponseRecorder for GET Request
 func DoGET(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	return doRequest(handler, req, urlParams)
+	return DoRequest(handler, req, urlParams)
 }
 
 // DoPOST return echo.Context and httptest.ResponseRecorder for POST Request
 func DoPOST(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPost, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return doRequest(handler, req, nil)
+	return DoRequest(handler, req, nil)
 }
 
 // DoPUT return echo.Context and httptest.ResponseRecorder for POST Request
 func DoPUT(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPut, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return doRequest(handler, req, nil)
+	return DoRequest(handler, req, nil)
 }
 
 // DoDELETE return echo.Context and httptest.ResponseRecorder for DELETE Request
 func DoDELETE(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
-	return doRequest(handler, req, urlParams)
+	return DoRequest(handler, req, urlParams)
 }
