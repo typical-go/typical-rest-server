@@ -35,7 +35,6 @@ require (
 	github.com/valyala/fasttemplate v1.0.1 // indirect
 	go.uber.org/dig v1.7.0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/tools v0.0.0-20190820033707-85edb9ef3283 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/src-d/go-git.v4 v4.13.1

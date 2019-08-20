@@ -7,19 +7,14 @@ import (
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/pkg/utility/strkit"
+	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
 
 // BookController is controller to book entity
 type BookController struct {
-	bookRepository repository.BookRepository
-}
-
-// NewBookController return new instance of book controller
-func NewBookController(bookRepository repository.BookRepository) *BookController {
-	return &BookController{
-		bookRepository: bookRepository,
-	}
+	dig.In
+	repository.BookRepository
 }
 
 // Route to define API Route
@@ -42,7 +37,7 @@ func (c *BookController) Create(ctx echo.Context) (err error) {
 	if err != nil {
 		return invalidMessage(ctx, err)
 	}
-	result, err := c.bookRepository.Insert(book)
+	result, err := c.BookRepository.Insert(book)
 	if err != nil {
 		return err
 	}
@@ -51,7 +46,7 @@ func (c *BookController) Create(ctx echo.Context) (err error) {
 
 // List of book
 func (c *BookController) List(ctx echo.Context) error {
-	books, err := c.bookRepository.List()
+	books, err := c.BookRepository.List()
 	if err != nil {
 		return err
 	}
@@ -64,7 +59,7 @@ func (c *BookController) Get(ctx echo.Context) error {
 	if err != nil {
 		return invalidID(ctx, err)
 	}
-	book, err := c.bookRepository.Find(id)
+	book, err := c.BookRepository.Find(id)
 	if err != nil {
 		return err
 	}
@@ -80,7 +75,7 @@ func (c *BookController) Delete(ctx echo.Context) error {
 	if err != nil {
 		return invalidID(ctx, err)
 	}
-	err = c.bookRepository.Delete(id)
+	err = c.BookRepository.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -101,7 +96,7 @@ func (c *BookController) Update(ctx echo.Context) (err error) {
 	if err != nil {
 		return invalidMessage(ctx, err)
 	}
-	err = c.bookRepository.Update(book)
+	err = c.BookRepository.Update(book)
 	if err != nil {
 		return err
 	}

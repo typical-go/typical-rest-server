@@ -5,7 +5,6 @@ package typical
 import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app/config"
-	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
@@ -18,8 +17,6 @@ type Config struct {
 }
 
 func init() {
-	Context.AddConstructor(controller.NewApplicationController)
-	Context.AddConstructor(controller.NewBookController)
 	Context.AddConstructor(func() (*Config, error) {
 		var cfg Config
 		err := envconfig.Process("", &cfg)

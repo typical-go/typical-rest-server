@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"go.uber.org/dig"
 )
 
 // Book represented database model
@@ -25,24 +26,25 @@ type BookRepository interface {
 	Update(book Book) error
 }
 
-type bookRepository struct {
-	conn *sql.DB
+// BookRepositoryImpl is implementation book repository
+type BookRepositoryImpl struct {
+	dig.In
+	*sql.DB
 }
 
 // NewBookRepository return new instance of BookRepository
-func NewBookRepository(conn *sql.DB) BookRepository {
-	return &bookRepository{
-		conn: conn,
-	}
+func NewBookRepository(impl BookRepositoryImpl) BookRepository {
+	return &impl
 }
 
-func (r *bookRepository) Find(id int64) (book *Book, err error) {
+// Find book
+func (r *BookRepositoryImpl) Find(id int64) (book *Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select(BookColumns...).
 		From(bookTable).
 		Where(sq.Eq{idColumn: id})
 
-	rows, err := builder.RunWith(r.conn).Query()
+	rows, err := builder.RunWith(r.DB).Query()
 	if err != nil {
 		return
 	}
@@ -53,11 +55,12 @@ func (r *bookRepository) Find(id int64) (book *Book, err error) {
 	return
 }
 
-func (r *bookRepository) List() (list []*Book, err error) {
+// List book
+func (r *BookRepositoryImpl) List() (list []*Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select(BookColumns...).From(bookTable)
 
-	rows, err := builder.RunWith(r.conn).Query()
+	rows, err := builder.RunWith(r.DB).Query()
 	if err != nil {
 		return
 	}
@@ -75,12 +78,13 @@ func (r *bookRepository) List() (list []*Book, err error) {
 	return
 }
 
-func (r *bookRepository) Insert(book Book) (lastInsertID int64, err error) {
+// Insert book
+func (r *BookRepositoryImpl) Insert(book Book) (lastInsertID int64, err error) {
 	query := sq.Insert(bookTable).
 		Columns(bookTitleColumn, bookAuthorColumn).
 		Values(book.Title, book.Author).
 		Suffix("RETURNING \"id\"").
-		RunWith(r.conn).
+		RunWith(r.DB).
 		PlaceholderFormat(sq.Dollar)
 
 	err = query.QueryRow().Scan(&book.ID)
@@ -92,16 +96,18 @@ func (r *bookRepository) Insert(book Book) (lastInsertID int64, err error) {
 	return
 }
 
-func (r *bookRepository) Delete(id int64) (err error) {
+// Delete book
+func (r *BookRepositoryImpl) Delete(id int64) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Delete(bookTable).
 		Where(sq.Eq{idColumn: id})
 
-	_, err = builder.RunWith(r.conn).Exec()
+	_, err = builder.RunWith(r.DB).Exec()
 	return
 }
 
-func (r *bookRepository) Update(book Book) (err error) {
+// Update book
+func (r *BookRepositoryImpl) Update(book Book) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Update(bookTable).
 		Set(bookTitleColumn, book.Title).
@@ -109,7 +115,7 @@ func (r *bookRepository) Update(book Book) (err error) {
 		Set(updatedAtColumn, time.Now()).
 		Where(sq.Eq{idColumn: book.ID})
 
-	_, err = builder.RunWith(r.conn).Exec()
+	_, err = builder.RunWith(r.DB).Exec()
 	return
 }
 

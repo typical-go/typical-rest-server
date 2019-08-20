@@ -7,18 +7,17 @@ import (
 	"go.uber.org/dig"
 )
 
-// Controllers is collection fo controller
-type Controllers struct {
+// RouteParams for route parameters
+type RouteParams struct {
 	dig.In
-
-	Book *controller.BookController
-	App  *controller.ApplicationController
+	Server    *echo.Echo
+	BookCntrl controller.BookController
+	AppCntrl  controller.ApplicationController
 }
 
 // Routes of API
-func Routes(server *echo.Echo, c Controllers) {
+func Routes(p RouteParams) {
 	log.Info("Initiate API Routes")
-
-	c.Book.Route(server)
-	c.App.Route(server)
+	p.BookCntrl.Route(p.Server)
+	p.AppCntrl.Route(p.Server)
 }
