@@ -26,15 +26,23 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |---|---|---|---|---|	
 |APP_ADDRESS|String|:8089|true||
 
+
 ### Server
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
 |SERVER_DEBUG|True or False|false|||
 
+
 ### Postgres Database
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|	
-|PG_DBNAME|String||true|||PG_USER|String|postgres|true|||PG_PASSWORD|String|pgpass|true|||PG_HOST|String|localhost||||PG_PORT|Integer|5432||||PG_MIGRATIONSRC|String|scripts/migration|||
+|PG_DBNAME|String||true||
+|PG_USER|String|postgres|true||
+|PG_PASSWORD|String|pgpass|true||
+|PG_HOST|String|localhost|||
+|PG_PORT|Integer|5432|||
+|PG_MIGRATIONSRC|String|scripts/migration|||
+
 
