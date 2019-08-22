@@ -17,8 +17,8 @@ import (
 
 const (
 	configTemplate = `| Key | Type | Default | Required | Description |	
-|---|---|---|---|---|	
-{{range .}}|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|{{end}}`
+|---|---|---|---|---|{{range .}}
+|{{usage_key .}}|{{usage_type .}}|{{usage_default .}}|{{usage_required .}}|{{usage_description .}}|{{end}}`
 )
 
 // GenerateReadme for generate typical applical readme
