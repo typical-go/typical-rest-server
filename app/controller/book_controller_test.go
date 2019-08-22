@@ -20,7 +20,9 @@ func TestBookController_Get(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookRepo := mock.NewMockBookRepository(ctrl)
-	bookCntrl := controller.NewBookController(bookRepo)
+	bookCntrl := controller.BookController{
+		BookRepository: bookRepo,
+	}
 
 	t.Run("GIVEN invalid id", func(t *testing.T) {
 		rr, err := echokit.DoGET(bookCntrl.Get, "/", map[string]string{
@@ -68,7 +70,9 @@ func TestBookController_List(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookRepo := mock.NewMockBookRepository(ctrl)
-	bookCntrl := controller.NewBookController(bookRepo)
+	bookCntrl := controller.BookController{
+		BookRepository: bookRepo,
+	}
 
 	t.Run("When repo success", func(t *testing.T) {
 		bookRepo.EXPECT().List().Return([]*repository.Book{
@@ -95,7 +99,9 @@ func TestBookController_Create(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookR := mock.NewMockBookRepository(ctrl)
-	bookController := controller.NewBookController(bookR)
+	bookController := controller.BookController{
+		BookRepository: bookR,
+	}
 
 	t.Run("When invalid message request", func(t *testing.T) {
 		rr, err := echokit.DoPOST(bookController.Create, "/", `{}`)
@@ -129,7 +135,9 @@ func TestBookController_Delete(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookRepo := mock.NewMockBookRepository(ctrl)
-	bookCntrl := controller.NewBookController(bookRepo)
+	bookCntrl := controller.BookController{
+		BookRepository: bookRepo,
+	}
 
 	t.Run("When invalid ID", func(t *testing.T) {
 		rr, err := echokit.DoDELETE(bookCntrl.Delete, "/", map[string]string{
@@ -163,7 +171,9 @@ func TestBookController_Update(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookRepo := mock.NewMockBookRepository(ctrl)
-	bookCntrl := controller.NewBookController(bookRepo)
+	bookCntrl := controller.BookController{
+		BookRepository: bookRepo,
+	}
 
 	t.Run("When invalid message request", func(t *testing.T) {
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{}`)

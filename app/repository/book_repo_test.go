@@ -17,7 +17,9 @@ func TestBookRepository(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	repositorysitory := repository.NewBookRepository(db)
+	repositorysitory := repository.BookRepositoryImpl{
+		DB: db,
+	}
 
 	t.Run("Insert", func(t *testing.T) {
 		insertSQL := regexp.QuoteMeta(`INSERT INTO books (title,author) VALUES ($1,$2) RETURNING "id"`)
