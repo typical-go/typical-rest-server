@@ -12,28 +12,9 @@ import (
 
 // GenerateDockerCompose to generate docker-compose.yaml
 func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
-	mainDocker := ctx.DockerCompose
-	if mainDocker == nil {
-		log.Info("No Docker Compose defined in Typical Context")
-		return
-	}
-	for _, module := range ctx.Modules {
-		moduleDocker := module.DockerCompose
-		if moduleDocker == nil {
-			continue
-		}
-		for _, name := range moduleDocker.ServiceKeys {
-			mainDocker.RegisterService(name, moduleDocker.Services[name])
-		}
-		for _, name := range moduleDocker.NetworkKeys {
-			mainDocker.RegisterNetwork(name, moduleDocker.Networks[name])
-		}
-		for _, name := range moduleDocker.VolumeKeys {
-			mainDocker.RegisterVolume(name, moduleDocker.Volumes[name])
-		}
-	}
-	d1, _ := yaml.Marshal(mainDocker)
 	log.Info("Generate docker-compose.yml")
+	dockerCompose := ctx.DockerCompose()
+	d1, _ := yaml.Marshal(dockerCompose)
 	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
 }
 

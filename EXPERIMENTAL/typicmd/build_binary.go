@@ -10,6 +10,5 @@ import (
 func BuildBinary(ctx *typictx.ActionContext) error {
 	binaryName := typienv.Binary(ctx.BinaryNameOrDefault())
 	mainPackage := typienv.AppMainPackage()
-
 	return bash.GoBuild(binaryName, mainPackage)
 }

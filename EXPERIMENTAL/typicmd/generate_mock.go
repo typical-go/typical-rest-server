@@ -16,14 +16,11 @@ func GenerateMock(ctx *typictx.ActionContext) (err error) {
 	if err != nil {
 		return
 	}
-
 	mockPkg := typienv.Mock()
-
 	if !ctx.Cli.Bool("no-delete") {
 		log.Infof("Clean mock package '%s'", mockPkg)
 		os.RemoveAll(mockPkg)
 	}
-
 	for _, mockTarget := range ctx.MockTargets {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 		err = bash.RunGoBin("mockgen",

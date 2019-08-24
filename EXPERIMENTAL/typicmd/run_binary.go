@@ -11,7 +11,6 @@ func RunBinary(ctx *typictx.ActionContext) error {
 	if !ctx.Cli.Bool("no-build") {
 		BuildBinary(ctx)
 	}
-
 	binaryPath := typienv.Binary(ctx.BinaryNameOrDefault())
 	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
 }
