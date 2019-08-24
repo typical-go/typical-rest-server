@@ -42,7 +42,7 @@ func NewBookRepository(impl BookRepositoryImpl) BookRepository {
 func (r *BookRepositoryImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
-		From("book").
+		From("books").
 		Where(sq.Eq{"id": id})
 
 	rows, err := builder.RunWith(r.DB).QueryContext(ctx)
@@ -59,7 +59,7 @@ func (r *BookRepositoryImpl) Find(ctx context.Context, id int64) (book *Book, er
 // List book
 func (r *BookRepositoryImpl) List(ctx context.Context) (list []*Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select("id", "title", "author", "updated_at", "created_at").From("book")
+	builder := psql.Select("id", "title", "author", "updated_at", "created_at").From("books")
 
 	rows, err := builder.RunWith(r.DB).QueryContext(ctx)
 	if err != nil {
@@ -81,7 +81,7 @@ func (r *BookRepositoryImpl) List(ctx context.Context) (list []*Book, err error)
 
 // Insert book
 func (r *BookRepositoryImpl) Insert(ctx context.Context, book Book) (lastInsertID int64, err error) {
-	query := sq.Insert("book").
+	query := sq.Insert("books").
 		Columns("title", "author").
 		Values(book.Title, book.Author).
 		Suffix("RETURNING \"id\"").
@@ -100,7 +100,7 @@ func (r *BookRepositoryImpl) Insert(ctx context.Context, book Book) (lastInsertI
 // Delete book
 func (r *BookRepositoryImpl) Delete(ctx context.Context, id int64) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Delete("book").
+	builder := psql.Delete("books").
 		Where(sq.Eq{"id": id})
 
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
@@ -110,7 +110,7 @@ func (r *BookRepositoryImpl) Delete(ctx context.Context, id int64) (err error) {
 // Update book
 func (r *BookRepositoryImpl) Update(ctx context.Context, book Book) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Update("book").
+	builder := psql.Update("books").
 		Set("title", book.Title).
 		Set("author", book.Author).
 		Set("updated_at", time.Now()).

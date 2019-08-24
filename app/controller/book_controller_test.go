@@ -18,12 +18,10 @@ import (
 func TestBookController_Get(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	bookRepo := mock.NewMockBookRepository(ctrl)
+	bookSvc := mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookController{
-		BookRepository: bookRepo,
+		BookService: bookSvc,
 	}
-
 	t.Run("GIVEN invalid id", func(t *testing.T) {
 		rr, err := echokit.DoGET(bookCntrl.Get, "/", map[string]string{
 			"id": "invalid",
@@ -33,7 +31,7 @@ func TestBookController_Get(t *testing.T) {
 	})
 
 	t.Run("GIVEN valid ID", func(t *testing.T) {
-		bookRepo.EXPECT().Find(int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+		bookSvc.EXPECT().Find(gomock.Any(), int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 
 		rr, err := echokit.DoGET(bookCntrl.Get, "/", map[string]string{
 			"id": "1",
@@ -44,7 +42,7 @@ func TestBookController_Get(t *testing.T) {
 	})
 
 	t.Run("When repository not found", func(t *testing.T) {
-		bookRepo.EXPECT().Find(int64(3)).Return(nil, nil)
+		bookSvc.EXPECT().Find(gomock.Any(), int64(3)).Return(nil, nil)
 
 		rr, err := echokit.DoGET(bookCntrl.Get, "/", map[string]string{
 			"id": "3",
@@ -55,7 +53,7 @@ func TestBookController_Get(t *testing.T) {
 	})
 
 	t.Run("When return error", func(t *testing.T) {
-		bookRepo.EXPECT().Find(int64(2)).Return(nil, fmt.Errorf("some-get-error"))
+		bookSvc.EXPECT().Find(gomock.Any(), int64(2)).Return(nil, fmt.Errorf("some-get-error"))
 
 		_, err := echokit.DoGET(bookCntrl.Get, "/", map[string]string{
 			"id": "2",
@@ -69,17 +67,16 @@ func TestBookController_List(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	bookRepo := mock.NewMockBookRepository(ctrl)
+	bookSvc := mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookController{
-		BookRepository: bookRepo,
+		BookService: bookSvc,
 	}
 
 	t.Run("When repo success", func(t *testing.T) {
-		bookRepo.EXPECT().List().Return([]*repository.Book{
+		bookSvc.EXPECT().List(gomock.Any()).Return([]*repository.Book{
 			&repository.Book{ID: 1, Title: "title1", Author: "author1"},
 			&repository.Book{ID: 2, Title: "title2", Author: "author2"},
 		}, nil)
-
 		rr, err := echokit.DoGET(bookCntrl.List, "/", nil)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rr.Code)
@@ -87,8 +84,7 @@ func TestBookController_List(t *testing.T) {
 	})
 
 	t.Run("When repo error", func(t *testing.T) {
-		bookRepo.EXPECT().List().Return(nil, fmt.Errorf("some-list-error"))
-
+		bookSvc.EXPECT().List(gomock.Any()).Return(nil, fmt.Errorf("some-list-error"))
 		_, err := echokit.DoGET(bookCntrl.List, "/", nil)
 		require.EqualError(t, err, "some-list-error")
 	})
@@ -98,9 +94,9 @@ func TestBookController_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	bookR := mock.NewMockBookRepository(ctrl)
+	bookSvc := mock.NewMockBookService(ctrl)
 	bookController := controller.BookController{
-		BookRepository: bookR,
+		BookService: bookSvc,
 	}
 
 	t.Run("When invalid message request", func(t *testing.T) {
@@ -116,13 +112,13 @@ func TestBookController_Create(t *testing.T) {
 	})
 
 	t.Run("When error", func(t *testing.T) {
-		bookR.EXPECT().Insert(gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
+		bookSvc.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
 		_, err := echokit.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
 		require.EqualError(t, err, "some-insert-error")
 	})
 
 	t.Run("When success", func(t *testing.T) {
-		bookR.EXPECT().Insert(gomock.Any()).Return(int64(99), nil)
+		bookSvc.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(int64(99), nil)
 		rr, err := echokit.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusCreated, rr.Code)
@@ -133,12 +129,10 @@ func TestBookController_Create(t *testing.T) {
 func TestBookController_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	bookRepo := mock.NewMockBookRepository(ctrl)
+	bookSvc := mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookController{
-		BookRepository: bookRepo,
+		BookService: bookSvc,
 	}
-
 	t.Run("When invalid ID", func(t *testing.T) {
 		rr, err := echokit.DoDELETE(bookCntrl.Delete, "/", map[string]string{
 			"id": "invalid",
@@ -146,9 +140,8 @@ func TestBookController_Delete(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 	})
-
 	t.Run("When return success", func(t *testing.T) {
-		bookRepo.EXPECT().Delete(int64(1)).Return(nil)
+		bookSvc.EXPECT().Delete(gomock.Any(), int64(1)).Return(nil)
 		rr, err := echokit.DoDELETE(bookCntrl.Delete, "/", map[string]string{
 			"id": "1",
 		})
@@ -156,9 +149,8 @@ func TestBookController_Delete(t *testing.T) {
 		require.Equal(t, http.StatusOK, rr.Code)
 		require.Equal(t, "{\"message\":\"Delete #1 done\"}\n", rr.Body.String())
 	})
-
 	t.Run("When error", func(t *testing.T) {
-		bookRepo.EXPECT().Delete(int64(2)).Return(fmt.Errorf("some-delete-error"))
+		bookSvc.EXPECT().Delete(gomock.Any(), int64(2)).Return(fmt.Errorf("some-delete-error"))
 		_, err := echokit.DoDELETE(bookCntrl.Delete, "/", map[string]string{
 			"id": "2",
 		})
@@ -169,12 +161,10 @@ func TestBookController_Delete(t *testing.T) {
 func TestBookController_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	bookRepo := mock.NewMockBookRepository(ctrl)
+	bookSvc := mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookController{
-		BookRepository: bookRepo,
+		BookService: bookSvc,
 	}
-
 	t.Run("When invalid message request", func(t *testing.T) {
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{}`)
 		require.NoError(t, err)
@@ -195,13 +185,13 @@ func TestBookController_Update(t *testing.T) {
 	})
 
 	t.Run("When error", func(t *testing.T) {
-		bookRepo.EXPECT().Update(gomock.Any()).Return(fmt.Errorf("some-update-error"))
+		bookSvc.EXPECT().Update(gomock.Any(), gomock.Any()).Return(fmt.Errorf("some-update-error"))
 		_, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1,"author":"some-author", "title":"some-title"}`)
 		require.EqualError(t, err, "some-update-error")
 	})
 
 	t.Run("When success", func(t *testing.T) {
-		bookRepo.EXPECT().Update(gomock.Any()).Return(nil)
+		bookSvc.EXPECT().Update(gomock.Any(), gomock.Any()).Return(nil)
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rr.Code)
