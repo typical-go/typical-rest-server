@@ -6,6 +6,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/app/service"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
 )
@@ -32,9 +33,12 @@ func init() {
 		return cfg.Server
 	})
 	Context.AddConstructor(repository.NewBookRepository)
+	Context.AddConstructor(service.NewBookService)
 	Context.AddMockTarget("app/repository/book_repo.go")
+	Context.AddMockTarget("app/service/book_service.go")
 	Context.AddTestTarget("./app")
 	Context.AddTestTarget("./app/config")
 	Context.AddTestTarget("./app/controller")
 	Context.AddTestTarget("./app/repository")
+	Context.AddTestTarget("./app/service")
 }
