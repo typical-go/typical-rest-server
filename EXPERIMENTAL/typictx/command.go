@@ -8,6 +8,7 @@ type Command struct {
 	ShortName   string
 	Usage       string
 	BeforeFunc  func() error
+	Flags       []cli.Flag
 	ActionFunc  ActionFunc
 	SubCommands []*Command
 }
@@ -17,6 +18,7 @@ func (c *Command) CliCommand(ctx *Context) (cliCmd cli.Command) {
 	cliCmd.Name = c.Name
 	cliCmd.ShortName = c.ShortName
 	cliCmd.Usage = c.Usage
+	cliCmd.Flags = c.Flags
 	if c.ActionFunc != nil {
 		cliCmd.Action = func(cliCtx *cli.Context) error {
 			return c.ActionFunc(&ActionContext{

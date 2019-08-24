@@ -25,12 +25,18 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Commands = typicmd.StandardCommands(t.Context)
-	for key := range t.Modules {
-		module := t.Modules[key]
-		if module.Command != nil {
-			app.Commands = append(app.Commands, module.Command.CliCommand(t.Context))
-		}
+	for _, cmd := range t.commands() {
+		app.Commands = append(app.Commands, cmd.CliCommand(t.Context))
 	}
 	return app
+}
+
+func (t *TypicalDevTool) commands() []*typictx.Command {
+	cmds := typicmd.StandardCommands(t.Context)
+	for _, module := range t.Modules {
+		if module.Command != nil {
+			cmds = append(cmds, module.Command)
+		}
+	}
+	return cmds
 }
