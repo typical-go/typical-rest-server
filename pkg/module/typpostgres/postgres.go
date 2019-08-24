@@ -11,14 +11,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	createDatabaseScriptTemplate = `CREATE DATABASE "%s"`
-	dropDatabaseScriptTemplate   = `DROP DATABASE IF EXISTS "%s"`
-)
+// Config is postgres configuration
+type Config struct {
+	DBName   string `required:"true"`
+	User     string `required:"true" default:"postgres"`
+	Password string `required:"true" default:"pgpass"`
+	Host     string `default:"localhost"`
+	Port     int    `default:"5432"`
+}
 
 func openConnection(cfg *Config) (db *sql.DB, err error) {
 	log.Info("Open postgres connection")
-	db, err = sql.Open(cfg.DriverName(), cfg.DataSource())
+	db, err = sql.Open("postgres", dataSource(cfg))
 	if err != nil {
 		return
 	}
@@ -31,39 +35,34 @@ func closeConnection(db *sql.DB) error {
 	return db.Close()
 }
 
-func createDB(config *Config) (err error) {
-	query := fmt.Sprintf(createDatabaseScriptTemplate, config.DatabaseName())
+func createDB(cfg *Config) (err error) {
+	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
-
-	conn, err := sql.Open(config.DriverName(), config.AdminDataSource())
+	conn, err := sql.Open("postgres", adminDataSource(cfg))
 	if err != nil {
 		return
 	}
 	defer conn.Close()
-
 	_, err = conn.Exec(query)
 	return
 }
 
-func dropDB(config *Config) (err error) {
-	query := fmt.Sprintf(dropDatabaseScriptTemplate, config.DatabaseName())
+func dropDB(cfg *Config) (err error) {
+	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
-
-	conn, err := sql.Open(config.DriverName(), config.AdminDataSource())
+	conn, err := sql.Open("postgres", adminDataSource(cfg))
 	if err != nil {
 		return
 	}
 	defer conn.Close()
-
 	_, err = conn.Exec(query)
 	return
 }
 
-func migrateDB(config *Config) error {
-	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
+func migrateDB(cfg *Config) error {
+	sourceURL := "file://scripts/migration"
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
-
-	migration, err := migrate.New(sourceURL, config.DataSource())
+	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
 		return err
 	}
@@ -71,11 +70,10 @@ func migrateDB(config *Config) error {
 	return migration.Up()
 }
 
-func rollbackDB(config *Config) error {
-	sourceURL := fmt.Sprintf("file://%s", config.MigrationSource())
+func rollbackDB(cfg *Config) error {
+	sourceURL := "file://scripts/migration"
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
-
-	migration, err := migrate.New(sourceURL, config.DataSource())
+	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
 		return err
 	}
@@ -83,12 +81,22 @@ func rollbackDB(config *Config) error {
 	return migration.Down()
 }
 
-func console(config *Config) (err error) {
-	os.Setenv("PGPASSWORD", config.Password)
-	cmd := exec.Command("psql", "-h", config.Host, "-p", strconv.Itoa(config.Port), "-U", config.User)
+func console(cfg *Config) (err error) {
+	os.Setenv("PGPASSWORD", cfg.Password)
+	// TODO: using `docker -it` for psql
+	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
-
 	return cmd.Run()
+}
+
+func dataSource(c *Config) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		c.User, c.Password, c.Host, c.Port, c.DBName)
+}
+
+func adminDataSource(c *Config) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		c.User, c.Password, c.Host, c.Port, "template1")
 }
