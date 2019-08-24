@@ -4,9 +4,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-// ActionFunc represented the action
-type ActionFunc func(*ActionContext) error
-
 // Action for cli
 type Action interface {
 	Start(*ActionContext) error
@@ -18,9 +15,12 @@ type ActionContext struct {
 	Cli *cli.Context
 }
 
-// ActionFunction to convert function to ActionFunction
-func ActionFunction(function interface{}) ActionFunc {
-	return func(ctx *ActionContext) (err error) {
-		return ctx.Invoke(function)
+// ActionCommandFunction to get command function fo action
+func ActionCommandFunction(context *Context, action Action) interface{} {
+	return func(ctx *cli.Context) error {
+		return action.Start(&ActionContext{
+			Cli:     ctx,
+			Context: context,
+		})
 	}
 }

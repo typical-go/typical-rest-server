@@ -23,7 +23,7 @@ func (t *TypicalApplication) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
-	app.Action = runAction(t.Context, t.Application)
+	app.Action = typictx.ActionCommandFunction(t.Context, t.Application)
 	app.Before = t.beforeApplication
 
 	for _, cmd := range t.Application.Commands {
@@ -31,7 +31,7 @@ func (t *TypicalApplication) Cli() *cli.App {
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
 			Usage:     cmd.Usage,
-			Action:    runActionFunc(t.Context, cmd.ActionFunc),
+			Action:    cmd.ActionFunc.CommandFunction(t.Context),
 		})
 	}
 	return app
