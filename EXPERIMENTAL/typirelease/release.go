@@ -5,57 +5,39 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/google/go-github/v27/github"
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/git"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"golang.org/x/oauth2"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 // Release the distribution
 func Release(ctx *typictx.Context) (err error) {
-	// NOTE: git fetch in beginning and after to make local is up2date
-	exec.Command("git", "fetch").Run()
-	defer exec.Command("git", "fetch").Run()
-
-	gitRepo, err := git.PlainOpen(".")
-	if err != nil {
-		return
-	}
-
-	latestTag := latestTag(gitRepo)
-	if latestTag != nil && latestTag.Name().Short() == releaseVersion(ctx) {
-		log.Infof("%s already released", releaseVersion(ctx))
+	git.Fetch()
+	defer git.Fetch()
+	releaseVersion := releaseVersion(ctx)
+	latestTag := git.LatestTag()
+	if latestTag == releaseVersion {
+		log.Infof("%s already released", latestTag)
 		return nil
 	}
-
-	worktree, _ := gitRepo.Worktree()
-	status, _ := worktree.Status()
-	if !status.IsClean() {
-		return fmt.Errorf("Please submit uncommitted change first:\n%s", status.String())
-	}
-
-	changelogs := listChangeLogs(gitRepo, latestTag)
-	if len(changelogs) < 1 {
+	changeLogs := git.Logs(latestTag)
+	if len(changeLogs) < 1 {
 		log.Info("No change to be released")
 		return nil
 	}
-
-	for _, changelog := range changelogs {
-		log.Infof("Change Log: %s", changelog)
+	for _, changeLog := range changeLogs {
+		log.Infof("Change Log: %s", changeLog)
 	}
-
-	binaries, err := buildReleaseBinaries(ctx)
+	binaries, err := buildReleaseBinaries(ctx, releaseVersion)
 	if err != nil {
 		return
 	}
-
 	if ctx.Release.Github != nil {
 		token := os.Getenv("GITHUB_TOKEN")
 		if token == "" {
@@ -73,15 +55,15 @@ func Release(ctx *typictx.Context) (err error) {
 
 		releaser := githubReleaser{ctx}
 		if releaser.IsReleased(ctx0, client.Repositories) {
-			log.Infof("Release for %s/%s (%s) already exist", owner, repo, releaseVersion(ctx))
+			log.Infof("Release for %s/%s (%s) already exist", owner, repo, releaseVersion)
 			return
 		}
 
 		log.Info("Generate release note")
 		var releaseNote strings.Builder
-		for _, changelog := range changelogs {
-			if !ignoring(changelog.Message) {
-				releaseNote.WriteString(changelog.String())
+		for _, changelog := range changeLogs {
+			if !ignoring(changelog) {
+				releaseNote.WriteString(changelog)
 				releaseNote.WriteString("\n")
 			}
 		}
@@ -105,7 +87,7 @@ func Release(ctx *typictx.Context) (err error) {
 	return
 }
 
-func buildReleaseBinaries(ctx *typictx.Context) (binaries []string, err error) {
+func buildReleaseBinaries(ctx *typictx.Context, version string) (binaries []string, err error) {
 	if len(ctx.GoOS) < 0 {
 		err = errors.New("Missing 'GoOS' in Typical Context")
 		return
@@ -121,10 +103,7 @@ func buildReleaseBinaries(ctx *typictx.Context) (binaries []string, err error) {
 		for _, arch := range ctx.GoArch {
 			// TODO: consider to using ldflags
 			binary := fmt.Sprintf("%s_%s_%s_%s",
-				ctx.BinaryNameOrDefault(),
-				releaseVersion(ctx),
-				os1,
-				arch)
+				ctx.BinaryNameOrDefault(), version, os1, arch)
 
 			binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
 
@@ -142,39 +121,6 @@ func buildReleaseBinaries(ctx *typictx.Context) (binaries []string, err error) {
 	return
 }
 
-func latestTag(gitRepo *git.Repository) (latestTag *plumbing.Reference) {
-	tagrefs, _ := gitRepo.Tags()
-	defer tagrefs.Close()
-	tagrefs.ForEach(func(tagRef *plumbing.Reference) error {
-		latestTag = tagRef
-		return nil
-	})
-
-	return
-}
-
-func listChangeLogs(gitRepo *git.Repository, latestTag *plumbing.Reference) (logs []changelog) {
-	gitLogs, _ := gitRepo.Log(&git.LogOptions{})
-	defer gitLogs.Close()
-	for {
-		commit, err := gitLogs.Next()
-		if err != nil {
-			break
-		}
-		if latestTag != nil && commit.Hash == latestTag.Hash() {
-			break
-		}
-		shortHash := commit.Hash.String()[0:8]
-		message := cleanMessage(commit.Message)
-
-		logs = append(logs, changelog{
-			Hash:    shortHash,
-			Message: message,
-		})
-	}
-	return
-}
-
 func cleanMessage(message string) string {
 	iCoAuthor := strings.Index(message, "Co-Authored-By")
 	if iCoAuthor > 0 {
@@ -184,9 +130,9 @@ func cleanMessage(message string) string {
 	return message
 }
 
-func ignoring(message string) bool {
+func ignoring(changelog string) bool {
+	message := cleanMessage(changelog[7:])
 	lowerMessage := strings.ToLower(message)
-
 	return strings.HasPrefix(lowerMessage, "merge") ||
 		strings.HasPrefix(lowerMessage, "bump") ||
 		strings.HasPrefix(lowerMessage, "revision") ||
