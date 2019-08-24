@@ -90,7 +90,7 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Create and start containers",
 					Flags: []cli.Flag{
 						cli.BoolFlag{
-							Name:  "no-gen",
+							Name:  "no-compose",
 							Usage: "Create and start containers without generate docker-compose.yaml",
 						},
 					},

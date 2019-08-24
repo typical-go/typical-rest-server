@@ -39,7 +39,7 @@ func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
 
 // DockerUp to create and start containers
 func DockerUp(ctx *typictx.ActionContext) (err error) {
-	if !ctx.Cli.Bool("no-gen") {
+	if !ctx.Cli.Bool("no-compose") {
 		err = GenerateDockerCompose(ctx)
 		if err != nil {
 			return
