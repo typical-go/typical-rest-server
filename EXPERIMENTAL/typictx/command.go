@@ -12,26 +12,26 @@ type Command struct {
 	SubCommands []*Command
 }
 
-// ConvertToCLICommand to convert command ti cli.Command
-func ConvertToCLICommand(ctx *Context, cmd *Command) (cliCmd cli.Command) {
-	cliCmd.Name = cmd.Name
-	cliCmd.ShortName = cmd.ShortName
-	cliCmd.Usage = cmd.Usage
-	if cmd.ActionFunc != nil {
+// CliCommand to convert command ti cli.Command
+func (c *Command) CliCommand(ctx *Context) (cliCmd cli.Command) {
+	cliCmd.Name = c.Name
+	cliCmd.ShortName = c.ShortName
+	cliCmd.Usage = c.Usage
+	if c.ActionFunc != nil {
 		cliCmd.Action = func(cliCtx *cli.Context) error {
-			return cmd.ActionFunc(&ActionContext{
+			return c.ActionFunc(&ActionContext{
 				Context: ctx,
 				Cli:     cliCtx,
 			})
 		}
 	}
-	if cmd.BeforeFunc != nil {
+	if c.BeforeFunc != nil {
 		cliCmd.Before = func(ctx *cli.Context) error {
-			return cmd.BeforeFunc()
+			return c.BeforeFunc()
 		}
 	}
-	for _, subCmd := range cmd.SubCommands {
-		cliCmd.Subcommands = append(cliCmd.Subcommands, ConvertToCLICommand(ctx, subCmd))
+	for _, subCmd := range c.SubCommands {
+		cliCmd.Subcommands = append(cliCmd.Subcommands, subCmd.CliCommand(ctx))
 	}
 	return
 }

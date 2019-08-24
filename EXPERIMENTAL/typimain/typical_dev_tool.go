@@ -29,7 +29,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	for key := range t.Modules {
 		module := t.Modules[key]
 		if module.Command != nil {
-			app.Commands = append(app.Commands, typictx.ConvertToCLICommand(t.Context, module.Command))
+			app.Commands = append(app.Commands, module.Command.CliCommand(t.Context))
 		}
 	}
 	return app
