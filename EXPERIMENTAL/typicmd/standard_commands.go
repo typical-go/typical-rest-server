@@ -83,7 +83,7 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 				{
 					Name:       "compose",
 					Usage:      "Generate docker-compose.yaml",
-					ActionFunc: GenerateDockerCompose,
+					ActionFunc: dockerCompose,
 				},
 				{
 					Name:  "up",
@@ -94,12 +94,12 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 							Usage: "Create and start containers without generate docker-compose.yaml",
 						},
 					},
-					ActionFunc: DockerUp,
+					ActionFunc: dockerUp,
 				},
 				{
 					Name:       "down",
 					Usage:      "Stop and remove containers, networks, images, and volumes",
-					ActionFunc: DockerDown,
+					ActionFunc: dockerDown,
 				},
 			},
 		},

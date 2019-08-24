@@ -10,18 +10,16 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// DockerCompose to generate docker-compose.yaml
-func DockerCompose(ctx *typictx.ActionContext) (err error) {
+func dockerCompose(ctx *typictx.ActionContext) (err error) {
 	log.Info("Generate docker-compose.yml")
 	dockerCompose := ctx.DockerCompose()
 	d1, _ := yaml.Marshal(dockerCompose)
 	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
 }
 
-// DockerUp to create and start containers
-func DockerUp(ctx *typictx.ActionContext) (err error) {
+func dockerUp(ctx *typictx.ActionContext) (err error) {
 	if !ctx.Cli.Bool("no-compose") {
-		err = DockerCompose(ctx)
+		err = dockerCompose(ctx)
 		if err != nil {
 			return
 		}
@@ -32,8 +30,7 @@ func DockerUp(ctx *typictx.ActionContext) (err error) {
 	return cmd.Run()
 }
 
-// DockerDown to stop and remove containers, networks, images, and volumes
-func DockerDown(ctx *typictx.ActionContext) (err error) {
+func dockerDown(ctx *typictx.ActionContext) (err error) {
 	cmd := exec.Command("docker-compose", "down")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
