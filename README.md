@@ -41,5 +41,4 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |PG_PASSWORD|String|pgpass|true||
 |PG_HOST|String|localhost|||
 |PG_PORT|Integer|5432|||
-|PG_MIGRATIONSRC|String|scripts/migration|||
 
