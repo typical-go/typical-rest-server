@@ -37,7 +37,7 @@ func GenerateReadme(a *typictx.ActionContext) (err error) {
 		return
 	}
 
-	if !a.Cli.Bool("no-auto-commit") {
+	if !a.Cli.Bool("no-commit") {
 		gitRepo, _ := git.PlainOpen(".")
 		worktree, _ := gitRepo.Worktree()
 		status, _ := worktree.Status()

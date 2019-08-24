@@ -122,7 +122,7 @@ func (t *TypicalDevTool) StandardCommands() []cli.Command {
 			Usage: "Generate readme document",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
-					Name:  "no-auto-commit",
+					Name:  "no-commit",
 					Usage: "Generate readme without auto commit",
 				},
 			},
