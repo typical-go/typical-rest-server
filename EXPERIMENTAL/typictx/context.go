@@ -1,7 +1,6 @@
 package typictx
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -77,15 +76,6 @@ func (c *Context) ConfigAccessors() (accessors []ConfigAccessor) {
 		if module.Spec != nil {
 			accessors = append(accessors, module)
 		}
-	}
-	return
-}
-
-// ReleaseVersion to return release version
-func (c *Context) ReleaseVersion() (version string) {
-	version = fmt.Sprintf("v%s", c.Version)
-	if c.Release.Alpha {
-		version = fmt.Sprintf("%s-alpha", version)
 	}
 	return
 }

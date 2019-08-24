@@ -1,4 +1,4 @@
-package typicmd
+package typirelease
 
 import (
 	"testing"
