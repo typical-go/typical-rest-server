@@ -2,6 +2,7 @@ package typicmd
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/urfave/cli"
 )
 
@@ -75,8 +76,9 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			ActionFunc: CleanProject,
 		},
 		{
-			Name:  "docker",
-			Usage: "Docker utitly",
+			Name:       "docker",
+			Usage:      "Docker utility",
+			BeforeFunc: typienv.LoadEnv,
 			SubCommands: []*typictx.Command{
 				{
 					Name:       "compose",
