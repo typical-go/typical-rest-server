@@ -1,4 +1,4 @@
-package typitask
+package typicmd
 
 import (
 	"os/exec"

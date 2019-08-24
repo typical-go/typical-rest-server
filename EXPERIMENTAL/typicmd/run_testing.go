@@ -1,4 +1,4 @@
-package typitask
+package typicmd
 
 import (
 	"github.com/typical-go/runn"
