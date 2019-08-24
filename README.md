@@ -42,3 +42,6 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |PG_HOST|String|localhost|||
 |PG_PORT|Integer|5432|||
 
+## Custom
+
+Testing custom section
