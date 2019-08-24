@@ -38,7 +38,6 @@ func Logs(from string) []string {
 	if err != nil {
 		return []string{}
 	}
-
 	return strings.Split(data, "\n")
 }
 
@@ -50,14 +49,30 @@ func Push(commitMessage string, files ...string) (err error) {
 	if err != nil {
 		return
 	}
-
 	_, err = Git("commit", "-m", commitMessage)
 	if err != nil {
 		return
 	}
-
 	_, err = Git("push")
 	return
+}
+
+// Branch to return current branch
+func Branch() string {
+	branch, err := Git("rev-parse", "--abbrev-ref", "HEAD")
+	if err != nil {
+		return ""
+	}
+	return branch
+}
+
+// LatestCommit return latest commit in short hash
+func LatestCommit() string {
+	commit, err := Git("rev-parse", "--short", "HEAD")
+	if err != nil {
+		return ""
+	}
+	return commit
 }
 
 // Git to execution git command

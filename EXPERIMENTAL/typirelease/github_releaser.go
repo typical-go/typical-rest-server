@@ -12,14 +12,14 @@ import (
 )
 
 type githubReleaser struct {
-	*typictx.Context
+	typictx.Release
 }
 
 func (r *githubReleaser) IsReleased(ctx context.Context, service *github.RepositoriesService) bool {
 	_, _, err := service.GetReleaseByTag(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
-		releaseVersion(r.Context))
+		r.Tag())
 	if err == nil {
 		return true
 	}
@@ -27,13 +27,13 @@ func (r *githubReleaser) IsReleased(ctx context.Context, service *github.Reposit
 }
 
 func (r *githubReleaser) CreateRelease(ctx context.Context, service *github.RepositoriesService, releaseNote string) (release *github.RepositoryRelease, err error) {
-	releaseVersion := releaseVersion(r.Context)
+	releaseTag := r.Tag()
 	release, _, err = service.CreateRelease(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
 		&github.RepositoryRelease{
-			Name:       github.String(fmt.Sprintf("%s - %s", r.Name, releaseVersion)),
-			TagName:    github.String(releaseVersion),
+			Name:       github.String(fmt.Sprintf("%s - %s", r.Name, releaseTag)),
+			TagName:    github.String(releaseTag),
 			Body:       github.String(releaseNote),
 			Draft:      github.Bool(false),
 			Prerelease: github.Bool(r.Release.Alpha),

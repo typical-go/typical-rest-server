@@ -2,10 +2,9 @@ package typictx
 
 import (
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
-
 	"go.uber.org/dig"
 )
 
@@ -15,7 +14,6 @@ type Context struct {
 	Release
 
 	Name        string
-	Version     string
 	Description string
 	BinaryName  string
 
@@ -33,8 +31,7 @@ type Context struct {
 func (c *Context) BinaryNameOrDefault() string {
 	if c.BinaryName == "" {
 		dir, _ := os.Getwd()
-		chunks := strings.Split(dir, "/")
-		return chunks[len(chunks)-1]
+		return filepath.Base(dir)
 	}
 	return c.BinaryName
 }
