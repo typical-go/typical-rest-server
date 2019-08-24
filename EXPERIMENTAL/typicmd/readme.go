@@ -20,7 +20,7 @@ const (
 )
 
 // GenerateReadme for generate typical applical readme
-func GenerateReadme(a *typictx.ActionContext) (err error) {
+func generateReadme(a *typictx.ActionContext) (err error) {
 	readme0 := readme.DefaultReadme().
 		SetTitle(a.Name).
 		SetDescription(a.Description).

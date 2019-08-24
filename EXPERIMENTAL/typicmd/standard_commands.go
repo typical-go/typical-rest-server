@@ -13,7 +13,7 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			Name:       "build",
 			ShortName:  "b",
 			Usage:      "Build the binary",
-			ActionFunc: BuildBinary,
+			ActionFunc: buildBinary,
 		},
 		{
 			Name:      "run",
@@ -25,13 +25,13 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Run the binary without build",
 				},
 			},
-			ActionFunc: RunBinary,
+			ActionFunc: runBinary,
 		},
 		{
 			Name:       "test",
 			ShortName:  "t",
 			Usage:      "Run the testing",
-			ActionFunc: RunTest,
+			ActionFunc: runTesting,
 		},
 		{
 			Name:  "release",
@@ -46,7 +46,7 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Release without generate readme",
 				},
 			},
-			ActionFunc: ReleaseDistribution,
+			ActionFunc: releaseDistribution,
 		},
 		{
 			Name:  "mock",
@@ -57,7 +57,7 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Generate mock class with delete previous generation",
 				},
 			},
-			ActionFunc: GenerateMock,
+			ActionFunc: generateMock,
 		},
 		{
 			Name:  "readme",
@@ -68,12 +68,12 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Generate readme without auto commit",
 				},
 			},
-			ActionFunc: GenerateReadme,
+			ActionFunc: generateReadme,
 		},
 		{
 			Name:       "clean",
 			Usage:      "Clean project from generated file during build time",
-			ActionFunc: CleanProject,
+			ActionFunc: cleanProject,
 		},
 		{
 			Name:       "docker",

@@ -5,16 +5,15 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirelease"
 )
 
-// ReleaseDistribution to release binary distribution
-func ReleaseDistribution(action *typictx.ActionContext) (err error) {
+func releaseDistribution(action *typictx.ActionContext) (err error) {
 	if !action.Cli.Bool("no-test") {
-		err = RunTest(action)
+		err = runTesting(action)
 		if err != nil {
 			return
 		}
 	}
 	if !action.Cli.Bool("no-readme") {
-		err = GenerateReadme(action)
+		err = generateReadme(action)
 		if err != nil {
 			return
 		}

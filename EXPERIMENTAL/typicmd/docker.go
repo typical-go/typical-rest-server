@@ -10,8 +10,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// GenerateDockerCompose to generate docker-compose.yaml
-func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
+// DockerCompose to generate docker-compose.yaml
+func DockerCompose(ctx *typictx.ActionContext) (err error) {
 	log.Info("Generate docker-compose.yml")
 	dockerCompose := ctx.DockerCompose()
 	d1, _ := yaml.Marshal(dockerCompose)
@@ -21,7 +21,7 @@ func GenerateDockerCompose(ctx *typictx.ActionContext) (err error) {
 // DockerUp to create and start containers
 func DockerUp(ctx *typictx.ActionContext) (err error) {
 	if !ctx.Cli.Bool("no-compose") {
-		err = GenerateDockerCompose(ctx)
+		err = DockerCompose(ctx)
 		if err != nil {
 			return
 		}
