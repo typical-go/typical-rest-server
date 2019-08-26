@@ -30,8 +30,8 @@ type Tagging struct {
 	WithLatestGitCommit bool
 }
 
-// Tag to get release tag
-func (r *Release) Tag() string {
+// ReleaseTag to get release tag
+func (r *Release) ReleaseTag() string {
 	var builder strings.Builder
 	builder.WriteString("v")
 	builder.WriteString(r.Version)
@@ -49,12 +49,18 @@ func (r *Release) Tag() string {
 	return builder.String()
 }
 
-// ReleaseBinary to get release binary
-func (r *Release) ReleaseBinary(os1, arch string) string {
+// ReleaseName to get release name
+func (r *Release) ReleaseName() string {
 	name := r.Name
 	if name == "" {
 		dir, _ := os.Getwd()
 		name = filepath.Base(dir)
 	}
-	return strings.Join([]string{name, r.Tag(), os1, arch}, "_")
+	return name
+}
+
+// ReleaseBinary to get release binary
+func (r *Release) ReleaseBinary(os1, arch string) string {
+
+	return strings.Join([]string{r.ReleaseName(), r.ReleaseTag(), os1, arch}, "_")
 }

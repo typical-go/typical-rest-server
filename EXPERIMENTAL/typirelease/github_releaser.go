@@ -19,7 +19,7 @@ func (r *githubReleaser) IsReleased(ctx context.Context, service *github.Reposit
 	_, _, err := service.GetReleaseByTag(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
-		r.Tag())
+		r.ReleaseTag())
 	if err == nil {
 		return true
 	}
@@ -27,12 +27,12 @@ func (r *githubReleaser) IsReleased(ctx context.Context, service *github.Reposit
 }
 
 func (r *githubReleaser) CreateRelease(ctx context.Context, service *github.RepositoriesService, releaseNote string) (release *github.RepositoryRelease, err error) {
-	releaseTag := r.Tag()
+	releaseTag := r.ReleaseTag()
 	release, _, err = service.CreateRelease(ctx,
 		r.Release.Github.Owner,
 		r.Release.Github.RepoName,
 		&github.RepositoryRelease{
-			Name:       github.String(fmt.Sprintf("%s - %s", r.Name, releaseTag)),
+			Name:       github.String(fmt.Sprintf("%s - %s", r.ReleaseName(), releaseTag)),
 			TagName:    github.String(releaseTag),
 			Body:       github.String(releaseNote),
 			Draft:      github.Bool(false),

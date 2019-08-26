@@ -31,7 +31,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 		return
 	}
 	latestTag := git.LatestTag()
-	if !force && latestTag == rel.Tag() {
+	if !force && latestTag == rel.ReleaseTag() {
 		log.Infof("%s already released", latestTag)
 		return
 	}
@@ -79,7 +79,7 @@ func GithubRelease(binaries, changeLogs []string, rel typictx.Release) (err erro
 	client := github.NewClient(oauth2.NewClient(ctx0, oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})))
 	releaser := githubReleaser{rel}
 	if releaser.IsReleased(ctx0, client.Repositories) {
-		log.Infof("Release for %s/%s (%s) already exist", owner, repo, rel.Tag())
+		log.Infof("Release for %s/%s (%s) already exist", owner, repo, rel.ReleaseTag())
 		return
 	}
 	log.Info("Generate release note")
