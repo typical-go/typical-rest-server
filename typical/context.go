@@ -28,7 +28,7 @@ var Context = &typictx.Context{
 		typpostgres.Module(),
 	},
 	Release: typictx.Release{
-		Version: "0.6.6",
+		Version: "0.7.0",
 		Targets: []string{
 			"linux/amd64",
 			"darwin/amd64",
