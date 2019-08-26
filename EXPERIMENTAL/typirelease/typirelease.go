@@ -18,14 +18,11 @@ import (
 
 // ReleaseDistribution to release the distribution
 func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs []string, err error) {
-	if len(rel.GoOS) < 0 {
-		err = errors.New("Missing 'GoOS' in Typical Context")
+	if len(rel.Targets) < 0 {
+		err = errors.New("Missing 'Targets' in Typical Context; The format should be '$GOOS/$GOARCH'")
 		return
 	}
-	if len(rel.GoArch) < 0 {
-		err = errors.New("Missing 'GoArch' in Typical Context")
-		return
-	}
+
 	git.Fetch()
 	defer git.Fetch()
 	status := git.Status()
@@ -47,18 +44,22 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 		log.Infof("Change Log: %s", changeLog)
 	}
 	mainPackage := typienv.AppMainPackage()
-	for _, os1 := range rel.GoOS {
-		for _, arch := range rel.GoArch {
-			binary := rel.ReleaseBinary(os1, arch)
-			binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
-			log.Infof("Create release binary for %s/%s: %s", os1, arch, binaryPath)
-			// TODO: support cgo
-			err = bash.GoBuild(binaryPath, mainPackage, "GOOS="+os1, "GOARCH="+arch)
-			if err != nil {
-				return
-			}
-			binaries = append(binaries, binary)
+	for _, target := range rel.Targets {
+		chunks := strings.Split(target, "/")
+		if len(chunks) != 2 {
+			err = fmt.Errorf("Invalid target '%s': it should be '$GOOS/$GOARCH'", target)
+			return
 		}
+		binary := rel.ReleaseBinary(chunks[0], chunks[1])
+		binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
+		log.Infof("Create release binary for %s: %s", target, binaryPath)
+		// TODO: support cgo
+		err = bash.GoBuild(binaryPath, mainPackage, "GOOS="+chunks[0], "GOARCH="+chunks[1])
+		if err != nil {
+			return
+		}
+		binaries = append(binaries, binary)
+
 	}
 	return
 }

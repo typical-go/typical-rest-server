@@ -29,15 +29,17 @@ var Context = &typictx.Context{
 	},
 	Release: typictx.Release{
 		Version: "0.6.6",
-		GoOS:    []string{"linux", "darwin"},
-		GoArch:  []string{"amd64"},
+		Targets: []string{
+			"linux/amd64",
+			"darwin/amd64",
+		},
 		Github: &typictx.Github{
 			Owner:    "typical-go",
 			RepoName: "typical-rest-server",
 		},
-		Versioning: typictx.Versioning{
-			WithGitBranch:       true,
-			WithLatestGitCommit: true,
-		},
+		// Tagging: typictx.Tagging{
+		// 	WithGitBranch:       true,
+		// 	WithLatestGitCommit: true,
+		// },
 	},
 }

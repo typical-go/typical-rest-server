@@ -10,12 +10,11 @@ import (
 
 // Release setting
 type Release struct {
-	Versioning
+	Tagging
 	Name    string
 	Version string
 	Alpha   bool
-	GoOS    []string
-	GoArch  []string
+	Targets []string
 	Github  *Github
 }
 
@@ -25,8 +24,8 @@ type Github struct {
 	RepoName string
 }
 
-// Versioning setting
-type Versioning struct {
+// Tagging setting
+type Tagging struct {
 	WithGitBranch       bool
 	WithLatestGitCommit bool
 }
