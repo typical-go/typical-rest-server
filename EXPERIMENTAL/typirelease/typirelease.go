@@ -51,10 +51,9 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 		for _, arch := range rel.GoArch {
 			binary := rel.ReleaseBinary(os1, arch)
 			binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
-			log.Infof("Create release binary for %s/%s at %s", os1, arch, binary)
-			os.Setenv("GOOS", os1)
-			os.Setenv("GOARCH", arch)
-			err = bash.GoBuild(binaryPath, mainPackage, "-w", "-s")
+			log.Infof("Create release binary for %s/%s: %s", os1, arch, binaryPath)
+			// TODO: support cgo
+			err = bash.GoBuild(binaryPath, mainPackage, "GOOS="+os1, "GOARCH="+arch)
 			if err != nil {
 				return
 			}

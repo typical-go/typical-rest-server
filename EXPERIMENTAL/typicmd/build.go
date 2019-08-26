@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -26,10 +25,8 @@ func runBinary(ctx *typictx.ActionContext) error {
 }
 
 func runTesting(ctx *typictx.ActionContext) error {
-	return runn.Execute(
-		bash.GoModTidy(),
-		bash.GoTest(ctx.TestTargets),
-	)
+	return bash.GoTest(ctx.TestTargets)
+
 }
 
 func cleanProject(ctx *typictx.ActionContext) error {

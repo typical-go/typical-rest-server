@@ -3,17 +3,13 @@ package bash
 import (
 	"fmt"
 	"go/build"
+	"os"
 	"os/exec"
-	"strings"
-)
-
-var (
-	goCommand = fmt.Sprintf("%s/bin/go", build.Default.GOROOT)
 )
 
 // GoFmt for `go fmt`
 func GoFmt(filename string) error {
-	return exec.Command(goCommand, "fmt", filename).Run()
+	return exec.Command("go", "fmt", filename).Run()
 }
 
 // GoImports for `goimports`
@@ -22,16 +18,16 @@ func GoImports(filename string) error {
 }
 
 // GoBuild for `go build`
-func GoBuild(binaryName, mainPackage string, ldflags ...string) error {
+func GoBuild(binaryName, mainPackage string, env ...string) error {
 	args := []string{"build"}
-
 	args = append(args, "-o", binaryName)
-	if len(ldflags) > 0 {
-		args = append(args, "-ldflags", strings.Join(ldflags, " "))
-	}
+	args = append(args, "-ldflags", "\"-w -s\"")
 	args = append(args, mainPackage)
-
-	return Run(goCommand, args...)
+	cmd := exec.Command("go", args...)
+	cmd.Env = append(os.Environ(), env...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
+	return cmd.Run()
 }
 
 // GoTest for `go test` with coverprofile
@@ -40,12 +36,12 @@ func GoTest(targets []string) error {
 	args = append(args, targets...)
 	args = append(args, "-coverprofile=cover.out")
 	args = append(args, "-race")
-	return Run(goCommand, args...)
+	return Run("go", args...)
 }
 
 // GoGet for `go get`
 func GoGet(packageName string) error {
-	return Run(goCommand, "get", packageName)
+	return Run("go", "get", packageName)
 }
 
 // RunGoBin to run binary in gobin folder
@@ -59,10 +55,5 @@ func GoClean(cleanArgs ...string) error {
 	var args []string
 	args = append(args, "clean")
 	args = append(args, cleanArgs...)
-	return Run(goCommand, args...)
-}
-
-// GoModTidy for `go mod tidy`
-func GoModTidy() error {
-	return Run(goCommand, "mod", "tidy")
+	return Run("go", args...)
 }
