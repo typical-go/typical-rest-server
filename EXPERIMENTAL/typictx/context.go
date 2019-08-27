@@ -44,7 +44,10 @@ func (c *Context) Invoke(function interface{}) error {
 			module.Inject(c.container)
 		}
 		for _, constructor := range c.Constructors {
-			c.container.Provide(constructor)
+			err := c.container.Provide(constructor)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return c.container.Invoke(function)
