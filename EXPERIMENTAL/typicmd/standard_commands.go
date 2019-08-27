@@ -42,10 +42,6 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Usage: "Release without run automated test",
 				},
 				cli.BoolFlag{
-					Name:  "no-readme",
-					Usage: "Release without generate readme",
-				},
-				cli.BoolFlag{
 					Name:  "no-github",
 					Usage: "Release without create github release",
 				},

@@ -12,12 +12,6 @@ func releaseDistribution(action *typictx.ActionContext) (err error) {
 			return
 		}
 	}
-	if !action.Cli.Bool("no-readme") {
-		err = generateReadme(action)
-		if err != nil {
-			return
-		}
-	}
 	binaries, changeLogs, err := typirelease.ReleaseDistribution(action.Release, action.Cli.Bool("force"))
 	if err != nil {
 		return
