@@ -13,11 +13,11 @@ import (
 	"github.com/typical-go/typical-rest-server/app/repository"
 )
 
-func TestBookRepository_Insert(t *testing.T) {
+func TestBookRepo_Insert(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repositorysitory := repository.BookRepositoryImpl{
+	repositorysitory := repository.BookRepoImpl{
 		DB: db,
 	}
 	ctx0 := context.Background()
@@ -41,7 +41,7 @@ func TestBookRepitory_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repositorysitory := repository.BookRepositoryImpl{
+	repositorysitory := repository.BookRepoImpl{
 		DB: db,
 	}
 	ctx0 := context.Background()
@@ -60,12 +60,11 @@ func TestBookRepitory_Update(t *testing.T) {
 	})
 }
 
-func TestBookRepository_Delete(t *testing.T) {
-
+func TestBookRepo_Delete(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repositorysitory := repository.BookRepositoryImpl{
+	repositorysitory := repository.BookRepoImpl{
 		DB: db,
 	}
 	ctx0 := context.Background()
@@ -88,7 +87,7 @@ func TestBookRepitory_Find(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repositorysitory := repository.BookRepositoryImpl{
+	repositorysitory := repository.BookRepoImpl{
 		DB: db,
 	}
 	ctx0 := context.Background()
@@ -118,11 +117,11 @@ func TestBookRepitory_Find(t *testing.T) {
 	})
 }
 
-func TestBookRepository(t *testing.T) {
+func TestBookRepo(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repositorysitory := repository.BookRepositoryImpl{
+	repositorysitory := repository.BookRepoImpl{
 		DB: db,
 	}
 	ctx0 := context.Background()

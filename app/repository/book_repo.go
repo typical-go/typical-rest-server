@@ -14,8 +14,8 @@ type Book struct {
 	CreatedAt time.Time `json:"-"`
 }
 
-// BookRepository to get book data from databasesa
-type BookRepository interface {
+// BookRepo to get book data from databasesa
+type BookRepo interface {
 	Find(ctx context.Context, id int64) (*Book, error)
 	List(ctx context.Context) ([]*Book, error)
 	Insert(ctx context.Context, book Book) (lastInsertID int64, err error)
@@ -23,7 +23,7 @@ type BookRepository interface {
 	Update(ctx context.Context, book Book) error
 }
 
-// NewBookRepository return new instance of BookRepository
-func NewBookRepository(impl BookRepositoryImpl) BookRepository {
+// NewBookRepo return new instance of BookRepo
+func NewBookRepo(impl CachedBookRepoImpl) BookRepo {
 	return &impl
 }

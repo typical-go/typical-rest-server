@@ -5,6 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
 )
 
@@ -26,6 +27,7 @@ var Context = &typictx.Context{
 	Modules: []*typictx.Module{
 		typserver.Module(),
 		typpostgres.Module(),
+		typredis.Module(),
 	},
 	Release: typictx.Release{
 		Version: "0.7.2",

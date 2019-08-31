@@ -11,31 +11,31 @@ import (
 	reflect "reflect"
 )
 
-// MockBookRepository is a mock of BookRepository interface
-type MockBookRepository struct {
+// MockBookRepo is a mock of BookRepo interface
+type MockBookRepo struct {
 	ctrl     *gomock.Controller
-	recorder *MockBookRepositoryMockRecorder
+	recorder *MockBookRepoMockRecorder
 }
 
-// MockBookRepositoryMockRecorder is the mock recorder for MockBookRepository
-type MockBookRepositoryMockRecorder struct {
-	mock *MockBookRepository
+// MockBookRepoMockRecorder is the mock recorder for MockBookRepo
+type MockBookRepoMockRecorder struct {
+	mock *MockBookRepo
 }
 
-// NewMockBookRepository creates a new mock instance
-func NewMockBookRepository(ctrl *gomock.Controller) *MockBookRepository {
-	mock := &MockBookRepository{ctrl: ctrl}
-	mock.recorder = &MockBookRepositoryMockRecorder{mock}
+// NewMockBookRepo creates a new mock instance
+func NewMockBookRepo(ctrl *gomock.Controller) *MockBookRepo {
+	mock := &MockBookRepo{ctrl: ctrl}
+	mock.recorder = &MockBookRepoMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockBookRepository) EXPECT() *MockBookRepositoryMockRecorder {
+func (m *MockBookRepo) EXPECT() *MockBookRepoMockRecorder {
 	return m.recorder
 }
 
 // Find mocks base method
-func (m *MockBookRepository) Find(ctx context.Context, id int64) (*repository.Book, error) {
+func (m *MockBookRepo) Find(ctx context.Context, id int64) (*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", ctx, id)
 	ret0, _ := ret[0].(*repository.Book)
@@ -44,13 +44,13 @@ func (m *MockBookRepository) Find(ctx context.Context, id int64) (*repository.Bo
 }
 
 // Find indicates an expected call of Find
-func (mr *MockBookRepositoryMockRecorder) Find(ctx, id interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Find(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepository)(nil).Find), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepo)(nil).Find), ctx, id)
 }
 
 // List mocks base method
-func (m *MockBookRepository) List(ctx context.Context) ([]*repository.Book, error) {
+func (m *MockBookRepo) List(ctx context.Context) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx)
 	ret0, _ := ret[0].([]*repository.Book)
@@ -59,13 +59,13 @@ func (m *MockBookRepository) List(ctx context.Context) ([]*repository.Book, erro
 }
 
 // List indicates an expected call of List
-func (mr *MockBookRepositoryMockRecorder) List(ctx interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) List(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBookRepository)(nil).List), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockBookRepo)(nil).List), ctx)
 }
 
 // Insert mocks base method
-func (m *MockBookRepository) Insert(ctx context.Context, book repository.Book) (int64, error) {
+func (m *MockBookRepo) Insert(ctx context.Context, book repository.Book) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", ctx, book)
 	ret0, _ := ret[0].(int64)
@@ -74,13 +74,13 @@ func (m *MockBookRepository) Insert(ctx context.Context, book repository.Book) (
 }
 
 // Insert indicates an expected call of Insert
-func (mr *MockBookRepositoryMockRecorder) Insert(ctx, book interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Insert(ctx, book interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockBookRepository)(nil).Insert), ctx, book)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockBookRepo)(nil).Insert), ctx, book)
 }
 
 // Delete mocks base method
-func (m *MockBookRepository) Delete(ctx context.Context, id int64) error {
+func (m *MockBookRepo) Delete(ctx context.Context, id int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -88,13 +88,13 @@ func (m *MockBookRepository) Delete(ctx context.Context, id int64) error {
 }
 
 // Delete indicates an expected call of Delete
-func (mr *MockBookRepositoryMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepository)(nil).Delete), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepo)(nil).Delete), ctx, id)
 }
 
 // Update mocks base method
-func (m *MockBookRepository) Update(ctx context.Context, book repository.Book) error {
+func (m *MockBookRepo) Update(ctx context.Context, book repository.Book) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, book)
 	ret0, _ := ret[0].(error)
@@ -102,7 +102,7 @@ func (m *MockBookRepository) Update(ctx context.Context, book repository.Book) e
 }
 
 // Update indicates an expected call of Update
-func (mr *MockBookRepositoryMockRecorder) Update(ctx, book interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Update(ctx, book interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepository)(nil).Update), ctx, book)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepo)(nil).Update), ctx, book)
 }

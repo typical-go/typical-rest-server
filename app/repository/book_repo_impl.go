@@ -9,14 +9,14 @@ import (
 	"go.uber.org/dig"
 )
 
-// BookRepositoryImpl is implementation book repository
-type BookRepositoryImpl struct {
+// BookRepoImpl is implementation book repository
+type BookRepoImpl struct {
 	dig.In
 	*sql.DB
 }
 
 // Find book
-func (r *BookRepositoryImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
@@ -32,7 +32,7 @@ func (r *BookRepositoryImpl) Find(ctx context.Context, id int64) (book *Book, er
 }
 
 // List book
-func (r *BookRepositoryImpl) List(ctx context.Context) (list []*Book, err error) {
+func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
 		From("books")
@@ -53,7 +53,7 @@ func (r *BookRepositoryImpl) List(ctx context.Context) (list []*Book, err error)
 }
 
 // Insert book
-func (r *BookRepositoryImpl) Insert(ctx context.Context, book Book) (lastInsertID int64, err error) {
+func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int64, err error) {
 	query := sq.Insert("books").
 		Columns("title", "author").
 		Values(book.Title, book.Author).
@@ -69,7 +69,7 @@ func (r *BookRepositoryImpl) Insert(ctx context.Context, book Book) (lastInsertI
 }
 
 // Delete book
-func (r *BookRepositoryImpl) Delete(ctx context.Context, id int64) (err error) {
+func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Delete("books").Where(sq.Eq{"id": id})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
@@ -77,7 +77,7 @@ func (r *BookRepositoryImpl) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // Update book
-func (r *BookRepositoryImpl) Update(ctx context.Context, book Book) (err error) {
+func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Update("books").
 		Set("title", book.Title).

@@ -7,13 +7,13 @@ import (
 
 // BookService contain logic for Book Controller
 type BookService interface {
-	repository.BookRepository
+	repository.BookRepo
 }
 
 // BookServiceImpl is implementation of BookService
 type BookServiceImpl struct {
 	dig.In
-	repository.BookRepository
+	repository.BookRepo
 }
 
 // NewBookService return new instance of BookService

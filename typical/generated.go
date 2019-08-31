@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/app/service"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
 )
 
@@ -15,6 +16,7 @@ type Config struct {
 	App    *config.Config
 	Server *typserver.Config
 	Pg     *typpostgres.Config
+	Redis  *typredis.Config
 }
 
 func init() {
@@ -29,10 +31,13 @@ func init() {
 	Context.AddConstructor(func(cfg *Config) *typpostgres.Config {
 		return cfg.Pg
 	})
+	Context.AddConstructor(func(cfg *Config) *typredis.Config {
+		return cfg.Redis
+	})
 	Context.AddConstructor(func(cfg *Config) *typserver.Config {
 		return cfg.Server
 	})
-	Context.AddConstructor(repository.NewBookRepository)
+	Context.AddConstructor(repository.NewBookRepo)
 	Context.AddConstructor(service.NewBookService)
 	Context.AddMockTarget("app/repository/book_repo.go")
 	Context.AddMockTarget("app/service/book_service.go")
