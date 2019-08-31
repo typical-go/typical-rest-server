@@ -36,3 +36,20 @@ func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, er
 	err = cachekit.Set(redisClient, cacheKey, book, 20*time.Second)
 	return
 }
+
+// List of book entity
+func (r *CachedBookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
+	cacheKey := fmt.Sprintf("BOOK:LIST")
+	redisClient := r.Redis.WithContext(ctx)
+	err = cachekit.Get(redisClient, cacheKey, list)
+	if err == nil {
+		log.Infof("Using cache %s", cacheKey)
+		return
+	}
+	list, err = r.BookRepoImpl.List(ctx)
+	if err != nil {
+		return
+	}
+	err = cachekit.Set(redisClient, cacheKey, list, 20*time.Second)
+	return
+}
