@@ -3,11 +3,12 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
+
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/app/service"
-	"github.com/typical-go/typical-rest-server/pkg/utility/strkit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -58,7 +59,7 @@ func (c *BookController) List(ctx echo.Context) error {
 
 // Get book
 func (c *BookController) Get(ctx echo.Context) error {
-	id, err := strkit.ToInt64(ctx.Param("id"))
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
 		return invalidID(ctx, err)
 	}
@@ -75,7 +76,7 @@ func (c *BookController) Get(ctx echo.Context) error {
 
 // Delete book
 func (c *BookController) Delete(ctx echo.Context) error {
-	id, err := strkit.ToInt64(ctx.Param("id"))
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
 		return invalidID(ctx, err)
 	}

@@ -16,6 +16,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lib/pq v1.2.0
+	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.3.0
 	github.com/tiket/TIX-COMMON-GO/tixredis v0.0.0-20190820082646-91e5e809f3e6
