@@ -60,7 +60,7 @@ func (m *Markdown) WriteString(s string) (int, error) {
 }
 
 func (m *Markdown) Comment(comment string) (int, error) {
-	return m.Writelnf("<!-- %s -->\n\n", comment)
+	return m.Writelnf("<!-- %s -->", comment)
 }
 
 // Writef same WriteString with formatting
