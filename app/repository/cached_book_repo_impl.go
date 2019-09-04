@@ -33,7 +33,10 @@ func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, er
 	if err != nil {
 		return
 	}
-	err = cachekit.Set(redisClient, cacheKey, book, 20*time.Second)
+	err2 := cachekit.Set(redisClient, cacheKey, book, 20*time.Second)
+	if err2 != nil {
+		log.Fatal(err2.Error())
+	}
 	return
 }
 
@@ -41,7 +44,7 @@ func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, er
 func (r *CachedBookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:LIST")
 	redisClient := r.Redis.WithContext(ctx)
-	err = cachekit.Get(redisClient, cacheKey, list)
+	err = cachekit.Get(redisClient, cacheKey, &list)
 	if err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
@@ -50,6 +53,9 @@ func (r *CachedBookRepoImpl) List(ctx context.Context) (list []*Book, err error)
 	if err != nil {
 		return
 	}
-	err = cachekit.Set(redisClient, cacheKey, list, 20*time.Second)
+	err2 := cachekit.Set(redisClient, cacheKey, list, 20*time.Second)
+	if err2 != nil {
+		log.Fatal(err2.Error())
+	}
 	return
 }
