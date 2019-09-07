@@ -1,9 +1,7 @@
 package typimain
 
 import (
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"github.com/urfave/cli"
 )
@@ -21,16 +19,12 @@ func NewTypicalGenerator(context *typictx.Context) *TypicalGenerator {
 }
 
 // Cli return the command line interface
-func (t *TypicalGenerator) Cli() *cli.App {
+func (g *TypicalGenerator) Cli() *cli.App {
 	app := cli.NewApp()
-	app.Action = func(ctx *cli.Context) error {
-		return runn.Execute(
-			typienv.WriteEnvIfNotExist(t.Context),
-			typigen.MainAppGenerated(t.Context),
-			typigen.MainDevToolGenerated(t.Context),
-			// typigen.TypicalGenerated(t.Context),
-		)
-	}
-
+	app.Action = g.run
 	return app
+}
+
+func (g *TypicalGenerator) run(ctx *cli.Context) error {
+	return typigen.Generate(g.Context)
 }

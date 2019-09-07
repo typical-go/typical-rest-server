@@ -5,12 +5,11 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 )
 
-// GenAppSideEffects generate side effects for app
-func GenAppSideEffects(ctx *typictx.Context, srcCode *golang.SourceCode) (err error) {
+func devToolSideEffects(ctx *typictx.Context) (imports []golang.Import) {
 	for _, module := range ctx.Modules {
 		for _, sideEffect := range module.SideEffects {
-			if sideEffect.AppFlag {
-				srcCode.AddImport(golang.Import{
+			if sideEffect.TypicalDevToolFlag {
+				imports = append(imports, golang.Import{
 					Alias:       "_",
 					PackageName: sideEffect.Library,
 				})
@@ -20,12 +19,11 @@ func GenAppSideEffects(ctx *typictx.Context, srcCode *golang.SourceCode) (err er
 	return
 }
 
-// GenDevToolSideEffects generate side effects for dev tool
-func GenDevToolSideEffects(ctx *typictx.Context, srcCode *golang.SourceCode) (sideEffects []string) {
+func appSideEffects(ctx *typictx.Context) (imports []golang.Import) {
 	for _, module := range ctx.Modules {
 		for _, sideEffect := range module.SideEffects {
-			if sideEffect.TypicalDevToolFlag {
-				srcCode.AddImport(golang.Import{
+			if sideEffect.AppFlag {
+				imports = append(imports, golang.Import{
 					Alias:       "_",
 					PackageName: sideEffect.Library,
 				})
