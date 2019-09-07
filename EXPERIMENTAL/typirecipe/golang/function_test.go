@@ -1,4 +1,4 @@
-package gosrc
+package golang
 
 import (
 	"strings"

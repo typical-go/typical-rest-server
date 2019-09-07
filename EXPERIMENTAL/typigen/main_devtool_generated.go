@@ -5,7 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/gosrc"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -14,9 +14,9 @@ import (
 func MainDevToolGenerated(t *typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
 	pkgName := "main"
-	recipe := gosrc.NewSourceCode(pkgName)
+	recipe := golang.NewSourceCode(pkgName)
 	for _, lib := range devtoolSideEffects(t) {
-		recipe.AddImport(gosrc.Import{Alias: "_", PackageName: lib})
+		recipe.AddImport(golang.Import{Alias: "_", PackageName: lib})
 	}
 	log.Infof("Generate recipe for Typical-Dev-Tool: %s", filename)
 	return runn.Execute(

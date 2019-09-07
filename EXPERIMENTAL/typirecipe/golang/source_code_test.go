@@ -1,4 +1,4 @@
-package gosrc
+package golang
 
 import (
 	"reflect"
@@ -23,7 +23,6 @@ func TestInitializationModel(t *testing.T) {
 				},
 			},
 		},
-
 		Constructors: []string{
 			"contructor1",
 		},

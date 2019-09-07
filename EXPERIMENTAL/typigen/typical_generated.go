@@ -9,7 +9,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/gosrc"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -24,7 +24,7 @@ func TypicalGenerated(ctx *typictx.Context) (err error) {
 	if err != nil {
 		return
 	}
-	recipe := gosrc.NewSourceCode(pkgName).
+	recipe := golang.NewSourceCode(pkgName).
 		AddStruct(mainConfig).
 		AddConstructorFunction(configConstructors...).
 		AddConstructors(projCtx.Autowires...).
@@ -42,13 +42,13 @@ func TypicalGenerated(ctx *typictx.Context) (err error) {
 	)
 }
 
-func constructConfig(ctx *typictx.Context) (mainConfig gosrc.Struct, configConstructors []gosrc.Function) {
+func constructConfig(ctx *typictx.Context) (mainConfig golang.Struct, configConstructors []golang.Function) {
 	mainConfigStruct := "Config"
 	ptrMainConfigStruct := "*" + mainConfigStruct
 
 	mainConfig.Name = mainConfigStruct
 
-	configConstructors = append(configConstructors, gosrc.Function{
+	configConstructors = append(configConstructors, golang.Function{
 		FuncParams:   map[string]string{},
 		ReturnValues: []string{ptrMainConfigStruct, "error"},
 		FuncBody: fmt.Sprintf(`var cfg Config
@@ -66,11 +66,11 @@ return &cfg, err`),
 	return
 }
 
-func configRecipe(acc typictx.ConfigAccessor, ptrStruct string) (field reflect.StructField, function gosrc.Function) {
+func configRecipe(acc typictx.ConfigAccessor, ptrStruct string) (field reflect.StructField, function golang.Function) {
 	key := acc.GetKey()
 	typ := reflect.TypeOf(acc.GetConfigSpec())
 	field = reflect.StructField{Name: key, Type: typ}
-	function = gosrc.Function{
+	function = golang.Function{
 		FuncParams:   map[string]string{"cfg": ptrStruct},
 		ReturnValues: []string{typ.String()},
 		FuncBody:     fmt.Sprintf(`return cfg.%s`, key),

@@ -1,4 +1,4 @@
-package gosrc
+package golang
 
 // Import is plain old go object for import
 type Import struct {
