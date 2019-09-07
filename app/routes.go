@@ -10,14 +10,14 @@ import (
 // RouteParams for route parameters
 type RouteParams struct {
 	dig.In
-	Server    *echo.Echo
-	BookCntrl controller.BookController
-	AppCntrl  controller.ApplicationController
+	*echo.Echo
+	controller.BookController
+	controller.ApplicationController
 }
 
 // Routes of API
 func Routes(p RouteParams) {
 	log.Info("Initiate API Routes")
-	p.BookCntrl.Route(p.Server)
-	p.AppCntrl.Route(p.Server)
+	p.BookController.Route(p.Echo)
+	p.BookController.Route(p.Echo)
 }

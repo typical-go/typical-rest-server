@@ -9,6 +9,5 @@ import (
 // Middlewares for the service
 func Middlewares(server *echo.Echo) {
 	log.Info("Initiate Middlewares")
-
 	server.Use(middleware.Recover())
 }
