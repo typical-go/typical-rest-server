@@ -11,27 +11,15 @@ import (
 )
 
 // MainDevToolGenerated to generate code in typical package
-func MainDevToolGenerated(t *typictx.Context) (err error) {
+func MainDevToolGenerated(ctx *typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
-	pkgName := "main"
-	recipe := golang.NewSourceCode(pkgName)
-	for _, lib := range devtoolSideEffects(t) {
-		recipe.AddImport(golang.Import{Alias: "_", PackageName: lib})
-	}
+	srcCode := golang.NewSourceCode("main")
 	log.Infof("Generate recipe for Typical-Dev-Tool: %s", filename)
 	return runn.Execute(
-		recipe.Cook(filename),
-		bash.GoFmt(filename),
+		GenDevToolSideEffects(ctx, srcCode),
+		GenConfiguration(ctx, srcCode),
+		GenDependecies(ctx, srcCode),
+		srcCode.Cook(filename),
+		bash.GoImports(filename),
 	)
-}
-
-func devtoolSideEffects(t *typictx.Context) (sideEffects []string) {
-	for _, module := range t.Modules {
-		for _, sideEffect := range module.SideEffects {
-			if sideEffect.TypicalDevToolFlag {
-				sideEffects = append(sideEffects, sideEffect.Library)
-			}
-		}
-	}
-	return
 }

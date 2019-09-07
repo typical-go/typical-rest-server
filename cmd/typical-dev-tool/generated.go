@@ -2,9 +2,52 @@
 
 package main
 
-import _ "github.com/lib/pq"
-import _ "github.com/golang-migrate/migrate/database/postgres"
-import _ "github.com/golang-migrate/migrate/source/file"
+import (
+	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/kelseyhightower/envconfig"
+	_ "github.com/lib/pq"
+	"github.com/typical-go/typical-rest-server/app/config"
+	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/app/service"
+	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
+	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
+	"github.com/typical-go/typical-rest-server/typical"
+)
+
+type Config struct {
+	App    *config.Config
+	Server *typserver.Config
+	Pg     *typpostgres.Config
+	Redis  *typredis.Config
+}
 
 func init() {
+	typical.Context.AddConstructor(func() (*Config, error) {
+		var cfg Config
+		err := envconfig.Process("", &cfg)
+		return &cfg, err
+	})
+	typical.Context.AddConstructor(func(cfg *Config) *config.Config {
+		return cfg.App
+	})
+	typical.Context.AddConstructor(func(cfg *Config) *typpostgres.Config {
+		return cfg.Pg
+	})
+	typical.Context.AddConstructor(func(cfg *Config) *typredis.Config {
+		return cfg.Redis
+	})
+	typical.Context.AddConstructor(func(cfg *Config) *typserver.Config {
+		return cfg.Server
+	})
+	typical.Context.AddConstructor(repository.NewBookRepo)
+	typical.Context.AddConstructor(service.NewBookService)
+	typical.Context.AddMockTarget("app/repository/book_repo.go")
+	typical.Context.AddMockTarget("app/service/book_service.go")
+	typical.Context.AddTestTarget("./app")
+	typical.Context.AddTestTarget("./app/config")
+	typical.Context.AddTestTarget("./app/controller")
+	typical.Context.AddTestTarget("./app/repository")
+	typical.Context.AddTestTarget("./app/service")
 }

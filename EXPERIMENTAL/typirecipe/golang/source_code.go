@@ -34,13 +34,13 @@ func (r SourceCode) Write(w io.Writer) {
 	}
 	writeln(w, "func init() {")
 	for i := range r.Constructors {
-		writelnf(w, "Context.AddConstructor(%s)", r.Constructors[i])
+		writelnf(w, "typical.Context.AddConstructor(%s)", r.Constructors[i])
 	}
 	for i := range r.MockTargets {
-		writelnf(w, "Context.AddMockTarget(\"%s\")", r.MockTargets[i])
+		writelnf(w, "typical.Context.AddMockTarget(\"%s\")", r.MockTargets[i])
 	}
 	for i := range r.TestTargets {
-		writelnf(w, "Context.AddTestTarget(\"./%s\")", r.TestTargets[i])
+		writelnf(w, "typical.Context.AddTestTarget(\"./%s\")", r.TestTargets[i])
 	}
 	writeln(w, "}")
 }

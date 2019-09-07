@@ -28,7 +28,7 @@ func (t *TypicalGenerator) Cli() *cli.App {
 			typienv.WriteEnvIfNotExist(t.Context),
 			typigen.MainAppGenerated(t.Context),
 			typigen.MainDevToolGenerated(t.Context),
-			typigen.TypicalGenerated(t.Context),
+			// typigen.TypicalGenerated(t.Context),
 		)
 	}
 
