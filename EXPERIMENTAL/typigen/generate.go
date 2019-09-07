@@ -3,15 +3,15 @@ package typigen
 import (
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiast"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiparser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 )
 
 // Generate all
 func Generate(ctx *typictx.Context) (err error) {
-	proj, err := typiparser.Parse("app")
+	proj, err := typiast.Walk("app")
 	if err != nil {
 		return
 	}
@@ -27,7 +27,7 @@ func Generate(ctx *typictx.Context) (err error) {
 	)
 }
 
-func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiparser.ProjectContext) *golang.SourceCode {
+func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiast.ProjectContext) *golang.SourceCode {
 	return golang.NewSourceCode("main").
 		AddImport(devToolSideEffects(ctx)...).
 		AddStruct(configuration.Struct).
@@ -37,7 +37,7 @@ func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, pro
 		AddTestTargets(proj.Packages...)
 }
 
-func appSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiparser.ProjectContext) *golang.SourceCode {
+func appSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiast.ProjectContext) *golang.SourceCode {
 	return golang.NewSourceCode("main").
 		AddImport(appSideEffects(ctx)...).
 		AddStruct(configuration.Struct).

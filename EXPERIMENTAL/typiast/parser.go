@@ -1,4 +1,4 @@
-package typiparser
+package typiast
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-// Parse the source code to get autowire and automock
-func Parse(appPath string) (projCtx ProjectContext, err error) {
+// Walk the source code to get autowire and automock
+func Walk(appPath string) (projCtx ProjectContext, err error) {
 	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
 

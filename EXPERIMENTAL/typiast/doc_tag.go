@@ -1,4 +1,4 @@
-package typiparser
+package typiast
 
 import (
 	"regexp"
