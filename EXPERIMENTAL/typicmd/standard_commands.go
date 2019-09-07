@@ -64,14 +64,8 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			ActionFunc: generateMock,
 		},
 		{
-			Name:  "readme",
-			Usage: "Generate readme document",
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "no-commit",
-					Usage: "Generate readme without auto commit",
-				},
-			},
+			Name:       "readme",
+			Usage:      "Generate readme document",
 			ActionFunc: generateReadme,
 		},
 		{

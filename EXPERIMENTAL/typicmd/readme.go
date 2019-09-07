@@ -1,12 +1,10 @@
 package typicmd
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/git"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/readme"
@@ -40,15 +38,6 @@ func generateReadme(a *typictx.ActionContext) (err error) {
 	err = readme0.OutputToFile(readmeFile)
 	if err != nil {
 		return
-	}
-	if !a.Cli.Bool("no-commit") {
-		status := git.Status(readmeFile)
-		if status == "" {
-			log.Infof("No changes for %s", readmeFile)
-			return
-		}
-		log.Infof("Push %s to Git", readmeFile)
-		return git.Push(fmt.Sprintf("Generate and update %s", readmeFile), readmeFile)
 	}
 	return
 }
