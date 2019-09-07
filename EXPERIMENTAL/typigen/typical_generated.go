@@ -16,27 +16,20 @@ import (
 
 // TypicalGenerated to generate code in typical package
 func TypicalGenerated(ctx *typictx.Context) (err error) {
-	// TODO: add typical folder in typienv
-	packageName := "typical"
-	filename := packageName + "/generated.go"
+	pkgName := "typical"
+	filename := pkgName + "/generated.go"
 	log.Infof("Typical Generated Code: %s", filename)
-
 	mainConfig, configConstructors := constructConfig(ctx)
 	projCtx, err := typiparser.Parse("app")
 	if err != nil {
-		log.Fatal(err.Error())
+		return
 	}
-
-	recipe := gosrc.SourceCode{
-		PackageName: packageName,
-		Structs: []gosrc.Struct{
-			mainConfig,
-		},
-	}
-	recipe.AddConstructorFunction(configConstructors...)
-	recipe.AddConstructors(projCtx.Autowires...)
-	recipe.AddMockTargets(projCtx.Automocks...)
-	recipe.AddTestTargets(projCtx.Packages...)
+	recipe := gosrc.NewSourceCode(pkgName).
+		AddStruct(mainConfig).
+		AddConstructorFunction(configConstructors...).
+		AddConstructors(projCtx.Autowires...).
+		AddMockTargets(projCtx.Automocks...).
+		AddTestTargets(projCtx.Packages...)
 
 	if recipe.Blank() {
 		os.Remove(filename)
@@ -45,7 +38,7 @@ func TypicalGenerated(ctx *typictx.Context) (err error) {
 
 	return runn.Execute(
 		recipe.Cook(filename),
-		bash.GoImports(packageName),
+		bash.GoImports(pkgName),
 	)
 }
 

@@ -1,8 +1,6 @@
 package typigen
 
 import (
-	"os"
-
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -15,20 +13,11 @@ import (
 // MainDevToolGenerated to generate code in typical package
 func MainDevToolGenerated(t *typictx.Context) (err error) {
 	filename := typienv.TypicalDevToolMainPackage() + "/generated.go"
-
-	recipe := gosrc.SourceCode{
-		PackageName: "main",
-	}
-
+	pkgName := "main"
+	recipe := gosrc.NewSourceCode(pkgName)
 	for _, lib := range devtoolSideEffects(t) {
 		recipe.AddImport(gosrc.Import{Alias: "_", PackageName: lib})
 	}
-
-	if recipe.Blank() {
-		os.Remove(filename)
-		return
-	}
-
 	log.Infof("Generate recipe for Typical-Dev-Tool: %s", filename)
 	return runn.Execute(
 		recipe.Cook(filename),

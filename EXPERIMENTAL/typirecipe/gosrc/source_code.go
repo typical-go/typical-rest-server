@@ -18,18 +18,20 @@ type SourceCode struct {
 	TestTargets  []string
 }
 
+// NewSourceCode return new instance of SourceCode
+func NewSourceCode(pkgName string) *SourceCode {
+	return &SourceCode{PackageName: pkgName}
+}
+
 func (r SourceCode) Write(w io.Writer) {
 	writelnf(w, "// "+typirecipe.WaterMark+"\n")
 	writelnf(w, "package %s", r.PackageName)
-
 	for _, importPogo := range r.Imports {
 		writelnf(w, `import %s "%s"`, importPogo.Alias, importPogo.PackageName)
 	}
-
 	for i := range r.Structs {
 		r.Structs[i].Write(w)
 	}
-
 	writeln(w, "func init() {")
 	for i := range r.Constructors {
 		writelnf(w, "Context.AddConstructor(%s)", r.Constructors[i])
@@ -51,10 +53,8 @@ func (r SourceCode) Cook(file string) (err error) {
 		return
 	}
 	defer f.Close()
-
 	r.sortOut()
 	r.Write(f)
-
 	return
 }
 
@@ -75,28 +75,39 @@ func (r SourceCode) sortOut() {
 }
 
 // AddConstructorFunction to add FunctionPogo to constructor
-func (r *SourceCode) AddConstructorFunction(pogos ...Function) {
+func (r *SourceCode) AddConstructorFunction(pogos ...Function) *SourceCode {
 	for _, pogo := range pogos {
 		r.Constructors = append(r.Constructors, pogo.String())
 	}
+	return r
 }
 
 // AddConstructors to add constructors
-func (r *SourceCode) AddConstructors(constructors ...string) {
+func (r *SourceCode) AddConstructors(constructors ...string) *SourceCode {
 	r.Constructors = append(r.Constructors, constructors...)
+	return r
 }
 
 // AddMockTargets to add constructors
-func (r *SourceCode) AddMockTargets(mockTargets ...string) {
+func (r *SourceCode) AddMockTargets(mockTargets ...string) *SourceCode {
 	r.MockTargets = append(r.MockTargets, mockTargets...)
+	return r
 }
 
 // AddTestTargets to add constructors
-func (r *SourceCode) AddTestTargets(testTargets ...string) {
+func (r *SourceCode) AddTestTargets(testTargets ...string) *SourceCode {
 	r.TestTargets = append(r.TestTargets, testTargets...)
+	return r
 }
 
 // AddImport to add import POGO
-func (r *SourceCode) AddImport(pogos ...Import) {
-	r.Imports = append(r.Imports, pogos...)
+func (r *SourceCode) AddImport(imports ...Import) *SourceCode {
+	r.Imports = append(r.Imports, imports...)
+	return r
+}
+
+// AddStruct to add struct
+func (r *SourceCode) AddStruct(structs ...Struct) *SourceCode {
+	r.Structs = append(r.Structs, structs...)
+	return r
 }
