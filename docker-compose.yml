@@ -13,8 +13,19 @@ services:
     networks:
     - postgres
     restart: unless-stopped
+  redis:
+    image: redis:4.0.5-alpine
+    command: redis-server --requirepass "${REDIS_PASSOWORD:-redispass}"
+    volumes:
+    - redis:/data
+    ports:
+    - 6379:6379
+    networks:
+    - redis
 networks:
   postgres:
     driver: bridge
+  redis: null
 volumes:
   postgres: null
+  redis: null
