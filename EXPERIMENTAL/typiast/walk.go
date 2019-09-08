@@ -5,25 +5,30 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
 	"os"
 	"strings"
 )
 
+// Outcome of goast when walk the project
+type Outcome struct {
+	Packages  []string
+	Autowires []string
+	Automocks []string
+}
+
 // Walk the source code to get autowire and automock
-func Walk(appPath string) (projCtx ProjectContext, err error) {
+func Walk(appPath string) (out Outcome, err error) {
 	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
-
-	AllDirectories(appPath, &paths)
+	allDir(appPath, &paths)
 	fset := token.NewFileSet() // positions are relative to fset
-
 	for _, path := range paths {
 		var pkgs map[string]*ast.Package
 		pkgs, err = parser.ParseDir(fset, path, directoryFilter, parser.ParseComments)
 		if err != nil {
 			return
 		}
-
 		// Print the imports from the file's AST.
 		for pkgName, pkg := range pkgs {
 			testTargets[path] = struct{}{}
@@ -37,7 +42,7 @@ func Walk(appPath string) (projCtx ProjectContext, err error) {
 							godoc = funcDecl.Doc.Text()
 						}
 						if isAutoWire(objName, godoc) {
-							projCtx.Autowires = append(projCtx.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
+							out.Autowires = append(out.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
 						}
 					case *ast.TypeSpec:
 						typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -49,7 +54,7 @@ func Walk(appPath string) (projCtx ProjectContext, err error) {
 								doc = typeSpec.Doc.Text()
 							}
 							if isAutoMock(doc) {
-								projCtx.Automocks = append(projCtx.Automocks, fileName)
+								out.Automocks = append(out.Automocks, fileName)
 							}
 						}
 					}
@@ -57,11 +62,24 @@ func Walk(appPath string) (projCtx ProjectContext, err error) {
 			}
 		}
 	}
-
 	for key := range testTargets {
-		projCtx.Packages = append(projCtx.Packages, key)
+		out.Packages = append(out.Packages, key)
 	}
+	return
+}
 
+func allDir(path string, directories *[]string) (err error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return
+	}
+	for _, f := range files {
+		if f.IsDir() {
+			dirPath := path + "/" + f.Name()
+			allDir(dirPath, directories)
+			*directories = append(*directories, dirPath)
+		}
+	}
 	return
 }
 
@@ -74,12 +92,10 @@ func isAutoWire(funcName, doc string) bool {
 	if strings.HasPrefix(funcName, "New") {
 		return !tags.Contain("nowire")
 	}
-
 	return tags.Contain("autowire")
 }
 
 func isAutoMock(doc string) bool {
 	tags := ParseDocTag(doc)
-
 	return !tags.Contain("nomock")
 }

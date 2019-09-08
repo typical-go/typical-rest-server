@@ -11,7 +11,7 @@ import (
 
 // Generate all
 func Generate(ctx *typictx.Context) (err error) {
-	proj, err := typiast.Walk("app")
+	out, err := typiast.Walk("app")
 	if err != nil {
 		return
 	}
@@ -20,29 +20,29 @@ func Generate(ctx *typictx.Context) (err error) {
 	devOut := typienv.TypicalDevToolMainPackage() + "/generated.go"
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		appSource(ctx, configuration, proj).Cook(appOut),
-		devToolSource(ctx, configuration, proj).Cook(devOut),
+		appSource(ctx, configuration, out).Cook(appOut),
+		devToolSource(ctx, configuration, out).Cook(devOut),
 		bash.GoImports(appOut),
 		bash.GoImports(devOut),
 	)
 }
 
-func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiast.ProjectContext) *golang.SourceCode {
+func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Outcome) *golang.SourceCode {
 	return golang.NewSourceCode("main").
 		AddImport(devToolSideEffects(ctx)...).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...).
-		AddConstructors(proj.Autowires...).
-		AddMockTargets(proj.Automocks...).
-		AddTestTargets(proj.Packages...)
+		AddConstructors(out.Autowires...).
+		AddMockTargets(out.Automocks...).
+		AddTestTargets(out.Packages...)
 }
 
-func appSource(ctx *typictx.Context, configuration ProjectConfiguration, proj typiast.ProjectContext) *golang.SourceCode {
+func appSource(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Outcome) *golang.SourceCode {
 	return golang.NewSourceCode("main").
 		AddImport(appSideEffects(ctx)...).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...).
-		AddConstructors(proj.Autowires...).
-		AddMockTargets(proj.Automocks...).
-		AddTestTargets(proj.Packages...)
+		AddConstructors(out.Autowires...).
+		AddMockTargets(out.Automocks...).
+		AddTestTargets(out.Packages...)
 }

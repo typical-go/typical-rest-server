@@ -21,7 +21,6 @@ func TestIsAutoWire(t *testing.T) {
 		{"NewSomething", "some doc [nowire][autowrite]", false},
 		{"Something", "some doc [nowire][autowire]", true},
 	}
-
 	for _, tt := range testcase {
 		require.Equal(t, tt.autowire, isAutoWire(tt.funcName, tt.doc))
 	}
