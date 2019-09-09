@@ -10,8 +10,8 @@ import (
 
 // ProjectConfiguration project configuration
 type ProjectConfiguration struct {
-	Struct       golang.Struct
-	Constructors []golang.Function
+	Struct       golang.Struct     `json:"struct"`
+	Constructors []golang.Function `json:"constructors"`
 }
 
 func configuration(ctx *typictx.Context) (configuration ProjectConfiguration) {

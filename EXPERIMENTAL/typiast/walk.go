@@ -10,15 +10,15 @@ import (
 	"strings"
 )
 
-// Outcome of goast when walk the project
-type Outcome struct {
-	Packages  []string
-	Autowires []string
-	Automocks []string
+// Report of goAst when walk the project
+type Report struct {
+	Packages  []string `json:"packages"`
+	Autowires []string `json:"autowires"`
+	Automocks []string `json:"automocks"`
 }
 
 // Walk the source code to get autowire and automock
-func Walk(appPath string) (out Outcome, err error) {
+func Walk(appPath string) (report Report, err error) {
 	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
 	allDir(appPath, &paths)
@@ -42,7 +42,7 @@ func Walk(appPath string) (out Outcome, err error) {
 							godoc = funcDecl.Doc.Text()
 						}
 						if isAutoWire(objName, godoc) {
-							out.Autowires = append(out.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
+							report.Autowires = append(report.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
 						}
 					case *ast.TypeSpec:
 						typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -54,7 +54,7 @@ func Walk(appPath string) (out Outcome, err error) {
 								doc = typeSpec.Doc.Text()
 							}
 							if isAutoMock(doc) {
-								out.Automocks = append(out.Automocks, fileName)
+								report.Automocks = append(report.Automocks, fileName)
 							}
 						}
 					}
@@ -63,7 +63,7 @@ func Walk(appPath string) (out Outcome, err error) {
 		}
 	}
 	for key := range testTargets {
-		out.Packages = append(out.Packages, key)
+		report.Packages = append(report.Packages, key)
 	}
 	return
 }

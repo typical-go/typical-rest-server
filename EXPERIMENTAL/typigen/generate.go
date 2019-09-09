@@ -16,33 +16,40 @@ func Generate(ctx *typictx.Context) (err error) {
 		return
 	}
 	configuration := configuration(ctx)
-	appOut := typienv.AppMainPackage() + "/generated.go"
-	devOut := typienv.TypicalDevToolMainPackage() + "/generated.go"
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		appSource(ctx, configuration, out).Cook(appOut),
-		devToolSource(ctx, configuration, out).Cook(devOut),
-		bash.GoImports(appOut),
-		bash.GoImports(devOut),
+		appGenerated(ctx, configuration, out),
+		devToolGeneratead(ctx, configuration, out),
 	)
 }
 
-func devToolSource(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Outcome) *golang.SourceCode {
-	return golang.NewSourceCode("main").
+func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Report) error {
+	devTarget := typienv.TypicalDevToolMainPackage() + "/generated.go"
+	sourceCode := golang.NewSourceCode("main").
 		AddImport(devToolSideEffects(ctx)...).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...).
 		AddConstructors(out.Autowires...).
 		AddMockTargets(out.Automocks...).
 		AddTestTargets(out.Packages...)
+	return runn.Execute(
+		sourceCode.Cook(devTarget),
+		bash.GoImports(devTarget),
+	)
 }
 
-func appSource(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Outcome) *golang.SourceCode {
-	return golang.NewSourceCode("main").
+func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, report typiast.Report) error {
+	appTarget := typienv.AppMainPackage() + "/generated.go"
+	sourceCode := golang.NewSourceCode("main").
 		AddImport(appSideEffects(ctx)...).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...).
-		AddConstructors(out.Autowires...).
-		AddMockTargets(out.Automocks...).
-		AddTestTargets(out.Packages...)
+		AddConstructors(report.Autowires...).
+		AddMockTargets(report.Automocks...).
+		AddTestTargets(report.Packages...)
+
+	return runn.Execute(
+		sourceCode.Cook(appTarget),
+		bash.GoImports(appTarget),
+	)
 }
