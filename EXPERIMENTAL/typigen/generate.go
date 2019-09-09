@@ -11,45 +11,64 @@ import (
 
 // Generate all
 func Generate(ctx *typictx.Context) (err error) {
-	out, err := typiast.Walk("app")
+	report, err := typiast.Walk("app")
 	if err != nil {
 		return
 	}
 	configuration := configuration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		appGenerated(ctx, configuration, out),
-		devToolGeneratead(ctx, configuration, out),
+		appGenerated(ctx, configuration, report),
+		devToolGeneratead(ctx, configuration, report),
 	)
 }
 
-func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, out typiast.Report) error {
-	devTarget := typienv.TypicalDevToolMainPackage() + "/generated.go"
-	sourceCode := golang.NewSourceCode("main").
-		AddImport(devToolSideEffects(ctx)...).
+func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, report typiast.Report) error {
+	pkgName := "main"
+	dir := typienv.TypicalDevToolMainPackage()
+	depTarget := dir + "/provide_dependencies.go"
+	depSrc := golang.NewSourceCode(pkgName).
+		AddConstructors(report.Autowires...).
+		AddMockTargets(report.Automocks...).
+		AddTestTargets(report.Packages...)
+	cfgTarget := dir + "/provide_configuration.go"
+	cfgSrc := golang.NewSourceCode(pkgName).
 		AddStruct(configuration.Struct).
-		AddConstructorFunction(configuration.Constructors...).
-		AddConstructors(out.Autowires...).
-		AddMockTargets(out.Automocks...).
-		AddTestTargets(out.Packages...)
+		AddConstructorFunction(configuration.Constructors...)
+	seffTarget := dir + "/provide_side_effects.go"
+	seffSrc := golang.NewSourceCode(pkgName).
+		AddImport(devToolSideEffects(ctx)...)
 	return runn.Execute(
-		sourceCode.Cook(devTarget),
-		bash.GoImports(devTarget),
+		depSrc.Cook(depTarget),
+		bash.GoImports(depTarget),
+		cfgSrc.Cook(cfgTarget),
+		bash.GoImports(cfgTarget),
+		seffSrc.Cook(seffTarget),
+		bash.GoImports(seffTarget),
 	)
 }
 
 func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, report typiast.Report) error {
-	appTarget := typienv.AppMainPackage() + "/generated.go"
-	sourceCode := golang.NewSourceCode("main").
-		AddImport(appSideEffects(ctx)...).
-		AddStruct(configuration.Struct).
-		AddConstructorFunction(configuration.Constructors...).
+	dir := typienv.AppMainPackage()
+	pkgName := "main"
+	depTarget := dir + "/provide_dependencies.go"
+	depSrc := golang.NewSourceCode(pkgName).
 		AddConstructors(report.Autowires...).
 		AddMockTargets(report.Automocks...).
 		AddTestTargets(report.Packages...)
-
+	cfgTarget := dir + "/provide_configuration.go"
+	cfgSrc := golang.NewSourceCode(pkgName).
+		AddStruct(configuration.Struct).
+		AddConstructorFunction(configuration.Constructors...)
+	seffTarget := dir + "/provide_side_effects.go"
+	seffSrc := golang.NewSourceCode(pkgName).
+		AddImport(appSideEffects(ctx)...)
 	return runn.Execute(
-		sourceCode.Cook(appTarget),
-		bash.GoImports(appTarget),
+		depSrc.Cook(depTarget),
+		bash.GoImports(depTarget),
+		cfgSrc.Cook(cfgTarget),
+		bash.GoImports(cfgTarget),
+		seffSrc.Cook(seffTarget),
+		bash.GoImports(seffTarget),
 	)
 }
