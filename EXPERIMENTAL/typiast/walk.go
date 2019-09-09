@@ -18,7 +18,8 @@ type Report struct {
 }
 
 // Walk the source code to get autowire and automock
-func Walk(appPath string) (report Report, err error) {
+func Walk(appPath string) (report *Report, err error) {
+	report = &Report{}
 	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
 	allDir(appPath, &paths)

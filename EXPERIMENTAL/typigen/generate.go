@@ -11,10 +11,19 @@ import (
 
 // Generate all
 func Generate(ctx *typictx.Context) (err error) {
+	// path := ".typical"
+	// if _, err := os.Stat(path); os.IsNotExist(err) {
+	// 	os.Mkdir(path, os.ModePerm)
+	// }
 	report, err := typiast.Walk("app")
 	if err != nil {
 		return
 	}
+	// b, _ := json.MarshalIndent(report, "", "    ")
+	// err = ioutil.WriteFile(path+"/walk_report.json", b, 0644)
+	// if err != nil {
+	// 	return
+	// }
 	configuration := configuration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
@@ -23,7 +32,11 @@ func Generate(ctx *typictx.Context) (err error) {
 	)
 }
 
-func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, report typiast.Report) error {
+// func getCacheWalkReport() {
+
+// }
+
+func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, report *typiast.Report) error {
 	pkgName := "main"
 	dir := typienv.TypicalDevToolMainPackage()
 	depTarget := dir + "/provide_dependencies.go"
@@ -48,7 +61,7 @@ func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration,
 	)
 }
 
-func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, report typiast.Report) error {
+func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, report *typiast.Report) error {
 	dir := typienv.AppMainPackage()
 	pkgName := "main"
 	depTarget := dir + "/provide_dependencies.go"
