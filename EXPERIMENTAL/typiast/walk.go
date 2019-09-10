@@ -23,6 +23,7 @@ func Walk(appPath string) (report *Report, err error) {
 	paths := []string{appPath}
 	testTargets := make(map[string]struct{})
 	allDir(appPath, &paths)
+	fmt.Println(paths)
 	fset := token.NewFileSet() // positions are relative to fset
 	for _, path := range paths {
 		var pkgs map[string]*ast.Package
@@ -31,40 +32,48 @@ func Walk(appPath string) (report *Report, err error) {
 			return
 		}
 		// Print the imports from the file's AST.
-		for pkgName, pkg := range pkgs {
+		for _, pkg := range pkgs {
 			testTargets[path] = struct{}{}
 			for fileName, file := range pkg.Files {
-				for objName, obj := range file.Scope.Objects {
-					switch obj.Decl.(type) {
-					case *ast.FuncDecl:
-						funcDecl := obj.Decl.(*ast.FuncDecl)
-						var godoc string
-						if funcDecl.Doc != nil {
-							godoc = funcDecl.Doc.Text()
-						}
-						if isAutoWire(objName, godoc) {
-							report.Autowires = append(report.Autowires, fmt.Sprintf("%s.%s", pkgName, objName))
-						}
-					case *ast.TypeSpec:
-						typeSpec := obj.Decl.(*ast.TypeSpec)
-						switch typeSpec.Type.(type) {
-						case *ast.StructType:
-						case *ast.InterfaceType:
-							var doc string
-							if typeSpec.Doc != nil {
-								doc = typeSpec.Doc.Text()
-							}
-							if isAutoMock(doc) {
-								report.Automocks = append(report.Automocks, fileName)
-							}
-						}
-					}
+				constructors, mock := parse(fileName, file)
+				report.Autowires = append(report.Autowires, constructors...)
+				if mock {
+					report.Automocks = append(report.Automocks, fileName)
 				}
+
 			}
 		}
 	}
 	for key := range testTargets {
 		report.Packages = append(report.Packages, key)
+	}
+	return
+}
+
+func parse(filename string, file *ast.File) (constructors []string, mock bool) {
+	for objName, obj := range file.Scope.Objects {
+		switch obj.Decl.(type) {
+		case *ast.FuncDecl:
+			funcDecl := obj.Decl.(*ast.FuncDecl)
+			var godoc string
+			if funcDecl.Doc != nil {
+				godoc = funcDecl.Doc.Text()
+			}
+			if isAutoWire(objName, godoc) {
+				constructors = append(constructors, fmt.Sprintf("%s.%s", file.Name, objName))
+			}
+		case *ast.TypeSpec:
+			typeSpec := obj.Decl.(*ast.TypeSpec)
+			switch typeSpec.Type.(type) {
+			case *ast.StructType:
+			case *ast.InterfaceType:
+				var doc string
+				if typeSpec.Doc != nil {
+					doc = typeSpec.Doc.Text()
+				}
+				mock = isAutoMock(doc)
+			}
+		}
 	}
 	return
 }
