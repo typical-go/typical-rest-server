@@ -7,7 +7,7 @@ import (
 )
 
 func TestIsAutoWire(t *testing.T) {
-	testcase := []struct {
+	testcases := []struct {
 		funcName string
 		doc      string
 		autowire bool
@@ -21,21 +21,35 @@ func TestIsAutoWire(t *testing.T) {
 		{"NewSomething", "some doc [nowire][autowrite]", false},
 		{"Something", "some doc [nowire][autowire]", true},
 	}
-	for _, tt := range testcase {
+	for _, tt := range testcases {
 		require.Equal(t, tt.autowire, isAutoWire(tt.funcName, tt.doc))
 	}
 }
 
 func TestIsAutoMock(t *testing.T) {
-	testcase := []struct {
+	testcases := []struct {
 		doc      string
 		automock bool
 	}{
 		{"some doc", true},
 		{"some doc [nomock]", false},
 	}
-
-	for _, tt := range testcase {
+	for _, tt := range testcases {
 		require.Equal(t, tt.automock, isAutoMock(tt.doc))
+	}
+}
+
+func TestWalkTarget(t *testing.T) {
+	testcases := []struct {
+		filename string
+		result   bool
+	}{
+		{"file.go", true},
+		{"file_test.go", false},
+		{"file.test.go", true},
+		{"file", false},
+	}
+	for _, tt := range testcases {
+		require.Equal(t, tt.result, walkTarget(tt.filename))
 	}
 }

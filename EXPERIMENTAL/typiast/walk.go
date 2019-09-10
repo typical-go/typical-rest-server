@@ -6,7 +6,6 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
-	"os"
 	"strings"
 )
 
@@ -20,34 +19,30 @@ type Report struct {
 // Walk the source code to get autowire and automock
 func Walk(appPath string) (report *Report, err error) {
 	report = &Report{}
-	paths := []string{appPath}
-	testTargets := make(map[string]struct{})
-	allDir(appPath, &paths)
-	fmt.Println(paths)
+	paths, files, _ := projectFiles(appPath)
+	report.Packages = paths
 	fset := token.NewFileSet() // positions are relative to fset
-	for _, path := range paths {
-		var pkgs map[string]*ast.Package
-		pkgs, err = parser.ParseDir(fset, path, directoryFilter, parser.ParseComments)
-		if err != nil {
-			return
-		}
-		// Print the imports from the file's AST.
-		for _, pkg := range pkgs {
-			testTargets[path] = struct{}{}
-			for fileName, file := range pkg.Files {
-				constructors, mock := parse(fileName, file)
-				report.Autowires = append(report.Autowires, constructors...)
-				if mock {
-					report.Automocks = append(report.Automocks, fileName)
-				}
-
+	for _, filename := range files {
+		if walkTarget(filename) {
+			fmt.Println(filename)
+			var f *ast.File
+			f, err = parser.ParseFile(fset, filename, nil, parser.ParseComments)
+			if err != nil {
+				return
+			}
+			constructors, mock := parse(filename, f)
+			report.Autowires = append(report.Autowires, constructors...)
+			if mock {
+				report.Automocks = append(report.Automocks, filename)
 			}
 		}
 	}
-	for key := range testTargets {
-		report.Packages = append(report.Packages, key)
-	}
 	return
+}
+
+func walkTarget(filename string) bool {
+	return strings.HasSuffix(filename, ".go") &&
+		!strings.HasSuffix(filename, "_test.go")
 }
 
 func parse(filename string, file *ast.File) (constructors []string, mock bool) {
@@ -78,23 +73,27 @@ func parse(filename string, file *ast.File) (constructors []string, mock bool) {
 	return
 }
 
-func allDir(path string, directories *[]string) (err error) {
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		return
-	}
-	for _, f := range files {
-		if f.IsDir() {
-			dirPath := path + "/" + f.Name()
-			allDir(dirPath, directories)
-			*directories = append(*directories, dirPath)
-		}
-	}
+func projectFiles(root string) (dirs []string, files []string, err error) {
+	dirs = append(dirs, root)
+	err = scanProjectFiles(root, &dirs, &files)
 	return
 }
 
-func directoryFilter(f os.FileInfo) bool {
-	return true
+func scanProjectFiles(root string, directories *[]string, files *[]string) (err error) {
+	fileInfos, err := ioutil.ReadDir(root)
+	if err != nil {
+		return
+	}
+	for _, f := range fileInfos {
+		if f.IsDir() {
+			dirPath := root + "/" + f.Name()
+			scanProjectFiles(dirPath, directories, files)
+			*directories = append(*directories, dirPath)
+		} else {
+			*files = append(*files, root+"/"+f.Name())
+		}
+	}
+	return
 }
 
 func isAutoWire(funcName, doc string) bool {
