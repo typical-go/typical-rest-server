@@ -9,13 +9,6 @@ import (
 	"strings"
 )
 
-// Report of goAst when walk the project
-type Report struct {
-	Packages  []string `json:"packages"`
-	Autowires []string `json:"autowires"`
-	Automocks []string `json:"automocks"`
-}
-
 // Walk the source code to get autowire and automock
 func Walk(appPath string) (report *Report, err error) {
 	report = &Report{}
@@ -24,17 +17,12 @@ func Walk(appPath string) (report *Report, err error) {
 	fset := token.NewFileSet() // positions are relative to fset
 	for _, filename := range files {
 		if walkTarget(filename) {
-			fmt.Println(filename)
-			var f *ast.File
-			f, err = parser.ParseFile(fset, filename, nil, parser.ParseComments)
+			var file File
+			file, err = parse(fset, filename)
 			if err != nil {
 				return
 			}
-			constructors, mock := parse(filename, f)
-			report.Autowires = append(report.Autowires, constructors...)
-			if mock {
-				report.Automocks = append(report.Automocks, filename)
-			}
+			report.AddFile(file)
 		}
 	}
 	return
@@ -45,8 +33,13 @@ func walkTarget(filename string) bool {
 		!strings.HasSuffix(filename, "_test.go")
 }
 
-func parse(filename string, file *ast.File) (constructors []string, mock bool) {
-	for objName, obj := range file.Scope.Objects {
+func parse(fset *token.FileSet, filename string) (file File, err error) {
+	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
+	if err != nil {
+		return
+	}
+	file.Name = filename
+	for objName, obj := range f.Scope.Objects {
 		switch obj.Decl.(type) {
 		case *ast.FuncDecl:
 			funcDecl := obj.Decl.(*ast.FuncDecl)
@@ -55,7 +48,7 @@ func parse(filename string, file *ast.File) (constructors []string, mock bool) {
 				godoc = funcDecl.Doc.Text()
 			}
 			if isAutoWire(objName, godoc) {
-				constructors = append(constructors, fmt.Sprintf("%s.%s", file.Name, objName))
+				file.AddConstructor(fmt.Sprintf("%s.%s", f.Name, objName))
 			}
 		case *ast.TypeSpec:
 			typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -66,7 +59,7 @@ func parse(filename string, file *ast.File) (constructors []string, mock bool) {
 				if typeSpec.Doc != nil {
 					doc = typeSpec.Doc.Text()
 				}
-				mock = isAutoMock(doc)
+				file.Mock = isAutoMock(doc)
 			}
 		}
 	}

@@ -33,7 +33,6 @@ func Generate(ctx *typictx.Context) (err error) {
 }
 
 // func getCacheWalkReport() {
-
 // }
 
 func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, report *typiast.Report) error {
@@ -41,8 +40,8 @@ func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration,
 	dir := typienv.TypicalDevToolMainPackage()
 	depTarget := dir + "/provide_dependencies.go"
 	depSrc := golang.NewSourceCode(pkgName).
-		AddConstructors(report.Autowires...).
-		AddMockTargets(report.Automocks...).
+		AddConstructors(report.Autowires()...).
+		AddMockTargets(report.Automocks()...).
 		AddTestTargets(report.Packages...)
 	cfgTarget := dir + "/provide_configuration.go"
 	cfgSrc := golang.NewSourceCode(pkgName).
@@ -66,8 +65,8 @@ func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, repo
 	pkgName := "main"
 	depTarget := dir + "/provide_dependencies.go"
 	depSrc := golang.NewSourceCode(pkgName).
-		AddConstructors(report.Autowires...).
-		AddMockTargets(report.Automocks...).
+		AddConstructors(report.Autowires()...).
+		AddMockTargets(report.Automocks()...).
 		AddTestTargets(report.Packages...)
 	cfgTarget := dir + "/provide_configuration.go"
 	cfgSrc := golang.NewSourceCode(pkgName).
