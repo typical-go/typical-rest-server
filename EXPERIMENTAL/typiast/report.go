@@ -2,8 +2,7 @@ package typiast
 
 // Report of AST transversal
 type Report struct {
-	Packages []string `json:"packages"`
-	Files    []File   `json:"files"`
+	Files []File `json:"files"`
 }
 
 // AddFile to add new file

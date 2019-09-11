@@ -1,6 +1,8 @@
 package typigen
 
 import (
+	"io/ioutil"
+
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiast"
@@ -15,7 +17,9 @@ func Generate(ctx *typictx.Context) (err error) {
 	// if _, err := os.Stat(path); os.IsNotExist(err) {
 	// 	os.Mkdir(path, os.ModePerm)
 	// }
-	report, err := typiast.Walk("app")
+	root := "app"
+	pkgs, filenames, _ := projectFiles(root)
+	report, err := typiast.Walk(filenames)
 	if err != nil {
 		return
 	}
@@ -27,22 +31,22 @@ func Generate(ctx *typictx.Context) (err error) {
 	configuration := configuration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		appGenerated(ctx, configuration, report),
-		devToolGeneratead(ctx, configuration, report),
+		appGenerated(ctx, configuration, pkgs, report),
+		devToolGeneratead(ctx, configuration, pkgs, report),
 	)
 }
 
 // func getCacheWalkReport() {
 // }
 
-func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, report *typiast.Report) error {
+func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, pkgs []string, report *typiast.Report) error {
 	pkgName := "main"
 	dir := typienv.TypicalDevToolMainPackage()
 	depTarget := dir + "/provide_dependencies.go"
 	depSrc := golang.NewSourceCode(pkgName).
 		AddConstructors(report.Autowires()...).
 		AddMockTargets(report.Automocks()...).
-		AddTestTargets(report.Packages...)
+		AddTestTargets(pkgs...)
 	cfgTarget := dir + "/provide_configuration.go"
 	cfgSrc := golang.NewSourceCode(pkgName).
 		AddStruct(configuration.Struct).
@@ -60,14 +64,14 @@ func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration,
 	)
 }
 
-func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, report *typiast.Report) error {
+func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, pkgs []string, report *typiast.Report) error {
 	dir := typienv.AppMainPackage()
 	pkgName := "main"
 	depTarget := dir + "/provide_dependencies.go"
 	depSrc := golang.NewSourceCode(pkgName).
 		AddConstructors(report.Autowires()...).
 		AddMockTargets(report.Automocks()...).
-		AddTestTargets(report.Packages...)
+		AddTestTargets(pkgs...)
 	cfgTarget := dir + "/provide_configuration.go"
 	cfgSrc := golang.NewSourceCode(pkgName).
 		AddStruct(configuration.Struct).
@@ -83,4 +87,27 @@ func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, repo
 		seffSrc.Cook(seffTarget),
 		bash.GoImports(seffTarget),
 	)
+}
+
+func projectFiles(root string) (dirs []string, files []string, err error) {
+	dirs = append(dirs, root)
+	err = scanProjectFiles(root, &dirs, &files)
+	return
+}
+
+func scanProjectFiles(root string, directories *[]string, files *[]string) (err error) {
+	fileInfos, err := ioutil.ReadDir(root)
+	if err != nil {
+		return
+	}
+	for _, f := range fileInfos {
+		if f.IsDir() {
+			dirPath := root + "/" + f.Name()
+			scanProjectFiles(dirPath, directories, files)
+			*directories = append(*directories, dirPath)
+		} else {
+			*files = append(*files, root+"/"+f.Name())
+		}
+	}
+	return
 }
