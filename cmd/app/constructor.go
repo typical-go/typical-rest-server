@@ -13,9 +13,4 @@ func init() {
 	typical.Context.AddConstructor(service.NewBookService)
 	typical.Context.AddMockTarget("app/repository/book_repo.go")
 	typical.Context.AddMockTarget("app/service/book_service.go")
-	typical.Context.AddTestTarget("./app")
-	typical.Context.AddTestTarget("./app/config")
-	typical.Context.AddTestTarget("./app/controller")
-	typical.Context.AddTestTarget("./app/repository")
-	typical.Context.AddTestTarget("./app/service")
 }

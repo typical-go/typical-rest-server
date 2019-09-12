@@ -39,53 +39,25 @@ func Generate(ctx *typictx.Context) (err error) {
 // func getCacheWalkReport() {
 // }
 
-func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, pkgs []string, report *typiast.Report) error {
-	pkgName := "main"
+func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, testTargets []string, report *typiast.Report) error {
+	pkg := "main"
 	dir := typienv.TypicalDevToolMainPackage()
-	depTarget := dir + "/provide_dependencies.go"
-	depSrc := golang.NewSourceCode(pkgName).
-		AddConstructors(report.Autowires()...).
-		AddMockTargets(report.Automocks()...).
-		AddTestTargets(pkgs...)
-	cfgTarget := dir + "/provide_configuration.go"
-	cfgSrc := golang.NewSourceCode(pkgName).
-		AddStruct(configuration.Struct).
-		AddConstructorFunction(configuration.Constructors...)
-	seffTarget := dir + "/provide_side_effects.go"
-	seffSrc := golang.NewSourceCode(pkgName).
-		AddImport(devToolSideEffects(ctx)...)
 	return runn.Execute(
-		depSrc.Cook(depTarget),
-		bash.GoImports(depTarget),
-		cfgSrc.Cook(cfgTarget),
-		bash.GoImports(cfgTarget),
-		seffSrc.Cook(seffTarget),
-		bash.GoImports(seffTarget),
+		genTestTargets(pkg, dir+"/test_targets.go", testTargets),
+		genConstructors(pkg, dir+"/constructor.go", report),
+		genConfiguration(pkg, dir+"/configuration.go", configuration),
+		genSideEffects(pkg, dir+"/side_effects.go", devToolSideEffects(ctx)),
 	)
 }
 
-func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, pkgs []string, report *typiast.Report) error {
+func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, testTargets []string, report *typiast.Report) error {
 	dir := typienv.AppMainPackage()
-	pkgName := "main"
-	depTarget := dir + "/provide_dependencies.go"
-	depSrc := golang.NewSourceCode(pkgName).
-		AddConstructors(report.Autowires()...).
-		AddMockTargets(report.Automocks()...).
-		AddTestTargets(pkgs...)
-	cfgTarget := dir + "/provide_configuration.go"
-	cfgSrc := golang.NewSourceCode(pkgName).
-		AddStruct(configuration.Struct).
-		AddConstructorFunction(configuration.Constructors...)
-	seffTarget := dir + "/provide_side_effects.go"
-	seffSrc := golang.NewSourceCode(pkgName).
-		AddImport(appSideEffects(ctx)...)
+	pkg := "main"
 	return runn.Execute(
-		depSrc.Cook(depTarget),
-		bash.GoImports(depTarget),
-		cfgSrc.Cook(cfgTarget),
-		bash.GoImports(cfgTarget),
-		seffSrc.Cook(seffTarget),
-		bash.GoImports(seffTarget),
+		genTestTargets(pkg, dir+"/test_targets.go", testTargets),
+		genConstructors(pkg, dir+"/constructor.go", report),
+		genConfiguration(pkg, dir+"/configuration.go", configuration),
+		genSideEffects(pkg, dir+"/side_effects.go", appSideEffects(ctx)),
 	)
 }
 
@@ -110,4 +82,42 @@ func scanProjectFiles(root string, directories *[]string, files *[]string) (err 
 		}
 	}
 	return
+}
+
+func genTestTargets(pkg, target string, testTargets []string) error {
+	src := golang.NewSourceCode(pkg).
+		AddTestTargets(testTargets...)
+	return runn.Execute(
+		src.Cook(target),
+		bash.GoImports(target),
+	)
+}
+
+func genConstructors(pkg, target string, report *typiast.Report) error {
+	src := golang.NewSourceCode(pkg).
+		AddConstructors(report.Autowires()...).
+		AddMockTargets(report.Automocks()...)
+	return runn.Execute(
+		src.Cook(target),
+		bash.GoImports(target),
+	)
+}
+
+func genConfiguration(pkg, target string, configuration ProjectConfiguration) error {
+	src := golang.NewSourceCode(pkg).
+		AddStruct(configuration.Struct).
+		AddConstructorFunction(configuration.Constructors...)
+	return runn.Execute(
+		src.Cook(target),
+		bash.GoImports(target),
+	)
+}
+
+func genSideEffects(pkg, target string, sideEffects []golang.Import) error {
+	src := golang.NewSourceCode(pkg).
+		AddImport(sideEffects...)
+	return runn.Execute(
+		src.Cook(target),
+		bash.GoImports(target),
+	)
 }
