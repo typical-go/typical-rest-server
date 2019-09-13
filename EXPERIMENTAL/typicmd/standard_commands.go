@@ -68,11 +68,12 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			Usage:      "Generate readme document",
 			ActionFunc: generateReadme,
 		},
-		{
-			Name:       "clean",
-			Usage:      "Clean project from generated file during build time",
-			ActionFunc: cleanProject,
-		},
+		// TODO: rework clean
+		// {
+		// 	Name:       "clean",
+		// 	Usage:      "Clean project from generated file during build time",
+		// 	ActionFunc: cleanProject,
+		// },
 		{
 			Name:       "docker",
 			Usage:      "Docker utility",

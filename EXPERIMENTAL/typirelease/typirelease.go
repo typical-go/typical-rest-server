@@ -43,7 +43,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 	for _, changeLog := range changeLogs {
 		log.Infof("Change Log: %s", changeLog)
 	}
-	mainPackage := typienv.AppMainPackage()
+	mainPackage := typienv.App.MainPkg
 	for _, target := range rel.Targets {
 		chunks := strings.Split(target, "/")
 		if len(chunks) != 2 {
@@ -51,7 +51,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 			return
 		}
 		binary := rel.ReleaseBinary(chunks[0], chunks[1])
-		binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
+		binaryPath := fmt.Sprintf("%s/%s", typienv.Release, binary)
 		log.Infof("Create release binary for %s: %s", target, binaryPath)
 		// TODO: support cgo
 		err = bash.GoBuild(binaryPath, mainPackage, "GOOS="+chunks[0], "GOARCH="+chunks[1])

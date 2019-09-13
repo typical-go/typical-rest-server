@@ -43,7 +43,7 @@ func (r *githubReleaser) CreateRelease(ctx context.Context, service *github.Repo
 }
 
 func (r *githubReleaser) Upload(ctx context.Context, service *github.RepositoriesService, repoID int64, binary string) (err error) {
-	binaryPath := fmt.Sprintf("%s/%s", typienv.Release(), binary)
+	binaryPath := fmt.Sprintf("%s/%s", typienv.Release, binary)
 	var file *os.File
 	file, err = os.Open(binaryPath)
 	if err != nil {

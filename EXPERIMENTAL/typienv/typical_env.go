@@ -1,7 +1,6 @@
 package typienv
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -21,27 +20,37 @@ const (
 	defaultBuildTool = "build-tool"
 )
 
-// Binary return complete path of typical binary
-func Binary(name string) string {
-	return fmt.Sprintf("./%s/%s", Bin(), name)
+var (
+	App       *applicationFolder
+	BuildTool *applicationFolder
+	Mock      string
+	Release   string
+)
+
+type applicationFolder struct {
+	MainPkg string
+	Binary  string
 }
 
-// MainPackage return main package path
-func MainPackage(name string) string {
-	return fmt.Sprintf("./%s/%s", Cmd(), name)
-}
-
-// Bin to return typical bin folder
-func Bin() string {
-	bin := os.Getenv(envBin)
-	if bin == "" {
-		bin = defaultBin
+func init() {
+	cmd := cmd()
+	bin := bin()
+	app := app()
+	buildTool := buildTool()
+	App = &applicationFolder{
+		MainPkg: cmd + "/" + app,
+		Binary:  bin + "/" + app,
 	}
-	return bin
+	BuildTool = &applicationFolder{
+		MainPkg: cmd + "/" + buildTool,
+		Binary:  bin + "/" + buildTool,
+	}
+	Mock = mock()
+	Release = release()
+
 }
 
-// Cmd to return typical cmd folder
-func Cmd() string {
+func cmd() string {
 	cmd := os.Getenv(envCmd)
 	if cmd == "" {
 		cmd = defaultCmd
@@ -49,8 +58,15 @@ func Cmd() string {
 	return cmd
 }
 
-// BuildTool to return typical dev tool package
-func BuildTool() string {
+func bin() string {
+	bin := os.Getenv(envBin)
+	if bin == "" {
+		bin = defaultBin
+	}
+	return bin
+}
+
+func buildTool() string {
 	devTool := os.Getenv(envBuildTool)
 	if devTool == "" {
 		devTool = defaultBuildTool
@@ -58,18 +74,7 @@ func BuildTool() string {
 	return devTool
 }
 
-// BuildToolMainPackage return main package path of Typical CLI
-func BuildToolMainPackage() string {
-	return MainPackage(BuildTool())
-}
-
-// BuildToolBinary return
-func BuildToolBinary() string {
-	return Binary(BuildTool())
-}
-
-// App to return app package
-func App() string {
+func app() string {
 	app := os.Getenv(envApp)
 	if app == "" {
 		app = defaultApp
@@ -77,18 +82,7 @@ func App() string {
 	return app
 }
 
-// AppMainPackage return main package path of Typical CLI
-func AppMainPackage() string {
-	return MainPackage(App())
-}
-
-// AppBinary return
-func AppBinary() string {
-	return Binary(App())
-}
-
-// Mock to return app package
-func Mock() string {
+func mock() string {
 	mock := os.Getenv(envMock)
 	if mock == "" {
 		mock = defaultMock
@@ -96,8 +90,7 @@ func Mock() string {
 	return mock
 }
 
-// Release to return release package
-func Release() string {
+func release() string {
 	release := os.Getenv(envApp)
 	if release == "" {
 		release = defaultRelease

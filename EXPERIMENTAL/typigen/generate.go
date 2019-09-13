@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	app = typienv.AppMainPackage()
-	dev = typienv.BuildToolMainPackage()
+	app = typienv.App.MainPkg
+	dev = typienv.BuildTool.MainPkg
 )
 
 // Generate all

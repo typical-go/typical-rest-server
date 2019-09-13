@@ -1,9 +1,6 @@
 package typictx
 
 import (
-	"os"
-	"path/filepath"
-
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"go.uber.org/dig"
 )
@@ -25,15 +22,6 @@ type Context struct {
 	Constructors []interface{}
 
 	container *dig.Container
-}
-
-// BinaryNameOrDefault return binary name of typiapp or default value
-func (c *Context) BinaryNameOrDefault() string {
-	if c.BinaryName == "" {
-		dir, _ := os.Getwd()
-		return filepath.Base(dir)
-	}
-	return c.BinaryName
 }
 
 // Invoke the function
