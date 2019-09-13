@@ -6,19 +6,19 @@ import (
 )
 
 const (
-	envApp     = "TYPICAL_APP"
-	envBin     = "TYPICAL_BIN"
-	envCmd     = "TYPICAL_CMD"
-	envMock    = "TYPICAL_MOCK"
-	envRelease = "TYPICAL_RELEASE"
-	envDevTool = "TYPICAL_DEV_TOOL"
+	envApp       = "TYPICAL_APP"
+	envBin       = "TYPICAL_BIN"
+	envCmd       = "TYPICAL_CMD"
+	envMock      = "TYPICAL_MOCK"
+	envRelease   = "TYPICAL_RELEASE"
+	envBuildTool = "TYPICAL_BUILD_TOOL"
 
-	defaultBin            = "bin"
-	defaultCmd            = "cmd"
-	defaultMock           = "mock"
-	defaultApp            = "app"
-	defaultRelease        = "release"
-	defaultTypicalDevTool = "typical-dev-tool"
+	defaultBin       = "bin"
+	defaultCmd       = "cmd"
+	defaultMock      = "mock"
+	defaultApp       = "app"
+	defaultRelease   = "release"
+	defaultBuildTool = "build-tool"
 )
 
 // Binary return complete path of typical binary
@@ -49,23 +49,23 @@ func Cmd() string {
 	return cmd
 }
 
-// TypicalDevTool to return typical dev tool package
-func TypicalDevTool() string {
-	devTool := os.Getenv(envDevTool)
+// BuildTool to return typical dev tool package
+func BuildTool() string {
+	devTool := os.Getenv(envBuildTool)
 	if devTool == "" {
-		devTool = defaultTypicalDevTool
+		devTool = defaultBuildTool
 	}
 	return devTool
 }
 
-// TypicalDevToolMainPackage return main package path of Typical CLI
-func TypicalDevToolMainPackage() string {
-	return MainPackage(TypicalDevTool())
+// BuildToolMainPackage return main package path of Typical CLI
+func BuildToolMainPackage() string {
+	return MainPackage(BuildTool())
 }
 
-// TypicalDevToolBinary return
-func TypicalDevToolBinary() string {
-	return Binary(TypicalDevTool())
+// BuildToolBinary return
+func BuildToolBinary() string {
+	return Binary(BuildTool())
 }
 
 // App to return app package

@@ -13,7 +13,7 @@ import (
 
 var (
 	app = typienv.AppMainPackage()
-	dev = typienv.TypicalDevToolMainPackage()
+	dev = typienv.BuildToolMainPackage()
 )
 
 // Generate all

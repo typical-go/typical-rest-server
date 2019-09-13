@@ -3,8 +3,8 @@ set -e
 
 BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
-DEV_TOOL=${TYPICAL_DEV:-typical-dev-tool}
+BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
 GENERATOR=${TYPICAL_GEN:-typical-generator}
 
 go run ./$CMD/$GENERATOR/main.go
-go run ./$CMD/$DEV_TOOL/*.go $@
+go run ./$CMD/$BUILD_TOOL/*.go $@
