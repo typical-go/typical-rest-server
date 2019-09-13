@@ -1,7 +1,5 @@
 package readme
 
-import "github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
-
 // DefaultReadme create default readme
 func DefaultReadme() *Readme {
 	return NewReadme().
@@ -9,7 +7,7 @@ func DefaultReadme() *Readme {
 		SetSection("Release Distribution", defaultReleaseDistribution)
 }
 
-func defaultGettingStarted(md *typirecipe.Markdown) (err error) {
+func defaultGettingStarted(md *Markdown) (err error) {
 	md.Heading3("Prerequisite")
 	md.OrderedList(
 		"Install [Go](https://golang.org/doc/install) or `brew install go`",
@@ -20,7 +18,7 @@ func defaultGettingStarted(md *typirecipe.Markdown) (err error) {
 	return
 }
 
-func defaultReleaseDistribution(md *typirecipe.Markdown) (err error) {
+func defaultReleaseDistribution(md *Markdown) (err error) {
 	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder. More information check [here](https://typical-go.github.io/release.html)")
 	return
 }

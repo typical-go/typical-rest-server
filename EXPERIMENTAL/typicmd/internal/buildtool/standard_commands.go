@@ -1,4 +1,4 @@
-package typicmd
+package buildtool
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"

@@ -1,4 +1,4 @@
-package typirelease
+package releaser
 
 import (
 	"testing"

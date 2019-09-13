@@ -1,4 +1,4 @@
-package typirecipe
+package readme
 
 import (
 	"fmt"

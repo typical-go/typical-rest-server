@@ -1,4 +1,4 @@
-package typiast
+package walker
 
 // Report of AST transversal
 type Report struct {

@@ -1,13 +1,12 @@
-package typicmd
+package buildtool
 
 import (
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/buildtool/readme"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/readme"
 )
 
 const (
@@ -22,7 +21,7 @@ func generateReadme(a *typictx.ActionContext) (err error) {
 	readme0 := readme.DefaultReadme().
 		SetTitle(a.Name).
 		SetDescription(a.Description).
-		SetSection("Configuration", func(md *typirecipe.Markdown) (err error) {
+		SetSection("Configuration", func(md *readme.Markdown) (err error) {
 			for _, acc := range a.Context.ConfigAccessors() {
 				name := acc.GetName()
 				if name != "" {

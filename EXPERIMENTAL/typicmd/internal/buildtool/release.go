@@ -1,8 +1,8 @@
-package typicmd
+package buildtool
 
 import (
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/buildtool/releaser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirelease"
 )
 
 func releaseDistribution(action *typictx.ActionContext) (err error) {
@@ -12,13 +12,13 @@ func releaseDistribution(action *typictx.ActionContext) (err error) {
 			return
 		}
 	}
-	binaries, changeLogs, err := typirelease.ReleaseDistribution(action.Release, action.Cli.Bool("force"))
+	binaries, changeLogs, err := releaser.ReleaseDistribution(action.Release, action.Cli.Bool("force"))
 	if err != nil {
 		return
 	}
 
 	if !action.Cli.Bool("no-github") {
-		typirelease.GithubRelease(binaries, changeLogs, action.Release)
+		releaser.GithubRelease(binaries, changeLogs, action.Release)
 	}
 	return
 }

@@ -1,7 +1,7 @@
-package typimain
+package typicmd
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/buildtool"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/urfave/cli"
 )
@@ -32,7 +32,7 @@ func (t *TypicalBuildTool) Cli() *cli.App {
 }
 
 func (t *TypicalBuildTool) commands() []*typictx.Command {
-	cmds := typicmd.StandardCommands(t.Context)
+	cmds := buildtool.StandardCommands(t.Context)
 	for _, module := range t.Modules {
 		if module.Command != nil {
 			cmds = append(cmds, module.Command)

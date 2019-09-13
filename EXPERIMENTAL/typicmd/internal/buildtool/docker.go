@@ -1,4 +1,4 @@
-package typicmd
+package buildtool
 
 import (
 	"io/ioutil"

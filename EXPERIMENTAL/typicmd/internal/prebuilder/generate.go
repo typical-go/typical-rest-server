@@ -1,14 +1,14 @@
-package typigen
+package prebuilder
 
 import (
 	"io/ioutil"
 
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiast"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/golang"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 )
 
 var (
@@ -24,7 +24,7 @@ func Generate(ctx *typictx.Context) (err error) {
 	// }
 	root := "app"
 	pkgs, filenames, _ := projectFiles(root)
-	report, err := typiast.Walk(filenames)
+	report, err := walker.Walk(filenames)
 	if err != nil {
 		return
 	}
@@ -80,7 +80,7 @@ func genTestTargets(pkg, name string, testTargets []string) error {
 	)
 }
 
-func genConstructors(pkg, name string, report *typiast.Report) error {
+func genConstructors(pkg, name string, report *walker.Report) error {
 	src := golang.NewSourceCode(pkg).
 		AddConstructors(report.Autowires()...).
 		AddMockTargets(report.Automocks()...)

@@ -1,4 +1,4 @@
-package typimain
+package typicmd
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"

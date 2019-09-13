@@ -1,8 +1,8 @@
-package typimain
+package typicmd
 
 import (
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typigen"
 	"github.com/urfave/cli"
 )
 
@@ -26,5 +26,5 @@ func (g *TypicalPreBuilder) Cli() *cli.App {
 }
 
 func (g *TypicalPreBuilder) run(ctx *cli.Context) error {
-	return typigen.Generate(g.Context)
+	return prebuilder.Generate(g.Context)
 }

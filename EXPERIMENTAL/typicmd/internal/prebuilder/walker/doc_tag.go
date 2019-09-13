@@ -1,4 +1,4 @@
-package typiast
+package walker
 
 import (
 	"regexp"

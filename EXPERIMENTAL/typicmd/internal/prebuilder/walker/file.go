@@ -1,4 +1,4 @@
-package typiast
+package walker
 
 // File of walk analysis
 type File struct {
