@@ -11,6 +11,11 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typirecipe/golang"
 )
 
+var (
+	app = typienv.AppMainPackage()
+	dev = typienv.TypicalDevToolMainPackage()
+)
+
 // Generate all
 func Generate(ctx *typictx.Context) (err error) {
 	// path := ".typical"
@@ -26,38 +31,16 @@ func Generate(ctx *typictx.Context) (err error) {
 	// b, _ := json.MarshalIndent(report, "", "    ")
 	// err = ioutil.WriteFile(path+"/walk_report.json", b, 0644)
 	// if err != nil {
-	// 	return
+	// 	returnt
 	// }
+	pkg := "main"
 	configuration := configuration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		appGenerated(ctx, configuration, pkgs, report),
-		devToolGeneratead(ctx, configuration, pkgs, report),
-	)
-}
-
-// func getCacheWalkReport() {
-// }
-
-func devToolGeneratead(ctx *typictx.Context, configuration ProjectConfiguration, testTargets []string, report *typiast.Report) error {
-	pkg := "main"
-	dir := typienv.TypicalDevToolMainPackage()
-	return runn.Execute(
-		genTestTargets(pkg, dir+"/test_targets.go", testTargets),
-		genConstructors(pkg, dir+"/constructor.go", report),
-		genConfiguration(pkg, dir+"/configuration.go", configuration),
-		genSideEffects(pkg, dir+"/side_effects.go", devToolSideEffects(ctx)),
-	)
-}
-
-func appGenerated(ctx *typictx.Context, configuration ProjectConfiguration, testTargets []string, report *typiast.Report) error {
-	dir := typienv.AppMainPackage()
-	pkg := "main"
-	return runn.Execute(
-		genTestTargets(pkg, dir+"/test_targets.go", testTargets),
-		genConstructors(pkg, dir+"/constructor.go", report),
-		genConfiguration(pkg, dir+"/configuration.go", configuration),
-		genSideEffects(pkg, dir+"/side_effects.go", appSideEffects(ctx)),
+		genTestTargets(pkg, "test_targets.go", pkgs),
+		genConstructors(pkg, "constructor.go", report),
+		genConfiguration(pkg, "configuration.go", configuration),
+		genSideEffects(pkg, "side_effects.go", ctx),
 	)
 }
 
@@ -84,40 +67,54 @@ func scanProjectFiles(root string, directories *[]string, files *[]string) (err 
 	return
 }
 
-func genTestTargets(pkg, target string, testTargets []string) error {
+func genTestTargets(pkg, name string, testTargets []string) error {
 	src := golang.NewSourceCode(pkg).
 		AddTestTargets(testTargets...)
+	appTarget := app + "/" + name
+	devTarget := dev + "/" + name
 	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
+		src.Cook(appTarget),
+		bash.GoImports(appTarget),
+		src.Cook(devTarget),
+		bash.GoImports(devTarget),
 	)
 }
 
-func genConstructors(pkg, target string, report *typiast.Report) error {
+func genConstructors(pkg, name string, report *typiast.Report) error {
 	src := golang.NewSourceCode(pkg).
 		AddConstructors(report.Autowires()...).
 		AddMockTargets(report.Automocks()...)
+	appTarget := app + "/" + name
+	devTarget := dev + "/" + name
 	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
+		src.Cook(appTarget),
+		bash.GoImports(appTarget),
+		src.Cook(devTarget),
+		bash.GoImports(devTarget),
 	)
 }
 
-func genConfiguration(pkg, target string, configuration ProjectConfiguration) error {
+func genConfiguration(pkg, name string, configuration ProjectConfiguration) error {
 	src := golang.NewSourceCode(pkg).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...)
+	appTarget := app + "/" + name
+	devTarget := dev + "/" + name
 	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
+		src.Cook(appTarget),
+		bash.GoImports(appTarget),
+		src.Cook(devTarget),
+		bash.GoImports(devTarget),
 	)
 }
 
-func genSideEffects(pkg, target string, sideEffects []golang.Import) error {
-	src := golang.NewSourceCode(pkg).
-		AddImport(sideEffects...)
+func genSideEffects(pkg, name string, ctx *typictx.Context) error {
+	appTarget := app + "/" + name
+	devTarget := dev + "/" + name
 	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
+		golang.NewSourceCode(pkg).AddImport(devToolSideEffects(ctx)...).Cook(devTarget),
+		bash.GoImports(devTarget),
+		golang.NewSourceCode(pkg).AddImport(appSideEffects(ctx)...).Cook(appTarget),
+		bash.GoImports(appTarget),
 	)
 }
