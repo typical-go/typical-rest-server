@@ -6,20 +6,20 @@ import (
 	"github.com/urfave/cli"
 )
 
-// TypicalDevTool represent typical task tool application
-type TypicalDevTool struct {
+// TypicalBuildTool represent typical task tool application
+type TypicalBuildTool struct {
 	*typictx.Context
 }
 
-// NewTypicalDevTool return new instance of TypicalCli
-func NewTypicalDevTool(context *typictx.Context) *TypicalDevTool {
-	return &TypicalDevTool{
+// NewTypicalBuildTool return new instance of TypicalCli
+func NewTypicalBuildTool(context *typictx.Context) *TypicalBuildTool {
+	return &TypicalBuildTool{
 		Context: context,
 	}
 }
 
 // Cli return the command line interface
-func (t *TypicalDevTool) Cli() *cli.App {
+func (t *TypicalBuildTool) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Name = t.Name + " (TYPICAL)"
 	app.Usage = ""
@@ -31,7 +31,7 @@ func (t *TypicalDevTool) Cli() *cli.App {
 	return app
 }
 
-func (t *TypicalDevTool) commands() []*typictx.Command {
+func (t *TypicalBuildTool) commands() []*typictx.Command {
 	cmds := typicmd.StandardCommands(t.Context)
 	for _, module := range t.Modules {
 		if module.Command != nil {

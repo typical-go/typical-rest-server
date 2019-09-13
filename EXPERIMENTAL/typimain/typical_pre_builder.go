@@ -6,25 +6,25 @@ import (
 	"github.com/urfave/cli"
 )
 
-// TypicalGenerator represent typical generator
-type TypicalGenerator struct {
+// TypicalPreBuilder represent typical generator
+type TypicalPreBuilder struct {
 	*typictx.Context
 }
 
-// NewTypicalGenerator return new instance of TypicalCli
-func NewTypicalGenerator(context *typictx.Context) *TypicalGenerator {
-	return &TypicalGenerator{
+// NewTypicalPreBuilder return new instance of TypicalCli
+func NewTypicalPreBuilder(context *typictx.Context) *TypicalPreBuilder {
+	return &TypicalPreBuilder{
 		Context: context,
 	}
 }
 
 // Cli return the command line interface
-func (g *TypicalGenerator) Cli() *cli.App {
+func (g *TypicalPreBuilder) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Action = g.run
 	return app
 }
 
-func (g *TypicalGenerator) run(ctx *cli.Context) error {
+func (g *TypicalPreBuilder) run(ctx *cli.Context) error {
 	return typigen.Generate(g.Context)
 }

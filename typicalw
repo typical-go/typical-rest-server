@@ -4,7 +4,7 @@ set -e
 BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
 BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
-GENERATOR=${TYPICAL_GEN:-typical-generator}
+PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
 
-go run ./$CMD/$GENERATOR/main.go
+go run ./$CMD/$PRE_BUILDER/main.go
 go run ./$CMD/$BUILD_TOOL/*.go $@
