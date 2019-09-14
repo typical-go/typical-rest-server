@@ -26,5 +26,5 @@ func (g *TypicalPreBuilder) Cli() *cli.App {
 }
 
 func (g *TypicalPreBuilder) run(ctx *cli.Context) error {
-	return prebuilder.Generate(g.Context)
+	return prebuilder.PreBuild(g.Context)
 }

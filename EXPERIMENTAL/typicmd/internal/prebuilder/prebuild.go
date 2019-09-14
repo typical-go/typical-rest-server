@@ -16,8 +16,8 @@ var (
 	dev = typienv.BuildTool.MainPkg
 )
 
-// Generate all
-func Generate(ctx *typictx.Context) (err error) {
+// PreBuild process to build the typical project
+func PreBuild(ctx *typictx.Context) (err error) {
 	// path := ".typical"
 	// if _, err := os.Stat(path); os.IsNotExist(err) {
 	// 	os.Mkdir(path, os.ModePerm)
