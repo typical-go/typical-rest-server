@@ -8,9 +8,11 @@ import (
 // SourceCode is source code recipe for generated.go in typical package
 type SourceCode struct {
 	Initialization
+	Imports
+
 	PackageName string
-	Imports     []Import
 	Structs     []Struct
+	Codes       []string
 }
 
 // NewSourceCode return new instance of SourceCode
@@ -30,6 +32,9 @@ func (r SourceCode) Write(w io.Writer) {
 	if !r.Initialization.IsBlank() {
 		r.Initialization.Write(w)
 	}
+	for _, code := range r.Codes {
+		writeln(w, code)
+	}
 }
 
 // Cook to generate the recipe into file
@@ -44,30 +49,14 @@ func (r SourceCode) Cook(file string) (err error) {
 	return
 }
 
-// // Blank is nothing to generate for recipe
-// func (r SourceCode) Blank() bool {
-// 	return len(r.Imports) < 1 &&
-// 		len(r.Structs) < 1 &&
-// 		len(r.MockTargets) < 1 &&
-// 		len(r.Constructors) < 1 &&
-// 		len(r.TestTargets) < 1
-
-// }
-
-// func (r SourceCode) sortOut() {
-// 	sort.Strings(r.Constructors)
-// 	sort.Strings(r.MockTargets)
-// 	sort.Strings(r.TestTargets)
-// }
-
-// AddImport to add import POGO
-func (r *SourceCode) AddImport(imports ...Import) *SourceCode {
-	r.Imports = append(r.Imports, imports...)
-	return r
-}
-
 // AddStruct to add struct
 func (r *SourceCode) AddStruct(structs ...Struct) *SourceCode {
 	r.Structs = append(r.Structs, structs...)
+	return r
+}
+
+// Put code to source code
+func (r *SourceCode) Put(code string) *SourceCode {
+	r.Codes = append(r.Codes, code)
 	return r
 }
