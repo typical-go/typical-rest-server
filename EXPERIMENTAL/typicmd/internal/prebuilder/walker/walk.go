@@ -9,8 +9,8 @@ import (
 )
 
 // Walk the source code to get autowire and automock
-func Walk(filenames []string) (report *Report, err error) {
-	report = &Report{}
+func Walk(filenames []string) (f *Files, err error) {
+	f = &Files{}
 	fset := token.NewFileSet() // positions are relative to fset
 	for _, filename := range filenames {
 		if walkTarget(filename) {
@@ -19,7 +19,9 @@ func Walk(filenames []string) (report *Report, err error) {
 			if err != nil {
 				return
 			}
-			report.AddFile(file)
+			if !file.IsEmpty() {
+				f.Add(file)
+			}
 		}
 	}
 	return

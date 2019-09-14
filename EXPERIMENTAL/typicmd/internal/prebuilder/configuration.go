@@ -11,7 +11,7 @@ import (
 // Configuration project configuration
 type Configuration struct {
 	Struct       golang.Struct `json:"struct"`
-	Constructors []string      `json:"constructors"`
+	Constructors []string      `json:"-"`
 }
 
 // AddConstructor to add constructor to project configuration
@@ -25,9 +25,9 @@ func createConfiguration(ctx *typictx.Context) (cfg Configuration) {
 	cfg.AddConstructor(configDefinition())
 	for _, acc := range ctx.ConfigAccessors() {
 		key := acc.GetKey()
-		typ := reflect.TypeOf(acc.GetConfigSpec())
-		cfg.Struct.AddField(reflect.StructField{Name: key, Type: typ})
-		cfg.AddConstructor(subConfigDefinition(key, typ.String()))
+		typ := reflect.TypeOf(acc.GetConfigSpec()).String()
+		cfg.Struct.AddField(key, typ)
+		cfg.AddConstructor(subConfigDefinition(key, typ))
 	}
 	return
 }

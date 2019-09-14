@@ -1,29 +1,24 @@
 package walker
 
-// Report of AST transversal
-type Report struct {
-	Files []File `json:"files"`
-}
+// Files information
+type Files []File
 
-// AddFile to add new file
-func (r *Report) AddFile(file File) *Report {
-	if !file.IsEmpty() {
-		r.Files = append(r.Files, file)
-	}
-	return r
+// Add item to files
+func (f *Files) Add(item File) {
+	*f = append(*f, item)
 }
 
 // Autowires return autowired constructors
-func (r *Report) Autowires() (constructors []string) {
-	for _, file := range r.Files {
+func (f *Files) Autowires() (constructors []string) {
+	for _, file := range *f {
 		constructors = append(constructors, file.Constructors...)
 	}
 	return
 }
 
 // Automocks return automocked filenames
-func (r *Report) Automocks() (filenames []string) {
-	for _, file := range r.Files {
+func (f *Files) Automocks() (filenames []string) {
+	for _, file := range *f {
 		if file.Mock {
 			filenames = append(filenames, file.Name)
 		}

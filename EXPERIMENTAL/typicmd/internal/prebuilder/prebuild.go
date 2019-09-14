@@ -19,8 +19,20 @@ var (
 func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	projPkgs, filenames, _ := projectFiles(root)
+	err = writeCache("test_targets.json", projPkgs)
+	if err != nil {
+		return
+	}
 	configuration := createConfiguration(ctx)
+	err = writeCache("configurations.json", configuration)
+	if err != nil {
+		return
+	}
 	report, err := walker.Walk(filenames)
+	if err != nil {
+		return
+	}
+	err = writeCache("files.json", report)
 	if err != nil {
 		return err
 	}
@@ -44,12 +56,12 @@ func generateTestTargets(testTargets []string) error {
 	)
 }
 
-func generateAnnotated(report *walker.Report) error {
+func generateAnnotated(files *walker.Files) error {
 	pkg := typienv.Dependency.Package
 	name := "annotateds.go"
 	src := golang.NewSourceCode(pkg)
-	src.AddConstructors(report.Autowires()...)
-	src.AddMockTargets(report.Automocks()...)
+	src.AddConstructors(files.Autowires()...)
+	src.AddMockTargets(files.Automocks()...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),
