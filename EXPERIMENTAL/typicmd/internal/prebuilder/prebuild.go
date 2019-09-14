@@ -14,7 +14,7 @@ import (
 var (
 	app        = typienv.App.MainPkg
 	buildTool  = typienv.BuildTool.MainPkg
-	dependency = "cmd/dependency"
+	dependency = typienv.Dependency
 )
 
 // PreBuild process to build the typical project

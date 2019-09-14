@@ -8,7 +8,7 @@ import (
 func devToolSideEffects(ctx *typictx.Context) (imports []golang.Import) {
 	imports = append(imports, golang.Import{
 		Alias:       "_",
-		PackageName: "github.com/typical-go/typical-rest-server/cmd/dependency",
+		PackageName: "github.com/typical-go/typical-rest-server/" + dependency,
 	})
 	for _, module := range ctx.Modules {
 		for _, sideEffect := range module.SideEffects {
@@ -26,7 +26,7 @@ func devToolSideEffects(ctx *typictx.Context) (imports []golang.Import) {
 func appSideEffects(ctx *typictx.Context) (imports []golang.Import) {
 	imports = append(imports, golang.Import{
 		Alias:       "_",
-		PackageName: "github.com/typical-go/typical-rest-server/cmd/dependency",
+		PackageName: "github.com/typical-go/typical-rest-server/" + dependency,
 	})
 	for _, module := range ctx.Modules {
 		for _, sideEffect := range module.SideEffects {

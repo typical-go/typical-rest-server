@@ -5,26 +5,29 @@ import (
 )
 
 const (
-	envApp       = "TYPICAL_APP"
-	envBin       = "TYPICAL_BIN"
-	envCmd       = "TYPICAL_CMD"
-	envMock      = "TYPICAL_MOCK"
-	envRelease   = "TYPICAL_RELEASE"
-	envBuildTool = "TYPICAL_BUILD_TOOL"
+	envApp        = "TYPICAL_APP"
+	envBin        = "TYPICAL_BIN"
+	envCmd        = "TYPICAL_CMD"
+	envMock       = "TYPICAL_MOCK"
+	envRelease    = "TYPICAL_RELEASE"
+	envBuildTool  = "TYPICAL_BUILD_TOOL"
+	envDependency = "TYPICAL_DEPENDENCY"
 
-	defaultBin       = "bin"
-	defaultCmd       = "cmd"
-	defaultMock      = "mock"
-	defaultApp       = "app"
-	defaultRelease   = "release"
-	defaultBuildTool = "build-tool"
+	defaultBin        = "bin"
+	defaultCmd        = "cmd"
+	defaultMock       = "mock"
+	defaultApp        = "app"
+	defaultRelease    = "release"
+	defaultBuildTool  = "build-tool"
+	defaultDependency = "dependency"
 )
 
 var (
-	App       *applicationFolder
-	BuildTool *applicationFolder
-	Mock      string
-	Release   string
+	App        *applicationFolder
+	BuildTool  *applicationFolder
+	Mock       string
+	Release    string
+	Dependency string
 )
 
 type applicationFolder struct {
@@ -47,7 +50,7 @@ func init() {
 	}
 	Mock = mock()
 	Release = release()
-
+	Dependency = cmd + "/internal/" + dependency()
 }
 
 func cmd() string {
@@ -96,4 +99,12 @@ func release() string {
 		release = defaultRelease
 	}
 	return release
+}
+
+func dependency() string {
+	dep := os.Getenv(envDependency)
+	if dep == "" {
+		dep = defaultDependency
+	}
+	return dep
 }

@@ -2,7 +2,7 @@
 
 package main
 
-import _ "github.com/typical-go/typical-rest-server/cmd/dependency"
+import _ "github.com/typical-go/typical-rest-server/cmd/internal/dependency"
 import _ "github.com/lib/pq"
 
 func init() {
