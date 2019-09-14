@@ -19,21 +19,21 @@ type Config struct {
 }
 
 func init() {
-	typical.Context.AddConstructor(func() (*Config, error) {
+	typical.Context.Constructors.Add(func() (*Config, error) {
 		var cfg Config
 		err := envconfig.Process("", &cfg)
 		return &cfg, err
 	})
-	typical.Context.AddConstructor(func(cfg *Config) *config.Config {
+	typical.Context.Constructors.Add(func(cfg *Config) *config.Config {
 		return cfg.App
 	})
-	typical.Context.AddConstructor(func(cfg *Config) *typserver.Config {
+	typical.Context.Constructors.Add(func(cfg *Config) *typserver.Config {
 		return cfg.Server
 	})
-	typical.Context.AddConstructor(func(cfg *Config) *typpostgres.Config {
+	typical.Context.Constructors.Add(func(cfg *Config) *typpostgres.Config {
 		return cfg.Pg
 	})
-	typical.Context.AddConstructor(func(cfg *Config) *typredis.Config {
+	typical.Context.Constructors.Add(func(cfg *Config) *typredis.Config {
 		return cfg.Redis
 	})
 }

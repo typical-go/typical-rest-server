@@ -2,6 +2,7 @@ package typictx
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"go.uber.org/dig"
 )
 
@@ -15,9 +16,9 @@ type Context struct {
 	Root        string
 
 	Modules      []*Module
-	TestTargets  []string
-	MockTargets  []string
-	Constructors []interface{}
+	TestTargets  slice.Strings
+	MockTargets  slice.Strings
+	Constructors slice.Interfaces
 
 	container *dig.Container
 }
@@ -42,16 +43,6 @@ func (c *Context) Invoke(function interface{}) error {
 // AddConstructor to add constructor
 func (c *Context) AddConstructor(constructor interface{}) {
 	c.Constructors = append(c.Constructors, constructor)
-}
-
-// AddMockTarget to add mock target
-func (c *Context) AddMockTarget(mockTarget string) {
-	c.MockTargets = append(c.MockTargets, mockTarget)
-}
-
-// AddTestTarget to add test target
-func (c *Context) AddTestTarget(testTarget string) {
-	c.TestTargets = append(c.TestTargets, testTarget)
 }
 
 // ConfigAccessors return list of config accessor

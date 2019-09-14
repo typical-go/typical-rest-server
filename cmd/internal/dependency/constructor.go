@@ -9,8 +9,8 @@ import (
 )
 
 func init() {
-	typical.Context.AddConstructor(repository.NewBookRepo)
-	typical.Context.AddConstructor(service.NewBookService)
-	typical.Context.AddMockTarget("app/repository/book_repo.go")
-	typical.Context.AddMockTarget("app/service/book_service.go")
+	typical.Context.Constructors.Add(repository.NewBookRepo)
+	typical.Context.Constructors.Add(service.NewBookService)
+	typical.Context.MockTargets.Add("app/repository/book_repo.go")
+	typical.Context.MockTargets.Add("app/service/book_service.go")
 }
