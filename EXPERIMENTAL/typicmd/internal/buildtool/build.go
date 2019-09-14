@@ -11,8 +11,8 @@ import (
 )
 
 func buildBinary(ctx *typictx.ActionContext) error {
-	binaryName := typienv.App.Binary
-	mainPackage := typienv.App.MainPkg
+	binaryName := typienv.App.BinPath
+	mainPackage := typienv.App.SrcPath
 	return bash.GoBuild(binaryName, mainPackage)
 }
 
@@ -20,7 +20,7 @@ func runBinary(ctx *typictx.ActionContext) error {
 	if !ctx.Cli.Bool("no-build") {
 		buildBinary(ctx)
 	}
-	binaryPath := typienv.App.Binary
+	binaryPath := typienv.App.BinPath
 	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
 }
 

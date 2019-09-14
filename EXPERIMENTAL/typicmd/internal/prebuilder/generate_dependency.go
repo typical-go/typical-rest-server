@@ -6,11 +6,12 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
 func generateDependency(ctx *typictx.Context) error {
-	root := "app"
-	pkg := "dependency"
+	root := typienv.AppName
+	pkg := typienv.Dependency.Package
 	pkgs, filenames, _ := projectFiles(root)
 	configuration := createConfiguration(ctx)
 	report, err := walker.Walk(filenames)
@@ -19,8 +20,8 @@ func generateDependency(ctx *typictx.Context) error {
 	}
 	return runn.Execute(
 		genTestTargets(pkg, "test_targets.go", pkgs),
-		genConstructors(pkg, "constructor.go", report),
-		genConfiguration(pkg, "configuration.go", configuration),
+		genConstructors(pkg, "constructors.go", report),
+		genConfiguration(pkg, "configurations.go", configuration),
 	)
 }
 

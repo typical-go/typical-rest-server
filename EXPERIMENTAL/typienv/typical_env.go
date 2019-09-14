@@ -25,32 +25,40 @@ const (
 var (
 	App        *applicationFolder
 	BuildTool  *applicationFolder
+	Dependency *applicationFolder
 	Mock       string
 	Release    string
-	Dependency string
+	AppName    string
 )
 
 type applicationFolder struct {
-	MainPkg string
-	Binary  string
+	Package string
+	SrcPath string
+	BinPath string
 }
 
 func init() {
+	AppName = app()
 	cmd := cmd()
 	bin := bin()
-	app := app()
 	buildTool := buildTool()
+	dependency := dependency()
 	App = &applicationFolder{
-		MainPkg: cmd + "/" + app,
-		Binary:  bin + "/" + app,
+		Package: "main",
+		SrcPath: cmd + "/" + AppName,
+		BinPath: bin + "/" + AppName,
 	}
 	BuildTool = &applicationFolder{
-		MainPkg: cmd + "/" + buildTool,
-		Binary:  bin + "/" + buildTool,
+		Package: "main",
+		SrcPath: cmd + "/" + buildTool,
+		BinPath: bin + "/" + buildTool,
+	}
+	Dependency = &applicationFolder{
+		Package: dependency,
+		SrcPath: cmd + "/internal/" + dependency,
 	}
 	Mock = mock()
 	Release = release()
-	Dependency = cmd + "/internal/" + dependency()
 }
 
 func cmd() string {

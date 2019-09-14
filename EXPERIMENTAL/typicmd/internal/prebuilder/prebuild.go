@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	app        = typienv.App.MainPkg
-	buildTool  = typienv.BuildTool.MainPkg
-	dependency = typienv.Dependency
+	app        = typienv.App.SrcPath
+	buildTool  = typienv.BuildTool.SrcPath
+	dependency = typienv.Dependency.SrcPath
 )
 
 // PreBuild process to build the typical project

@@ -43,7 +43,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 	for _, changeLog := range changeLogs {
 		log.Infof("Change Log: %s", changeLog)
 	}
-	mainPackage := typienv.App.MainPkg
+	mainPackage := typienv.App.SrcPath
 	for _, target := range rel.Targets {
 		chunks := strings.Split(target, "/")
 		if len(chunks) != 2 {
