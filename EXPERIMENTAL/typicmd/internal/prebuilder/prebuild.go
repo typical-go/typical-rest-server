@@ -19,8 +19,6 @@ func PreBuild(ctx *typictx.Context) (err error) {
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
 		generateDependency(ctx),
-		generateApp(ctx),
-		generateBuildTool(ctx),
 	)
 }
 
