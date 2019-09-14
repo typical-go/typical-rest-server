@@ -6,6 +6,3 @@ import _ "github.com/typical-go/typical-rest-server/cmd/internal/dependency"
 import _ "github.com/lib/pq"
 import _ "github.com/golang-migrate/migrate/database/postgres"
 import _ "github.com/golang-migrate/migrate/source/file"
-
-func init() {
-}

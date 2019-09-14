@@ -3,17 +3,14 @@ package golang
 import (
 	"io"
 	"os"
-	"sort"
 )
 
 // SourceCode is source code recipe for generated.go in typical package
 type SourceCode struct {
-	PackageName  string
-	Imports      []Import
-	Structs      []Struct
-	Constructors []string
-	MockTargets  []string
-	TestTargets  []string
+	Initialization
+	PackageName string
+	Imports     []Import
+	Structs     []Struct
 }
 
 // NewSourceCode return new instance of SourceCode
@@ -30,17 +27,9 @@ func (r SourceCode) Write(w io.Writer) {
 	for i := range r.Structs {
 		r.Structs[i].Write(w)
 	}
-	writeln(w, "func init() {")
-	for i := range r.Constructors {
-		writelnf(w, "typical.Context.AddConstructor(%s)", r.Constructors[i])
+	if !r.Initialization.IsBlank() {
+		r.Initialization.Write(w)
 	}
-	for i := range r.MockTargets {
-		writelnf(w, "typical.Context.AddMockTarget(\"%s\")", r.MockTargets[i])
-	}
-	for i := range r.TestTargets {
-		writelnf(w, "typical.Context.AddTestTarget(\"./%s\")", r.TestTargets[i])
-	}
-	writeln(w, "}")
 }
 
 // Cook to generate the recipe into file
@@ -51,44 +40,25 @@ func (r SourceCode) Cook(file string) (err error) {
 		return
 	}
 	defer f.Close()
-	r.sortOut()
 	r.Write(f)
 	return
 }
 
-// Blank is nothing to generate for recipe
-func (r SourceCode) Blank() bool {
-	return len(r.Imports) < 1 &&
-		len(r.Structs) < 1 &&
-		len(r.MockTargets) < 1 &&
-		len(r.Constructors) < 1 &&
-		len(r.TestTargets) < 1
+// // Blank is nothing to generate for recipe
+// func (r SourceCode) Blank() bool {
+// 	return len(r.Imports) < 1 &&
+// 		len(r.Structs) < 1 &&
+// 		len(r.MockTargets) < 1 &&
+// 		len(r.Constructors) < 1 &&
+// 		len(r.TestTargets) < 1
 
-}
+// }
 
-func (r SourceCode) sortOut() {
-	sort.Strings(r.Constructors)
-	sort.Strings(r.MockTargets)
-	sort.Strings(r.TestTargets)
-}
-
-// AddConstructors to add constructors
-func (r *SourceCode) AddConstructors(constructors ...string) *SourceCode {
-	r.Constructors = append(r.Constructors, constructors...)
-	return r
-}
-
-// AddMockTargets to add constructors
-func (r *SourceCode) AddMockTargets(mockTargets ...string) *SourceCode {
-	r.MockTargets = append(r.MockTargets, mockTargets...)
-	return r
-}
-
-// AddTestTargets to add constructors
-func (r *SourceCode) AddTestTargets(testTargets ...string) *SourceCode {
-	r.TestTargets = append(r.TestTargets, testTargets...)
-	return r
-}
+// func (r SourceCode) sortOut() {
+// 	sort.Strings(r.Constructors)
+// 	sort.Strings(r.MockTargets)
+// 	sort.Strings(r.TestTargets)
+// }
 
 // AddImport to add import POGO
 func (r *SourceCode) AddImport(imports ...Import) *SourceCode {

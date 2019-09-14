@@ -27,13 +27,13 @@ func init() {
 	typical.Context.AddConstructor(func(cfg *Config) *config.Config {
 		return cfg.App
 	})
+	typical.Context.AddConstructor(func(cfg *Config) *typserver.Config {
+		return cfg.Server
+	})
 	typical.Context.AddConstructor(func(cfg *Config) *typpostgres.Config {
 		return cfg.Pg
 	})
 	typical.Context.AddConstructor(func(cfg *Config) *typredis.Config {
 		return cfg.Redis
-	})
-	typical.Context.AddConstructor(func(cfg *Config) *typserver.Config {
-		return cfg.Server
 	})
 }

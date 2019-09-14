@@ -69,7 +69,8 @@ func scanProjectFiles(root string, directories *[]string, files *[]string) (err 
 }
 
 func genTestTargets(pkg, name string, testTargets []string) error {
-	src := golang.NewSourceCode(pkg).AddTestTargets(testTargets...)
+	src := golang.NewSourceCode(pkg)
+	src.AddTestTargets(testTargets...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),
@@ -78,9 +79,9 @@ func genTestTargets(pkg, name string, testTargets []string) error {
 }
 
 func genConstructors(pkg, name string, report *walker.Report) error {
-	src := golang.NewSourceCode(pkg).
-		AddConstructors(report.Autowires()...).
-		AddMockTargets(report.Automocks()...)
+	src := golang.NewSourceCode(pkg)
+	src.AddConstructors(report.Autowires()...)
+	src.AddMockTargets(report.Automocks()...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),
@@ -90,8 +91,8 @@ func genConstructors(pkg, name string, report *walker.Report) error {
 
 func genConfiguration(pkg, name string, configuration Configuration) error {
 	src := golang.NewSourceCode(pkg).
-		AddStruct(configuration.Struct).
-		AddConstructors(configuration.Constructors...)
+		AddStruct(configuration.Struct)
+	src.AddConstructors(configuration.Constructors...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),
