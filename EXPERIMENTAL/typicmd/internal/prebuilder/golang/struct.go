@@ -12,6 +12,11 @@ type Struct struct {
 	Fields []reflect.StructField
 }
 
+// AddField to add field to struct
+func (s *Struct) AddField(field reflect.StructField) {
+	s.Fields = append(s.Fields, field)
+}
+
 func (s Struct) Write(w io.Writer) {
 	writelnf(w, "type %s struct{", s.Name)
 	for _, field := range s.Fields {

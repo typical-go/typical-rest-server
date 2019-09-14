@@ -35,7 +35,7 @@ func PreBuild(ctx *typictx.Context) (err error) {
 	// 	returnt
 	// }
 	pkg := "dependency"
-	configuration := configuration(ctx)
+	configuration := createConfiguration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
 		genTestTargets(pkg, "test_targets.go", pkgs),
@@ -88,10 +88,10 @@ func genConstructors(pkg, name string, report *walker.Report) error {
 	)
 }
 
-func genConfiguration(pkg, name string, configuration ProjectConfiguration) error {
+func genConfiguration(pkg, name string, configuration Configuration) error {
 	src := golang.NewSourceCode(pkg).
 		AddStruct(configuration.Struct).
-		AddConstructorFunction(configuration.Constructors...)
+		AddConstructors(configuration.Constructors...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),

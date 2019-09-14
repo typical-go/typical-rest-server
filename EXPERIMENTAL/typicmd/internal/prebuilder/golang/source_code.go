@@ -72,14 +72,6 @@ func (r SourceCode) sortOut() {
 	sort.Strings(r.TestTargets)
 }
 
-// AddConstructorFunction to add FunctionPogo to constructor
-func (r *SourceCode) AddConstructorFunction(pogos ...Function) *SourceCode {
-	for _, pogo := range pogos {
-		r.Constructors = append(r.Constructors, pogo.String())
-	}
-	return r
-}
-
 // AddConstructors to add constructors
 func (r *SourceCode) AddConstructors(constructors ...string) *SourceCode {
 	r.Constructors = append(r.Constructors, constructors...)

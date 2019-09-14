@@ -8,40 +8,40 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
-// ProjectConfiguration project configuration
-type ProjectConfiguration struct {
-	Struct       golang.Struct     `json:"struct"`
-	Constructors []golang.Function `json:"constructors"`
+// Configuration project configuration
+type Configuration struct {
+	Struct       golang.Struct `json:"struct"`
+	Constructors []string      `json:"constructors"`
 }
 
-func configuration(ctx *typictx.Context) (configuration ProjectConfiguration) {
+// AddConstructor to add constructor to project configuration
+func (c *Configuration) AddConstructor(constructor string) {
+	c.Constructors = append(c.Constructors, constructor)
+}
+
+func createConfiguration(ctx *typictx.Context) (cfg Configuration) {
 	structName := "Config"
-	ptrStruct := "*" + structName
-	configuration.Struct.Name = structName
-	configuration.Constructors = append(
-		configuration.Constructors,
-		golang.Function{
-			FuncParams:   map[string]string{},
-			ReturnValues: []string{ptrStruct, "error"},
-			FuncBody: fmt.Sprintf(`var cfg Config
-err := envconfig.Process("", &cfg)
-return &cfg, err`),
-		})
+	cfg.Struct.Name = structName
+	cfg.AddConstructor(configDefinition())
 	for _, acc := range ctx.ConfigAccessors() {
 		key := acc.GetKey()
 		typ := reflect.TypeOf(acc.GetConfigSpec())
-		configuration.Struct.Fields = append(
-			configuration.Struct.Fields,
-			reflect.StructField{Name: key, Type: typ},
-		)
-		configuration.Constructors = append(
-			configuration.Constructors,
-			golang.Function{
-				FuncParams:   map[string]string{"cfg": ptrStruct},
-				ReturnValues: []string{typ.String()},
-				FuncBody:     fmt.Sprintf(`return cfg.%s`, key),
-			},
-		)
+		cfg.Struct.AddField(reflect.StructField{Name: key, Type: typ})
+		cfg.AddConstructor(subConfigDefinition(key, typ.String()))
 	}
 	return
+}
+
+func configDefinition() string {
+	return `func() (*Config, error) {
+	var cfg Config
+	err := envconfig.Process("", &cfg)
+	return &cfg, err
+}`
+}
+
+func subConfigDefinition(name, typ string) string {
+	return fmt.Sprintf(`func(cfg *Config) %s {
+	return cfg.%s
+}`, typ, name)
 }
