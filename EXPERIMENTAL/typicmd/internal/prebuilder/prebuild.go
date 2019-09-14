@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	app = typienv.App.MainPkg
-	dev = typienv.BuildTool.MainPkg
+	app        = typienv.App.MainPkg
+	buildTool  = typienv.BuildTool.MainPkg
+	dependency = "cmd/dependency"
 )
 
 // PreBuild process to build the typical project
@@ -33,14 +34,14 @@ func PreBuild(ctx *typictx.Context) (err error) {
 	// if err != nil {
 	// 	returnt
 	// }
-	pkg := "main"
+	pkg := "dependency"
 	configuration := configuration(ctx)
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
 		genTestTargets(pkg, "test_targets.go", pkgs),
 		genConstructors(pkg, "constructor.go", report),
 		genConfiguration(pkg, "configuration.go", configuration),
-		genSideEffects(pkg, "side_effects.go", ctx),
+		genSideEffects("main", "side_effects.go", ctx),
 	)
 }
 
@@ -68,15 +69,11 @@ func scanProjectFiles(root string, directories *[]string, files *[]string) (err 
 }
 
 func genTestTargets(pkg, name string, testTargets []string) error {
-	src := golang.NewSourceCode(pkg).
-		AddTestTargets(testTargets...)
-	appTarget := app + "/" + name
-	devTarget := dev + "/" + name
+	src := golang.NewSourceCode(pkg).AddTestTargets(testTargets...)
+	target := dependency + "/" + name
 	return runn.Execute(
-		src.Cook(appTarget),
-		bash.GoImports(appTarget),
-		src.Cook(devTarget),
-		bash.GoImports(devTarget),
+		src.Cook(target),
+		bash.GoImports(target),
 	)
 }
 
@@ -84,13 +81,10 @@ func genConstructors(pkg, name string, report *walker.Report) error {
 	src := golang.NewSourceCode(pkg).
 		AddConstructors(report.Autowires()...).
 		AddMockTargets(report.Automocks()...)
-	appTarget := app + "/" + name
-	devTarget := dev + "/" + name
+	target := dependency + "/" + name
 	return runn.Execute(
-		src.Cook(appTarget),
-		bash.GoImports(appTarget),
-		src.Cook(devTarget),
-		bash.GoImports(devTarget),
+		src.Cook(target),
+		bash.GoImports(target),
 	)
 }
 
@@ -98,19 +92,16 @@ func genConfiguration(pkg, name string, configuration ProjectConfiguration) erro
 	src := golang.NewSourceCode(pkg).
 		AddStruct(configuration.Struct).
 		AddConstructorFunction(configuration.Constructors...)
-	appTarget := app + "/" + name
-	devTarget := dev + "/" + name
+	target := dependency + "/" + name
 	return runn.Execute(
-		src.Cook(appTarget),
-		bash.GoImports(appTarget),
-		src.Cook(devTarget),
-		bash.GoImports(devTarget),
+		src.Cook(target),
+		bash.GoImports(target),
 	)
 }
 
 func genSideEffects(pkg, name string, ctx *typictx.Context) error {
 	appTarget := app + "/" + name
-	devTarget := dev + "/" + name
+	devTarget := buildTool + "/" + name
 	return runn.Execute(
 		golang.NewSourceCode(pkg).AddImport(devToolSideEffects(ctx)...).Cook(devTarget),
 		bash.GoImports(devTarget),
