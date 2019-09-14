@@ -22,7 +22,7 @@ func GoBuild(binaryName, mainPackage string, env ...string) error {
 	args := []string{"build"}
 	args = append(args, "-o", binaryName)
 	args = append(args, "-ldflags", "-w -s")
-	args = append(args, mainPackage)
+	args = append(args, "./"+mainPackage)
 	cmd := exec.Command("go", args...)
 	cmd.Env = append(os.Environ(), env...)
 	cmd.Stdout = os.Stdout

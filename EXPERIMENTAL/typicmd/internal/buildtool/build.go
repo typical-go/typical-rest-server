@@ -26,7 +26,6 @@ func runBinary(ctx *typictx.ActionContext) error {
 
 func runTesting(ctx *typictx.ActionContext) error {
 	return bash.GoTest(ctx.TestTargets)
-
 }
 
 func generateMock(ctx *typictx.ActionContext) (err error) {
