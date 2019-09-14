@@ -13,6 +13,7 @@ import (
 var Context = &typictx.Context{
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
+	Root:        "github.com/typical-go/typical-rest-server",
 	Application: typictx.Application{
 		StartFunc: app.Start,
 		Config: typictx.Config{

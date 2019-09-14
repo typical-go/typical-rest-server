@@ -12,13 +12,11 @@ type Context struct {
 
 	Name        string
 	Description string
-	BinaryName  string
+	Root        string
 
-	Modules []*Module
-
-	TestTargets []string
-	MockTargets []string
-
+	Modules      []*Module
+	TestTargets  []string
+	MockTargets  []string
 	Constructors []interface{}
 
 	container *dig.Container
