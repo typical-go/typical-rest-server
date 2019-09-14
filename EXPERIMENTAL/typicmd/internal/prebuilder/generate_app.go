@@ -30,13 +30,6 @@ func mainApp() string {
 }
 
 func appSideEffects(ctx *typictx.Context) (imports golang.Imports) {
-	for _, module := range ctx.Modules {
-		for _, sideEffect := range module.SideEffects {
-			if sideEffect.AppFlag {
-				imports.Blank(sideEffect.Library)
-			}
-		}
-	}
 	imports.Blank(ctx.Root + "/" + dependency)
 	imports.WithAlias("log", "github.com/sirupsen/logrus")
 	imports.Add(ctx.Root + "/typical")

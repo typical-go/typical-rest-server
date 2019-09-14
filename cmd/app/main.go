@@ -5,7 +5,6 @@ package main
 import (
 	"os"
 
-	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd"
 	_ "github.com/typical-go/typical-rest-server/cmd/internal/dependency"
