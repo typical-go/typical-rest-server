@@ -1,6 +1,9 @@
 package prebuilder
 
 import (
+	"time"
+
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/golang"
@@ -19,12 +22,9 @@ var (
 func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	projPkgs, filenames, _ := projectFiles(root)
-	err = writeCache("test_targets.json", projPkgs)
-	if err != nil {
-		return
-	}
+
 	configuration := createConfiguration(ctx)
-	err = writeCache("configurations.json", configuration)
+	err = writeCache("configurations", configuration)
 	if err != nil {
 		return
 	}
@@ -32,24 +32,33 @@ func PreBuild(ctx *typictx.Context) (err error) {
 	if err != nil {
 		return
 	}
-	err = writeCache("files.json", report)
+	err = writeCache("files", report)
 	if err != nil {
 		return err
 	}
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
-		generateTestTargets(projPkgs),
+		prepareTestTargets(projPkgs),
 		generateAnnotated(report),
 		generateConfiguration(configuration),
 	)
 }
 
-func generateTestTargets(testTargets []string) error {
+func prepareTestTargets(projPkgs []string) (err error) {
+	name := "test_targets"
+	err = writeCache(name, projPkgs)
+	if err != nil {
+		return
+	}
+	return generateTestTargets(name, projPkgs)
+}
+
+func generateTestTargets(name string, testTargets []string) error {
+	defer elapsed("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
-	name := "test_targets.go"
 	src := golang.NewSourceCode(pkg)
 	src.AddTestTargets(testTargets...)
-	target := dependency + "/" + name
+	target := dependency + "/" + name + ".go"
 	return runn.Execute(
 		src.Cook(target),
 		bash.GoImports(target),
@@ -57,6 +66,7 @@ func generateTestTargets(testTargets []string) error {
 }
 
 func generateAnnotated(files *walker.Files) error {
+	defer elapsed("Generate Annotated")()
 	pkg := typienv.Dependency.Package
 	name := "annotateds.go"
 	src := golang.NewSourceCode(pkg)
@@ -70,6 +80,8 @@ func generateAnnotated(files *walker.Files) error {
 }
 
 func generateConfiguration(configuration Configuration) error {
+	defer elapsed("Generate Configuration")()
+	// TODO: try if manual import can improve goimport execution
 	pkg := typienv.Dependency.Package
 	name := "configurations.go"
 	src := golang.NewSourceCode(pkg).
@@ -80,4 +92,11 @@ func generateConfiguration(configuration Configuration) error {
 		src.Cook(target),
 		bash.GoImports(target),
 	)
+}
+
+func elapsed(what string) func() {
+	start := time.Now()
+	return func() {
+		log.Infof("%s took %v\n", what, time.Since(start))
+	}
 }
