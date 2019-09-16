@@ -22,19 +22,10 @@ var (
 func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	projPkgs, filenames, _ := projectFiles(root)
-
 	configuration := createConfiguration(ctx)
-	err = writeCache("configurations", configuration)
-	if err != nil {
-		return
-	}
 	report, err := walker.Walk(filenames)
 	if err != nil {
 		return
-	}
-	err = writeCache("files", report)
-	if err != nil {
-		return err
 	}
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
@@ -46,10 +37,10 @@ func PreBuild(ctx *typictx.Context) (err error) {
 
 func prepareTestTargets(projPkgs []string) (err error) {
 	name := "test_targets"
-	err = writeCache(name, projPkgs)
-	if err != nil {
-		return
-	}
+	// err = writeCache(name, projPkgs)
+	// if err != nil {
+	// 	return
+	// }
 	return generateTestTargets(name, projPkgs)
 }
 
