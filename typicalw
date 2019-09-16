@@ -6,5 +6,15 @@ CMD=${TYPICAL_CMD:-cmd}
 BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
 PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
 
-go run ./$CMD/$PRE_BUILDER/main.go
-go run ./$CMD/$BUILD_TOOL/*.go $@
+if ! [[ -fz $BIN/$PRE_BUILDER ]]; then
+    echo "Missing PreBuilder. Building Typical PreBuilder."
+    go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER    
+fi
+
+if ! [[ -z $(git status -s typical cmd/build-tool cmd/internal) ]]; then
+    echo "Update detected. Building Typical BuildTool."
+    go build -o $BIN/$BUILD_TOOL ./$CMD/$BUILD_TOOL
+fi
+
+./$BIN/$PRE_BUILDER
+./$BIN/$BUILD_TOOL $@
