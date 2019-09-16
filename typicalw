@@ -6,7 +6,7 @@ CMD=${TYPICAL_CMD:-cmd}
 BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
 PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
 
-if ! [[ -fz $BIN/$PRE_BUILDER ]]; then
+if ! [[ -f $BIN/$PRE_BUILDER ]]; then
     echo "Missing PreBuilder. Building Typical PreBuilder."
     go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER    
 fi
