@@ -5,7 +5,7 @@ import (
 
 	"github.com/alicebob/miniredis"
 	"github.com/stretchr/testify/require"
-	"github.com/tiket/TIX-COMMON-GO/tixredis"
+	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 )
 
 func TestConnect(t *testing.T) {
@@ -13,7 +13,7 @@ func TestConnect(t *testing.T) {
 	require.NoError(t, err)
 	defer dummyServer.Close()
 	t.Run("GIVEN bad config", func(t *testing.T) {
-		_, err := tixredis.Connect(&tixredis.Config{
+		_, err := typredis.Connect(&typredis.Config{
 			Host: "badserver",
 			Port: "1",
 		})
@@ -21,7 +21,7 @@ func TestConnect(t *testing.T) {
 	})
 	t.Run("GIVEN good config", func(t *testing.T) {
 		dummyServer.Set("hello", "world")
-		client, err := tixredis.Connect(&tixredis.Config{
+		client, err := typredis.Connect(&typredis.Config{
 			Host: dummyServer.Host(),
 			Port: dummyServer.Port(),
 		})

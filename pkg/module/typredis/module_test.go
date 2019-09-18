@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/tiket/TIX-COMMON-GO/tixredis"
+	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 )
 
 func TestModule(t *testing.T) {
-	module := tixredis.Module()
+	module := typredis.Module()
 	require.NotNil(t, module)
 }
