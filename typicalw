@@ -10,11 +10,7 @@ if ! [[ -f $BIN/$PRE_BUILDER ]]; then
     echo "Missing PreBuilder. Building Typical PreBuilder."
     go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER    
 fi
-
-if ! [[ -z $(git status -s typical cmd/build-tool cmd/internal) ]]; then
-    echo "Update detected. Building Typical BuildTool."
-    go build -o $BIN/$BUILD_TOOL ./$CMD/$BUILD_TOOL
-fi
-
 ./$BIN/$PRE_BUILDER
+
+go build -o $BIN/$BUILD_TOOL ./$CMD/$BUILD_TOOL
 ./$BIN/$BUILD_TOOL $@
