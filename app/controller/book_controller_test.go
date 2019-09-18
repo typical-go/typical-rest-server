@@ -195,6 +195,6 @@ func TestBookController_Update(t *testing.T) {
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rr.Code)
-		require.Equal(t, "{\"message\":\"Update success\"}\n", rr.Body.String())
+		require.Equal(t, "{\"message\":\"Update #1 success\"}\n", rr.Body.String())
 	})
 }
