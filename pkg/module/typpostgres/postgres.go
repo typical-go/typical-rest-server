@@ -3,6 +3,7 @@ package typpostgres
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
@@ -14,7 +15,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const sourceURL = "file://scripts/db/migration"
+const (
+	migrationSrc = "scripts/db/migration"
+	seedSrc      = "scripts/db/seed"
+)
 
 // Config is postgres configuration
 type Config struct {
@@ -65,6 +69,7 @@ func dropDB(cfg *Config) (err error) {
 }
 
 func migrateDB(cfg *Config) error {
+	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
@@ -75,6 +80,7 @@ func migrateDB(cfg *Config) error {
 }
 
 func rollbackDB(cfg *Config) error {
+	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
@@ -82,6 +88,29 @@ func rollbackDB(cfg *Config) error {
 	}
 	defer migration.Close()
 	return migration.Down()
+}
+
+func seedDB(cfg *Config) (err error) {
+	conn, err := sql.Open("postgres", dataSource(cfg))
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+	files, _ := ioutil.ReadDir(seedSrc)
+	for _, f := range files {
+		sqlFile := seedSrc + "/" + f.Name()
+		log.Infof("Execute seed '%s'", sqlFile)
+		var b []byte
+		b, err = ioutil.ReadFile(sqlFile)
+		if err != nil {
+			return
+		}
+		_, err = conn.Exec(string(b))
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 func console(cfg *Config) (err error) {

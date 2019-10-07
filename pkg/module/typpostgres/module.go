@@ -26,6 +26,7 @@ func Module() *typictx.Module {
 				{Name: "drop", Usage: "Drop Database", ActionFunc: typictx.ActionFunction(dropDB)},
 				{Name: "migrate", Usage: "Migrate Database", ActionFunc: typictx.ActionFunction(migrateDB)},
 				{Name: "rollback", Usage: "Rollback Database", ActionFunc: typictx.ActionFunction(rollbackDB)},
+				{Name: "seed", Usage: "Database Seeding", ActionFunc: typictx.ActionFunction(seedDB)},
 				{Name: "console", Usage: "PostgreSQL interactive terminal", ActionFunc: typictx.ActionFunction(console)},
 			},
 		},
