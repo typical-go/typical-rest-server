@@ -12,15 +12,15 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// BookController is controller to book entity
-type BookController struct {
+// BookCntrl is controller to book entity
+type BookCntrl struct {
 	dig.In
-	BookControllerResponse
+	BookCntrlResponse
 	service.BookService
 }
 
 // Route to define API Route
-func (c *BookController) Route(e *echo.Echo) {
+func (c *BookCntrl) Route(e *echo.Echo) {
 	e.GET("book", c.List)
 	e.POST("book", c.Create)
 	e.GET("book/:id", c.Get)
@@ -29,7 +29,7 @@ func (c *BookController) Route(e *echo.Echo) {
 }
 
 // Create book
-func (c *BookController) Create(ctx echo.Context) (err error) {
+func (c *BookCntrl) Create(ctx echo.Context) (err error) {
 	var book repository.Book
 	err = ctx.Bind(&book)
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *BookController) Create(ctx echo.Context) (err error) {
 }
 
 // List of book
-func (c *BookController) List(ctx echo.Context) error {
+func (c *BookCntrl) List(ctx echo.Context) error {
 	ctx0 := ctx.Request().Context()
 	books, err := c.BookService.List(ctx0)
 	if err != nil {
@@ -58,7 +58,7 @@ func (c *BookController) List(ctx echo.Context) error {
 }
 
 // Get book
-func (c *BookController) Get(ctx echo.Context) error {
+func (c *BookCntrl) Get(ctx echo.Context) error {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
 		return c.invalidID(ctx, err)
@@ -75,7 +75,7 @@ func (c *BookController) Get(ctx echo.Context) error {
 }
 
 // Delete book
-func (c *BookController) Delete(ctx echo.Context) error {
+func (c *BookCntrl) Delete(ctx echo.Context) error {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
 		return c.invalidID(ctx, err)
@@ -89,7 +89,7 @@ func (c *BookController) Delete(ctx echo.Context) error {
 }
 
 // Update book
-func (c *BookController) Update(ctx echo.Context) (err error) {
+func (c *BookCntrl) Update(ctx echo.Context) (err error) {
 	var book repository.Book
 	err = ctx.Bind(&book)
 	if err != nil {

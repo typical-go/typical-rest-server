@@ -19,7 +19,7 @@ func TestBookController_Get(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	bookSvc := mock.NewMockBookService(ctrl)
-	bookCntrl := controller.BookController{
+	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
 	t.Run("GIVEN invalid id", func(t *testing.T) {
@@ -68,7 +68,7 @@ func TestBookController_List(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookSvc := mock.NewMockBookService(ctrl)
-	bookCntrl := controller.BookController{
+	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
 
@@ -95,7 +95,7 @@ func TestBookController_Create(t *testing.T) {
 	defer ctrl.Finish()
 
 	bookSvc := mock.NewMockBookService(ctrl)
-	bookController := controller.BookController{
+	bookController := controller.BookCntrl{
 		BookService: bookSvc,
 	}
 
@@ -130,7 +130,7 @@ func TestBookController_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	bookSvc := mock.NewMockBookService(ctrl)
-	bookCntrl := controller.BookController{
+	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
 	t.Run("When invalid ID", func(t *testing.T) {
@@ -162,7 +162,7 @@ func TestBookController_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	bookSvc := mock.NewMockBookService(ctrl)
-	bookCntrl := controller.BookController{
+	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
 	t.Run("When invalid message request", func(t *testing.T) {
