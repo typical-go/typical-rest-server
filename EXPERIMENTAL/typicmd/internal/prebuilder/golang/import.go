@@ -17,12 +17,12 @@ func (i *Imports) WithAlias(alias, pkg string) {
 	})
 }
 
-// Add to add new import
-func (i *Imports) Add(pkg string) {
+// AddImport to add new import
+func (i *Imports) AddImport(pkg string) {
 	i.WithAlias("", pkg)
 }
 
-// Blank to add new blank import
-func (i *Imports) Blank(pkg string) {
+// BlankImport to add new blank import
+func (i *Imports) BlankImport(pkg string) {
 	i.WithAlias("_", pkg)
 }

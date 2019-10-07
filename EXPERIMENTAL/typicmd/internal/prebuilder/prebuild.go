@@ -77,6 +77,7 @@ func generateConfiguration(configuration Configuration) error {
 	name := "configurations.go"
 	src := golang.NewSourceCode(pkg).
 		AddStruct(configuration.Struct)
+	src.AddImport("github.com/kelseyhightower/envconfig")
 	src.AddConstructors(configuration.Constructors...)
 	target := dependency + "/" + name
 	return runn.Execute(
