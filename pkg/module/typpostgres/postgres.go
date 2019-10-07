@@ -14,9 +14,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const sourceURL = "file://scripts/db/migration"
+
 // Config is postgres configuration
 type Config struct {
-	DBName   string `required:"true"`
+	DBName   string `required:"true" default:typical-rest`
 	User     string `required:"true" default:"postgres"`
 	Password string `required:"true" default:"pgpass"`
 	Host     string `default:"localhost"`
@@ -63,7 +65,6 @@ func dropDB(cfg *Config) (err error) {
 }
 
 func migrateDB(cfg *Config) error {
-	sourceURL := "file://scripts/migration"
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
@@ -74,7 +75,6 @@ func migrateDB(cfg *Config) error {
 }
 
 func rollbackDB(cfg *Config) error {
-	sourceURL := "file://scripts/migration"
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	migration, err := migrate.New(sourceURL, dataSource(cfg))
 	if err != nil {
