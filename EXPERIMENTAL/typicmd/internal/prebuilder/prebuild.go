@@ -22,8 +22,12 @@ var (
 func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	projPkgs, filenames, _ := projectFiles(root)
-	configuration := createConfiguration(ctx)
+	conf := createConfiguration(ctx)
 	projFiles, err := walker.WalkProject(filenames)
+	if err != nil {
+		return
+	}
+	ctxFile, err := walker.WalkContext("typical/context.go")
 	if err != nil {
 		return
 	}
@@ -31,7 +35,7 @@ func PreBuild(ctx *typictx.Context) (err error) {
 		typienv.WriteEnvIfNotExist(ctx),
 		prepareTestTargets(projPkgs),
 		generateAnnotated(projFiles),
-		generateConfiguration(configuration),
+		generateConfiguration(conf, ctxFile),
 	)
 }
 
@@ -70,15 +74,17 @@ func generateAnnotated(files *walker.ProjectFiles) error {
 	)
 }
 
-func generateConfiguration(configuration Configuration) error {
+func generateConfiguration(conf Configuration, ctxFile *walker.ContextFile) error {
 	defer elapsed("Generate Configuration")()
 	// TODO: try if manual import can improve goimport execution
 	pkg := typienv.Dependency.Package
 	name := "configurations.go"
-	src := golang.NewSourceCode(pkg).
-		AddStruct(configuration.Struct)
-	src.AddImport("github.com/kelseyhightower/envconfig")
-	src.AddConstructors(configuration.Constructors...)
+	src := golang.NewSourceCode(pkg).AddStruct(conf.Struct)
+	src.AddImport("", "github.com/kelseyhightower/envconfig")
+	for _, imp := range ctxFile.Imports {
+		src.AddImport(imp.Name, imp.Path)
+	}
+	src.AddConstructors(conf.Constructors...)
 	target := dependency + "/" + name
 	return runn.Execute(
 		src.Cook(target),

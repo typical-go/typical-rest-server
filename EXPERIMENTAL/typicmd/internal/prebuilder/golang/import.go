@@ -9,20 +9,10 @@ type Import struct {
 	Path string
 }
 
-// WithAlias to add new import with alias
-func (i *Imports) WithAlias(name, path string) {
+// AddImport to add new import with alias
+func (i *Imports) AddImport(name, path string) {
 	*i = append(*i, Import{
 		Name: name,
 		Path: path,
 	})
-}
-
-// AddImport to add new import
-func (i *Imports) AddImport(pkg string) {
-	i.WithAlias("", pkg)
-}
-
-// BlankImport to add new blank import
-func (i *Imports) BlankImport(pkg string) {
-	i.WithAlias("_", pkg)
 }
