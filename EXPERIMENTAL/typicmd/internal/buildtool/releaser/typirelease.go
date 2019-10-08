@@ -17,12 +17,11 @@ import (
 )
 
 // ReleaseDistribution to release the distribution
-func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs []string, err error) {
+func ReleaseDistribution(rel typictx.Release, force, alpha bool) (binaries, changeLogs []string, err error) {
 	if len(rel.Targets) < 0 {
 		err = errors.New("Missing 'Targets' in Typical Context; The format should be '$GOOS/$GOARCH'")
 		return
 	}
-
 	git.Fetch()
 	defer git.Fetch()
 	status := git.Status()
@@ -31,7 +30,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 		return
 	}
 	latestTag := git.LatestTag()
-	if !force && latestTag == rel.ReleaseTag() {
+	if !force && latestTag == rel.ReleaseTag(alpha) {
 		log.Infof("%s already released", latestTag)
 		return
 	}
@@ -50,7 +49,7 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 			err = fmt.Errorf("Invalid target '%s': it should be '$GOOS/$GOARCH'", target)
 			return
 		}
-		binary := rel.ReleaseBinary(chunks[0], chunks[1])
+		binary := rel.ReleaseBinary(chunks[0], chunks[1], alpha)
 		binaryPath := fmt.Sprintf("%s/%s", typienv.Release, binary)
 		log.Infof("Create release binary for %s: %s", target, binaryPath)
 		// TODO: support cgo
@@ -59,13 +58,12 @@ func ReleaseDistribution(rel typictx.Release, force bool) (binaries, changeLogs 
 			return
 		}
 		binaries = append(binaries, binary)
-
 	}
 	return
 }
 
 // GithubRelease for github release
-func GithubRelease(binaries, changeLogs []string, rel typictx.Release) (err error) {
+func GithubRelease(binaries, changeLogs []string, rel typictx.Release, alpha bool) (err error) {
 	if rel.Github == nil {
 		return
 	}
@@ -77,9 +75,9 @@ func GithubRelease(binaries, changeLogs []string, rel typictx.Release) (err erro
 	repo := rel.Github.RepoName
 	ctx0 := context.Background()
 	client := github.NewClient(oauth2.NewClient(ctx0, oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})))
-	releaser := githubReleaser{rel}
+	releaser := githubReleaser{rel, alpha}
 	if releaser.IsReleased(ctx0, client.Repositories) {
-		log.Infof("Release for %s/%s (%s) already exist", owner, repo, rel.ReleaseTag())
+		log.Infof("Release for %s/%s (%s) already exist", owner, repo, rel.ReleaseTag(alpha))
 		return
 	}
 	log.Info("Generate release note")

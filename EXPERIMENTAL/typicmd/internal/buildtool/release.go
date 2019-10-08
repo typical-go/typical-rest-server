@@ -12,13 +12,15 @@ func releaseDistribution(action *typictx.ActionContext) (err error) {
 			return
 		}
 	}
-	binaries, changeLogs, err := releaser.ReleaseDistribution(action.Release, action.Cli.Bool("force"))
+	force := action.Cli.Bool("force")
+	alpha := action.Cli.Bool("alpha")
+	binaries, changeLogs, err := releaser.ReleaseDistribution(action.Release, force, alpha)
 	if err != nil {
 		return
 	}
 
 	if !action.Cli.Bool("no-github") {
-		releaser.GithubRelease(binaries, changeLogs, action.Release)
+		releaser.GithubRelease(binaries, changeLogs, action.Release, alpha)
 	}
 	return
 }

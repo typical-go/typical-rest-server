@@ -49,6 +49,10 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 					Name:  "force",
 					Usage: "Release by passed all validation",
 				},
+				cli.BoolFlag{
+					Name:  "alpha",
+					Usage: "Release for alpha version",
+				},
 			},
 			ActionFunc: releaseDistribution,
 		},

@@ -13,7 +13,6 @@ type Release struct {
 	Tagging
 	Name    string
 	Version string
-	Alpha   bool
 	Targets []string
 	Github  *Github
 }
@@ -31,11 +30,11 @@ type Tagging struct {
 }
 
 // ReleaseTag to get release tag
-func (r *Release) ReleaseTag() string {
+func (r *Release) ReleaseTag(alpha bool) string {
 	var builder strings.Builder
 	builder.WriteString("v")
 	builder.WriteString(r.Version)
-	if r.Alpha {
+	if alpha {
 		builder.WriteString("-alpha")
 	}
 	if r.WithGitBranch {
@@ -60,7 +59,11 @@ func (r *Release) ReleaseName() string {
 }
 
 // ReleaseBinary to get release binary
-func (r *Release) ReleaseBinary(os1, arch string) string {
-
-	return strings.Join([]string{r.ReleaseName(), r.ReleaseTag(), os1, arch}, "_")
+func (r *Release) ReleaseBinary(os1, arch string, alpha bool) string {
+	return strings.Join([]string{
+		r.ReleaseName(),
+		r.ReleaseTag(alpha),
+		os1,
+		arch,
+	}, "_")
 }
