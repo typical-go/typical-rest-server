@@ -27,6 +27,7 @@ func (p *PreBuilder) TestTargets() error {
 	defer elapsed("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
+	src.AddImport("", p.Root+"/typical")
 	src.AddTestTargets(p.Packages...)
 	target := dependency + "/test_targets.go"
 	return runn.Execute(
