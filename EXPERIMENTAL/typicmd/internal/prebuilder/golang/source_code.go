@@ -1,8 +1,9 @@
 package golang
 
 import (
+	"bytes"
 	"io"
-	"os"
+	"io/ioutil"
 )
 
 // SourceCode is source code recipe for generated.go in typical package
@@ -39,13 +40,9 @@ func (r SourceCode) Write(w io.Writer) {
 
 // Cook to generate the recipe into file
 func (r SourceCode) Cook(file string) (err error) {
-	var f *os.File
-	f, err = os.Create(file)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-	r.Write(f)
+	var buf bytes.Buffer
+	r.Write(&buf)
+	err = ioutil.WriteFile(file, buf.Bytes(), 0644)
 	return
 }
 

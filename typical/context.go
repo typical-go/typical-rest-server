@@ -3,7 +3,7 @@ package typical
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
-	cfg "github.com/typical-go/typical-rest-server/app/config"
+	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
@@ -18,7 +18,7 @@ var Context = &typictx.Context{
 		StartFunc: app.Start,
 		Config: typictx.Config{
 			Prefix: "APP",
-			Spec:   &cfg.Config{},
+			Spec:   &config.Config{},
 		},
 		Initiations: []interface{}{
 			app.Middlewares,
