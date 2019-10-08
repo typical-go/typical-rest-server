@@ -5,15 +5,15 @@ type Imports []Import
 
 // Import is plain old go object for import
 type Import struct {
-	Alias       string
-	PackageName string
+	Name string
+	Path string
 }
 
 // WithAlias to add new import with alias
-func (i *Imports) WithAlias(alias, pkg string) {
+func (i *Imports) WithAlias(name, path string) {
 	*i = append(*i, Import{
-		Alias:       alias,
-		PackageName: pkg,
+		Name: name,
+		Path: path,
 	})
 }
 
