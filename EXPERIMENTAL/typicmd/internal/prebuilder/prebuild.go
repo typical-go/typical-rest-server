@@ -23,14 +23,14 @@ func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	projPkgs, filenames, _ := projectFiles(root)
 	configuration := createConfiguration(ctx)
-	report, err := walker.Walk(filenames)
+	projFiles, err := walker.WalkProject(filenames)
 	if err != nil {
 		return
 	}
 	return runn.Execute(
 		typienv.WriteEnvIfNotExist(ctx),
 		prepareTestTargets(projPkgs),
-		generateAnnotated(report),
+		generateAnnotated(projFiles),
 		generateConfiguration(configuration),
 	)
 }
@@ -56,7 +56,7 @@ func generateTestTargets(name string, testTargets []string) error {
 	)
 }
 
-func generateAnnotated(files *walker.Files) error {
+func generateAnnotated(files *walker.ProjectFiles) error {
 	defer elapsed("Generate Annotated")()
 	pkg := typienv.Dependency.Package
 	name := "annotateds.go"

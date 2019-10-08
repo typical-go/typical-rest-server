@@ -8,36 +8,36 @@ import (
 	"strings"
 )
 
-// Walk the source code to get autowire and automock
-func Walk(filenames []string) (f *Files, err error) {
-	f = &Files{}
+// WalkProject the source code to get autowire and automock
+func WalkProject(filenames []string) (files *ProjectFiles, err error) {
+	files = &ProjectFiles{}
 	fset := token.NewFileSet() // positions are relative to fset
 	for _, filename := range filenames {
-		if walkTarget(filename) {
-			var file File
+		if isWalkTarget(filename) {
+			var file ProjectFile
 			file, err = parse(fset, filename)
 			if err != nil {
 				return
 			}
 			if !file.IsEmpty() {
-				f.Add(file)
+				files.Add(file)
 			}
 		}
 	}
 	return
 }
 
-func walkTarget(filename string) bool {
+func isWalkTarget(filename string) bool {
 	return strings.HasSuffix(filename, ".go") &&
 		!strings.HasSuffix(filename, "_test.go")
 }
 
-func parse(fset *token.FileSet, filename string) (file File, err error) {
+func parse(fset *token.FileSet, filename string) (projFile ProjectFile, err error) {
 	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
 	if err != nil {
 		return
 	}
-	file.Name = filename
+	projFile.Name = filename
 	for objName, obj := range f.Scope.Objects {
 		switch obj.Decl.(type) {
 		case *ast.FuncDecl:
@@ -47,7 +47,7 @@ func parse(fset *token.FileSet, filename string) (file File, err error) {
 				godoc = funcDecl.Doc.Text()
 			}
 			if isAutoWire(objName, godoc) {
-				file.AddConstructor(fmt.Sprintf("%s.%s", f.Name, objName))
+				projFile.AddConstructor(fmt.Sprintf("%s.%s", f.Name, objName))
 			}
 		case *ast.TypeSpec:
 			typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -58,7 +58,7 @@ func parse(fset *token.FileSet, filename string) (file File, err error) {
 				if typeSpec.Doc != nil {
 					doc = typeSpec.Doc.Text()
 				}
-				file.Mock = isAutoMock(doc)
+				projFile.Mock = isAutoMock(doc)
 			}
 		}
 	}

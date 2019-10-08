@@ -50,6 +50,6 @@ func TestWalkTarget(t *testing.T) {
 		{"file", false},
 	}
 	for _, tt := range testcases {
-		require.Equal(t, tt.result, walkTarget(tt.filename))
+		require.Equal(t, tt.result, isWalkTarget(tt.filename))
 	}
 }

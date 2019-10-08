@@ -1,15 +1,15 @@
 package walker
 
-// Files information
-type Files []File
+// ProjectFiles information
+type ProjectFiles []ProjectFile
 
 // Add item to files
-func (f *Files) Add(item File) {
+func (f *ProjectFiles) Add(item ProjectFile) {
 	*f = append(*f, item)
 }
 
 // Autowires return autowired constructors
-func (f *Files) Autowires() (constructors []string) {
+func (f *ProjectFiles) Autowires() (constructors []string) {
 	for _, file := range *f {
 		constructors = append(constructors, file.Constructors...)
 	}
@@ -17,7 +17,7 @@ func (f *Files) Autowires() (constructors []string) {
 }
 
 // Automocks return automocked filenames
-func (f *Files) Automocks() (filenames []string) {
+func (f *ProjectFiles) Automocks() (filenames []string) {
 	for _, file := range *f {
 		if file.Mock {
 			filenames = append(filenames, file.Name)

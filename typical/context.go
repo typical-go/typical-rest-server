@@ -3,7 +3,7 @@ package typical
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
-	"github.com/typical-go/typical-rest-server/app/config"
+	cfg "github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
@@ -11,14 +11,14 @@ import (
 
 // Context instance of Context
 var Context = &typictx.Context{
+	Root:        "github.com/typical-go/typical-rest-server",
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Root:        "github.com/typical-go/typical-rest-server",
 	Application: typictx.Application{
 		StartFunc: app.Start,
 		Config: typictx.Config{
 			Prefix: "APP",
-			Spec:   &config.Config{},
+			Spec:   &cfg.Config{},
 		},
 		Initiations: []interface{}{
 			app.Middlewares,
