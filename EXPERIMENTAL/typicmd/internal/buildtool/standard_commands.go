@@ -16,6 +16,12 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			ActionFunc: buildBinary,
 		},
 		{
+			Name:       "clean",
+			ShortName:  "c",
+			Usage:      "Clean the project from generated file during build time",
+			ActionFunc: cleanProject,
+		},
+		{
 			Name:      "run",
 			ShortName: "r",
 			Usage:     "Run the binary",
@@ -72,12 +78,6 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			Usage:      "Generate readme document",
 			ActionFunc: generateReadme,
 		},
-		// TODO: rework clean
-		// {
-		// 	Name:       "clean",
-		// 	Usage:      "Clean project from generated file during build time",
-		// 	ActionFunc: cleanProject,
-		// },
 		{
 			Name:       "docker",
 			Usage:      "Docker utility",

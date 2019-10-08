@@ -17,7 +17,6 @@ var (
 func PreBuild(ctx *typictx.Context) (err error) {
 	root := typienv.AppName
 	packages, filenames, _ := projectFiles(root)
-
 	projFiles, err := walker.WalkProject(filenames)
 	if err != nil {
 		return

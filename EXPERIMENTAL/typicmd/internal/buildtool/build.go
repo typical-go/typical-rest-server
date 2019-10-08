@@ -2,9 +2,11 @@ package buildtool
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -14,6 +16,18 @@ func buildBinary(ctx *typictx.ActionContext) error {
 	binaryName := typienv.App.BinPath
 	mainPackage := typienv.App.SrcPath
 	return bash.GoBuild(binaryName, mainPackage)
+}
+
+func cleanProject(ctx *typictx.ActionContext) error {
+	return runn.Execute(
+		os.RemoveAll(typienv.Bin),
+		filepath.Walk(typienv.Dependency.SrcPath, func(path string, info os.FileInfo, err error) error {
+			if !info.IsDir() {
+				return os.Remove(path)
+			}
+			return nil
+		}),
+	)
 }
 
 func runBinary(ctx *typictx.ActionContext) error {

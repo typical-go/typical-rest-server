@@ -26,6 +26,7 @@ var (
 	App        *applicationFolder
 	BuildTool  *applicationFolder
 	Dependency *applicationFolder
+	Bin        string
 	Mock       string
 	Release    string
 	AppName    string
@@ -40,18 +41,18 @@ type applicationFolder struct {
 func init() {
 	AppName = app()
 	cmd := cmd()
-	bin := bin()
+	Bin = bin()
 	buildTool := buildTool()
 	dependency := dependency()
 	App = &applicationFolder{
 		Package: "main",
 		SrcPath: cmd + "/" + AppName,
-		BinPath: bin + "/" + AppName,
+		BinPath: Bin + "/" + AppName,
 	}
 	BuildTool = &applicationFolder{
 		Package: "main",
 		SrcPath: cmd + "/" + buildTool,
-		BinPath: bin + "/" + buildTool,
+		BinPath: Bin + "/" + buildTool,
 	}
 	Dependency = &applicationFolder{
 		Package: dependency,
