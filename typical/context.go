@@ -31,7 +31,7 @@ var Context = &typictx.Context{
 		typredis.Module(),
 	},
 	Release: typictx.Release{
-		Version: "0.8.0",
+		Version: "0.8.1",
 		Targets: []string{
 			"linux/amd64",
 			"darwin/amd64",
