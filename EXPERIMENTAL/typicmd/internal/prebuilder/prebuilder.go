@@ -5,7 +5,6 @@ import (
 
 	"time"
 
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
@@ -23,21 +22,23 @@ type PreBuilder struct {
 }
 
 // TestTargets generate test target
-func (p *PreBuilder) TestTargets() error {
+func (p *PreBuilder) TestTargets() (err error) {
 	defer elapsed("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
 	src.AddImport("", p.Root+"/typical")
 	src.AddTestTargets(p.Packages...)
 	target := dependency + "/test_targets.go"
-	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
-	)
+	err = src.Cook(target)
+	if err != nil {
+		return
+	}
+	return bash.GoImports(target)
+
 }
 
 // Annotated to generate annotated
-func (p *PreBuilder) Annotated() error {
+func (p *PreBuilder) Annotated() (err error) {
 	defer elapsed("Generate Annotated")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
@@ -47,14 +48,15 @@ func (p *PreBuilder) Annotated() error {
 	src.AddConstructors(p.ProjectFiles.Autowires()...)
 	src.AddMockTargets(p.ProjectFiles.Automocks()...)
 	target := dependency + "/annotateds.go"
-	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
-	)
+	err = src.Cook(target)
+	if err != nil {
+		return
+	}
+	return bash.GoImports(target)
 }
 
 // Configuration to generate configuration
-func (p *PreBuilder) Configuration() error {
+func (p *PreBuilder) Configuration() (err error) {
 	defer elapsed("Generate Configuration")()
 	conf := createConfiguration(p.Context)
 	pkg := typienv.Dependency.Package
@@ -65,10 +67,11 @@ func (p *PreBuilder) Configuration() error {
 	}
 	src.AddConstructors(conf.Constructors...)
 	target := dependency + "/configurations.go"
-	return runn.Execute(
-		src.Cook(target),
-		bash.GoImports(target),
-	)
+	err = src.Cook(target)
+	if err != nil {
+		return
+	}
+	return bash.GoImports(target)
 }
 
 func elapsed(what string) func() {

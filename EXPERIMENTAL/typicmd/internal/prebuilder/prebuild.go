@@ -2,7 +2,6 @@ package prebuilder
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -34,10 +33,15 @@ func PreBuild(ctx *typictx.Context) (err error) {
 		ProjectFiles: projFiles,
 		ContextFile:  ctxFile,
 	}
-	return runn.Execute(
-		typienv.WriteEnvIfNotExist(ctx),
-		prebuilder.TestTargets(),
-		prebuilder.Annotated(),
-		prebuilder.Configuration(),
-	)
+	typienv.WriteEnvIfNotExist(ctx)
+	err = prebuilder.TestTargets()
+	if err != nil {
+		return
+	}
+	err = prebuilder.Annotated()
+	if err != nil {
+		return
+	}
+	return prebuilder.Configuration()
+
 }

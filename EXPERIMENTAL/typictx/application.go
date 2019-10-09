@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/runn"
+	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
 )
 
 // Application is represent the application
@@ -45,7 +45,7 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 		fmt.Println()
 		fmt.Println("Graceful Shutdown...")
 
-		var errs runn.Errors
+		var errs errkit.Errors
 		if a.StopFunc != nil {
 			errs.Add(ctx.Invoke(a.StopFunc))
 		}
