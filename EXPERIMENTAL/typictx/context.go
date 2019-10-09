@@ -1,6 +1,7 @@
 package typictx
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"go.uber.org/dig"
@@ -10,17 +11,14 @@ import (
 type Context struct {
 	Application
 	Release
-
-	Name        string
-	Description string
-	Root        string
-
+	Name         string
+	Description  string
+	Root         string
 	Modules      []*Module
 	TestTargets  slice.Strings
 	MockTargets  slice.Strings
 	Constructors slice.Interfaces
-
-	container *dig.Container
+	container    *dig.Container
 }
 
 // Invoke the function
@@ -75,4 +73,16 @@ func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 		}
 	}
 	return
+}
+
+// Validate the context
+func (c *Context) Validate() error {
+	log.Info("Validate the context")
+	if c.Name == "" {
+		return invalidContextError("Name can't not empty")
+	}
+	if c.Root == "" {
+		return invalidContextError("Root can't not empty")
+	}
+	return nil
 }

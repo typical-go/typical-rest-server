@@ -25,6 +25,9 @@ func (t *TypicalBuildTool) Cli() *cli.App {
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
+	app.Before = func(ctx *cli.Context) error {
+		return t.Validate()
+	}
 	for _, cmd := range t.commands() {
 		app.Commands = append(app.Commands, cmd.CliCommand(t.Context))
 	}

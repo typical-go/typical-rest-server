@@ -25,6 +25,10 @@ func (g *TypicalPreBuilder) Cli() *cli.App {
 	return app
 }
 
-func (g *TypicalPreBuilder) run(ctx *cli.Context) error {
+func (g *TypicalPreBuilder) run(ctx *cli.Context) (err error) {
+	err = g.Context.Validate()
+	if err != nil {
+		return
+	}
 	return prebuilder.PreBuild(g.Context)
 }

@@ -11,7 +11,7 @@ import (
 
 // Context instance of Context
 var Context = &typictx.Context{
-	Root:        "github.com/typical-go/typical-rest-server",
+	// Root:        "github.com/typical-go/typical-rest-server",
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Application: typictx.Application{

@@ -1,6 +1,7 @@
 package prebuilder
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/runn"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -15,6 +16,7 @@ var (
 
 // PreBuild process to build the typical project
 func PreBuild(ctx *typictx.Context) (err error) {
+	log.Info("Prebuilding...")
 	root := typienv.AppName
 	packages, filenames, _ := projectFiles(root)
 	projFiles, err := walker.WalkProject(filenames)
