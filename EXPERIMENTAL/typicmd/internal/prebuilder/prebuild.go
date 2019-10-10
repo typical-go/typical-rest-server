@@ -15,7 +15,7 @@ var (
 
 // PreBuild process to build the typical project
 func PreBuild(ctx *typictx.Context) (err error) {
-	log.Info("Prebuilding...")
+	log.Debug("Prebuilding...")
 	root := typienv.AppName
 	packages, filenames, _ := projectFiles(root)
 	projFiles, err := walker.WalkProject(filenames)

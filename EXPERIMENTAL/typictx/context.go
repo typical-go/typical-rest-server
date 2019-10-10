@@ -77,7 +77,7 @@ func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 
 // Validate the context
 func (c *Context) Validate() error {
-	log.Info("Validate the context")
+	log.Debug("Validate the context")
 	if c.Name == "" {
 		return invalidContextError("Name can't not empty")
 	}

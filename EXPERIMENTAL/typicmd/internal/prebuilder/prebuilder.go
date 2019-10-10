@@ -77,6 +77,6 @@ func (p *PreBuilder) Configuration() (err error) {
 func elapsed(what string) func() {
 	start := time.Now()
 	return func() {
-		log.Infof("%s took %v\n", what, time.Since(start))
+		log.Debugf("%s took %v\n", what, time.Since(start))
 	}
 }

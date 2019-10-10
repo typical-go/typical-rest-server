@@ -21,7 +21,7 @@ func Create(cfg *Config) *echo.Echo {
 
 	// set log
 	if cfg.Debug {
-		log.SetLevel(log.InfoLevel)
+		log.SetLevel(log.DebugLevel)
 		logrusMwConfig.IncludeRequestBodies = true
 		logrusMwConfig.IncludeResponseBodies = true
 	} else {
