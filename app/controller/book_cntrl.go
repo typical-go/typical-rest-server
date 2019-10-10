@@ -8,6 +8,7 @@ import (
 
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/app/service"
+	"github.com/typical-go/typical-rest-server/pkg/utility/responsekit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -15,7 +16,6 @@ import (
 // BookCntrl is controller to book entity
 type BookCntrl struct {
 	dig.In
-	BookCntrlResponse
 	service.BookService
 }
 
@@ -37,14 +37,14 @@ func (c *BookCntrl) Create(ctx echo.Context) (err error) {
 	}
 	err = validator.New().Struct(book)
 	if err != nil {
-		return c.invalidMessage(ctx, err)
+		return responsekit.InvalidRequest(ctx, err)
 	}
 	ctx0 := ctx.Request().Context()
 	result, err := c.BookService.Insert(ctx0, book)
 	if err != nil {
 		return err
 	}
-	return c.insertSuccess(ctx, result)
+	return responsekit.InsertSuccess(ctx, result)
 }
 
 // List of book
@@ -61,7 +61,7 @@ func (c *BookCntrl) List(ctx echo.Context) error {
 func (c *BookCntrl) Get(ctx echo.Context) error {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
-		return c.invalidID(ctx, err)
+		return responsekit.InvalidID(ctx, err)
 	}
 	ctx0 := ctx.Request().Context()
 	book, err := c.BookService.Find(ctx0, id)
@@ -69,7 +69,7 @@ func (c *BookCntrl) Get(ctx echo.Context) error {
 		return err
 	}
 	if book == nil {
-		return c.bookNotFound(ctx, id)
+		return responsekit.NotFound(ctx, id)
 	}
 	return ctx.JSON(http.StatusOK, book)
 }
@@ -78,14 +78,14 @@ func (c *BookCntrl) Get(ctx echo.Context) error {
 func (c *BookCntrl) Delete(ctx echo.Context) error {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
-		return c.invalidID(ctx, err)
+		return responsekit.InvalidID(ctx, err)
 	}
 	ctx0 := ctx.Request().Context()
 	err = c.BookService.Delete(ctx0, id)
 	if err != nil {
 		return err
 	}
-	return c.bookDeleted(ctx, id)
+	return responsekit.DeleteSuccess(ctx, id)
 }
 
 // Update book
@@ -96,16 +96,16 @@ func (c *BookCntrl) Update(ctx echo.Context) (err error) {
 		return err
 	}
 	if book.ID <= 0 {
-		return c.invalidID(ctx, err)
+		return responsekit.InvalidID(ctx, err)
 	}
 	err = validator.New().Struct(book)
 	if err != nil {
-		return c.invalidMessage(ctx, err)
+		return responsekit.InvalidRequest(ctx, err)
 	}
 	ctx0 := ctx.Request().Context()
 	err = c.BookService.Update(ctx0, book)
 	if err != nil {
 		return err
 	}
-	return c.bookUpdated(ctx, book.ID)
+	return responsekit.UpdateSuccess(ctx, book.ID)
 }

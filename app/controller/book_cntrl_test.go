@@ -49,7 +49,7 @@ func TestBookController_Get(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, http.StatusNotFound, rr.Code)
-		require.Equal(t, "{\"message\":\"book #3 not found\"}\n", rr.Body.String())
+		require.Equal(t, "{\"message\":\"#3 not found\"}\n", rr.Body.String())
 	})
 
 	t.Run("When return error", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestBookController_Create(t *testing.T) {
 		rr, err := echokit.DoPOST(bookController.Create, "/", `{}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
-		require.Equal(t, "{\"message\":\"Invalid Message\"}\n", rr.Body.String())
+		require.Equal(t, "{\"message\":\"Invalid Request\"}\n", rr.Body.String())
 	})
 
 	t.Run("When invalid json format", func(t *testing.T) {
@@ -176,7 +176,7 @@ func TestBookController_Update(t *testing.T) {
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
-		require.Equal(t, "{\"message\":\"Invalid Message\"}\n", rr.Body.String())
+		require.Equal(t, "{\"message\":\"Invalid Request\"}\n", rr.Body.String())
 	})
 
 	t.Run("When invalid json format", func(t *testing.T) {
