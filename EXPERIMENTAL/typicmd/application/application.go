@@ -1,4 +1,4 @@
-package typicmd
+package application
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -6,25 +6,27 @@ import (
 	"github.com/urfave/cli"
 )
 
-// TypicalApplication represent typical application
-type TypicalApplication struct {
+// Application represent typical application
+type Application struct {
 	*typictx.Context
 }
 
-// NewTypicalApplication return new instance of TypicalApplications
-func NewTypicalApplication(context *typictx.Context) *TypicalApplication {
-	return &TypicalApplication{context}
+// NewApplication return new instance of TypicalApplications
+func NewApplication(context *typictx.Context) *Application {
+	return &Application{context}
 }
 
 // Cli return the command line interface
-func (t *TypicalApplication) Cli() *cli.App {
+func (t *Application) Cli() *cli.App {
 	app := cli.NewApp()
 	app.Name = t.Name
 	app.Usage = ""
 	app.Description = t.Description
 	app.Version = t.Version
 	app.Action = typictx.ActionCommandFunction(t.Context, t.Application)
-	app.Before = t.beforeApplication
+	app.Before = func(ctx *cli.Context) error {
+		return typienv.LoadEnv()
+	}
 
 	for _, cmd := range t.Application.Commands {
 		app.Commands = append(app.Commands, cli.Command{
@@ -35,8 +37,4 @@ func (t *TypicalApplication) Cli() *cli.App {
 		})
 	}
 	return app
-}
-
-func (t *TypicalApplication) beforeApplication(ctx *cli.Context) error {
-	return typienv.LoadEnv()
 }
