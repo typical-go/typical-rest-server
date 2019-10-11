@@ -6,9 +6,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-// StandardCommands return standard commands for typical task tool
-func StandardCommands(ctx *typictx.Context) []*typictx.Command {
-	return []*typictx.Command{
+func commands(c *typictx.Context) (cmds []*typictx.Command) {
+	cmds = []*typictx.Command{
 		{
 			Name:       "build",
 			ShortName:  "b",
@@ -107,4 +106,10 @@ func StandardCommands(ctx *typictx.Context) []*typictx.Command {
 			},
 		},
 	}
+	for _, module := range c.Modules {
+		if module.Command != nil {
+			cmds = append(cmds, module.Command)
+		}
+	}
+	return
 }

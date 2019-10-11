@@ -2,7 +2,8 @@ package prebuilder
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/prebuilder/walker"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
@@ -13,9 +14,13 @@ var (
 	dependency = typienv.Dependency.SrcPath
 )
 
-// PreBuild process to build the typical project
-func PreBuild(ctx *typictx.Context) (err error) {
-	log.Debug("Prebuilding...")
+// Prebuild process
+func Prebuild(ctx *typictx.Context) (err error) {
+	log.Debug("Validate the context")
+	err = ctx.Validate()
+	if err != nil {
+		return
+	}
 	root := typienv.AppName
 	packages, filenames, _ := projectFiles(root)
 	projFiles, err := walker.WalkProject(filenames)

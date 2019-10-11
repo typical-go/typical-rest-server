@@ -1,7 +1,7 @@
 package buildtool
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/buildtool/releaser"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/releaser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 

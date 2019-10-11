@@ -11,8 +11,7 @@ import (
 )
 
 func main() {
-	app := application.NewApplication(typical.Context)
-	err := app.Cli().Run(os.Args)
+	err := application.Cli(typical.Context).Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}

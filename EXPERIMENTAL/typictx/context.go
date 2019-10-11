@@ -1,7 +1,6 @@
 package typictx
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"go.uber.org/dig"
@@ -77,7 +76,6 @@ func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 
 // Validate the context
 func (c *Context) Validate() error {
-	log.Debug("Validate the context")
 	if c.Name == "" {
 		return invalidContextError("Name can't not empty")
 	}

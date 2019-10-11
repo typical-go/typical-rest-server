@@ -2,15 +2,13 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
 func main() {
-	preBuilder := typicmd.NewTypicalPreBuilder(typical.Context)
-	err := preBuilder.Cli().Run(os.Args)
+	err := prebuilder.Prebuild(typical.Context)
 	if err != nil {
 		log.Fatalf("%s", err.Error())
 	}

@@ -5,7 +5,8 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/internal/buildtool/readme"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/readme"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
