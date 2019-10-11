@@ -15,7 +15,7 @@ func Cli(c *typictx.Context) *cli.App {
 	app.Version = c.Version
 	app.Action = typictx.ActionCommandFunction(c, c.Application)
 	app.Before = func(ctx *cli.Context) error {
-		return typienv.LoadEnv()
+		return typienv.LoadEnvFile()
 	}
 	for _, cmd := range c.Application.Commands {
 		app.Commands = append(app.Commands, cli.Command{

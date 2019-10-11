@@ -20,7 +20,7 @@ func Module() *typictx.Module {
 			Name:       "postgres",
 			ShortName:  "pg",
 			Usage:      "Postgres Database Tool",
-			BeforeFunc: typienv.LoadEnv,
+			BeforeFunc: typienv.LoadEnvFile,
 			SubCommands: []*typictx.Command{
 				{Name: "create", Usage: "Create New Database", ActionFunc: typictx.ActionFunction(createDB)},
 				{Name: "drop", Usage: "Drop Database", ActionFunc: typictx.ActionFunction(dropDB)},

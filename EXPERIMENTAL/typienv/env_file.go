@@ -18,8 +18,8 @@ const (
 {{end}}`
 )
 
-// LoadEnv load environment from .env file
-func LoadEnv() (err error) {
+// LoadEnvFile to load environment from .env file
+func LoadEnvFile() (err error) {
 	configSource := os.Getenv(configKey)
 	var configs []string
 	var envMap map[string]string
@@ -32,7 +32,6 @@ func LoadEnv() (err error) {
 			return
 		}
 	}
-
 	var builder strings.Builder
 	if len(envMap) > 0 {
 		builder.WriteString(fmt.Sprintf("Read the environment %s\n", configSource))
@@ -42,27 +41,23 @@ func LoadEnv() (err error) {
 		}
 		log.Info(builder.String())
 	}
-
 	return
 }
 
-// WriteEnvIfNotExist will write .env file if not exist
-func WriteEnvIfNotExist(ctx *typictx.Context) (err error) {
+// PrepareEnvFile to write .env file if not exist
+func PrepareEnvFile(ctx *typictx.Context) (err error) {
 	_, err = os.Stat(defaultDotEnv)
 	if !os.IsNotExist(err) {
 		return
 	}
 	log.Infof("Generate new project environment at '%s'", defaultDotEnv)
-
 	buf, err := os.Create(defaultDotEnv)
 	if err != nil {
 		return
 	}
 	defer buf.Close()
-
 	for _, cfg := range ctx.ConfigAccessors() {
 		envconfig.Usagef(cfg.GetConfigPrefix(), cfg.GetConfigSpec(), buf, envTemplate)
 	}
-
 	return
 }

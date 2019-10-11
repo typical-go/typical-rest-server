@@ -18,7 +18,7 @@ func Module() *typictx.Module {
 		Command: &typictx.Command{
 			Name:       "redis",
 			Usage:      "Redis Utility Tool",
-			BeforeFunc: typienv.LoadEnv,
+			BeforeFunc: typienv.LoadEnvFile,
 			SubCommands: []*typictx.Command{
 				{Name: "console", ShortName: "c", ActionFunc: typictx.ActionFunction(Console)},
 			},

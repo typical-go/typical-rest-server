@@ -14,6 +14,10 @@ var (
 	dependency = typienv.Dependency.SrcPath
 )
 
+const (
+	ctxPath = "typical/context.go"
+)
+
 // Prebuild process
 func Prebuild(ctx *typictx.Context) (err error) {
 	log.Debug("Validate the context")
@@ -22,12 +26,18 @@ func Prebuild(ctx *typictx.Context) (err error) {
 		return
 	}
 	root := typienv.AppName
-	packages, filenames, _ := projectFiles(root)
+	log.Debug("Scan project to get package and filenames")
+	packages, filenames, err := scanProject(root)
+	if err != nil {
+		return
+	}
+	log.Debug("Walk the project to get annotated or metadata")
 	projFiles, err := walker.WalkProject(filenames)
 	if err != nil {
 		return
 	}
-	ctxFile, err := walker.WalkContext("typical/context.go")
+	log.Debug("Walk the context file")
+	ctxFile, err := walker.WalkContext(ctxPath)
 	if err != nil {
 		return
 	}
@@ -38,7 +48,8 @@ func Prebuild(ctx *typictx.Context) (err error) {
 		ProjectFiles: projFiles,
 		ContextFile:  ctxFile,
 	}
-	typienv.WriteEnvIfNotExist(ctx)
+	log.Debug("Prepare Environment File")
+	typienv.PrepareEnvFile(ctx)
 	err = prebuilder.TestTargets()
 	if err != nil {
 		return

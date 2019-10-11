@@ -80,7 +80,7 @@ func commands(c *typictx.Context) (cmds []*typictx.Command) {
 		{
 			Name:       "docker",
 			Usage:      "Docker utility",
-			BeforeFunc: typienv.LoadEnv,
+			BeforeFunc: typienv.LoadEnvFile,
 			SubCommands: []*typictx.Command{
 				{
 					Name:       "compose",
