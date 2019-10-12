@@ -1,6 +1,8 @@
 package prebuilder
 
 import (
+	"os"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
@@ -15,11 +17,15 @@ var (
 )
 
 const (
-	ctxPath = "typical/context.go"
+	ctxPath  = "typical/context.go"
+	debugEnv = "PREBUILDER_DEBUG"
 )
 
 // Prebuild process
 func Prebuild(ctx *typictx.Context) (err error) {
+	if os.Getenv(debugEnv) != "" {
+		log.SetLevel(log.DebugLevel)
+	}
 	log.Debug("Validate the context")
 	err = ctx.Validate()
 	if err != nil {
