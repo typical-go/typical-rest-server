@@ -40,16 +40,22 @@ func Prebuild(ctx *typictx.Context) {
 	fatalIfError(err)
 	log.Debug("Prepare Environment File")
 	typienv.PrepareEnvFile(ctx)
-	prebuilder := PreBuilder{
+	prebuilder := prebuilder{
 		Context:      ctx,
 		Filenames:    filenames,
 		Packages:     packages,
 		ProjectFiles: projFiles,
 		ContextFile:  ctxFile,
 	}
-	fatalIfError(prebuilder.TestTargets())
-	fatalIfError(prebuilder.Annotated())
-	fatalIfError(prebuilder.Configuration())
+	if prebuilder.checkTestTargets() {
+		fatalIfError(prebuilder.generateTestTargets())
+	}
+	if prebuilder.checkAnnotated() {
+		fatalIfError(prebuilder.generateAnnotated())
+	}
+	if prebuilder.checkConfiguration() {
+		fatalIfError(prebuilder.generateConfiguration())
+	}
 }
 
 func fatalIfError(err error) {

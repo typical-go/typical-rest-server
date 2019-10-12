@@ -12,8 +12,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
 
-// PreBuilder responsible to prebuild process
-type PreBuilder struct {
+type prebuilder struct {
 	*typictx.Context
 	*walker.ProjectFiles
 	*walker.ContextFile
@@ -21,8 +20,11 @@ type PreBuilder struct {
 	Packages  []string
 }
 
-// TestTargets generate test target
-func (p *PreBuilder) TestTargets() (err error) {
+func (p *prebuilder) checkTestTargets() bool {
+	return true
+}
+
+func (p *prebuilder) generateTestTargets() (err error) {
 	defer elapsed("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
@@ -34,11 +36,13 @@ func (p *PreBuilder) TestTargets() (err error) {
 		return
 	}
 	return bash.GoImports(target)
-
 }
 
-// Annotated to generate annotated
-func (p *PreBuilder) Annotated() (err error) {
+func (p *prebuilder) checkAnnotated() bool {
+	return true
+}
+
+func (p *prebuilder) generateAnnotated() (err error) {
 	defer elapsed("Generate Annotated")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
@@ -55,8 +59,11 @@ func (p *PreBuilder) Annotated() (err error) {
 	return bash.GoImports(target)
 }
 
-// Configuration to generate configuration
-func (p *PreBuilder) Configuration() (err error) {
+func (p *prebuilder) checkConfiguration() bool {
+	return true
+}
+
+func (p *prebuilder) generateConfiguration() (err error) {
 	defer elapsed("Generate Configuration")()
 	conf := createConfiguration(p.Context)
 	pkg := typienv.Dependency.Package
