@@ -22,31 +22,24 @@ const (
 )
 
 // Prebuild process
-func Prebuild(ctx *typictx.Context) (err error) {
+func Prebuild(ctx *typictx.Context) {
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
 	log.Debug("Validate the context")
-	err = ctx.Validate()
-	if err != nil {
-		return
-	}
+	fatalIfError(ctx.Validate())
 	root := typienv.AppName
 	log.Debug("Scan project to get package and filenames")
 	packages, filenames, err := scanProject(root)
-	if err != nil {
-		return
-	}
+	fatalIfError(err)
 	log.Debug("Walk the project to get annotated or metadata")
 	projFiles, err := walker.WalkProject(filenames)
-	if err != nil {
-		return
-	}
+	fatalIfError(err)
 	log.Debug("Walk the context file")
 	ctxFile, err := walker.WalkContext(ctxPath)
-	if err != nil {
-		return
-	}
+	fatalIfError(err)
+	log.Debug("Prepare Environment File")
+	typienv.PrepareEnvFile(ctx)
 	prebuilder := PreBuilder{
 		Context:      ctx,
 		Filenames:    filenames,
@@ -54,16 +47,13 @@ func Prebuild(ctx *typictx.Context) (err error) {
 		ProjectFiles: projFiles,
 		ContextFile:  ctxFile,
 	}
-	log.Debug("Prepare Environment File")
-	typienv.PrepareEnvFile(ctx)
-	err = prebuilder.TestTargets()
-	if err != nil {
-		return
-	}
-	err = prebuilder.Annotated()
-	if err != nil {
-		return
-	}
-	return prebuilder.Configuration()
+	fatalIfError(prebuilder.TestTargets())
+	fatalIfError(prebuilder.Annotated())
+	fatalIfError(prebuilder.Configuration())
+}
 
+func fatalIfError(err error) {
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }
