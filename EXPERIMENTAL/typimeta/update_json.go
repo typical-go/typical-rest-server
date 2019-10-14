@@ -3,26 +3,22 @@ package typimeta
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"io/ioutil"
 	"os"
 )
 
-// Handler responsible to write/read the metadata
-var Handler = MetadataHandler{}
-
 // UpdateJSON to update json metadata
-func UpdateJSON(name string, v interface{}) (updated bool, err error) {
-	filename := fmt.Sprintf("%s.json", name)
+func UpdateJSON(filename string, v interface{}) (updated bool, err error) {
 	var cachedData, data []byte
-	cachedData, err = Handler.Read(filename)
+	cachedData, err = ioutil.ReadFile(filename)
+	data, _ = json.Marshal(v)
 	if os.IsNotExist(err) {
 		updated = true
 	} else {
-		data, _ = json.Marshal(v)
 		updated = (bytes.Compare(data, cachedData) != 0)
 	}
 	if updated {
-		err = Handler.Write(filename, data)
+		err = ioutil.WriteFile(filename, data, 0777)
 	}
 	return
 }
