@@ -1,12 +1,16 @@
 package buildtool
 
 import (
+	"os"
+
+	log "github.com/sirupsen/logrus"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/urfave/cli"
 )
 
-// Cli return the command line interface
-func Cli(c *typictx.Context) *cli.App {
+// Run the build tool
+func Run(c *typictx.Context) {
 	app := cli.NewApp()
 	app.Name = c.Name
 	app.Usage = ""
@@ -18,5 +22,8 @@ func Cli(c *typictx.Context) *cli.App {
 	for _, cmd := range commands(c) {
 		app.Commands = append(app.Commands, cmd.CliCommand(c))
 	}
-	return app
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	prebuilder.Prebuild(typical.Context)
+	prebuilder.Run(typical.Context)
 }

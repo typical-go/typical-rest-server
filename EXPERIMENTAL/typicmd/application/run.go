@@ -1,13 +1,17 @@
 package application
 
 import (
+	log "github.com/sirupsen/logrus"
+
+	"os"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/urfave/cli"
 )
 
-// Cli return the command line interface
-func Cli(c *typictx.Context) *cli.App {
+// Run the application
+func Run(c *typictx.Context) {
 	app := cli.NewApp()
 	app.Name = c.Name
 	app.Usage = ""
@@ -25,5 +29,8 @@ func Cli(c *typictx.Context) *cli.App {
 			Action:    cmd.ActionFunc.CommandFunction(c),
 		})
 	}
-	return app
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

@@ -21,8 +21,8 @@ const (
 	debugEnv = "PREBUILDER_DEBUG"
 )
 
-// Prebuild process
-func Prebuild(ctx *typictx.Context) {
+// Run the prebuilder
+func Run(ctx *typictx.Context) {
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
