@@ -9,7 +9,7 @@ import (
 )
 
 func TestUpdateJSON(t *testing.T) {
-	filename := "sample.json"
+	filename := "example-for-test.json"
 	defer os.Remove(filename)
 	t.Run("GIVEN no file", func(t *testing.T) {
 		updated, err := typimeta.UpdateJSON(filename, map[string]string{
