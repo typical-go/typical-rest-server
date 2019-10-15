@@ -1,4 +1,4 @@
-package typimeta
+package metadata
 
 import (
 	"bytes"
