@@ -31,15 +31,9 @@ func Run(ctx *typictx.Context) {
 	typienv.PrepareEnvFile(ctx)
 	prebuilder := prebuilder{}
 	fatalIfError(prebuilder.Initiate(ctx))
-	if prebuilder.checkTestTargets() {
-		fatalIfError(prebuilder.generateTestTargets())
-	}
-	if prebuilder.checkAnnotated() {
-		fatalIfError(prebuilder.generateAnnotated())
-	}
-	if prebuilder.checkConfiguration() {
-		fatalIfError(prebuilder.generateConfiguration())
-	}
+	fatalIfError(prebuilder.TestTarget.Generate())
+	fatalIfError(prebuilder.Annotated.Generate())
+	fatalIfError(prebuilder.Configuration.Generate())
 }
 
 func fatalIfError(err error) {
