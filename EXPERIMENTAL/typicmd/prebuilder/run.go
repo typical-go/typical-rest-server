@@ -5,7 +5,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
@@ -28,25 +27,10 @@ func Run(ctx *typictx.Context) {
 	}
 	log.Debug("Validate the context")
 	fatalIfError(ctx.Validate())
-	root := typienv.AppName
-	log.Debug("Scan project to get package and filenames")
-	packages, filenames, err := scanProject(root)
-	fatalIfError(err)
-	log.Debug("Walk the project to get annotated or metadata")
-	projFiles, err := walker.WalkProject(filenames)
-	fatalIfError(err)
-	log.Debug("Walk the context file")
-	ctxFile, err := walker.WalkContext(ctxPath)
-	fatalIfError(err)
 	log.Debug("Prepare Environment File")
 	typienv.PrepareEnvFile(ctx)
-	prebuilder := prebuilder{
-		Context:      ctx,
-		Filenames:    filenames,
-		Packages:     packages,
-		ProjectFiles: projFiles,
-		ContextFile:  ctxFile,
-	}
+	prebuilder := prebuilder{}
+	fatalIfError(prebuilder.Initiate(ctx))
 	if prebuilder.checkTestTargets() {
 		fatalIfError(prebuilder.generateTestTargets())
 	}

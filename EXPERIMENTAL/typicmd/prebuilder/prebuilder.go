@@ -20,6 +20,27 @@ type prebuilder struct {
 	Packages  []string
 }
 
+func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
+	log.Debug("Scan project to get package and filenames")
+	p.Context = ctx
+	root := typienv.AppName
+	p.Packages, p.Filenames, err = scanProject(root)
+	if err != nil {
+		return
+	}
+	log.Debug("Walk the project to get annotated or metadata")
+	p.ProjectFiles, err = walker.WalkProject(p.Filenames)
+	if err != nil {
+		return
+	}
+	log.Debug("Walk the context file")
+	p.ContextFile, err = walker.WalkContext(ctxPath)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (p *prebuilder) checkTestTargets() bool {
 	return true
 }
