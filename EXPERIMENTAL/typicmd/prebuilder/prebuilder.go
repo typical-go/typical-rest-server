@@ -46,7 +46,22 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 		Root:     ctx.Root,
 		Packages: packages,
 	}
+	return
+}
 
+func (p *prebuilder) Prebuild() (err error) {
+	err = p.TestTarget.Generate()
+	if err != nil {
+		return
+	}
+	err = p.Annotated.Generate()
+	if err != nil {
+		return
+	}
+	err = p.Configuration.Generate()
+	if err != nil {
+		return
+	}
 	return
 }
 
