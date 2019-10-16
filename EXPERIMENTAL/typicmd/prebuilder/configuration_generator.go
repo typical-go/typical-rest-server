@@ -1,6 +1,9 @@
 package prebuilder
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
@@ -24,23 +27,50 @@ func (g *ConfigurationGenerator) Generate() (err error) {
 
 func (g *ConfigurationGenerator) generate() (err error) {
 	defer elapsed("Generate Configuration")()
-	conf := createConfiguration(g.Context)
+	model, contructors := g.create()
 	pkg := typienv.Dependency.Package
-	src := golang.NewSourceCode(pkg).AddStruct(conf.Struct)
+	src := golang.NewSourceCode(pkg).AddStruct(model)
 	src.AddImport("", "github.com/kelseyhightower/envconfig")
 	for _, imp := range g.ContextFile.Imports {
 		src.AddImport(imp.Name, imp.Path)
 	}
-	src.AddConstructors(conf.Constructors...)
+	src.AddConstructors(contructors...)
 	target := dependency + "/configurations.go"
 	err = src.Cook(target)
 	if err != nil {
 		return
 	}
 	return bash.GoImports(target)
-	return
 }
 
 func (g *ConfigurationGenerator) check() bool {
 	return true
+}
+
+func (g *ConfigurationGenerator) create() (model golang.Struct, constructors []string) {
+	structName := "Config"
+	model.Name = structName
+	constructors = append(constructors, g.configDef())
+	for _, acc := range g.ConfigAccessors() {
+		key := acc.GetKey()
+		typ := reflect.TypeOf(acc.GetConfigSpec()).String()
+		model.AddField(key, typ)
+		constructors = append(constructors, g.subConfigDef(key, typ))
+
+	}
+	return
+}
+
+func (g *ConfigurationGenerator) configDef() string {
+	return `func() (*Config, error) {
+	var cfg Config
+	err := envconfig.Process("", &cfg)
+	return &cfg, err
+}`
+}
+
+func (g *ConfigurationGenerator) subConfigDef(name, typ string) string {
+	return fmt.Sprintf(`func(cfg *Config) %s {
+	return cfg.%s
+}`, typ, name)
 }
