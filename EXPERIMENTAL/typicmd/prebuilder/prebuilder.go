@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -20,6 +21,7 @@ type prebuildReport struct {
 	AnnotatedUpdated     bool
 	ConfigurationUpdated bool
 	TestTargetUpdated    bool
+	ContextUpdated       bool
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
@@ -65,6 +67,7 @@ func (p *prebuilder) Prebuild() (r prebuildReport, err error) {
 	if r.ConfigurationUpdated, err = p.Configuration.Generate(); err != nil {
 		return
 	}
+	r.ContextUpdated, err = metadata.Checksum("typical/context.go")
 	return
 }
 
