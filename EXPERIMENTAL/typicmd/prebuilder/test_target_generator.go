@@ -5,6 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // TestTargetGenerator responsible to generate the test target
@@ -22,7 +23,7 @@ func (g *TestTargetGenerator) Generate() (err error) {
 }
 
 func (g *TestTargetGenerator) generate() (err error) {
-	defer elapsed("Generate TestTargets")()
+	defer debugkit.ElapsedTime("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
 	src.AddImport("", g.Root+"/typical")

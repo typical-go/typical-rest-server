@@ -3,8 +3,6 @@ package prebuilder
 import (
 	log "github.com/sirupsen/logrus"
 
-	"time"
-
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -53,11 +51,4 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	}
 
 	return
-}
-
-func elapsed(what string) func() {
-	start := time.Now()
-	return func() {
-		log.Debugf("%s took %v\n", what, time.Since(start))
-	}
 }

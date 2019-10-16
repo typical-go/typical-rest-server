@@ -6,6 +6,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // AnnotatedGenerator responsible for generate annotated
@@ -24,7 +25,7 @@ func (g *AnnotatedGenerator) Generate() (err error) {
 }
 
 func (g *AnnotatedGenerator) generate() (err error) {
-	defer elapsed("Generate Annotated")()
+	defer debugkit.ElapsedTime("Generate Annotated")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
 	for _, pkg := range g.Packages {

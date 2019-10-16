@@ -9,6 +9,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // ConfigurationGenerator responsible to generate configuration
@@ -26,7 +27,7 @@ func (g *ConfigurationGenerator) Generate() (err error) {
 }
 
 func (g *ConfigurationGenerator) generate() (err error) {
-	defer elapsed("Generate Configuration")()
+	defer debugkit.ElapsedTime("Generate Configuration")()
 	model, contructors := g.create()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg).AddStruct(model)
