@@ -1,6 +1,8 @@
 package prebuilder
 
 import (
+	"reflect"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
@@ -9,11 +11,6 @@ import (
 )
 
 type prebuilder struct {
-	// *typictx.Context
-	// *walker.ProjectFiles
-	// *walker.ContextFile
-	// Filenames []string
-	// Packages  []string
 	Annotated     *AnnotatedGenerator
 	Configuration *ConfigurationGenerator
 	TestTarget    *TestTargetGenerator
@@ -37,18 +34,30 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 		return
 	}
 	p.Annotated = &AnnotatedGenerator{
-		Context:      ctx,
+		Root:         ctx.Root,
 		ProjectFiles: projectFiles,
 		Packages:     packages,
 	}
 	p.Configuration = &ConfigurationGenerator{
-		Context:     ctx,
+		Configs:     createConfigs(ctx),
 		ContextFile: contextFile,
 	}
 	p.TestTarget = &TestTargetGenerator{
-		Context:  ctx,
+		Root:     ctx.Root,
 		Packages: packages,
 	}
 
+	return
+}
+
+func createConfigs(ctx *typictx.Context) (configs []Config) {
+	for _, acc := range ctx.ConfigAccessors() {
+		key := acc.GetKey()
+		typ := reflect.TypeOf(acc.GetConfigSpec()).String()
+		configs = append(configs, Config{
+			Key: key,
+			Typ: typ,
+		})
+	}
 	return
 }

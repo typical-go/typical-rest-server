@@ -2,20 +2,24 @@ package prebuilder
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // ConfigurationGenerator responsible to generate configuration
 type ConfigurationGenerator struct {
-	*typictx.Context
+	Configs []Config
 	*walker.ContextFile
+}
+
+// Config model
+type Config struct {
+	Key string
+	Typ string
 }
 
 // Generate the file
@@ -49,15 +53,11 @@ func (g *ConfigurationGenerator) check() bool {
 }
 
 func (g *ConfigurationGenerator) create() (model golang.Struct, constructors []string) {
-	structName := "Config"
-	model.Name = structName
+	model.Name = "Config"
 	constructors = append(constructors, g.configDef())
-	for _, acc := range g.ConfigAccessors() {
-		key := acc.GetKey()
-		typ := reflect.TypeOf(acc.GetConfigSpec()).String()
-		model.AddField(key, typ)
-		constructors = append(constructors, g.subConfigDef(key, typ))
-
+	for _, cfg := range g.Configs {
+		model.AddField(cfg.Key, cfg.Typ)
+		constructors = append(constructors, g.subConfigDef(cfg.Key, cfg.Typ))
 	}
 	return
 }

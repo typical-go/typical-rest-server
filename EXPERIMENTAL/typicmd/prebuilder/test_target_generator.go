@@ -3,14 +3,13 @@ package prebuilder
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // TestTargetGenerator responsible to generate the test target
 type TestTargetGenerator struct {
-	*typictx.Context
+	Root     string
 	Packages []string
 }
 
