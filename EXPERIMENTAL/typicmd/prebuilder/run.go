@@ -3,8 +3,11 @@ package prebuilder
 import (
 	"os"
 
+	"github.com/typical-go/typical-rest-server/pkg/utility/filekit"
+
 	log "github.com/sirupsen/logrus"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
@@ -31,8 +34,15 @@ func Run(ctx *typictx.Context) {
 	typienv.PrepareEnvFile(ctx)
 	prebuilder := prebuilder{}
 	fatalIfError(prebuilder.Initiate(ctx))
-	_, err := prebuilder.Prebuild()
+	report, err := prebuilder.Prebuild()
 	fatalIfError(err)
+	if !filekit.Exists(typienv.BuildTool.BinPath) || report.Updated() {
+		log.Info("Build the build-tool")
+		fatalIfError(bash.GoBuild(
+			typienv.BuildTool.BinPath,
+			typienv.BuildTool.SrcPath,
+		))
+	}
 }
 
 func fatalIfError(err error) {
