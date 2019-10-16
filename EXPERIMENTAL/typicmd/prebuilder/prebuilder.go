@@ -16,6 +16,12 @@ type prebuilder struct {
 	TestTarget    *TestTargetGenerator
 }
 
+type prebuildReport struct {
+	AnnotatedUpdated     bool
+	ConfigurationUpdated bool
+	TestTargetUpdated    bool
+}
+
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	log.Debug("Scan project to get package and filenames")
 	root := typienv.AppName
@@ -49,14 +55,14 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	return
 }
 
-func (p *prebuilder) Prebuild() (err error) {
-	if err = p.TestTarget.Generate(); err != nil {
+func (p *prebuilder) Prebuild() (r prebuildReport, err error) {
+	if r.TestTargetUpdated, err = p.TestTarget.Generate(); err != nil {
 		return
 	}
-	if err = p.Annotated.Generate(); err != nil {
+	if r.AnnotatedUpdated, err = p.Annotated.Generate(); err != nil {
 		return
 	}
-	if err = p.Configuration.Generate(); err != nil {
+	if r.ConfigurationUpdated, err = p.Configuration.Generate(); err != nil {
 		return
 	}
 	return

@@ -17,10 +17,10 @@ type AnnotatedGenerator struct {
 }
 
 // Generate the file
-func (g *AnnotatedGenerator) Generate() (err error) {
-	updated, err := metadata.Update("annotated", g)
+func (g *AnnotatedGenerator) Generate() (updated bool, err error) {
+	updated, err = metadata.Update("annotated", g)
 	if updated {
-		return g.generate()
+		err = g.generate()
 	}
 	return
 }

@@ -24,10 +24,10 @@ type Config struct {
 }
 
 // Generate the file
-func (g *ConfigurationGenerator) Generate() (err error) {
-	updated, err := metadata.Update("configuration", g)
+func (g *ConfigurationGenerator) Generate() (updated bool, err error) {
+	updated, err = metadata.Update("configuration", g)
 	if updated {
-		return g.generate()
+		err = g.generate()
 	}
 	return
 }

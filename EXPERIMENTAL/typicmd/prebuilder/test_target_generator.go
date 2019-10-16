@@ -15,10 +15,10 @@ type TestTargetGenerator struct {
 }
 
 // Generate the file
-func (g *TestTargetGenerator) Generate() (err error) {
-	updated, err := metadata.Update("test_targets", g)
+func (g *TestTargetGenerator) Generate() (updated bool, err error) {
+	updated, err = metadata.Update("test_targets", g)
 	if updated {
-		return g.generate()
+		err = g.generate()
 	}
 	return
 }
