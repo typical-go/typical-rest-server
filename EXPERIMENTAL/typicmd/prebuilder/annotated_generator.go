@@ -3,6 +3,7 @@ package prebuilder
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
@@ -17,7 +18,8 @@ type AnnotatedGenerator struct {
 
 // Generate the file
 func (g *AnnotatedGenerator) Generate() (err error) {
-	if g.check() {
+	updated, err := metadata.Update("annotated", g)
+	if updated {
 		return g.generate()
 	}
 	return

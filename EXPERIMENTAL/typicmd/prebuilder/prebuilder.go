@@ -50,16 +50,13 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 }
 
 func (p *prebuilder) Prebuild() (err error) {
-	err = p.TestTarget.Generate()
-	if err != nil {
+	if err = p.TestTarget.Generate(); err != nil {
 		return
 	}
-	err = p.Annotated.Generate()
-	if err != nil {
+	if err = p.Annotated.Generate(); err != nil {
 		return
 	}
-	err = p.Configuration.Generate()
-	if err != nil {
+	if err = p.Configuration.Generate(); err != nil {
 		return
 	}
 	return

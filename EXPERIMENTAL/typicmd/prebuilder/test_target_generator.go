@@ -3,6 +3,7 @@ package prebuilder
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
@@ -15,7 +16,8 @@ type TestTargetGenerator struct {
 
 // Generate the file
 func (g *TestTargetGenerator) Generate() (err error) {
-	if g.check() {
+	updated, err := metadata.Update("test_targets", g)
+	if updated {
 		return g.generate()
 	}
 	return
@@ -33,8 +35,4 @@ func (g *TestTargetGenerator) generate() (err error) {
 		return
 	}
 	return bash.GoImports(target)
-}
-
-func (g *TestTargetGenerator) check() bool {
-	return true
 }

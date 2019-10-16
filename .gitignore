@@ -1,20 +1,12 @@
-# local dependencies folder
 /vendor
-
-# binaries folder
 /bin
-
-# release folder 
 /release
+/.typical-metadata
 
-# local environment variable
 .envrc
 .env
-
-# testing
 cover.out
 
-# text editor/IDE
 .idea
 .vscode
 .typical
