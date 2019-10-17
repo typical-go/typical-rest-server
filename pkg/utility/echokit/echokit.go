@@ -11,10 +11,8 @@ import (
 // DoRequest return echo.Context and httptest.ResponseRecorder for Request
 func DoRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	rec = httptest.NewRecorder()
-
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
-
 	if urlParams != nil {
 		var keys []string
 		var values []string
@@ -25,7 +23,6 @@ func DoRequest(handler echo.HandlerFunc, req *http.Request, urlParams map[string
 		ctx.SetParamNames(keys...)
 		ctx.SetParamValues(values...)
 	}
-
 	err = handler(ctx)
 	return
 }

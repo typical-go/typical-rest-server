@@ -10,7 +10,6 @@ func (e *Errors) Add(err error) bool {
 	if err == nil {
 		return false
 	}
-
 	*e = append(*e, err)
 	return true
 }
@@ -23,6 +22,5 @@ func (e Errors) Error() string {
 		}
 		builder.WriteString(err.Error())
 	}
-
 	return builder.String()
 }

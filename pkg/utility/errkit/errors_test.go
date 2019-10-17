@@ -14,7 +14,5 @@ func TestErrors(t *testing.T) {
 	errors.Add(nil)
 	errors.Add(fmt.Errorf("error2"))
 	errors.Add(fmt.Errorf("error3"))
-
 	require.Equal(t, "error1; error2; error3", errors.Error())
-
 }
