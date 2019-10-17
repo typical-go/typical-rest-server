@@ -5,7 +5,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
@@ -60,7 +59,6 @@ func (p *prebuilder) Prebuild() (r report, err error) {
 	if r.ConfigurationUpdated, err = p.Configuration.Generate(); err != nil {
 		return
 	}
-	r.ContextUpdated, err = metadata.Checksum("typical/context.go")
 	return
 }
 

@@ -36,13 +36,26 @@ func Run(ctx *typictx.Context) {
 	fatalIfError(prebuilder.Initiate(ctx))
 	report, err := prebuilder.Prebuild()
 	fatalIfError(err)
-	if !filekit.Exists(typienv.BuildTool.BinPath) || report.Updated() {
+	buildToolBinaryNotExist := !filekit.Exists(typienv.BuildTool.BinPath)
+	log.Debugf("buildToolBinaryNotExist: %t", buildToolBinaryNotExist)
+	prebuildUpdated := report.Updated()
+	log.Debugf("prebuildUpdated: %t", prebuildUpdated)
+	haveBuildArgs := haveBuildArg()
+	log.Debugf("haveBuildArgs: %t", haveBuildArgs)
+	if buildToolBinaryNotExist || prebuildUpdated || haveBuildArgs {
 		log.Info("Build the build-tool")
 		fatalIfError(bash.GoBuild(
 			typienv.BuildTool.BinPath,
 			typienv.BuildTool.SrcPath,
 		))
 	}
+}
+
+func haveBuildArg() bool {
+	if len(os.Args) > 1 {
+		return os.Args[1] == "1"
+	}
+	return false
 }
 
 func fatalIfError(err error) {
