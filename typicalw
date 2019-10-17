@@ -7,7 +7,7 @@ BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
 PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
 
 if ! [[ -f $BIN/$PRE_BUILDER ]]; then
-    echo "Build the pre-build"
+    echo "Build the pre-builder"
     go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER
 fi
 

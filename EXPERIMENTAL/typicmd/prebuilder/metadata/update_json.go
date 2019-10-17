@@ -9,9 +9,9 @@ import (
 
 // Update the metadata
 func Update(name string, v interface{}) (updated bool, err error) {
-	filename := name + ".json"
+	filename := Path(name + ".json")
 	var cachedData, data []byte
-	cachedData, err = ioutil.ReadFile(Path(filename))
+	cachedData, err = ioutil.ReadFile(filename)
 	data, _ = json.Marshal(v)
 	if os.IsNotExist(err) {
 		updated = true
@@ -19,7 +19,7 @@ func Update(name string, v interface{}) (updated bool, err error) {
 		updated = (bytes.Compare(data, cachedData) != 0)
 	}
 	if updated {
-		err = ioutil.WriteFile(Path(filename), data, 0777)
+		err = ioutil.WriteFile(filename, data, 0777)
 	}
 	return
 }
