@@ -5,19 +5,24 @@ BIN=${TYPICAL_BIN:-bin}
 CMD=${TYPICAL_CMD:-cmd}
 BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
 PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
+METADATA=${TYPICAL_METADATA:-.typical-metadata}
 
-CHECKSUM_PATH=".typical-metadata/checksum "
+mkdir -p $METADATA
+mkdir -p $CMD/internal/dependency
+
+CHECKSUM_PATH="$METADATA/checksum "
 CHECKSUM_DATA=$(cksum typical/context.go)
 
 if ! [ -s .typical-metadata/checksum ]; then
     cksum typical/context.go > $CHECKSUM_PATH
 else
     CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat $CHECKSUM_PATH )" ] ; echo $?)
-    if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f $BIN/$PRE_BUILDER ]] ; then 
-        echo $CHECKSUM_DATA > $CHECKSUM_PATH
-        echo "Build the pre-builder"
-        go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER
-    fi
+fi
+
+if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f $BIN/$PRE_BUILDER ]] ; then 
+    echo $CHECKSUM_DATA > $CHECKSUM_PATH
+    echo "Build the pre-builder"
+    go build -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER
 fi
 
 ./$BIN/$PRE_BUILDER $CHECKSUM_UPDATED
