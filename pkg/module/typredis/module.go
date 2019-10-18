@@ -9,7 +9,7 @@ import (
 // Module of redis
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name: "redis",
+		Name: "Redis",
 		Config: typictx.Config{
 			Prefix: "REDIS",
 			Spec:   &Config{},

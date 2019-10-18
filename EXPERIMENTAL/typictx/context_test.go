@@ -26,7 +26,6 @@ func TestContext_Validate(t *testing.T) {
 			"",
 		},
 	}
-
 	for _, tt := range testcases {
 		err := tt.context.Validate()
 		if tt.errMsg == "" {

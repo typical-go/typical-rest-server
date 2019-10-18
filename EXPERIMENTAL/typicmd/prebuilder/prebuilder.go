@@ -2,7 +2,9 @@ package prebuilder
 
 import (
 	"reflect"
+	"strings"
 
+	"github.com/iancoleman/strcase"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
@@ -63,12 +65,14 @@ func (p *prebuilder) Prebuild() (r report, err error) {
 }
 
 func createConfigs(ctx *typictx.Context) (configs []Config) {
-	for _, acc := range ctx.ConfigAccessors() {
-		key := acc.GetKey()
-		typ := reflect.TypeOf(acc.GetConfigSpec()).String()
+	configs = append(configs, Config{
+		Key: strcase.ToCamel(strings.ToLower(ctx.Application.Prefix)),
+		Typ: reflect.TypeOf(ctx.Application.Spec).String(),
+	})
+	for _, module := range ctx.Modules {
 		configs = append(configs, Config{
-			Key: key,
-			Typ: typ,
+			Key: strcase.ToCamel(strings.ToLower(module.Prefix)),
+			Typ: reflect.TypeOf(module.Spec).String(),
 		})
 	}
 	return

@@ -3,6 +3,8 @@ package buildtool
 import (
 	"strings"
 
+	"github.com/iancoleman/strcase"
+
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 
@@ -23,13 +25,13 @@ func generateReadme(a *typictx.ActionContext) (err error) {
 		SetTitle(a.Name).
 		SetDescription(a.Description).
 		SetSection("Configuration", func(md *readme.Markdown) (err error) {
-			for _, acc := range a.Context.ConfigAccessors() {
-				name := acc.GetName()
+			for _, module := range a.Context.Modules {
+				name := strcase.ToCamel(module.Name)
 				if name != "" {
 					md.Heading3(name)
 				}
 				var builder strings.Builder
-				envconfig.Usagef(acc.GetConfigPrefix(), acc.GetConfigSpec(), &builder, configTemplate)
+				envconfig.Usagef(module.Prefix, module.Spec, &builder, configTemplate)
 				md.Writeln(builder.String())
 			}
 			return

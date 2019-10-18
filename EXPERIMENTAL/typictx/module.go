@@ -25,8 +25,3 @@ func (m *Module) Inject(container *dig.Container) {
 	container.Provide(m.OpenFunc)
 	return
 }
-
-// GetName to get name
-func (m *Module) GetName() string {
-	return m.Name
-}

@@ -42,17 +42,6 @@ func (c *Context) AddConstructor(constructor interface{}) {
 	c.Constructors = append(c.Constructors, constructor)
 }
 
-// ConfigAccessors return list of config accessor
-func (c *Context) ConfigAccessors() (accessors []ConfigAccessor) {
-	accessors = append(accessors, &c.Application)
-	for _, module := range c.Modules {
-		if module.Spec != nil {
-			accessors = append(accessors, module)
-		}
-	}
-	return
-}
-
 // DockerCompose get docker compose
 func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 	dockerCompose = docker.NewCompose("3")
