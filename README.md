@@ -14,10 +14,6 @@ Example of typical and scalable RESTful API Server for Go
 
 Use `./typicalw run` to compile and run local development. You can find the binary at `bin` folder
 
-## Release Distribution
-
-Use `./typicalw release` to make the release. You can find the binary at `release` folder. More information check [here](https://typical-go.github.io/release.html)
-
 ## Configuration
 
 ### Server
@@ -26,7 +22,7 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |---|---|---|---|---|
 |SERVER_DEBUG|True or False|false|||
 
-### Postgres Database
+### PostgresDatabase
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|
@@ -36,7 +32,7 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |PG_HOST|String|localhost|||
 |PG_PORT|Integer|5432|||
 
-### redis
+### Redis
 
 | Key | Type | Default | Required | Description |	
 |---|---|---|---|---|
@@ -50,4 +46,8 @@ Use `./typicalw release` to make the release. You can find the binary at `releas
 |REDIS_IDLE_TIMEOUT|Duration|5m|true||
 |REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|true||
 |REDIS_MAX_CONN_AGE|Duration|30m|true||
+
+## Release Distribution
+
+Use `./typicalw release` to make the release. You can find the binary at `release` folder. More information check [here](https://typical-go.github.io/release.html)
 

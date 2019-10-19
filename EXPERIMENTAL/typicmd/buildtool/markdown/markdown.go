@@ -1,4 +1,4 @@
-package readme
+package markdown
 
 import (
 	"fmt"

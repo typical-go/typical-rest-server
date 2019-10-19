@@ -1,9 +1,24 @@
 package buildtool
 
 import (
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/releaser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/urfave/cli"
+	"gopkg.in/yaml.v2"
+)
+
+const (
+	readmeFile = "README.md"
 )
 
 func commands(c *typictx.Context) (cmds []*typictx.Command) {
@@ -111,5 +126,119 @@ func commands(c *typictx.Context) (cmds []*typictx.Command) {
 			cmds = append(cmds, module.Command)
 		}
 	}
+	return
+}
+
+func buildBinary(ctx *typictx.ActionContext) error {
+	binaryName := typienv.App.BinPath
+	mainPackage := typienv.App.SrcPath
+	return bash.GoBuild(binaryName, mainPackage)
+}
+
+func cleanProject(ctx *typictx.ActionContext) (err error) {
+	err = os.RemoveAll(typienv.Bin)
+	if err != nil {
+		return
+	}
+	return filepath.Walk(typienv.Dependency.SrcPath, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			return os.Remove(path)
+		}
+		return nil
+	})
+}
+
+func runBinary(ctx *typictx.ActionContext) error {
+	if !ctx.Cli.Bool("no-build") {
+		buildBinary(ctx)
+	}
+	binaryPath := typienv.App.BinPath
+	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
+}
+
+func runTesting(ctx *typictx.ActionContext) error {
+	return bash.GoTest(ctx.TestTargets)
+}
+
+func generateMock(ctx *typictx.ActionContext) (err error) {
+	err = bash.GoGet("github.com/golang/mock/mockgen")
+	if err != nil {
+		return
+	}
+	mockPkg := typienv.Mock
+	if !ctx.Cli.Bool("no-delete") {
+		log.Infof("Clean mock package '%s'", mockPkg)
+		os.RemoveAll(mockPkg)
+	}
+	for _, mockTarget := range ctx.MockTargets {
+		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
+		err = bash.RunGoBin("mockgen",
+			"-source", mockTarget,
+			"-destination", dest,
+			"-package", mockPkg)
+	}
+	return
+}
+
+func releaseDistribution(action *typictx.ActionContext) (err error) {
+	if !action.Cli.Bool("no-test") {
+		err = runTesting(action)
+		if err != nil {
+			return
+		}
+	}
+	force := action.Cli.Bool("force")
+	alpha := action.Cli.Bool("alpha")
+	binaries, changeLogs, err := releaser.ReleaseDistribution(action.Release, force, alpha)
+	if err != nil {
+		return
+	}
+	if !action.Cli.Bool("no-github") {
+		releaser.GithubRelease(binaries, changeLogs, action.Release, alpha)
+	}
+	return
+}
+
+func dockerCompose(ctx *typictx.ActionContext) (err error) {
+	log.Info("Generate docker-compose.yml")
+	dockerCompose := ctx.DockerCompose()
+	d1, _ := yaml.Marshal(dockerCompose)
+	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
+}
+
+func dockerUp(ctx *typictx.ActionContext) (err error) {
+	if !ctx.Cli.Bool("no-compose") {
+		err = dockerCompose(ctx)
+		if err != nil {
+			return
+		}
+	}
+	cmd := exec.Command("docker-compose", "up", "--remove-orphans", "-d")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
+
+func dockerDown(ctx *typictx.ActionContext) (err error) {
+	cmd := exec.Command("docker-compose", "down")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
+
+// GenerateReadme for generate typical applical readme
+func generateReadme(a *typictx.ActionContext) (err error) {
+	readme0 := Readme{
+		Title:       a.Name,
+		Description: a.Description,
+		Context:     a.Context,
+	}
+	log.Infof("Generate new %s", readmeFile)
+	file, err := os.Create(readmeFile)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+	readme0.Markdown(file)
 	return
 }
