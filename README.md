@@ -4,15 +4,13 @@
 
 Example of typical and scalable RESTful API Server for Go
 
-## Getting Started
-
-### Prerequisite
+## Prerequisite
 
 1. Install [Go](https://golang.org/doc/install) or `brew install go`
 
-### Run
+## Run
 
-Use `./typicalw run` to compile and run local development. You can find the binary at `bin` folder
+Use `./typicalw run` to compile and run local development. Lear more at[here](https://typical-go.github.io/learn-more/wrapper.html)
 
 ## Configuration
 
@@ -49,5 +47,5 @@ Use `./typicalw run` to compile and run local development. You can find the bina
 
 ## Release Distribution
 
-Use `./typicalw release` to make the release. You can find the binary at `release` folder. More information check [here](https://typical-go.github.io/release.html)
+Use `./typicalw release` to make the release. You can find the binary at `release` folder. Learn more at[here](https://typical-go.github.io/learn-more/release.html)
 
