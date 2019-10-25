@@ -20,6 +20,7 @@ const (
 	defaultRelease    = "release"
 	defaultBuildTool  = "build-tool"
 	defaultDependency = "dependency"
+	defaultMetadata   = ".typical-metadata"
 )
 
 var (
@@ -27,6 +28,7 @@ var (
 	BuildTool  *applicationFolder
 	Dependency *applicationFolder
 	Bin        string
+	Metadata   string
 	Mock       string
 	Release    string
 	AppName    string
@@ -42,6 +44,7 @@ func init() {
 	AppName = app()
 	cmd := cmd()
 	Bin = bin()
+	Metadata = defaultMetadata
 	buildTool := buildTool()
 	dependency := dependency()
 	App = &applicationFolder{

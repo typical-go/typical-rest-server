@@ -136,8 +136,10 @@ func buildBinary(ctx *typictx.ActionContext) error {
 }
 
 func cleanProject(ctx *typictx.ActionContext) (err error) {
-	err = os.RemoveAll(typienv.Bin)
-	if err != nil {
+	if err = os.RemoveAll(typienv.Bin); err != nil {
+		return
+	}
+	if err = os.RemoveAll(typienv.Metadata); err != nil {
 		return
 	}
 	return filepath.Walk(typienv.Dependency.SrcPath, func(path string, info os.FileInfo, err error) error {
