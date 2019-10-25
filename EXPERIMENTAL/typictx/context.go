@@ -63,8 +63,15 @@ func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 	return
 }
 
-// Validate the context
-func (c *Context) Validate() error {
+// Preparing context
+func (c *Context) Preparing() (err error) {
+	if err = c.validate(); err != nil {
+		return invalidContextError("Name can't not empty")
+	}
+	return
+}
+
+func (c *Context) validate() error {
 	if c.Name == "" {
 		return invalidContextError("Name can't not empty")
 	}

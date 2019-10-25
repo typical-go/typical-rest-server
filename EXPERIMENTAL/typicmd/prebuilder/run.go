@@ -28,8 +28,8 @@ func Run(ctx *typictx.Context) {
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
-	log.Debug("Validate the context")
-	fatalIfError(ctx.Validate())
+	log.Debug("Preparing the context")
+	fatalIfError(ctx.Preparing())
 	log.Debug("Prepare Environment File")
 	typienv.PrepareEnvFile(ctx)
 	prebuilder := prebuilder{}

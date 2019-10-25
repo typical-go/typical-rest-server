@@ -17,7 +17,7 @@ func Run(c *typictx.Context) {
 	app.Description = c.Description
 	app.Version = c.Version
 	app.Before = func(ctx *cli.Context) error {
-		return c.Validate()
+		return c.Preparing()
 	}
 	for _, cmd := range commands(c) {
 		app.Commands = append(app.Commands, cmd.CliCommand(c))
