@@ -24,22 +24,19 @@ type Context struct {
 func (c *Context) Invoke(function interface{}) error {
 	if c.container == nil {
 		c.container = dig.New()
-		for _, module := range c.Modules {
-			module.Inject(c.container)
+		for _, m := range c.Modules {
+			for _, constructor := range m.Constructors {
+				c.Constructors.Add(constructor)
+			}
+			c.Constructors.Add(m.OpenFunc)
 		}
 		for _, constructor := range c.Constructors {
-			err := c.container.Provide(constructor)
-			if err != nil {
+			if err := c.container.Provide(constructor); err != nil {
 				return err
 			}
 		}
 	}
 	return c.container.Invoke(function)
-}
-
-// AddConstructor to add constructor
-func (c *Context) AddConstructor(constructor interface{}) {
-	c.Constructors = append(c.Constructors, constructor)
 }
 
 // DockerCompose get docker compose
