@@ -25,6 +25,7 @@ const (
 
 // Run the prebuilder
 func Run(ctx *typictx.Context) {
+	var prebuilder prebuilder
 	var report report
 	var err error
 	if os.Getenv(debugEnv) != "" {
@@ -38,8 +39,12 @@ func Run(ctx *typictx.Context) {
 	if err = typienv.PrepareEnvFile(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
+	log.Debug("Initiate prebuilder")
+	if err := prebuilder.Initiate(ctx); err != nil {
+		log.Fatal(err.Error())
+	}
 	log.Debug("Prebuilding")
-	if report, err = new(prebuilder).Prebuild(); err != nil {
+	if report, err = prebuilder.Prebuild(); err != nil {
 		log.Fatal(err.Error())
 	}
 	checker := buildToolChecker{
