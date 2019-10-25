@@ -6,15 +6,14 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/walker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 // ConfigurationGenerator responsible to generate configuration
 type ConfigurationGenerator struct {
-	Configs []Config
-	*walker.ContextFile
+	Configs       []Config
+	ConfigImports golang.Imports
 }
 
 // Config model
@@ -37,10 +36,7 @@ func (g *ConfigurationGenerator) generate() (err error) {
 	model, contructors := g.create()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg).AddStruct(model)
-	src.AddImport("", "github.com/kelseyhightower/envconfig")
-	for _, imp := range g.ContextFile.Imports {
-		src.AddImport(imp.Name, imp.Path)
-	}
+	src.Imports = g.ConfigImports
 	src.AddConstructors(contructors...)
 	target := dependency + "/configurations.go"
 	err = src.Cook(target)

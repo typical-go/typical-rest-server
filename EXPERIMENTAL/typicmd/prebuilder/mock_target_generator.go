@@ -10,9 +10,8 @@ import (
 
 // MockTargetGenerator responsible for generate mock_target
 type MockTargetGenerator struct {
-	Packages    []string
-	Root        string
-	MockTargets []string
+	ApplicationImports golang.Imports
+	MockTargets        []string
 }
 
 // Generate the file
@@ -28,9 +27,7 @@ func (g *MockTargetGenerator) generate() (err error) {
 	defer debugkit.ElapsedTime("Generate Mock Target")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
-	for _, pkg := range g.Packages {
-		src.AddImport("", g.Root+"/"+pkg)
-	}
+	src.Imports = g.ApplicationImports
 	src.AddMockTargets(g.MockTargets...)
 	target := dependency + "/mock_targets.go"
 	err = src.Cook(target)

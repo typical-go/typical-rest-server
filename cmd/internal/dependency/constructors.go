@@ -2,11 +2,9 @@
 
 package dependency
 
-import (
-	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/app/service"
-	"github.com/typical-go/typical-rest-server/typical"
-)
+import "github.com/typical-go/typical-rest-server/app/repository"
+import "github.com/typical-go/typical-rest-server/app/service"
+import "github.com/typical-go/typical-rest-server/typical"
 
 func init() {
 	typical.Context.Constructors.Add(repository.NewBookRepo)

@@ -10,8 +10,8 @@ import (
 
 // TestTargetGenerator responsible to generate the test target
 type TestTargetGenerator struct {
-	Root     string
-	Packages []string
+	ContextImport string
+	Packages      []string
 }
 
 // Generate the file
@@ -27,7 +27,7 @@ func (g *TestTargetGenerator) generate() (err error) {
 	defer debugkit.ElapsedTime("Generate TestTargets")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
-	src.AddImport("", g.Root+"/typical")
+	src.AddImport("", g.ContextImport)
 	src.AddTestTargets(g.Packages...)
 	target := dependency + "/test_targets.go"
 	err = src.Cook(target)

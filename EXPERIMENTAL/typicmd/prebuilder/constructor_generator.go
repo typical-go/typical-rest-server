@@ -10,9 +10,8 @@ import (
 
 // ConstructorGenerator responsible for generate annotated
 type ConstructorGenerator struct {
-	Packages     []string
-	Root         string
-	Constructors []string
+	ApplicationImports golang.Imports
+	Constructors       []string
 }
 
 // Generate the file
@@ -28,9 +27,7 @@ func (g *ConstructorGenerator) generate() (err error) {
 	defer debugkit.ElapsedTime("Generate Constructors")()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg)
-	for _, pkg := range g.Packages {
-		src.AddImport("", g.Root+"/"+pkg)
-	}
+	src.Imports = g.ApplicationImports
 	src.AddConstructors(g.Constructors...)
 	target := dependency + "/constructors.go"
 	err = src.Cook(target)
