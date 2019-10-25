@@ -7,8 +7,9 @@ import (
 
 // Struct is plain old go object for struct
 type Struct struct {
-	Name   string
-	Fields []Field
+	Name        string
+	Fields      []Field
+	Description string
 }
 
 // Field is struct field
@@ -23,6 +24,7 @@ func (s *Struct) AddField(name, typ string) {
 }
 
 func (s Struct) Write(w io.Writer) {
+	writelnf(w, "// %s %s", s.Name, s.Description)
 	writelnf(w, "type %s struct{", s.Name)
 	for _, field := range s.Fields {
 		writelnf(w, "%s %s", field.Name, field.Type)

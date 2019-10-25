@@ -52,6 +52,7 @@ func (g *ConfigurationGenerator) generate() (err error) {
 
 func (g *ConfigurationGenerator) create() (model golang.Struct, constructors []string) {
 	model.Name = "Config"
+	model.Description = "for typical"
 	constructors = append(constructors, g.configDef())
 	for _, cfg := range g.Configs {
 		model.AddField(cfg.Key, cfg.Typ)

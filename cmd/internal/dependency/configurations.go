@@ -11,6 +11,7 @@ import (
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
+// Config for typical
 type Config struct {
 	App    *config.Config
 	Server *typserver.Config
