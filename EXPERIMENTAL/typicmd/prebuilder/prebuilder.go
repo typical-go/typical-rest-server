@@ -13,32 +13,37 @@ import (
 )
 
 type prebuilder struct {
-	Annotated     *AnnotatedGenerator
+	MockTarget    *MockTargetGenerator
+	Constructor   *ConstructorGenerator
 	Configuration *ConfigurationGenerator
 	TestTarget    *TestTargetGenerator
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
+	var projectFiles *walker.ProjectFiles
+	var contextFile *walker.ContextFile
+	var dirs, files []string
 	log.Debug("Scan project to get package and filenames")
-	root := typienv.AppName
-	packages, filenames, err := scanProject(root)
-	if err != nil {
+	if dirs, files, err = scanProject(typienv.AppName); err != nil {
 		return
 	}
 	log.Debug("Walk the project to get annotated or metadata")
-	projectFiles, err := walker.WalkProject(filenames)
-	if err != nil {
+	if projectFiles, err = walker.WalkProject(files); err != nil {
 		return
 	}
 	log.Debug("Walk the context file")
-	contextFile, err := walker.WalkContext(ctxPath)
-	if err != nil {
+	if contextFile, err = walker.WalkContext(ctxPath); err != nil {
 		return
 	}
-	p.Annotated = &AnnotatedGenerator{
+	p.MockTarget = &MockTargetGenerator{
+		Root:        ctx.Root,
+		MockTargets: projectFiles.Automocks(),
+		Packages:    dirs,
+	}
+	p.Constructor = &ConstructorGenerator{
 		Root:         ctx.Root,
-		ProjectFiles: projectFiles,
-		Packages:     packages,
+		Constructors: projectFiles.Autowires(),
+		Packages:     dirs,
 	}
 	p.Configuration = &ConfigurationGenerator{
 		Configs:     createConfigs(ctx),
@@ -55,7 +60,10 @@ func (p *prebuilder) Prebuild() (r report, err error) {
 	if r.TestTargetUpdated, err = p.TestTarget.Generate(); err != nil {
 		return
 	}
-	if r.AnnotatedUpdated, err = p.Annotated.Generate(); err != nil {
+	if r.MockTargetUpdated, err = p.MockTarget.Generate(); err != nil {
+		return
+	}
+	if r.ConstructorUpdated, err = p.Constructor.Generate(); err != nil {
 		return
 	}
 	if r.ConfigurationUpdated, err = p.Configuration.Generate(); err != nil {

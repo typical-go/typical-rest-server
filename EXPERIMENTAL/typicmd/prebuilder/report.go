@@ -1,13 +1,15 @@
 package prebuilder
 
 type report struct {
-	AnnotatedUpdated     bool
+	MockTargetUpdated    bool
+	ConstructorUpdated   bool
 	ConfigurationUpdated bool
 	TestTargetUpdated    bool
 }
 
 func (r *report) Updated() bool {
-	return r.AnnotatedUpdated ||
+	return r.MockTargetUpdated ||
+		r.ConstructorUpdated ||
 		r.ConfigurationUpdated ||
 		r.TestTargetUpdated
 }

@@ -2,13 +2,13 @@ package prebuilder
 
 import "io/ioutil"
 
-func scanProject(root string) (dirs []string, files []string, err error) {
+func scanProject(root string) (dirs, files []string, err error) {
 	dirs = append(dirs, root)
 	err = scanDir(root, &dirs, &files)
 	return
 }
 
-func scanDir(root string, directories *[]string, files *[]string) (err error) {
+func scanDir(root string, directories, files *[]string) (err error) {
 	fileInfos, err := ioutil.ReadDir(root)
 	if err != nil {
 		return
