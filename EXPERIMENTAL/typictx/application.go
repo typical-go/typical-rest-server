@@ -13,7 +13,6 @@ import (
 // Application is represent the application
 type Application struct {
 	Config
-	Name        string
 	StartFunc   interface{}
 	StopFunc    interface{}
 	Commands    []Command
@@ -52,9 +51,4 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 		err = ctx.Invoke(a.StartFunc)
 	}
 	return
-}
-
-// GetName to get name
-func (a *Application) GetName() string {
-	return a.Name
 }
