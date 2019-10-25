@@ -25,29 +25,33 @@ const (
 
 // Run the prebuilder
 func Run(ctx *typictx.Context) {
+	var report report
+	var err error
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
 	log.Debug("Preparing the context")
-	fatalIfError(ctx.Preparing())
+	if err = ctx.Preparing(); err != nil {
+		log.Fatal(err.Error())
+	}
 	log.Debug("Prepare Environment File")
-	typienv.PrepareEnvFile(ctx)
-	prebuilder := prebuilder{}
-	fatalIfError(prebuilder.Initiate(ctx))
-	report, err := prebuilder.Prebuild()
-	fatalIfError(err)
-	buildToolBinaryNotExist := !filekit.Exists(typienv.BuildTool.BinPath)
-	log.Debugf("buildToolBinaryNotExist: %t", buildToolBinaryNotExist)
-	prebuildUpdated := report.Updated()
-	log.Debugf("prebuildUpdated: %t", prebuildUpdated)
-	haveBuildArgs := haveBuildArg()
-	log.Debugf("haveBuildArgs: %t", haveBuildArgs)
-	if buildToolBinaryNotExist || prebuildUpdated || haveBuildArgs {
+	if err = typienv.PrepareEnvFile(ctx); err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Debug("Prebuilding")
+	if report, err = new(prebuilder).Prebuild(); err != nil {
+		log.Fatal(err.Error())
+	}
+	checker := buildToolChecker{
+		BinaryNotExist:  !filekit.Exists(typienv.BuildTool.BinPath),
+		PrebuildUpdated: report.Updated(),
+		HaveBuildArgs:   haveBuildArg(),
+	}
+	if checker.Check() {
 		log.Info("Build the build-tool")
-		fatalIfError(bash.GoBuild(
-			typienv.BuildTool.BinPath,
-			typienv.BuildTool.SrcPath,
-		))
+		if err := bash.GoBuild(typienv.BuildTool.BinPath, typienv.BuildTool.SrcPath); err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 }
 
@@ -56,10 +60,4 @@ func haveBuildArg() bool {
 		return os.Args[1] == "1"
 	}
 	return false
-}
-
-func fatalIfError(err error) {
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 }
