@@ -8,13 +8,13 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
-func TestContext_Validate(t *testing.T) {
+func TestContext_Preparing(t *testing.T) {
 	testcases := []struct {
 		context typictx.Context
 		errMsg  string
 	}{
 		{
-			typictx.Context{},
+			typictx.Context{Root: "some-root"},
 			"Invalid Context: Name can't not empty",
 		},
 		{
@@ -27,7 +27,7 @@ func TestContext_Validate(t *testing.T) {
 		},
 	}
 	for _, tt := range testcases {
-		err := tt.context.Validate()
+		err := tt.context.Preparing()
 		if tt.errMsg == "" {
 			require.NoError(t, err)
 		} else {
