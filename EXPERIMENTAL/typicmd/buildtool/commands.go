@@ -130,12 +130,12 @@ func commands(c *typictx.Context) (cmds []*typictx.Command) {
 }
 
 func buildBinary(ctx *typictx.ActionContext) error {
-	binaryName := typienv.App.BinPath
-	mainPackage := typienv.App.SrcPath
-	return bash.GoBuild(binaryName, mainPackage)
+	log.Info("Build application binary")
+	return bash.GoBuild(typienv.App.BinPath, typienv.App.SrcPath)
 }
 
 func cleanProject(ctx *typictx.ActionContext) (err error) {
+	log.Info("Clean the project")
 	if err = os.RemoveAll(typienv.Bin); err != nil {
 		return
 	}
@@ -154,17 +154,18 @@ func runBinary(ctx *typictx.ActionContext) error {
 	if !ctx.Cli.Bool("no-build") {
 		buildBinary(ctx)
 	}
-	binaryPath := typienv.App.BinPath
-	return bash.Run(binaryPath, []string(ctx.Cli.Args())...)
+	log.Info("Run application binary")
+	return bash.Run(typienv.App.BinPath, []string(ctx.Cli.Args())...)
 }
 
 func runTesting(ctx *typictx.ActionContext) error {
+	log.Info("Run testings")
 	return bash.GoTest(ctx.TestTargets)
 }
 
 func generateMock(ctx *typictx.ActionContext) (err error) {
-	err = bash.GoGet("github.com/golang/mock/mockgen")
-	if err != nil {
+	log.Info("Generate mocks")
+	if err = bash.GoGet("github.com/golang/mock/mockgen"); err != nil {
 		return
 	}
 	mockPkg := typienv.Mock
@@ -183,6 +184,8 @@ func generateMock(ctx *typictx.ActionContext) (err error) {
 }
 
 func releaseDistribution(action *typictx.ActionContext) (err error) {
+	log.Info("Release distribution")
+	var binaries, changeLogs []string
 	if !action.Cli.Bool("no-test") {
 		err = runTesting(action)
 		if err != nil {
@@ -191,8 +194,7 @@ func releaseDistribution(action *typictx.ActionContext) (err error) {
 	}
 	force := action.Cli.Bool("force")
 	alpha := action.Cli.Bool("alpha")
-	binaries, changeLogs, err := releaser.ReleaseDistribution(action.Release, force, alpha)
-	if err != nil {
+	if binaries, changeLogs, err = releaser.ReleaseDistribution(action.Release, force, alpha); err != nil {
 		return
 	}
 	if !action.Cli.Bool("no-github") {
@@ -230,17 +232,16 @@ func dockerDown(ctx *typictx.ActionContext) (err error) {
 
 // GenerateReadme for generate typical applical readme
 func generateReadme(a *typictx.ActionContext) (err error) {
-	readme0 := Readme{
-		Title:       a.Name,
-		Description: a.Description,
-		Context:     a.Context,
-	}
+	var file *os.File
 	log.Infof("Generate new %s", readmeFile)
-	file, err := os.Create(readmeFile)
-	if err != nil {
+	if file, err = os.Create(readmeFile); err != nil {
 		return
 	}
 	defer file.Close()
-	readme0.Markdown(file)
+	Readme{
+		Title:       a.Name,
+		Description: a.Description,
+		Context:     a.Context,
+	}.Markdown(file)
 	return
 }
