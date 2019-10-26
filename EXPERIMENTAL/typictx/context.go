@@ -3,6 +3,7 @@ package typictx
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
+	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
 	"go.uber.org/dig"
 )
 
@@ -17,26 +18,17 @@ type Context struct {
 	TestTargets  slice.Strings
 	MockTargets  slice.Strings
 	Constructors slice.Interfaces
-	container    *dig.Container
+	*dig.Container
 }
 
 // Invoke the function
-func (c *Context) Invoke(function interface{}) error {
-	if c.container == nil {
-		c.container = dig.New()
-		for _, m := range c.Modules {
-			for _, constructor := range m.Constructors {
-				c.Constructors.Add(constructor)
-			}
-			c.Constructors.Add(m.OpenFunc)
-		}
-		for _, constructor := range c.Constructors {
-			if err := c.container.Provide(constructor); err != nil {
-				return err
-			}
-		}
+// TODO: remove this
+func (c *Context) Invoke(function interface{}) (err error) {
+	if c.Container == nil {
+		c.Container = dig.New()
+		c.Construct(c.Container)
 	}
-	return c.container.Invoke(function)
+	return c.Container.Invoke(function)
 }
 
 // Configs return config list
@@ -86,10 +78,40 @@ func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 	return
 }
 
+// Construct dependencies
+// TODO: move to application
+func (c *Context) Construct(container *dig.Container) (err error) {
+	for _, constructor := range c.Constructors {
+		if err = container.Provide(constructor); err != nil {
+			return err
+		}
+	}
+	for _, m := range c.Modules {
+		if err = m.Construct(container); err != nil {
+			return
+		}
+	}
+	return
+}
+
+// Destruct dependencies
+// TODO: move to application
+func (c *Context) Destruct(container *dig.Container) (err error) {
+	var errs errkit.Errors
+	if c.Application.StopFunc != nil {
+		errs.Add(container.Invoke(c.Application.StopFunc))
+	}
+	for _, m := range c.Modules {
+		errs.Add(m.Destruct(container))
+	}
+	return errs
+}
+
 // Preparing context
+// TODO: rename back to validate as conflicting with life cycle phase
 func (c *Context) Preparing() (err error) {
 	if err = c.validate(); err != nil {
-		return invalidContextError("Name can't not empty")
+		return
 	}
 	return
 }
