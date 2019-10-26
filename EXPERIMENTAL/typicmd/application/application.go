@@ -11,12 +11,12 @@ import (
 	"go.uber.org/dig"
 )
 
-type runner struct {
+type application struct {
 	*typictx.Context
 	action interface{}
 }
 
-func (a runner) Run(ctx *cli.Context) (err error) {
+func (a application) Run(ctx *cli.Context) (err error) {
 	di := dig.New()
 	defer a.Destruct(di)
 	gracefulStop := make(chan os.Signal)

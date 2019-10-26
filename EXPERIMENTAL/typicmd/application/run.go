@@ -33,7 +33,7 @@ func Run(c *typictx.Context) {
 
 // ActionCommandFunction to get command function fo action
 func action(ctx *typictx.Context, action interface{}) interface{} {
-	return runner{
+	return application{
 		Context: ctx,
 		action:  action,
 	}.Run
