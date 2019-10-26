@@ -31,24 +31,20 @@ func Run(ctx *typictx.Context) {
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
-	log.Debug("Preparing the context")
 	if err = ctx.Preparing(); err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Debug("Prepare Environment File")
 	if err = typienv.PrepareEnvFile(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Debug("Initiate prebuilder")
 	if err := prebuilder.Initiate(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Debug("Prebuilding")
 	if report, err = prebuilder.Prebuild(); err != nil {
 		log.Fatal(err.Error())
 	}
 	checker := buildToolChecker{
-		BinaryNotExist:  !filekit.Exists(typienv.BuildTool.BinPath),
+		BinaryNotExist:  !filekit.IsExist(typienv.BuildTool.BinPath),
 		PrebuildUpdated: report.Updated(),
 		HaveBuildArgs:   haveBuildArg(),
 	}

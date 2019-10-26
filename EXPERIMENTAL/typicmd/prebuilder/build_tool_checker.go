@@ -11,9 +11,11 @@ type buildToolChecker struct {
 }
 
 func (c *buildToolChecker) Check() bool {
-	log.Debug("BinaryNotExist: ", c.BinaryNotExist, " ",
-		"PrebuildUpdated: ", c.PrebuildUpdated, " ",
-		"HaveBuildArgs: ", c.HaveBuildArgs)
+	log.WithFields(log.Fields{
+		"BinaryNotExist":  c.BinaryNotExist,
+		"PrebuildUpdated": c.PrebuildUpdated,
+		"HaveBuildArgs":   c.HaveBuildArgs,
+	}).Debug("Check for build-tool")
 	return c.BinaryNotExist ||
 		c.PrebuildUpdated ||
 		c.HaveBuildArgs

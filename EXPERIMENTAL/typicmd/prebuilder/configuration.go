@@ -5,48 +5,34 @@ import (
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
-// ConfigurationGenerator responsible to generate configuration
-type ConfigurationGenerator struct {
-	Configs       []Config
+type configuration struct {
+	Configs       []config
 	ConfigImports golang.Imports
 }
 
-// Config model
-type Config struct {
+type config struct {
 	Key string
 	Typ string
 }
 
-// Generate the file
-func (g *ConfigurationGenerator) Generate() (updated bool, err error) {
-	updated, err = metadata.Update("configuration", g)
-	if updated {
-		err = g.generate()
-	}
-	return
-}
-
-func (g *ConfigurationGenerator) generate() (err error) {
-	defer debugkit.ElapsedTime("Generate Configuration")()
+func (g configuration) generate(target string) (err error) {
+	defer debugkit.ElapsedTime("Generate configuration")()
 	model, contructors := g.create()
 	pkg := typienv.Dependency.Package
 	src := golang.NewSourceCode(pkg).AddStruct(model)
 	src.Imports = g.ConfigImports
 	src.AddConstructors(contructors...)
-	target := dependency + "/configurations.go"
-	err = src.Cook(target)
-	if err != nil {
+	if err = src.Cook(target); err != nil {
 		return
 	}
 	return bash.GoImports(target)
 }
 
-func (g *ConfigurationGenerator) create() (model golang.Struct, constructors []string) {
+func (g configuration) create() (model golang.Struct, constructors []string) {
 	model.Name = "Config"
 	model.Description = "for typical"
 	constructors = append(constructors, g.configDef())
@@ -57,7 +43,7 @@ func (g *ConfigurationGenerator) create() (model golang.Struct, constructors []s
 	return
 }
 
-func (g *ConfigurationGenerator) configDef() string {
+func (g configuration) configDef() string {
 	return `func() (*Config, error) {
 	var cfg Config
 	err := envconfig.Process("", &cfg)
@@ -65,7 +51,7 @@ func (g *ConfigurationGenerator) configDef() string {
 }`
 }
 
-func (g *ConfigurationGenerator) subConfigDef(name, typ string) string {
+func (g *configuration) subConfigDef(name, typ string) string {
 	return fmt.Sprintf(`func(cfg *Config) %s {
 	return cfg.%s
 }`, typ, name)

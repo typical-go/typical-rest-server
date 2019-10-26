@@ -22,7 +22,7 @@ type prebuilder struct {
 	ConfigImports      golang.Imports
 	ApplicationImports golang.Imports
 	ContextImport      string
-	Configs            []Config
+	Configs            []config
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
@@ -51,40 +51,36 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
 	log.Debug("Create configs")
-	p.Configs = append(p.Configs, Config{Key: fmtConfigKey(ctx.Application.Prefix), Typ: fmtConfigTyp(ctx.Application.Spec)})
+	p.Configs = append(p.Configs, config{Key: fmtConfigKey(ctx.Application.Prefix), Typ: fmtConfigTyp(ctx.Application.Spec)})
 	for _, m := range ctx.Modules {
-		p.Configs = append(p.Configs, Config{Key: fmtConfigKey(m.Prefix), Typ: fmtConfigTyp(m.Spec)})
+		p.Configs = append(p.Configs, config{Key: fmtConfigKey(m.Prefix), Typ: fmtConfigTyp(m.Spec)})
 	}
 	return
 }
 
 func (p *prebuilder) Prebuild() (r report, err error) {
-	testTargetGen := TestTargetGenerator{
+	if r.TestTargetUpdated, err = Generate("test_target", testTarget{
 		ContextImport: p.ContextImport,
 		Packages:      p.Dirs,
-	}
-	if r.TestTargetUpdated, err = testTargetGen.Generate(); err != nil {
+	}); err != nil {
 		return
 	}
-	mockTargetGen := MockTargetGenerator{
+	if r.MockTargetUpdated, err = Generate("mock_target", mockTarget{
 		ApplicationImports: p.ApplicationImports,
 		MockTargets:        p.ProjectFiles.Automocks(),
-	}
-	if r.MockTargetUpdated, err = mockTargetGen.Generate(); err != nil {
+	}); err != nil {
 		return
 	}
-	constructorGen := ConstructorGenerator{
+	if r.ConstructorUpdated, err = Generate("constructor", constructor{
 		ApplicationImports: p.ApplicationImports,
 		Constructors:       p.ProjectFiles.Autowires(),
-	}
-	if r.ConstructorUpdated, err = constructorGen.Generate(); err != nil {
+	}); err != nil {
 		return
 	}
-	configGen := ConfigurationGenerator{
+	if r.ConfigurationUpdated, err = Generate("configuration", configuration{
 		Configs:       p.Configs,
 		ConfigImports: p.ConfigImports,
-	}
-	if r.ConfigurationUpdated, err = configGen.Generate(); err != nil {
+	}); err != nil {
 		return
 	}
 	return
