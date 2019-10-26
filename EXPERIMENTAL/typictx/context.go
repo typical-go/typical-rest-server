@@ -39,6 +39,19 @@ func (c *Context) Invoke(function interface{}) error {
 	return c.container.Invoke(function)
 }
 
+// Configs return config list
+func (c *Context) Configs() (configs []Config) {
+	if c.Application.Config != nil {
+		configs = append(configs, c.Application.Config)
+	}
+	for _, m := range c.Modules {
+		if m.Config != nil {
+			configs = append(configs, m.Config)
+		}
+	}
+	return
+}
+
 // DockerCompose get docker compose
 func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 	dockerCompose = docker.NewCompose("3")

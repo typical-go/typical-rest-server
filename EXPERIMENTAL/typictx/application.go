@@ -12,7 +12,7 @@ import (
 
 // Application is represent the application
 type Application struct {
-	Config
+	Config      Config
 	StartFunc   interface{}
 	StopFunc    interface{}
 	Commands    []Command

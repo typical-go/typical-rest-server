@@ -9,11 +9,8 @@ import (
 // Module for postgres
 func Module() *typictx.Module {
 	return &typictx.Module{
-		Name: "Postgres Database",
-		Config: typictx.Config{
-			Prefix: "PG",
-			Spec:   &Config{},
-		},
+		Name:      "Postgres Database",
+		Config:    typictx.NewConfig("PG", &Config{}),
 		OpenFunc:  openConnection,
 		CloseFunc: closeConnection,
 		Command: &typictx.Command{

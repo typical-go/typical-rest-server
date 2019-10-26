@@ -57,12 +57,12 @@ func (r Readme) releaseDistribution(md *markdown.Markdown) (err error) {
 func (r Readme) configuration(md *markdown.Markdown) {
 	md.Heading2("Configuration")
 	for _, module := range r.Modules {
-		name := strcase.ToCamel(module.Name)
-		if name != "" {
-			md.Heading3(name)
+		if module.Name != "" {
+			md.Heading3(strcase.ToCamel(module.Name))
 		}
 		var builder strings.Builder
-		envconfig.Usagef(module.Prefix, module.Spec, &builder, configTemplate)
+		cfg := module.Config
+		envconfig.Usagef(cfg.Prefix(), cfg.Spec(), &builder, configTemplate)
 		md.Writeln(builder.String())
 	}
 }

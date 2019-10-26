@@ -7,7 +7,7 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Config
+	Config        Config
 	Name          string
 	OpenFunc      interface{}
 	CloseFunc     interface{}
