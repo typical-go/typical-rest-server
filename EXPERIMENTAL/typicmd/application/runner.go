@@ -1,11 +1,11 @@
 package application
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
@@ -17,12 +17,11 @@ type runner struct {
 }
 
 func (a runner) Run(ctx *cli.Context) (err error) {
-	log.Info("------------- Application Start -------------")
-	defer log.Info("-------------- Application End --------------")
+	di := dig.New()
+	defer a.Destruct(di)
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
-	di := dig.New()
 	if err = a.Construct(di); err != nil {
 		return
 	}
@@ -32,13 +31,10 @@ func (a runner) Run(ctx *cli.Context) (err error) {
 			return
 		}
 	}
-	go func() { // gracefull shutdown
+	go func() {
 		<-gracefulStop
-		log.Println("\nGraceful Shutdown...")
-		err = a.Destruct(di)
+		fmt.Println("\n\n\nGraceful Shutdown...")
+		a.Destruct(di)
 	}()
-	if err = di.Invoke(a.action); err != nil {
-		return
-	}
-	return
+	return di.Invoke(a.action)
 }

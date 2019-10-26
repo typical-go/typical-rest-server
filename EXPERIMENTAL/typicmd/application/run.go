@@ -22,12 +22,8 @@ func Run(c *typictx.Context) {
 		return typienv.LoadEnvFile()
 	}
 	for _, cmd := range c.Application.Commands {
-		app.Commands = append(app.Commands, cli.Command{
-			Name:      cmd.Name,
-			ShortName: cmd.ShortName,
-			Usage:     cmd.Usage,
-			Action:    action(c, cmd.ActionFunc),
-		})
+		cmd.Action = action(c, cmd.Action)
+		app.Commands = append(app.Commands, cmd)
 	}
 	err := app.Run(os.Args)
 	if err != nil {

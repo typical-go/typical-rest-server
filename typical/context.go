@@ -7,6 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
+	"github.com/urfave/cli"
 )
 
 // Context instance of Context
@@ -20,6 +21,9 @@ var Context = &typictx.Context{
 		Initiations: []interface{}{
 			app.Middlewares,
 			app.Routes,
+		},
+		Commands: []cli.Command{
+			{Name: "route", Description: "Print available API Routes", Action: app.DryRun},
 		},
 	},
 	Modules: []*typictx.Module{

@@ -1,11 +1,13 @@
 package typictx
 
+import "github.com/urfave/cli"
+
 // Application is represent the application
 type Application struct {
 	Config      Config
 	StartFunc   interface{}
 	StopFunc    interface{}
-	Commands    []*Command
+	Commands    []cli.Command
 	Initiations []interface{}
 }
 
