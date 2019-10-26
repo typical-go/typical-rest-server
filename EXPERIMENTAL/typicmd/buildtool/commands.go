@@ -233,7 +233,7 @@ func dockerDown(ctx *typictx.ActionContext) (err error) {
 // GenerateReadme for generate typical applical readme
 func generateReadme(a *typictx.ActionContext) (err error) {
 	var file *os.File
-	log.Infof("Generate new %s", readmeFile)
+	log.Infof("Generate Readme: %s", readmeFile)
 	if file, err = os.Create(readmeFile); err != nil {
 		return
 	}

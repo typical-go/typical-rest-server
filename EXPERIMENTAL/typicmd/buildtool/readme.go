@@ -45,12 +45,12 @@ func (r Readme) prerequisite(md *markdown.Markdown) {
 
 func (r Readme) runInstruction(md *markdown.Markdown) {
 	md.Heading2("Run")
-	md.Writeln("Use `./typicalw run` to compile and run local development. Lear more at[here](https://typical-go.github.io/learn-more/wrapper.html)")
+	md.Writeln("Use `./typicalw run` to compile and run local development. [Learn more](https://typical-go.github.io/learn-more/wrapper.html)")
 }
 
 func (r Readme) releaseDistribution(md *markdown.Markdown) (err error) {
 	md.Heading2("Release Distribution")
-	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder. Learn more at[here](https://typical-go.github.io/learn-more/release.html)")
+	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder. [Learn more](https://typical-go.github.io/learn-more/release.html)")
 	return
 }
 

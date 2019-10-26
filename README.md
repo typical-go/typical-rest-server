@@ -10,7 +10,7 @@ Example of typical and scalable RESTful API Server for Go
 
 ## Run
 
-Use `./typicalw run` to compile and run local development. Lear more at[here](https://typical-go.github.io/learn-more/wrapper.html)
+Use `./typicalw run` to compile and run local development. [Learn more](https://typical-go.github.io/learn-more/wrapper.html)
 
 ## Configuration
 
@@ -47,5 +47,5 @@ Use `./typicalw run` to compile and run local development. Lear more at[here](ht
 
 ## Release Distribution
 
-Use `./typicalw release` to make the release. You can find the binary at `release` folder. Learn more at[here](https://typical-go.github.io/learn-more/release.html)
+Use `./typicalw release` to make the release. You can find the binary at `release` folder. [Learn more](https://typical-go.github.io/learn-more/release.html)
 
