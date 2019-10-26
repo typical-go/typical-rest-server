@@ -52,3 +52,8 @@ func (a Application) Start(ctx *ActionContext) (err error) {
 	}
 	return
 }
+
+// Configure return configuration
+func (a Application) Configure() Config {
+	return a.Config
+}

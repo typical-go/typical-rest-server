@@ -15,3 +15,8 @@ type Module struct {
 	DockerCompose *docker.Compose
 	Constructors  slice.Interfaces
 }
+
+// Configure return configuration
+func (m Module) Configure() Config {
+	return m.Config
+}

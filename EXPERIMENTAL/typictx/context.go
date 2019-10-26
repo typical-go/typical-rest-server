@@ -41,12 +41,14 @@ func (c *Context) Invoke(function interface{}) error {
 
 // Configs return config list
 func (c *Context) Configs() (configs []Config) {
-	if c.Application.Config != nil {
-		configs = append(configs, c.Application.Config)
+	cfg := c.Application.Configure()
+	if cfg != nil {
+		configs = append(configs, c.Application.Configure())
 	}
 	for _, m := range c.Modules {
-		if m.Config != nil {
-			configs = append(configs, m.Config)
+		cfg := m.Configure()
+		if cfg != nil {
+			configs = append(configs, cfg)
 		}
 	}
 	return
