@@ -2,6 +2,11 @@ package typictx
 
 import "github.com/urfave/cli"
 
+// CommandLiner responsible to give command
+type CommandLiner interface {
+	CommandLine() *Command
+}
+
 // Command represent the command in CLI
 type Command struct {
 	Name        string

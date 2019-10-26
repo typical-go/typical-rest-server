@@ -20,3 +20,8 @@ type Module struct {
 func (m Module) Configure() Config {
 	return m.Config
 }
+
+// CommandLine return command
+func (m Module) CommandLine() *Command {
+	return m.Command
+}

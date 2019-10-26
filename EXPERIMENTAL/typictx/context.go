@@ -54,6 +54,17 @@ func (c *Context) Configs() (configs []Config) {
 	return
 }
 
+// CommandLines return command list
+func (c *Context) CommandLines() (cmds []*Command) {
+	for _, m := range c.Modules {
+		cmd := m.CommandLine()
+		if cmd != nil {
+			cmds = append(cmds, cmd)
+		}
+	}
+	return
+}
+
 // DockerCompose get docker compose
 func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
 	dockerCompose = docker.NewCompose("3")

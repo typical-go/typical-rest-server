@@ -15,7 +15,6 @@ type Application struct {
 	Config      Config
 	StartFunc   interface{}
 	StopFunc    interface{}
-	Commands    []Command
 	Initiations []interface{}
 }
 

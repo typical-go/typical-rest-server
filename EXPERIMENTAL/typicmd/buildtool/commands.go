@@ -121,11 +121,7 @@ func commands(c *typictx.Context) (cmds []*typictx.Command) {
 			},
 		},
 	}
-	for _, module := range c.Modules {
-		if module.Command != nil {
-			cmds = append(cmds, module.Command)
-		}
-	}
+	cmds = append(cmds, c.CommandLines()...)
 	return
 }
 
