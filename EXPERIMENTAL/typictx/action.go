@@ -14,13 +14,3 @@ type ActionContext struct {
 	*Context
 	Cli *cli.Context
 }
-
-// ActionCommandFunction to get command function fo action
-func ActionCommandFunction(context *Context, action Action) interface{} {
-	return func(ctx *cli.Context) error {
-		return action.Start(&ActionContext{
-			Cli:     ctx,
-			Context: context,
-		})
-	}
-}

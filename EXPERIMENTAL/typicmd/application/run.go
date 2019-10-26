@@ -17,7 +17,7 @@ func Run(c *typictx.Context) {
 	app.Usage = ""
 	app.Description = c.Description
 	app.Version = c.Version
-	app.Action = typictx.ActionCommandFunction(c, c.Application)
+	app.Action = action(c, c.StartFunc)
 	app.Before = func(ctx *cli.Context) error {
 		return typienv.LoadEnvFile()
 	}
@@ -26,11 +26,19 @@ func Run(c *typictx.Context) {
 			Name:      cmd.Name,
 			ShortName: cmd.ShortName,
 			Usage:     cmd.Usage,
-			Action:    cmd.ActionFunc.CommandFunction(c),
+			Action:    action(c, cmd.ActionFunc),
 		})
 	}
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+}
+
+// ActionCommandFunction to get command function fo action
+func action(ctx *typictx.Context, action interface{}) interface{} {
+	return runner{
+		Context: ctx,
+		action:  action,
+	}.Run
 }
