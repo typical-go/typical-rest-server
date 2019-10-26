@@ -135,15 +135,20 @@ func buildBinary(ctx *typictx.ActionContext) error {
 }
 
 func cleanProject(ctx *typictx.ActionContext) (err error) {
-	log.Info("Clean the project")
+	log.Info("Start clean the project")
+	log.Infof("  Remove %s", typienv.Bin)
 	if err = os.RemoveAll(typienv.Bin); err != nil {
 		return
 	}
+	log.Infof("  Remove %s", typienv.Metadata)
 	if err = os.RemoveAll(typienv.Metadata); err != nil {
 		return
 	}
+	log.Info("  Remove .env")
+	os.Remove(".env")
 	return filepath.Walk(typienv.Dependency.SrcPath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
+			log.Infof("  Remove %s", path)
 			return os.Remove(path)
 		}
 		return nil
