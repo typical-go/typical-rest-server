@@ -25,19 +25,19 @@ type buildtool struct {
 	*typictx.Context
 }
 
-func (t buildtool) commands() (cmds []*typictx.Command) {
-	cmds = []*typictx.Command{
+func (t buildtool) commands() (cmds []cli.Command) {
+	cmds = []cli.Command{
 		{
-			Name:       "build",
-			ShortName:  "b",
-			Usage:      "Build the binary",
-			ActionFunc: t.buildBinary,
+			Name:      "build",
+			ShortName: "b",
+			Usage:     "Build the binary",
+			Action:    t.buildBinary,
 		},
 		{
-			Name:       "clean",
-			ShortName:  "c",
-			Usage:      "Clean the project from generated file during build time",
-			ActionFunc: t.cleanProject,
+			Name:      "clean",
+			ShortName: "c",
+			Usage:     "Clean the project from generated file during build time",
+			Action:    t.cleanProject,
 		},
 		{
 			Name:      "run",
@@ -49,13 +49,13 @@ func (t buildtool) commands() (cmds []*typictx.Command) {
 					Usage: "Run the binary without build",
 				},
 			},
-			ActionFunc: t.runBinary,
+			Action: t.runBinary,
 		},
 		{
-			Name:       "test",
-			ShortName:  "t",
-			Usage:      "Run the testing",
-			ActionFunc: t.runTesting,
+			Name:      "test",
+			ShortName: "t",
+			Usage:     "Run the testing",
+			Action:    t.runTesting,
 		},
 		{
 			Name:  "release",
@@ -78,7 +78,7 @@ func (t buildtool) commands() (cmds []*typictx.Command) {
 					Usage: "Release for alpha version",
 				},
 			},
-			ActionFunc: t.releaseDistribution,
+			Action: t.releaseDistribution,
 		},
 		{
 			Name:  "mock",
@@ -89,22 +89,22 @@ func (t buildtool) commands() (cmds []*typictx.Command) {
 					Usage: "Generate mock class with delete previous generation",
 				},
 			},
-			ActionFunc: t.generateMock,
+			Action: t.generateMock,
 		},
 		{
-			Name:       "readme",
-			Usage:      "Generate readme document",
-			ActionFunc: t.generateReadme,
+			Name:   "readme",
+			Usage:  "Generate readme document",
+			Action: t.generateReadme,
 		},
 		{
-			Name:       "docker",
-			Usage:      "Docker utility",
-			BeforeFunc: typienv.LoadEnvFile,
-			SubCommands: []*typictx.Command{
+			Name:  "docker",
+			Usage: "Docker utility",
+			// BeforeFunc: typienv.LoadEnvFile,
+			Subcommands: []cli.Command{
 				{
-					Name:       "compose",
-					Usage:      "Generate docker-compose.yaml",
-					ActionFunc: t.dockerCompose,
+					Name:   "compose",
+					Usage:  "Generate docker-compose.yaml",
+					Action: t.dockerCompose,
 				},
 				{
 					Name:  "up",
@@ -115,26 +115,26 @@ func (t buildtool) commands() (cmds []*typictx.Command) {
 							Usage: "Create and start containers without generate docker-compose.yaml",
 						},
 					},
-					ActionFunc: t.dockerUp,
+					Action: t.dockerUp,
 				},
 				{
-					Name:       "down",
-					Usage:      "Stop and remove containers, networks, images, and volumes",
-					ActionFunc: t.dockerDown,
+					Name:   "down",
+					Usage:  "Stop and remove containers, networks, images, and volumes",
+					Action: t.dockerDown,
 				},
 			},
 		},
 	}
-	cmds = append(cmds, t.CommandLines()...)
+	// cmds = append(cmds, t.CommandLines()...)
 	return
 }
 
-func (t buildtool) buildBinary(ctx *typictx.ActionContext) error {
+func (t buildtool) buildBinary(ctx *cli.Context) error {
 	log.Info("Build application binary")
 	return bash.GoBuild(typienv.App.BinPath, typienv.App.SrcPath)
 }
 
-func (t buildtool) cleanProject(ctx *typictx.ActionContext) (err error) {
+func (t buildtool) cleanProject(ctx *cli.Context) (err error) {
 	log.Info("Start clean the project")
 	log.Infof("  Remove %s", typienv.Bin)
 	if err = os.RemoveAll(typienv.Bin); err != nil {
@@ -155,32 +155,32 @@ func (t buildtool) cleanProject(ctx *typictx.ActionContext) (err error) {
 	})
 }
 
-func (t buildtool) runBinary(ctx *typictx.ActionContext) (err error) {
-	if !ctx.Cli.Bool("no-build") {
+func (t buildtool) runBinary(ctx *cli.Context) (err error) {
+	if !ctx.Bool("no-build") {
 		if err = t.buildBinary(ctx); err != nil {
 			return
 		}
 	}
 	log.Info("Run application binary")
-	return bash.Run(typienv.App.BinPath, []string(ctx.Cli.Args())...)
+	return bash.Run(typienv.App.BinPath, []string(ctx.Args())...)
 }
 
-func (t buildtool) runTesting(ctx *typictx.ActionContext) error {
+func (t buildtool) runTesting(ctx *cli.Context) error {
 	log.Info("Run testings")
-	return bash.GoTest(ctx.TestTargets)
+	return bash.GoTest(t.TestTargets)
 }
 
-func (t buildtool) generateMock(ctx *typictx.ActionContext) (err error) {
+func (t buildtool) generateMock(ctx *cli.Context) (err error) {
 	log.Info("Generate mocks")
 	if err = bash.GoGet("github.com/golang/mock/mockgen"); err != nil {
 		return
 	}
 	mockPkg := typienv.Mock
-	if !ctx.Cli.Bool("no-delete") {
+	if !ctx.Bool("no-delete") {
 		log.Infof("Clean mock package '%s'", mockPkg)
 		os.RemoveAll(mockPkg)
 	}
-	for _, mockTarget := range ctx.MockTargets {
+	for _, mockTarget := range t.MockTargets {
 		dest := mockPkg + "/" + mockTarget[strings.LastIndex(mockTarget, "/")+1:]
 		err = bash.RunGoBin("mockgen",
 			"-source", mockTarget,
@@ -190,57 +190,53 @@ func (t buildtool) generateMock(ctx *typictx.ActionContext) (err error) {
 	return
 }
 
-func (t buildtool) releaseDistribution(action *typictx.ActionContext) (err error) {
+func (t buildtool) releaseDistribution(ctx *cli.Context) (err error) {
 	log.Info("Release distribution")
 	var binaries, changeLogs []string
-	if !action.Cli.Bool("no-test") {
-		if err = t.runTesting(action); err != nil {
+	if !ctx.Bool("no-test") {
+		if err = t.runTesting(ctx); err != nil {
 			return
 		}
 	}
-	force := action.Cli.Bool("force")
-	alpha := action.Cli.Bool("alpha")
-	if binaries, changeLogs, err = releaser.ReleaseDistribution(action.Release, force, alpha); err != nil {
+	force := ctx.Bool("force")
+	alpha := ctx.Bool("alpha")
+	if binaries, changeLogs, err = releaser.ReleaseDistribution(t.Release, force, alpha); err != nil {
 		return
 	}
-	if !action.Cli.Bool("no-github") {
-		releaser.GithubRelease(binaries, changeLogs, action.Release, alpha)
+	if !ctx.Bool("no-github") {
+		releaser.GithubRelease(binaries, changeLogs, t.Release, alpha)
 	}
 	return
 }
 
-func (t buildtool) dockerCompose(ctx *typictx.ActionContext) (err error) {
+func (t buildtool) dockerCompose(ctx *cli.Context) (err error) {
 	log.Info("Generate docker-compose.yml")
-	dockerCompose := ctx.DockerCompose()
+	dockerCompose := t.DockerCompose()
 	d1, _ := yaml.Marshal(dockerCompose)
 	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
 }
 
-func (t buildtool) dockerUp(ctx *typictx.ActionContext) (err error) {
+func (t buildtool) dockerUp(ctx *cli.Context) (err error) {
 	cmd := exec.Command("docker-compose", "up", "--remove-orphans", "-d")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
 }
 
-func (t buildtool) dockerDown(ctx *typictx.ActionContext) (err error) {
+func (t buildtool) dockerDown(ctx *cli.Context) (err error) {
 	cmd := exec.Command("docker-compose", "down")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
 }
 
-func (t buildtool) generateReadme(a *typictx.ActionContext) (err error) {
+func (t buildtool) generateReadme(ctx *cli.Context) (err error) {
 	var file *os.File
 	log.Infof("Generate Readme: %s", readmeFile)
 	if file, err = os.Create(readmeFile); err != nil {
 		return
 	}
 	defer file.Close()
-	Readme{
-		Title:       a.Name,
-		Description: a.Description,
-		Context:     a.Context,
-	}.Markdown(file)
+	Readme{Context: t.Context}.Markdown(file)
 	return
 }

@@ -20,9 +20,7 @@ func Run(c *typictx.Context) {
 	app.Before = func(ctx *cli.Context) error {
 		return c.Preparing()
 	}
-	for _, cmd := range buildtool.commands() {
-		app.Commands = append(app.Commands, cmd.CliCommand(c))
-	}
+	app.Commands = buildtool.commands()
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err.Error())
 	}
