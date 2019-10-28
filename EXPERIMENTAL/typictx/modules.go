@@ -44,8 +44,8 @@ func (m Modules) Construct(c *dig.Container) (err error) {
 // Destruct dependency
 func (m Modules) Destruct(c *dig.Container) (err error) {
 	for _, module := range m {
-		if constructor, ok := module.(Constructor); ok {
-			if err = constructor.Destruct(c); err != nil {
+		if destructor, ok := module.(Destructor); ok {
+			if err = destructor.Destruct(c); err != nil {
 				return
 			}
 		}

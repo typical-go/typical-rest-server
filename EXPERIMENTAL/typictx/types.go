@@ -1,0 +1,32 @@
+package typictx
+
+import (
+	"github.com/urfave/cli"
+	"go.uber.org/dig"
+)
+
+// Constructor responsible to construct dependency
+type Constructor interface {
+	Construct(c *dig.Container) error
+}
+
+// Destructor responsible to destruct dependency
+type Destructor interface {
+	Destruct(c *dig.Container) error
+}
+
+// CommandLiner responsible to give command
+type CommandLiner interface {
+	CommandLine() cli.Command
+}
+
+// Configurer responsible to create config
+type Configurer interface {
+	Configure() Config
+}
+
+// Config represent the configuration
+type Config struct {
+	Prefix string
+	Spec   interface{}
+}
