@@ -27,18 +27,18 @@ const (
 
 // Module for postgres
 func Module() interface{} {
-	return &postgres{
+	return &postgresModule{
 		Name:   "Postgres",
 		Config: typictx.Config{Prefix: "PG", Spec: &Config{}},
 	}
 }
 
-type postgres struct {
+type postgresModule struct {
 	typictx.Config
 	Name string
 }
 
-func (p postgres) CommandLine() cli.Command {
+func (p postgresModule) CommandLine() cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",
@@ -55,23 +55,26 @@ func (p postgres) CommandLine() cli.Command {
 	}
 }
 
-func (p postgres) Construct(c *dig.Container) (err error) {
+// Construct dependencies
+func (p postgresModule) Construct(c *dig.Container) (err error) {
 	return c.Provide(p.openConnection)
 }
 
-func (p postgres) Destruct(c *dig.Container) (err error) {
+// Destruct dependencies
+func (p postgresModule) Destruct(c *dig.Container) (err error) {
 	return c.Invoke(p.closeConnection)
 }
 
-func (p postgres) Configure() typictx.Config {
+// Configure return config information
+func (p postgresModule) Configure() typictx.Config {
 	return p.Config
 }
 
-func (p postgres) cliBefore(ctx *cli.Context) (err error) {
+func (p postgresModule) cliBefore(ctx *cli.Context) (err error) {
 	return typienv.LoadEnvFile()
 }
 
-func (p postgres) action(fn interface{}) func(ctx *cli.Context) error {
+func (p postgresModule) action(fn interface{}) func(ctx *cli.Context) error {
 	return func(ctx *cli.Context) (err error) {
 		var c *dig.Container
 		if c, err = p.container(); err != nil {
@@ -81,19 +84,19 @@ func (p postgres) action(fn interface{}) func(ctx *cli.Context) error {
 	}
 }
 
-func (p postgres) container() (c *dig.Container, err error) {
+func (p postgresModule) container() (c *dig.Container, err error) {
 	c = dig.New()
 	err = c.Provide(p.loadConfig)
 	return
 }
 
-func (p postgres) loadConfig() (cfg *Config, err error) {
+func (p postgresModule) loadConfig() (cfg *Config, err error) {
 	cfg = new(Config)
 	err = envconfig.Process(p.Configure().Prefix, cfg)
 	return
 }
 
-func (p postgres) openConnection(cfg *Config) (db *sql.DB, err error) {
+func (p postgresModule) openConnection(cfg *Config) (db *sql.DB, err error) {
 	log.Info("Open postgres connection")
 	if db, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
@@ -102,12 +105,12 @@ func (p postgres) openConnection(cfg *Config) (db *sql.DB, err error) {
 	return
 }
 
-func (postgres) closeConnection(db *sql.DB) error {
+func (postgresModule) closeConnection(db *sql.DB) error {
 	log.Info("Close postgres connection")
 	return db.Close()
 }
 
-func (p postgres) createDB(cfg *Config) (err error) {
+func (p postgresModule) createDB(cfg *Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -119,7 +122,7 @@ func (p postgres) createDB(cfg *Config) (err error) {
 	return
 }
 
-func (p postgres) dropDB(cfg *Config) (err error) {
+func (p postgresModule) dropDB(cfg *Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -131,7 +134,7 @@ func (p postgres) dropDB(cfg *Config) (err error) {
 	return
 }
 
-func (p postgres) migrateDB(cfg *Config) (err error) {
+func (p postgresModule) migrateDB(cfg *Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -142,7 +145,7 @@ func (p postgres) migrateDB(cfg *Config) (err error) {
 	return migration.Up()
 }
 
-func (p postgres) rollbackDB(cfg *Config) (err error) {
+func (p postgresModule) rollbackDB(cfg *Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -153,7 +156,7 @@ func (p postgres) rollbackDB(cfg *Config) (err error) {
 	return migration.Down()
 }
 
-func (p postgres) seedDB(cfg *Config) (err error) {
+func (p postgresModule) seedDB(cfg *Config) (err error) {
 	conn, err := sql.Open("postgres", p.dataSource(cfg))
 	if err != nil {
 		return
@@ -174,7 +177,7 @@ func (p postgres) seedDB(cfg *Config) (err error) {
 	return
 }
 
-func (postgres) console(cfg *Config) (err error) {
+func (postgresModule) console(cfg *Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -184,12 +187,12 @@ func (postgres) console(cfg *Config) (err error) {
 	return cmd.Run()
 }
 
-func (p postgres) dataSource(c *Config) string {
+func (postgresModule) dataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (postgres) adminDataSource(c *Config) string {
+func (postgresModule) adminDataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }
