@@ -2,10 +2,7 @@ package buildtool
 
 import (
 	"io"
-	"strings"
 
-	"github.com/iancoleman/strcase"
-	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/markdown"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
@@ -29,7 +26,7 @@ func (r Readme) Markdown(w io.Writer) *markdown.Markdown {
 	md.Writeln(r.Description)
 	r.prerequisite(md)
 	r.runInstruction(md)
-	r.configuration(md)
+	// r.configuration(md)
 	r.releaseDistribution(md)
 	return md
 }
@@ -52,15 +49,15 @@ func (r Readme) releaseDistribution(md *markdown.Markdown) (err error) {
 	return
 }
 
-func (r Readme) configuration(md *markdown.Markdown) {
-	md.Heading2("Configuration")
-	for _, module := range r.Modules {
-		if module.Name != "" {
-			md.Heading3(strcase.ToCamel(module.Name))
-		}
-		var builder strings.Builder
-		cfg := module.Config
-		envconfig.Usagef(cfg.Prefix(), cfg.Spec(), &builder, configTemplate)
-		md.Writeln(builder.String())
-	}
-}
+// func (r Readme) configuration(md *markdown.Markdown) {
+// 	md.Heading2("Configuration")
+// 	for _, help := range r.Modules.Helps() {
+// 		if module.Name != "" {
+// 			md.Heading3(strcase.ToCamel(module.Name))
+// 		}
+// 		var builder strings.Builder
+// 		cfg := module.Config
+// 		envconfig.Usagef(cfg.Prefix(), cfg.Spec(), &builder, configTemplate)
+// 		md.Writeln(builder.String())
+// 	}
+// }

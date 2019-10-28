@@ -1,7 +1,6 @@
 package typictx
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
 	"go.uber.org/dig"
@@ -10,14 +9,14 @@ import (
 // Context of typical application
 type Context struct {
 	Application
+	Modules
 	Release
 	Name         string
 	Description  string
 	Root         string
-	Modules      []*Module
 	TestTargets  slice.Strings
 	MockTargets  slice.Strings
-	Constructors slice.Interfaces
+	Constructors slice.Interfaces // TODO: remove this
 	*dig.Container
 }
 
@@ -32,51 +31,35 @@ func (c *Context) Invoke(function interface{}) (err error) {
 }
 
 // Configs return config list
-func (c *Context) Configs() (configs []Config) {
+func (c *Context) Configs() (cfgs []Config) {
 	cfg := c.Application.Configure()
 	if cfg != nil {
-		configs = append(configs, c.Application.Configure())
+		cfgs = append(cfgs, c.Application.Configure())
 	}
-	for _, m := range c.Modules {
-		cfg := m.Configure()
-		if cfg != nil {
-			configs = append(configs, cfg)
-		}
-	}
-	return
-}
-
-// CommandLines return command list
-func (c *Context) CommandLines() (cmds []*Command) {
-	for _, m := range c.Modules {
-		cmd := m.CommandLine()
-		if cmd != nil {
-			cmds = append(cmds, cmd)
-		}
-	}
+	cfgs = append(cfgs, c.Modules.Configs()...)
 	return
 }
 
 // DockerCompose get docker compose
-func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
-	dockerCompose = docker.NewCompose("3")
-	for _, module := range c.Modules {
-		moduleDocker := module.DockerCompose
-		if moduleDocker == nil {
-			continue
-		}
-		for _, name := range moduleDocker.ServiceKeys {
-			dockerCompose.RegisterService(name, moduleDocker.Services[name])
-		}
-		for _, name := range moduleDocker.NetworkKeys {
-			dockerCompose.RegisterNetwork(name, moduleDocker.Networks[name])
-		}
-		for _, name := range moduleDocker.VolumeKeys {
-			dockerCompose.RegisterVolume(name, moduleDocker.Volumes[name])
-		}
-	}
-	return
-}
+// func (c *Context) DockerCompose() (dockerCompose *docker.Compose) {
+// 	dockerCompose = docker.NewCompose("3")
+// 	for _, module := range c.Modules {
+// 		moduleDocker := module.DockerCompose
+// 		if moduleDocker == nil {
+// 			continue
+// 		}
+// 		for _, name := range moduleDocker.ServiceKeys {
+// 			dockerCompose.RegisterService(name, moduleDocker.Services[name])
+// 		}
+// 		for _, name := range moduleDocker.NetworkKeys {
+// 			dockerCompose.RegisterNetwork(name, moduleDocker.Networks[name])
+// 		}
+// 		for _, name := range moduleDocker.VolumeKeys {
+// 			dockerCompose.RegisterVolume(name, moduleDocker.Volumes[name])
+// 		}
+// 	}
+// 	return
+// }
 
 // Construct dependencies
 // TODO: move to application
@@ -86,12 +69,7 @@ func (c *Context) Construct(container *dig.Container) (err error) {
 			return err
 		}
 	}
-	for _, m := range c.Modules {
-		if err = m.Construct(container); err != nil {
-			return
-		}
-	}
-	return
+	return c.Modules.Construct(container)
 }
 
 // Destruct dependencies
@@ -101,10 +79,7 @@ func (c *Context) Destruct(container *dig.Container) (err error) {
 	if c.Application.StopFunc != nil {
 		errs.Add(container.Invoke(c.Application.StopFunc))
 	}
-	for _, m := range c.Modules {
-		errs.Add(m.Destruct(container))
-	}
-	return errs
+	return c.Modules.Destruct(container)
 }
 
 // Preparing context

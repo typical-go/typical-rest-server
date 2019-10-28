@@ -26,7 +26,7 @@ var Context = &typictx.Context{
 			{Name: "route", Description: "Print available API Routes", Action: app.DryRun},
 		},
 	},
-	Modules: []*typictx.Module{
+	Modules: []interface{}{
 		typserver.Module(),
 		typpostgres.Module(),
 		typredis.Module(),

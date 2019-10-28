@@ -1,7 +1,6 @@
 package typictx
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/docker"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
 	"go.uber.org/dig"
@@ -9,24 +8,17 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Config        Config
-	Name          string
-	OpenFunc      interface{} // TODO: remove this, use constructors
-	CloseFunc     interface{} // TODO: remove this, use destructors
-	Command       *Command
-	DockerCompose *docker.Compose
-	Constructors  slice.Interfaces
-	Destructors   slice.Interfaces
+	Config       Config
+	Name         string
+	OpenFunc     interface{} // TODO: remove this, use constructors
+	CloseFunc    interface{} // TODO: remove this, use destructors
+	Constructors slice.Interfaces
+	Destructors  slice.Interfaces
 }
 
 // Configure return configuration
 func (m Module) Configure() Config {
 	return m.Config
-}
-
-// CommandLine return command
-func (m Module) CommandLine() *Command {
-	return m.Command
 }
 
 // Construct dependency
