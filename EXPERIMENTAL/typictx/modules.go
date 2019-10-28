@@ -13,9 +13,7 @@ type Modules slice.Interfaces
 func (m Modules) Configs() (cfgs []Config) {
 	for _, module := range m {
 		if configurer, ok := module.(Configurer); ok {
-			if cfg := configurer.Configure(); cfg != nil {
-				cfgs = append(cfgs, cfg)
-			}
+			cfgs = append(cfgs, configurer.Configure())
 		}
 	}
 	return

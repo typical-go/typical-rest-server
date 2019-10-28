@@ -8,7 +8,7 @@ import (
 func Module() *typictx.Module {
 	return &typictx.Module{
 		Name:      "Postgres Database",
-		Config:    typictx.NewConfig("PG", &Config{}),
+		Config:    typictx.Config{Prefix: "PG", Spec: &Config{}},
 		OpenFunc:  openConnection,
 		CloseFunc: closeConnection,
 		// Command: &typictx.Command{

@@ -53,8 +53,8 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	log.Debug("Create configs")
 	for _, cfg := range ctx.Configs() {
 		p.Configs = append(p.Configs, config{
-			Key: fmtConfigKey(cfg.Prefix()),
-			Typ: fmtConfigTyp(cfg.Spec()),
+			Key: fmtConfigKey(cfg.Prefix),
+			Typ: fmtConfigTyp(cfg.Spec),
 		})
 	}
 	return

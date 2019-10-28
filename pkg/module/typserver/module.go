@@ -10,6 +10,6 @@ func Module() *typictx.Module {
 		Name:      "Server",
 		OpenFunc:  Create,
 		CloseFunc: Shutdown,
-		Config:    typictx.NewConfig("SERVER", &Config{}),
+		Config:    typictx.Config{"SERVER", &Config{}},
 	}
 }

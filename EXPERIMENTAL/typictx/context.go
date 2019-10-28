@@ -32,10 +32,7 @@ func (c *Context) Invoke(function interface{}) (err error) {
 
 // Configs return config list
 func (c *Context) Configs() (cfgs []Config) {
-	cfg := c.Application.Configure()
-	if cfg != nil {
-		cfgs = append(cfgs, c.Application.Configure())
-	}
+	cfgs = append(cfgs, c.Application.Configure())
 	cfgs = append(cfgs, c.Modules.Configs()...)
 	return
 }

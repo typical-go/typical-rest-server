@@ -57,7 +57,7 @@ func PrepareEnvFile(ctx *typictx.Context) (err error) {
 	}
 	defer buf.Close()
 	for _, cfg := range ctx.Configs() {
-		envconfig.Usagef(cfg.Prefix(), cfg.Spec(), buf, envTemplate)
+		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, envTemplate)
 	}
 	return
 }

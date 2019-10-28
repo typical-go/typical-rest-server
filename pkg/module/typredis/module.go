@@ -8,7 +8,7 @@ import (
 func Module() *typictx.Module {
 	return &typictx.Module{
 		Name:     "Redis",
-		Config:   typictx.NewConfig("REDIS", &Config{}),
+		Config:   typictx.Config{Prefix: "REDIS", Spec: &Config{}},
 		OpenFunc: Connect,
 		// Command: &typictx.Command{
 		// 	Name:       "redis",
