@@ -30,3 +30,11 @@ type Config struct {
 	Prefix string
 	Spec   interface{}
 }
+
+// Help model
+type Help struct {
+	// WIP:
+	Name        string
+	Description string
+	// Configuration string
+}
