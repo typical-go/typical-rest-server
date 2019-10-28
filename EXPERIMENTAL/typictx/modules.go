@@ -21,7 +21,11 @@ func (m Modules) Configs() (cfgs []Config) {
 
 // Commands return list of command
 func (m Modules) Commands() (cmds []cli.Command) {
-	// TODO:
+	for _, module := range m {
+		if cmdline, ok := module.(CommandLiner); ok {
+			cmds = append(cmds, cmdline.CommandLine())
+		}
+	}
 	return
 }
 

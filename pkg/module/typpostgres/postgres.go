@@ -11,8 +11,13 @@ import (
 	"github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/urfave/cli"
+	"go.uber.org/dig"
 )
 
 const (
@@ -20,35 +25,93 @@ const (
 	seedSrc      = "scripts/db/seed"
 )
 
-// Config is postgres configuration
-type Config struct {
-	DBName   string `required:"true" default:typical-rest`
-	User     string `required:"true" default:"postgres"`
-	Password string `required:"true" default:"pgpass"`
-	Host     string `default:"localhost"`
-	Port     int    `default:"5432"`
+// Module for postgres
+func Module() interface{} {
+	return &postgres{
+		Name:   "Postgres",
+		Config: typictx.Config{Prefix: "PG", Spec: &Config{}},
+	}
 }
 
-func openConnection(cfg *Config) (db *sql.DB, err error) {
+type postgres struct {
+	typictx.Config
+	Name string
+}
+
+func (p postgres) CommandLine() cli.Command {
+	return cli.Command{
+		Name:      "postgres",
+		ShortName: "pg",
+		Usage:     "Postgres Database Tool",
+		Before:    p.cliBefore,
+		Subcommands: []cli.Command{
+			{Name: "create", Usage: "Create New Database", Action: p.action(p.createDB)},
+			{Name: "drop", Usage: "Drop Database", Action: p.action(p.dropDB)},
+			{Name: "migrate", Usage: "Migrate Database", Action: p.action(p.migrateDB)},
+			{Name: "rollback", Usage: "Rollback Database", Action: p.action(p.rollbackDB)},
+			{Name: "seed", Usage: "Database Seeding", Action: p.action(p.seedDB)},
+			{Name: "console", Usage: "PostgreSQL interactive terminal", Action: p.action(p.console)},
+		},
+	}
+}
+
+func (p postgres) Construct(c *dig.Container) (err error) {
+	return c.Provide(p.openConnection)
+}
+
+func (p postgres) Destruct(c *dig.Container) (err error) {
+	return c.Invoke(p.closeConnection)
+}
+
+func (p postgres) Configure() typictx.Config {
+	return p.Config
+}
+
+func (p postgres) cliBefore(ctx *cli.Context) (err error) {
+	return typienv.LoadEnvFile()
+}
+
+func (p postgres) action(fn interface{}) func(ctx *cli.Context) error {
+	return func(ctx *cli.Context) (err error) {
+		var c *dig.Container
+		if c, err = p.container(); err != nil {
+			return
+		}
+		return c.Invoke(fn)
+	}
+}
+
+func (p postgres) container() (c *dig.Container, err error) {
+	c = dig.New()
+	err = c.Provide(p.loadConfig)
+	return
+}
+
+func (p postgres) loadConfig() (cfg *Config, err error) {
+	cfg = new(Config)
+	err = envconfig.Process(p.Configure().Prefix, cfg)
+	return
+}
+
+func (p postgres) openConnection(cfg *Config) (db *sql.DB, err error) {
 	log.Info("Open postgres connection")
-	db, err = sql.Open("postgres", dataSource(cfg))
-	if err != nil {
+	if db, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
 	}
 	err = db.Ping()
 	return
 }
 
-func closeConnection(db *sql.DB) error {
+func (postgres) closeConnection(db *sql.DB) error {
 	log.Info("Close postgres connection")
 	return db.Close()
 }
 
-func createDB(cfg *Config) (err error) {
+func (p postgres) createDB(cfg *Config) (err error) {
+	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
-	conn, err := sql.Open("postgres", adminDataSource(cfg))
-	if err != nil {
+	if conn, err = sql.Open("postgres", p.adminDataSource(cfg)); err != nil {
 		return
 	}
 	defer conn.Close()
@@ -56,11 +119,11 @@ func createDB(cfg *Config) (err error) {
 	return
 }
 
-func dropDB(cfg *Config) (err error) {
+func (p postgres) dropDB(cfg *Config) (err error) {
+	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
-	conn, err := sql.Open("postgres", adminDataSource(cfg))
-	if err != nil {
+	if conn, err = sql.Open("postgres", p.adminDataSource(cfg)); err != nil {
 		return
 	}
 	defer conn.Close()
@@ -68,30 +131,30 @@ func dropDB(cfg *Config) (err error) {
 	return
 }
 
-func migrateDB(cfg *Config) error {
+func (p postgres) migrateDB(cfg *Config) (err error) {
+	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
-	migration, err := migrate.New(sourceURL, dataSource(cfg))
-	if err != nil {
+	if migration, err = migrate.New(sourceURL, p.dataSource(cfg)); err != nil {
 		return err
 	}
 	defer migration.Close()
 	return migration.Up()
 }
 
-func rollbackDB(cfg *Config) error {
+func (p postgres) rollbackDB(cfg *Config) (err error) {
+	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
-	migration, err := migrate.New(sourceURL, dataSource(cfg))
-	if err != nil {
-		return err
+	if migration, err = migrate.New(sourceURL, p.dataSource(cfg)); err != nil {
+		return
 	}
 	defer migration.Close()
 	return migration.Down()
 }
 
-func seedDB(cfg *Config) (err error) {
-	conn, err := sql.Open("postgres", dataSource(cfg))
+func (p postgres) seedDB(cfg *Config) (err error) {
+	conn, err := sql.Open("postgres", p.dataSource(cfg))
 	if err != nil {
 		return
 	}
@@ -101,19 +164,17 @@ func seedDB(cfg *Config) (err error) {
 		sqlFile := seedSrc + "/" + f.Name()
 		log.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
-		b, err = ioutil.ReadFile(sqlFile)
-		if err != nil {
+		if b, err = ioutil.ReadFile(sqlFile); err != nil {
 			return
 		}
-		_, err = conn.Exec(string(b))
-		if err != nil {
+		if _, err = conn.Exec(string(b)); err != nil {
 			return
 		}
 	}
 	return
 }
 
-func console(cfg *Config) (err error) {
+func (postgres) console(cfg *Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -123,12 +184,12 @@ func console(cfg *Config) (err error) {
 	return cmd.Run()
 }
 
-func dataSource(c *Config) string {
+func (p postgres) dataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func adminDataSource(c *Config) string {
+func (postgres) adminDataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

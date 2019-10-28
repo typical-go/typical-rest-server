@@ -122,8 +122,12 @@ func (t buildtool) commands() (cmds []cli.Command) {
 		// 	},
 		// },
 	}
-	// cmds = append(cmds, t.CommandLines()...)
+	cmds = append(cmds, t.Modules.Commands()...)
 	return
+}
+
+func (t buildtool) cliBefore(ctx *cli.Context) (err error) {
+	return t.Context.Preparing()
 }
 
 func (t buildtool) buildBinary(ctx *cli.Context) error {

@@ -17,9 +17,7 @@ func Run(c *typictx.Context) {
 	app.Usage = ""
 	app.Description = c.Description
 	app.Version = c.Version
-	app.Before = func(ctx *cli.Context) error {
-		return c.Preparing()
-	}
+	app.Before = buildtool.cliBefore
 	app.Commands = buildtool.commands()
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err.Error())
