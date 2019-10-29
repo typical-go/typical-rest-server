@@ -5,6 +5,11 @@ import (
 	"go.uber.org/dig"
 )
 
+// Runner responsible to run the application
+type Runner interface {
+	Run(c *dig.Container) error
+}
+
 // Constructor responsible to construct dependency
 type Constructor interface {
 	Construct(c *dig.Container) error

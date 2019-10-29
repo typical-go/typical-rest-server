@@ -4,9 +4,10 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/app/config"
-	"github.com/typical-go/typical-rest-server/pkg/module/typpostgres"
-	"github.com/typical-go/typical-rest-server/pkg/module/typredis"
-	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
+	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typredis"
+	"github.com/typical-go/typical-rest-server/pkg/typserver"
+
 	"github.com/urfave/cli"
 )
 
