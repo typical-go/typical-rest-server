@@ -28,13 +28,16 @@ const (
 // Module for postgres
 func Module() interface{} {
 	return &postgresModule{
-		Name:   "Postgres",
-		Config: typictx.Config{Prefix: "PG", Spec: &Config{}},
+		Name: "Postgres",
+		Configuration: typictx.Configuration{
+			Prefix: "PG",
+			Spec:   &Config{},
+		},
 	}
 }
 
 type postgresModule struct {
-	typictx.Config
+	typictx.Configuration
 	Name string
 }
 
@@ -66,29 +69,18 @@ func (p postgresModule) Destruct(c *dig.Container) (err error) {
 	return c.Invoke(p.closeConnection)
 }
 
-// Configure return config information
-func (p postgresModule) Configure() typictx.Config {
-	return p.Config
-}
-
 func (p postgresModule) cliBefore(ctx *cli.Context) (err error) {
 	return typienv.LoadEnvFile()
 }
 
 func (p postgresModule) action(fn interface{}) func(ctx *cli.Context) error {
 	return func(ctx *cli.Context) (err error) {
-		var c *dig.Container
-		if c, err = p.container(); err != nil {
+		c := dig.New()
+		if err = c.Provide(p.loadConfig); err != nil {
 			return
 		}
 		return c.Invoke(fn)
 	}
-}
-
-func (p postgresModule) container() (c *dig.Container, err error) {
-	c = dig.New()
-	err = c.Provide(p.loadConfig)
-	return
 }
 
 func (p postgresModule) loadConfig() (cfg *Config, err error) {

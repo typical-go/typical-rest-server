@@ -8,17 +8,12 @@ import (
 
 // Module of typical-go application
 type Module struct {
-	Config       Config
+	Configuration
 	Name         string
 	OpenFunc     interface{} // TODO: remove this, use constructors
 	CloseFunc    interface{} // TODO: remove this, use destructors
 	Constructors slice.Interfaces
 	Destructors  slice.Interfaces
-}
-
-// Configure return configuration
-func (m Module) Configure() Config {
-	return m.Config
 }
 
 // Construct dependency

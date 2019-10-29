@@ -17,7 +17,10 @@ var Context = &typictx.Context{
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Application: typictx.Application{
 		StartFunc: app.Start,
-		Config:    typictx.Config{Prefix: "APP", Spec: &config.Config{}},
+		Configuration: typictx.Configuration{
+			Prefix: "APP",
+			Spec:   &config.Config{},
+		},
 		Initiations: []interface{}{
 			app.Middlewares,
 			app.Routes,

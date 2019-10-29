@@ -9,8 +9,8 @@ import (
 // Modules is list of module
 type Modules slice.Interfaces
 
-// Configs return list of config
-func (m Modules) Configs() (cfgs []Config) {
+// Configurations return list of config
+func (m Modules) Configurations() (cfgs []Configuration) {
 	for _, module := range m {
 		if configurer, ok := module.(Configurer); ok {
 			cfgs = append(cfgs, configurer.Configure())

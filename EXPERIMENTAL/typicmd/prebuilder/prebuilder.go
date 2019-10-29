@@ -51,7 +51,7 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
 	log.Debug("Create configs")
-	for _, cfg := range ctx.Configs() {
+	for _, cfg := range ctx.Configurations() {
 		p.Configs = append(p.Configs, config{
 			Key: fmtConfigKey(cfg.Prefix),
 			Typ: fmtConfigTyp(cfg.Spec),

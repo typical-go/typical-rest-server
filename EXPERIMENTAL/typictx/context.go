@@ -30,10 +30,10 @@ func (c *Context) Invoke(function interface{}) (err error) {
 	return c.Container.Invoke(function)
 }
 
-// Configs return config list
-func (c *Context) Configs() (cfgs []Config) {
+// Configurations return config list
+func (c *Context) Configurations() (cfgs []Configuration) {
 	cfgs = append(cfgs, c.Application.Configure())
-	cfgs = append(cfgs, c.Modules.Configs()...)
+	cfgs = append(cfgs, c.Modules.Configurations()...)
 	return
 }
 
