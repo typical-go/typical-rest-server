@@ -2,12 +2,13 @@ package typictx
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"go.uber.org/dig"
 )
 
 // Context of typical application
 type Context struct {
-	Modules
+	typiobj.Modules
 	Release
 	Application  interface{}
 	Name         string
@@ -20,8 +21,8 @@ type Context struct {
 }
 
 // Configurations return config list
-func (c *Context) Configurations() (cfgs []Configuration) {
-	if configurer, ok := c.Application.(Configurer); ok {
+func (c *Context) Configurations() (cfgs []typiobj.Configuration) {
+	if configurer, ok := c.Application.(typiobj.Configurer); ok {
 		cfgs = append(cfgs, configurer.Configure())
 	}
 	cfgs = append(cfgs, c.Modules.Configurations()...)
@@ -56,7 +57,7 @@ func (c *Context) Construct(container *dig.Container) (err error) {
 			return err
 		}
 	}
-	if constructor, ok := c.Application.(Constructor); ok {
+	if constructor, ok := c.Application.(typiobj.Constructor); ok {
 		if err = constructor.Construct(container); err != nil {
 			return
 		}
@@ -66,7 +67,7 @@ func (c *Context) Construct(container *dig.Container) (err error) {
 
 // Destruct dependencies
 func (c *Context) Destruct(container *dig.Container) (err error) {
-	if destructor, ok := c.Application.(Destructor); ok {
+	if destructor, ok := c.Application.(typiobj.Destructor); ok {
 		if err = destructor.Destruct(container); err != nil {
 			return
 		}
@@ -90,7 +91,7 @@ func (c *Context) validate() error {
 	if c.Root == "" {
 		return invalidContextError("Root can't not empty")
 	}
-	if _, ok := c.Application.(Runner); !ok {
+	if _, ok := c.Application.(typiobj.Runner); !ok {
 		return invalidContextError("Application must implement Runner")
 	}
 	return nil

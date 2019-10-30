@@ -1,4 +1,4 @@
-package typictx
+package typiobj
 
 import (
 	"github.com/urfave/cli"

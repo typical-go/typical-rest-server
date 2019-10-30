@@ -1,4 +1,4 @@
-package typienv
+package typictx
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -18,7 +18,13 @@ const (
 {{end}}`
 )
 
+// CliLoadEnvFile is cli version of LoadEnvFile
+func CliLoadEnvFile(ctx *cli.Context) (err error) {
+	return LoadEnvFile()
+}
+
 // LoadEnvFile to load environment from .env file
+// TODO: move to util
 func LoadEnvFile() (err error) {
 	configSource := os.Getenv(configKey)
 	var configs []string
@@ -45,19 +51,18 @@ func LoadEnvFile() (err error) {
 }
 
 // PrepareEnvFile to write .env file if not exist
-func PrepareEnvFile(ctx *typictx.Context) (err error) {
-	_, err = os.Stat(defaultDotEnv)
-	if !os.IsNotExist(err) {
+func PrepareEnvFile(ctx *Context) (err error) {
+	if _, err = os.Stat(defaultDotEnv); !os.IsNotExist(err) {
 		return
 	}
 	log.Infof("Generate new project environment at '%s'", defaultDotEnv)
-	buf, err := os.Create(defaultDotEnv)
-	if err != nil {
+	var file *os.File
+	if file, err = os.Create(defaultDotEnv); err != nil {
 		return
 	}
-	defer buf.Close()
+	defer file.Close()
 	for _, cfg := range ctx.Configurations() {
-		envconfig.Usagef(cfg.Prefix, cfg.Spec, buf, envTemplate)
+		envconfig.Usagef(cfg.Prefix, cfg.Spec, file, envTemplate)
 	}
 	return
 }

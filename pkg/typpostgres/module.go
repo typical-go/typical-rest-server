@@ -15,7 +15,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -29,7 +29,7 @@ const (
 func Module() interface{} {
 	return &postgresModule{
 		Name: "Postgres",
-		Configuration: typictx.Configuration{
+		Configuration: typiobj.Configuration{
 			Prefix: "PG",
 			Spec:   &Config{},
 		},
@@ -37,7 +37,7 @@ func Module() interface{} {
 }
 
 type postgresModule struct {
-	typictx.Configuration
+	typiobj.Configuration
 	Name string
 }
 
@@ -47,14 +47,14 @@ func (p postgresModule) CommandLine() cli.Command {
 		Name:      "postgres",
 		ShortName: "pg",
 		Usage:     "Postgres Database Tool",
-		Before:    p.cliBefore,
+		Before:    typictx.CliLoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: p.action(p.createDB)},
-			{Name: "drop", Usage: "Drop Database", Action: p.action(p.dropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: p.action(p.migrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: p.action(p.rollbackDB)},
-			{Name: "seed", Usage: "Database Seeding", Action: p.action(p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL interactive terminal", Action: p.action(p.console)},
+			{Name: "create", Usage: "Create New Database", Action: typiobj.CliAction(p, p.createDB)},
+			{Name: "drop", Usage: "Drop Database", Action: typiobj.CliAction(p, p.dropDB)},
+			{Name: "migrate", Usage: "Migrate Database", Action: typiobj.CliAction(p, p.migrateDB)},
+			{Name: "rollback", Usage: "Rollback Database", Action: typiobj.CliAction(p, p.rollbackDB)},
+			{Name: "seed", Usage: "Database Seeding", Action: typiobj.CliAction(p, p.seedDB)},
+			{Name: "console", Usage: "PostgreSQL interactive terminal", Action: typiobj.CliAction(p, p.console)},
 		},
 	}
 }
@@ -68,20 +68,6 @@ func (p postgresModule) Construct(c *dig.Container) (err error) {
 // Destruct dependencies
 func (p postgresModule) Destruct(c *dig.Container) (err error) {
 	return c.Invoke(p.closeConnection)
-}
-
-func (p postgresModule) cliBefore(ctx *cli.Context) (err error) {
-	return typienv.LoadEnvFile()
-}
-
-func (p postgresModule) action(fn interface{}) func(ctx *cli.Context) error {
-	return func(ctx *cli.Context) (err error) {
-		c := dig.New()
-		if err = c.Provide(p.loadConfig); err != nil {
-			return
-		}
-		return c.Invoke(fn)
-	}
 }
 
 func (p postgresModule) loadConfig() (cfg *Config, err error) {

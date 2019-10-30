@@ -34,7 +34,7 @@ func Run(ctx *typictx.Context) {
 	if err = ctx.Preparing(); err != nil {
 		log.Fatal(err.Error())
 	}
-	if err = typienv.PrepareEnvFile(ctx); err != nil {
+	if err = typictx.PrepareEnvFile(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
 	if err := prebuilder.Initiate(ctx); err != nil {

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"go.uber.org/dig"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
@@ -17,7 +17,7 @@ import (
 func Module() interface{} {
 	return &serverModule{
 		Name: "Server",
-		Configuration: typictx.Configuration{
+		Configuration: typiobj.Configuration{
 			Prefix: "SERVER",
 			Spec:   &Config{},
 		},
@@ -25,7 +25,7 @@ func Module() interface{} {
 }
 
 type serverModule struct {
-	typictx.Configuration
+	typiobj.Configuration
 	Name string
 }
 

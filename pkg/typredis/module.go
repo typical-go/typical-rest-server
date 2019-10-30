@@ -5,11 +5,10 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-
 	"github.com/go-redis/redis"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -18,7 +17,7 @@ import (
 func Module() interface{} {
 	return &redisModule{
 		Name: "Redis",
-		Configuration: typictx.Configuration{
+		Configuration: typiobj.Configuration{
 			Prefix: "REDIS",
 			Spec:   &Config{},
 		},
@@ -26,7 +25,7 @@ func Module() interface{} {
 }
 
 type redisModule struct {
-	typictx.Configuration
+	typiobj.Configuration
 	Name string
 }
 
@@ -46,24 +45,10 @@ func (r redisModule) CommandLine() cli.Command {
 	return cli.Command{
 		Name:   "redis",
 		Usage:  "Redis Utility Tool",
-		Before: r.cliBefore,
+		Before: typictx.CliLoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Action: r.action(r.console)},
+			{Name: "console", ShortName: "c", Action: typiobj.CliAction(r, r.console)},
 		},
-	}
-}
-
-func (redisModule) cliBefore(ctx *cli.Context) (err error) {
-	return typienv.LoadEnvFile()
-}
-
-func (r redisModule) action(fn interface{}) func(ctx *cli.Context) error {
-	return func(ctx *cli.Context) (err error) {
-		c := dig.New()
-		if err = c.Provide(r.loadConfig); err != nil {
-			return
-		}
-		return c.Invoke(fn)
 	}
 }
 

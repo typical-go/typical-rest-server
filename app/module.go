@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
@@ -11,7 +11,7 @@ import (
 // Module of application
 func Module() interface{} {
 	return applicationModule{
-		Configuration: typictx.Configuration{
+		Configuration: typiobj.Configuration{
 			Prefix: "APP",
 			Spec:   &config.Config{},
 		},
@@ -19,7 +19,7 @@ func Module() interface{} {
 }
 
 type applicationModule struct {
-	typictx.Configuration
+	typiobj.Configuration
 }
 
 func (m applicationModule) CommandLine() cli.Command {

@@ -1,4 +1,4 @@
-package typictx
+package typiobj
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"

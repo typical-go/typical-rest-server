@@ -1,4 +1,4 @@
-package typictx
+package typiobj
 
 // Configuration represent the configuration
 type Configuration struct {
