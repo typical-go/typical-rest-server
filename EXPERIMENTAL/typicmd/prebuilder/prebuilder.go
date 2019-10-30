@@ -22,7 +22,7 @@ type prebuilder struct {
 	ConfigImports      golang.Imports
 	ApplicationImports golang.Imports
 	ContextImport      string
-	Configs            []config
+	// Configs            []config
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
@@ -50,13 +50,6 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 		p.ApplicationImports.AddImport("", ctx.Root+"/"+dir)
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
-	log.Debug("Create configs")
-	for _, cfg := range ctx.Configurations() {
-		p.Configs = append(p.Configs, config{
-			Key: fmtConfigKey(cfg.Prefix),
-			Typ: fmtConfigTyp(cfg.Spec),
-		})
-	}
 	return
 }
 
@@ -76,12 +69,6 @@ func (p *prebuilder) Prebuild() (r report, err error) {
 	if r.ConstructorUpdated, err = Generate("constructor", constructor{
 		ApplicationImports: p.ApplicationImports,
 		Constructors:       p.ProjectFiles.Autowires(),
-	}); err != nil {
-		return
-	}
-	if r.ConfigurationUpdated, err = Generate("configuration", configuration{
-		Configs:       p.Configs,
-		ConfigImports: p.ConfigImports,
 	}); err != nil {
 		return
 	}

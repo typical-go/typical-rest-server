@@ -32,6 +32,7 @@ type redisModule struct {
 
 // Construct dependencies
 func (r redisModule) Construct(c *dig.Container) (err error) {
+	c.Provide(r.loadConfig)
 	return c.Provide(r.connect)
 }
 

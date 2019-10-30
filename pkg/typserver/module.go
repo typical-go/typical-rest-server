@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"go.uber.org/dig"
 
@@ -29,11 +30,18 @@ type serverModule struct {
 }
 
 func (s serverModule) Construct(c *dig.Container) (err error) {
+	c.Provide(s.loadConfig)
 	return c.Provide(s.Create)
 }
 
 func (s serverModule) Destruct(c *dig.Container) (err error) {
 	return c.Invoke(s.Shutdown)
+}
+
+func (s serverModule) loadConfig() (cfg *Config, err error) {
+	cfg = new(Config)
+	err = envconfig.Process(s.Configure().Prefix, cfg)
+	return
 }
 
 // Create new server

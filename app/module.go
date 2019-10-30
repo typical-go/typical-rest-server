@@ -43,7 +43,7 @@ func (m applicationModule) Run(c *dig.Container) (err error) {
 }
 
 func (m applicationModule) Construct(c *dig.Container) (err error) {
-	return
+	return c.Provide(m.loadConfig)
 }
 
 func (m applicationModule) loadConfig() (cfg *config.Config, err error) {

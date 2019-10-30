@@ -61,6 +61,7 @@ func (p postgresModule) CommandLine() cli.Command {
 
 // Construct dependencies
 func (p postgresModule) Construct(c *dig.Container) (err error) {
+	c.Provide(p.loadConfig)
 	return c.Provide(p.openConnection)
 }
 
