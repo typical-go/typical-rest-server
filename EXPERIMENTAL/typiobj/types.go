@@ -10,9 +10,9 @@ type Runner interface {
 	Run(c *dig.Container) error
 }
 
-// Constructor responsible to construct dependency
-type Constructor interface {
-	Construct(c *dig.Container) error
+// Provider responsible to provide dependency
+type Provider interface {
+	Provide() []interface{}
 }
 
 // Destructor responsible to destruct dependency

@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/pkg/module/typserver"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
 
 func TestModule(t *testing.T) {
 	m := typserver.Module()
-	require.True(t, typictx.IsConstructor(m))
-	require.True(t, typictx.IsDestructor(m))
-	require.True(t, typictx.IsConfigurer(m))
+	require.True(t, typiobj.IsProvider(m))
+	require.True(t, typiobj.IsDestructor(m))
+	require.True(t, typiobj.IsConfigurer(m))
 }

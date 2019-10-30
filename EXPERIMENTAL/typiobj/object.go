@@ -12,9 +12,9 @@ func Description(obj interface{}) string {
 	return "<description>"
 }
 
-// IsConstructor return true if object implementation of constructor
-func IsConstructor(obj interface{}) (ok bool) {
-	_, ok = obj.(Constructor)
+// IsProvider return true if object implementation of provider
+func IsProvider(obj interface{}) (ok bool) {
+	_, ok = obj.(Provider)
 	return
 }
 

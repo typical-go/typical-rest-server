@@ -42,8 +42,10 @@ func (m applicationModule) Run(c *dig.Container) (err error) {
 	return c.Invoke(Start)
 }
 
-func (m applicationModule) Construct(c *dig.Container) (err error) {
-	return c.Provide(m.loadConfig)
+func (m applicationModule) Provide() []interface{} {
+	return []interface{}{
+		m.loadConfig,
+	}
 }
 
 func (m applicationModule) loadConfig() (cfg *config.Config, err error) {

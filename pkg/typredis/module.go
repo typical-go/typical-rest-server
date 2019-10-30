@@ -29,10 +29,12 @@ type redisModule struct {
 	Name string
 }
 
-// Construct dependencies
-func (r redisModule) Construct(c *dig.Container) (err error) {
-	c.Provide(r.loadConfig)
-	return c.Provide(r.connect)
+// Provide dependencies
+func (r redisModule) Provide() []interface{} {
+	return []interface{}{
+		r.loadConfig,
+		r.connect,
+	}
 }
 
 // Destruct dependencies

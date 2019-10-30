@@ -22,8 +22,10 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
-	if err = a.Construct(di); err != nil {
-		return
+	for _, constructor := range a.Provide() {
+		if err = di.Provide(constructor); err != nil {
+			return
+		}
 	}
 	// TODO: create prepare function
 	// for _, initiation := range a.Initiations {
@@ -38,4 +40,13 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	}()
 	runner := a.Application.(typiobj.Runner)
 	return runner.Run(di)
+}
+
+func (a application) Provide() (constructors []interface{}) {
+	constructors = append(constructors, a.Constructors...)
+	constructors = append(constructors, a.Modules.Provide()...)
+	if provider, ok := a.Application.(typiobj.Provider); ok {
+		constructors = append(constructors, provider.Provide()...)
+	}
+	return
 }

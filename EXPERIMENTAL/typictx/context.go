@@ -50,21 +50,6 @@ func (c *Context) Configurations() (cfgs []typiobj.Configuration) {
 // 	return
 // }
 
-// Construct dependencies
-func (c *Context) Construct(container *dig.Container) (err error) {
-	for _, constructor := range c.Constructors {
-		if err = container.Provide(constructor); err != nil {
-			return err
-		}
-	}
-	if constructor, ok := c.Application.(typiobj.Constructor); ok {
-		if err = constructor.Construct(container); err != nil {
-			return
-		}
-	}
-	return c.Modules.Construct(container)
-}
-
 // Destruct dependencies
 func (c *Context) Destruct(container *dig.Container) (err error) {
 	if destructor, ok := c.Application.(typiobj.Destructor); ok {

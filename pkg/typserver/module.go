@@ -29,9 +29,11 @@ type serverModule struct {
 	Name string
 }
 
-func (s serverModule) Construct(c *dig.Container) (err error) {
-	c.Provide(s.loadConfig)
-	return c.Provide(s.Create)
+func (s serverModule) Provide() []interface{} {
+	return []interface{}{
+		s.loadConfig,
+		s.Create,
+	}
 }
 
 func (s serverModule) Destruct(c *dig.Container) (err error) {

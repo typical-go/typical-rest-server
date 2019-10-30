@@ -14,9 +14,11 @@ func CliAction(p interface{}, fn interface{}) func(ctx *cli.Context) error {
 				destructor.Destruct(c)
 			}
 		}()
-		if constructor, ok := p.(Constructor); ok {
-			if err = constructor.Construct(c); err != nil {
-				return
+		if provider, ok := p.(Provider); ok {
+			for _, constructor := range provider.Provide() {
+				if err = c.Provide(constructor); err != nil {
+					return
+				}
 			}
 		}
 		return c.Invoke(fn)

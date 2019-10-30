@@ -29,13 +29,11 @@ func (m Modules) Commands() (cmds []cli.Command) {
 	return
 }
 
-// Construct dependency
-func (m Modules) Construct(c *dig.Container) (err error) {
+// Provide dependency
+func (m Modules) Provide() (constructors []interface{}) {
 	for _, module := range m {
-		if constructor, ok := module.(Constructor); ok {
-			if err = constructor.Construct(c); err != nil {
-				return
-			}
+		if provider, ok := module.(Provider); ok {
+			constructors = append(constructors, provider.Provide()...)
 		}
 	}
 	return
