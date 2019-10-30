@@ -2,37 +2,28 @@ package typictx
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
-	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
 	"go.uber.org/dig"
 )
 
 // Context of typical application
 type Context struct {
-	Application
 	Modules
 	Release
+	Application  interface{}
 	Name         string
 	Description  string
 	Root         string
 	TestTargets  slice.Strings
 	MockTargets  slice.Strings
 	Constructors slice.Interfaces // TODO: remove this
-	*dig.Container
-}
-
-// Invoke the function
-// TODO: remove this
-func (c *Context) Invoke(function interface{}) (err error) {
-	if c.Container == nil {
-		c.Container = dig.New()
-		c.Construct(c.Container)
-	}
-	return c.Container.Invoke(function)
+	// *dig.Container
 }
 
 // Configurations return config list
 func (c *Context) Configurations() (cfgs []Configuration) {
-	cfgs = append(cfgs, c.Application.Configure())
+	if configurer, ok := c.Application.(Configurer); ok {
+		cfgs = append(cfgs, configurer.Configure())
+	}
 	cfgs = append(cfgs, c.Modules.Configurations()...)
 	return
 }
@@ -59,22 +50,26 @@ func (c *Context) Configurations() (cfgs []Configuration) {
 // }
 
 // Construct dependencies
-// TODO: move to application
 func (c *Context) Construct(container *dig.Container) (err error) {
 	for _, constructor := range c.Constructors {
 		if err = container.Provide(constructor); err != nil {
 			return err
 		}
 	}
+	if constructor, ok := c.Application.(Constructor); ok {
+		if err = constructor.Construct(container); err != nil {
+			return
+		}
+	}
 	return c.Modules.Construct(container)
 }
 
 // Destruct dependencies
-// TODO: move to application
 func (c *Context) Destruct(container *dig.Container) (err error) {
-	var errs errkit.Errors
-	if c.Application.StopFunc != nil {
-		errs.Add(container.Invoke(c.Application.StopFunc))
+	if destructor, ok := c.Application.(Destructor); ok {
+		if err = destructor.Destruct(container); err != nil {
+			return
+		}
 	}
 	return c.Modules.Destruct(container)
 }
@@ -94,6 +89,9 @@ func (c *Context) validate() error {
 	}
 	if c.Root == "" {
 		return invalidContextError("Root can't not empty")
+	}
+	if _, ok := c.Application.(Runner); !ok {
+		return invalidContextError("Application must implement Runner")
 	}
 	return nil
 }

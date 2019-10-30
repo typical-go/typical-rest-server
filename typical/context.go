@@ -3,12 +3,9 @@ package typical
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
-	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
-
-	"github.com/urfave/cli"
 )
 
 // Context instance of Context
@@ -16,20 +13,7 @@ var Context = &typictx.Context{
 	Root:        "github.com/typical-go/typical-rest-server",
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Application: typictx.Application{
-		StartFunc: app.Start,
-		Configuration: typictx.Configuration{
-			Prefix: "APP",
-			Spec:   &config.Config{},
-		},
-		Initiations: []interface{}{
-			app.Middlewares,
-			app.Routes,
-		},
-		Commands: []cli.Command{
-			{Name: "route", Description: "Print available API Routes", Action: app.DryRun},
-		},
-	},
+	Application: app.Module(),
 	Modules: []interface{}{
 		typserver.Module(),
 		typpostgres.Module(),

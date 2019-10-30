@@ -13,7 +13,6 @@ import (
 
 type application struct {
 	*typictx.Context
-	action interface{}
 }
 
 func (a application) Run(ctx *cli.Context) (err error) {
@@ -26,15 +25,16 @@ func (a application) Run(ctx *cli.Context) (err error) {
 		return
 	}
 	// TODO: create prepare function
-	for _, initiation := range a.Initiations {
-		if err = di.Invoke(initiation); err != nil {
-			return
-		}
-	}
+	// for _, initiation := range a.Initiations {
+	// 	if err = di.Invoke(initiation); err != nil {
+	// 		return
+	// 	}
+	// }
 	go func() {
 		<-gracefulStop
 		fmt.Println("\n\n\nGraceful Shutdown...")
 		a.Destruct(di)
 	}()
-	return di.Invoke(a.action)
+	runner := a.Application.(typictx.Runner)
+	return runner.Run(di)
 }

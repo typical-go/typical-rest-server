@@ -33,7 +33,7 @@ func (s serverModule) Construct(c *dig.Container) (err error) {
 }
 
 func (s serverModule) Destruct(c *dig.Container) (err error) {
-	return c.Invoke(s.Destruct)
+	return c.Invoke(s.Shutdown)
 }
 
 // Create new server

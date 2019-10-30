@@ -11,30 +11,24 @@ import (
 )
 
 // Run the application
-func Run(c *typictx.Context) {
+func Run(ctx *typictx.Context) {
+	application := application{
+		Context: ctx,
+	}
 	app := cli.NewApp()
-	app.Name = c.Name
+	app.Name = ctx.Name
 	app.Usage = ""
-	app.Description = c.Description
-	app.Version = c.Version
-	app.Action = action(c, c.StartFunc)
+	app.Description = ctx.Description
+	app.Version = ctx.Version
+	app.Action = application.Run
 	app.Before = func(ctx *cli.Context) error {
 		return typienv.LoadEnvFile()
 	}
-	for _, cmd := range c.Application.Commands {
-		cmd.Action = action(c, cmd.Action)
-		app.Commands = append(app.Commands, cmd)
-	}
-	err := app.Run(os.Args)
-	if err != nil {
+	// for _, cmd := range c.Application.Commands {
+	// 	cmd.Action = action(c, cmd.Action)
+	// 	app.Commands = append(app.Commands, cmd)
+	// }
+	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err.Error())
 	}
-}
-
-// ActionCommandFunction to get command function fo action
-func action(ctx *typictx.Context, action interface{}) interface{} {
-	return application{
-		Context: ctx,
-		action:  action,
-	}.Run
 }
