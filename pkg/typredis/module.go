@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -45,7 +45,7 @@ func (r redisModule) CommandLine() cli.Command {
 	return cli.Command{
 		Name:   "redis",
 		Usage:  "Redis Utility Tool",
-		Before: typictx.CliLoadEnvFile,
+		Before: envkit.CliLoadEnvFile,
 		Subcommands: []cli.Command{
 			{Name: "console", ShortName: "c", Action: typiobj.CliAction(r, r.console)},
 		},

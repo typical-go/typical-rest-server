@@ -2,11 +2,11 @@ package application
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 
 	"os"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 	"github.com/urfave/cli"
 )
 
@@ -21,9 +21,7 @@ func Run(ctx *typictx.Context) {
 	app.Description = ctx.Description
 	app.Version = ctx.Version
 	app.Action = application.Run
-	app.Before = func(ctx *cli.Context) error {
-		return typienv.LoadEnvFile()
-	}
+	app.Before = envkit.CliLoadEnvFile
 	// for _, cmd := range c.Application.Commands {
 	// 	cmd.Action = action(c, cmd.Action)
 	// 	app.Commands = append(app.Commands, cmd)

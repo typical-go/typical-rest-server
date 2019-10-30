@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -35,6 +36,6 @@ func (a application) Run(ctx *cli.Context) (err error) {
 		fmt.Println("\n\n\nGraceful Shutdown...")
 		a.Destruct(di)
 	}()
-	runner := a.Application.(typictx.Runner)
+	runner := a.Application.(typiobj.Runner)
 	return runner.Run(di)
 }

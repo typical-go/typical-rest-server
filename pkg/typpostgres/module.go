@@ -14,8 +14,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -47,7 +47,7 @@ func (p postgresModule) CommandLine() cli.Command {
 		Name:      "postgres",
 		ShortName: "pg",
 		Usage:     "Postgres Database Tool",
-		Before:    typictx.CliLoadEnvFile,
+		Before:    envkit.CliLoadEnvFile,
 		Subcommands: []cli.Command{
 			{Name: "create", Usage: "Create New Database", Action: typiobj.CliAction(p, p.createDB)},
 			{Name: "drop", Usage: "Drop Database", Action: typiobj.CliAction(p, p.dropDB)},
