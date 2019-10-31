@@ -4,9 +4,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/dig"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
+
+type invalidDummyApp struct {
+}
+
+type dummyApp struct {
+}
+
+func (dummyApp) Run(c *dig.Container) (err error) {
+	return
+}
 
 func TestContext_Preparing(t *testing.T) {
 	testcases := []struct {
@@ -14,15 +25,19 @@ func TestContext_Preparing(t *testing.T) {
 		errMsg  string
 	}{
 		{
-			typictx.Context{Root: "some-root"},
+			typictx.Context{Application: invalidDummyApp{}, Name: "some-name", Root: "some-root"},
+			"Invalid Context: Application must implement Runner",
+		},
+		{
+			typictx.Context{Application: dummyApp{}, Root: "some-root"},
 			"Invalid Context: Name can't not empty",
 		},
 		{
-			typictx.Context{Name: "some-name"},
+			typictx.Context{Application: dummyApp{}, Name: "some-name"},
 			"Invalid Context: Root can't not empty",
 		},
 		{
-			typictx.Context{Name: "some-name", Root: "some-root"},
+			typictx.Context{Application: dummyApp{}, Name: "some-name", Root: "some-root"},
 			"",
 		},
 	}
