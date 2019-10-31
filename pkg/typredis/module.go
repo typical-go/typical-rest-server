@@ -50,7 +50,7 @@ func (r redisModule) CommandLine() cli.Command {
 		Usage:  "Redis Utility Tool",
 		Before: envkit.CliLoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Action: typiobj.CliAction(r, r.console)},
+			{Name: "console", ShortName: "c", Action: typiobj.Action(r, r.console)},
 		},
 	}
 }
@@ -79,6 +79,7 @@ func (redisModule) connect(cfg *Config) (client *redis.Client, err error) {
 }
 
 func (redisModule) disconnect(client *redis.Client) (err error) {
+	fmt.Println("Redis Client close")
 	return client.Close()
 }
 

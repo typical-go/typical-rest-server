@@ -5,19 +5,8 @@ import (
 	"go.uber.org/dig"
 )
 
-// CommandLiner responsible to give command
-type CommandLiner interface {
-	CommandLine() cli.Command
-}
-
-// IsCommandLiner return true if object implementation of CommandLiner
-func IsCommandLiner(obj interface{}) (ok bool) {
-	_, ok = obj.(CommandLiner)
-	return
-}
-
-// CliAction to return cli action
-func CliAction(p interface{}, fn interface{}) func(ctx *cli.Context) error {
+// Action to return cli action
+func Action(p interface{}, fn interface{}) func(ctx *cli.Context) error {
 	return func(ctx *cli.Context) (err error) {
 		c := dig.New()
 		defer func() {

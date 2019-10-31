@@ -14,7 +14,6 @@ type application struct {
 
 func (a application) Run(ctx *cli.Context) (err error) {
 	di := dig.New()
-	defer a.Close(di)
 	runkit.GracefulShutdown(func() error {
 		return a.Close(di)
 	})

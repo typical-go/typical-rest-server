@@ -48,12 +48,12 @@ func (p postgresModule) CommandLine() cli.Command {
 		Usage:     "Postgres Database Tool",
 		Before:    envkit.CliLoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: typiobj.CliAction(p, p.createDB)},
-			{Name: "drop", Usage: "Drop Database", Action: typiobj.CliAction(p, p.dropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: typiobj.CliAction(p, p.migrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: typiobj.CliAction(p, p.rollbackDB)},
-			{Name: "seed", Usage: "Database Seeding", Action: typiobj.CliAction(p, p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL interactive terminal", Action: typiobj.CliAction(p, p.console)},
+			{Name: "create", Usage: "Create New Database", Action: typiobj.Action(p, p.createDB)},
+			{Name: "drop", Usage: "Drop Database", Action: typiobj.Action(p, p.dropDB)},
+			{Name: "migrate", Usage: "Migrate Database", Action: typiobj.Action(p, p.migrateDB)},
+			{Name: "rollback", Usage: "Rollback Database", Action: typiobj.Action(p, p.rollbackDB)},
+			{Name: "seed", Usage: "Database Seeding", Action: typiobj.Action(p, p.seedDB)},
+			{Name: "console", Usage: "PostgreSQL interactive terminal", Action: typiobj.Action(p, p.console)},
 		},
 	}
 }
@@ -89,7 +89,7 @@ func (p postgresModule) openConnection(cfg *Config) (db *sql.DB, err error) {
 }
 
 func (postgresModule) closeConnection(db *sql.DB) error {
-	log.Info("Close postgres connection")
+	fmt.Println("Close postgres connection")
 	return db.Close()
 }
 

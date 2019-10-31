@@ -2,6 +2,7 @@ package typserver
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -68,7 +69,7 @@ func (s serverModule) Create(cfg *Config) *echo.Echo {
 
 // Shutdown the server
 func (s serverModule) Shutdown(server *echo.Echo) error {
-	log.Info("Server is shutting down")
+	fmt.Println("Server is shutting down")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	return server.Shutdown(ctx)
