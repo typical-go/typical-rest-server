@@ -22,10 +22,8 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
-	for _, constructor := range a.Provide() {
-		if err = di.Provide(constructor); err != nil {
-			return
-		}
+	if err = typiobj.Provide(di, a); err != nil {
+		return
 	}
 	// TODO: create prepare function
 	// for _, initiation := range a.Initiations {

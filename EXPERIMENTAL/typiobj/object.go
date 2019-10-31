@@ -12,12 +12,6 @@ func Description(obj interface{}) string {
 	return "<description>"
 }
 
-// IsProvider return true if object implementation of provider
-func IsProvider(obj interface{}) (ok bool) {
-	_, ok = obj.(Provider)
-	return
-}
-
 // IsCommandLiner return true if object implementation of CommandLiner
 func IsCommandLiner(obj interface{}) (ok bool) {
 	_, ok = obj.(CommandLiner)

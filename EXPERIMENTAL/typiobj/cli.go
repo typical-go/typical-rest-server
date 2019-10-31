@@ -17,10 +17,8 @@ func CliAction(p interface{}, fn interface{}) func(ctx *cli.Context) error {
 			}
 		}()
 		if provider, ok := p.(Provider); ok {
-			for _, constructor := range provider.Provide() {
-				if err = c.Provide(constructor); err != nil {
-					return
-				}
+			if err = Provide(c, provider); err != nil {
+				return
 			}
 		}
 		return c.Invoke(fn)

@@ -10,11 +10,6 @@ type Runner interface {
 	Run(c *dig.Container) error
 }
 
-// Provider responsible to provide dependency
-type Provider interface {
-	Provide() []interface{}
-}
-
 // CommandLiner responsible to give command
 type CommandLiner interface {
 	CommandLine() cli.Command
