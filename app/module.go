@@ -28,14 +28,11 @@ func (m applicationModule) CommandLine() cli.Command {
 	}
 }
 
-func (m applicationModule) Prepare(c *dig.Container) (err error) {
-	if err = c.Invoke(Middlewares); err != nil {
-		return
+func (m applicationModule) Prepare() []interface{} {
+	return []interface{}{
+		Routes,
+		Middlewares,
 	}
-	if err = c.Invoke(Routes); err != nil {
-		return
-	}
-	return
 }
 
 func (m applicationModule) Run(c *dig.Container) (err error) {

@@ -1,6 +1,8 @@
 package typiobj
 
-import "go.uber.org/dig"
+import (
+	"go.uber.org/dig"
+)
 
 // Provider responsible to provide dependency
 type Provider interface {

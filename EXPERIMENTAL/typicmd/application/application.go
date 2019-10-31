@@ -25,12 +25,9 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	if err = typiobj.Provide(di, a); err != nil {
 		return
 	}
-	// TODO: create prepare function
-	// for _, initiation := range a.Initiations {
-	// 	if err = di.Invoke(initiation); err != nil {
-	// 		return
-	// 	}
-	// }
+	if err = typiobj.Prepare(di, a); err != nil {
+		return
+	}
 	go func() {
 		<-gracefulStop
 		fmt.Println("\n\n\nGraceful Shutdown...")
@@ -38,6 +35,13 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	}()
 	runner := a.Application.(typiobj.Runner)
 	return runner.Run(di)
+}
+
+func (a application) Prepare() (preparations []interface{}) {
+	if preparer, ok := a.Application.(typiobj.Preparer); ok {
+		preparations = append(preparations, preparer.Prepare()...)
+	}
+	return
 }
 
 func (a application) Provide() (constructors []interface{}) {
