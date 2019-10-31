@@ -49,26 +49,8 @@ func (c *Context) Configurations() (cfgs []typiobj.Configuration) {
 // 	return
 // }
 
-// Destruct dependencies
-// func (c *Context) Destruct(container *dig.Container) (err error) {
-// 	if destructor, ok := c.Application.(typiobj.Destructor); ok {
-// 		if err = destructor.Destruct(container); err != nil {
-// 			return
-// 		}
-// 	}
-// 	return c.Modules.Destruct(container)
-// }
-
-// Preparing context
-// TODO: rename back to validate as conflicting with life cycle phase
-func (c *Context) Preparing() (err error) {
-	if err = c.validate(); err != nil {
-		return
-	}
-	return
-}
-
-func (c *Context) validate() error {
+// Validate context
+func (c *Context) Validate() error {
 	if c.Name == "" {
 		return invalidContextError("Name can't not empty")
 	}

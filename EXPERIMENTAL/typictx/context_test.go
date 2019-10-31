@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.uber.org/dig"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
@@ -15,11 +14,11 @@ type invalidDummyApp struct {
 type dummyApp struct {
 }
 
-func (dummyApp) Run(c *dig.Container) (err error) {
+func (dummyApp) Run() (runFn interface{}) {
 	return
 }
 
-func TestContext_Preparing(t *testing.T) {
+func TestContext_Validate(t *testing.T) {
 	testcases := []struct {
 		context typictx.Context
 		errMsg  string
@@ -42,7 +41,7 @@ func TestContext_Preparing(t *testing.T) {
 		},
 	}
 	for _, tt := range testcases {
-		err := tt.context.Preparing()
+		err := tt.context.Validate()
 		if tt.errMsg == "" {
 			require.NoError(t, err)
 		} else {

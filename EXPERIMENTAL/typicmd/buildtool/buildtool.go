@@ -127,7 +127,7 @@ func (t buildtool) commands() (cmds []cli.Command) {
 }
 
 func (t buildtool) cliBefore(ctx *cli.Context) (err error) {
-	return t.Context.Preparing()
+	return t.Context.Validate()
 }
 
 func (t buildtool) buildBinary(ctx *cli.Context) error {

@@ -31,7 +31,7 @@ func Run(ctx *typictx.Context) {
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
-	if err = ctx.Preparing(); err != nil {
+	if err = ctx.Validate(); err != nil {
 		log.Fatal(err.Error())
 	}
 	if err = typictx.PrepareEnvFile(ctx); err != nil {
