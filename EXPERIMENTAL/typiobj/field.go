@@ -11,15 +11,3 @@ func Description(obj interface{}) string {
 	// TODO:
 	return "<description>"
 }
-
-// IsCommandLiner return true if object implementation of CommandLiner
-func IsCommandLiner(obj interface{}) (ok bool) {
-	_, ok = obj.(CommandLiner)
-	return
-}
-
-// IsConfigurer return true if object implementation of configurer
-func IsConfigurer(obj interface{}) (ok bool) {
-	_, ok = obj.(Configurer)
-	return
-}
