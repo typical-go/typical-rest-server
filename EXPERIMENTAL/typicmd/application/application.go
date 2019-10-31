@@ -1,13 +1,9 @@
 package application
 
 import (
-	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/pkg/utility/runkit"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
@@ -19,20 +15,15 @@ type application struct {
 func (a application) Run(ctx *cli.Context) (err error) {
 	di := dig.New()
 	defer a.Close(di)
-	gracefulStop := make(chan os.Signal)
-	signal.Notify(gracefulStop, syscall.SIGTERM)
-	signal.Notify(gracefulStop, syscall.SIGINT)
+	runkit.GracefulShutdown(func() error {
+		return a.Close(di)
+	})
 	if err = typiobj.Provide(di, a); err != nil {
 		return
 	}
 	if err = typiobj.Prepare(di, a); err != nil {
 		return
 	}
-	go func() {
-		<-gracefulStop
-		fmt.Println("\n\n\nGraceful Shutdown...")
-		a.Close(di)
-	}()
 	runner := a.Application.(typiobj.Runner)
 	return di.Invoke(runner.Run())
 }
