@@ -5,7 +5,6 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
-	"go.uber.org/dig"
 )
 
 // Module of application
@@ -35,8 +34,8 @@ func (m applicationModule) Prepare() []interface{} {
 	}
 }
 
-func (m applicationModule) Run(c *dig.Container) (err error) {
-	return c.Invoke(Start)
+func (m applicationModule) Run() interface{} {
+	return Start
 }
 
 func (m applicationModule) Provide() []interface{} {

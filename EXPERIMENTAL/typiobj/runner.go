@@ -1,10 +1,12 @@
 package typiobj
 
-import (
-	"go.uber.org/dig"
-)
-
 // Runner responsible to run the application
 type Runner interface {
-	Run(c *dig.Container) error
+	Run() interface{}
+}
+
+// IsRunner return true if obj implement Runner
+func IsRunner(obj interface{}) (ok bool) {
+	_, ok = obj.(Runner)
+	return
 }

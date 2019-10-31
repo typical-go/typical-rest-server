@@ -13,4 +13,5 @@ func TestModule(t *testing.T) {
 	require.True(t, typiobj.IsProvider(m))
 	require.True(t, typiobj.IsConfigurer(m))
 	require.True(t, typiobj.IsPreparer(m))
+	require.True(t, typiobj.IsRunner(m))
 }

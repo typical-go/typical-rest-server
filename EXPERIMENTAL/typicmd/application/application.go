@@ -34,7 +34,7 @@ func (a application) Run(ctx *cli.Context) (err error) {
 		a.Close(di)
 	}()
 	runner := a.Application.(typiobj.Runner)
-	return runner.Run(di)
+	return di.Invoke(runner.Run())
 }
 
 func (a application) Prepare() (preparations []interface{}) {
