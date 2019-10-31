@@ -6,7 +6,6 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"go.uber.org/dig"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
@@ -36,8 +35,10 @@ func (s serverModule) Provide() []interface{} {
 	}
 }
 
-func (s serverModule) Destruct(c *dig.Container) (err error) {
-	return c.Invoke(s.Shutdown)
+func (s serverModule) Destroy() []interface{} {
+	return []interface{}{
+		s.Shutdown,
+	}
 }
 
 func (s serverModule) loadConfig() (cfg *Config, err error) {

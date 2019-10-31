@@ -18,7 +18,7 @@ type application struct {
 
 func (a application) Run(ctx *cli.Context) (err error) {
 	di := dig.New()
-	defer a.Destruct(di)
+	defer a.Close(di)
 	gracefulStop := make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)
 	signal.Notify(gracefulStop, syscall.SIGINT)
@@ -36,7 +36,7 @@ func (a application) Run(ctx *cli.Context) (err error) {
 	go func() {
 		<-gracefulStop
 		fmt.Println("\n\n\nGraceful Shutdown...")
-		a.Destruct(di)
+		a.Close(di)
 	}()
 	runner := a.Application.(typiobj.Runner)
 	return runner.Run(di)
@@ -49,4 +49,16 @@ func (a application) Provide() (constructors []interface{}) {
 		constructors = append(constructors, provider.Provide()...)
 	}
 	return
+}
+
+func (a application) Destroy() (destructors []interface{}) {
+	destructors = append(destructors, a.Modules.Destroy()...)
+	if destroyer, ok := a.Application.(typiobj.Destroyer); ok {
+		destructors = append(destructors, destroyer.Destroy()...)
+	}
+	return
+}
+
+func (a application) Close(c *dig.Container) (err error) {
+	return typiobj.Destroy(c, a)
 }

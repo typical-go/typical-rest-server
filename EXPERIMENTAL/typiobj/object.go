@@ -18,12 +18,6 @@ func IsProvider(obj interface{}) (ok bool) {
 	return
 }
 
-// IsDestructor return true if object implementation of destructor
-func IsDestructor(obj interface{}) (ok bool) {
-	_, ok = obj.(Destructor)
-	return
-}
-
 // IsCommandLiner return true if object implementation of CommandLiner
 func IsCommandLiner(obj interface{}) (ok bool) {
 	_, ok = obj.(CommandLiner)

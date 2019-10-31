@@ -3,7 +3,6 @@ package typiobj
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"github.com/urfave/cli"
-	"go.uber.org/dig"
 )
 
 // Modules is list of module
@@ -39,13 +38,11 @@ func (m Modules) Provide() (constructors []interface{}) {
 	return
 }
 
-// Destruct dependency
-func (m Modules) Destruct(c *dig.Container) (err error) {
+// Destroy dependency
+func (m Modules) Destroy() (destructors []interface{}) {
 	for _, module := range m {
-		if destructor, ok := module.(Destructor); ok {
-			if err = destructor.Destruct(c); err != nil {
-				return
-			}
+		if destroyer, ok := module.(Destroyer); ok {
+			destructors = append(destructors, destroyer.Destroy()...)
 		}
 	}
 	return

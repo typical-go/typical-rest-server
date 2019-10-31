@@ -10,8 +10,10 @@ func CliAction(p interface{}, fn interface{}) func(ctx *cli.Context) error {
 	return func(ctx *cli.Context) (err error) {
 		c := dig.New()
 		defer func() {
-			if destructor, ok := p.(Destructor); ok {
-				destructor.Destruct(c)
+			if destroyer, ok := p.(Destroyer); ok {
+				if err = Destroy(c, destroyer); err != nil {
+					return
+				}
 			}
 		}()
 		if provider, ok := p.(Provider); ok {

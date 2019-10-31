@@ -11,7 +11,7 @@ import (
 func TestModule(t *testing.T) {
 	m := typredis.Module()
 	require.True(t, typiobj.IsProvider(m))
-	require.True(t, typiobj.IsDestructor(m))
+	require.True(t, typiobj.IsDestroyer(m))
 	require.True(t, typiobj.IsCommandLiner(m))
 	require.True(t, typiobj.IsConfigurer(m))
 }

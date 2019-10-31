@@ -10,7 +10,6 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
-	"go.uber.org/dig"
 )
 
 // Module of redis
@@ -37,9 +36,11 @@ func (r redisModule) Provide() []interface{} {
 	}
 }
 
-// Destruct dependencies
-func (r redisModule) Destruct(c *dig.Container) (err error) {
-	return c.Invoke(c)
+// Destroy dependencies
+func (r redisModule) Destroy() []interface{} {
+	return []interface{}{
+		r.disconnect,
+	}
 }
 
 // CommandLine return command

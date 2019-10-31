@@ -17,7 +17,6 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
-	"go.uber.org/dig"
 )
 
 const (
@@ -67,9 +66,11 @@ func (p postgresModule) Provide() []interface{} {
 	}
 }
 
-// Destruct dependencies
-func (p postgresModule) Destruct(c *dig.Container) (err error) {
-	return c.Invoke(p.closeConnection)
+// Destroy dependencies
+func (p postgresModule) Destroy() []interface{} {
+	return []interface{}{
+		p.closeConnection,
+	}
 }
 
 func (p postgresModule) loadConfig() (cfg *Config, err error) {

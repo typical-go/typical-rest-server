@@ -3,7 +3,6 @@ package typictx
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"go.uber.org/dig"
 )
 
 // Context of typical application
@@ -51,14 +50,14 @@ func (c *Context) Configurations() (cfgs []typiobj.Configuration) {
 // }
 
 // Destruct dependencies
-func (c *Context) Destruct(container *dig.Container) (err error) {
-	if destructor, ok := c.Application.(typiobj.Destructor); ok {
-		if err = destructor.Destruct(container); err != nil {
-			return
-		}
-	}
-	return c.Modules.Destruct(container)
-}
+// func (c *Context) Destruct(container *dig.Container) (err error) {
+// 	if destructor, ok := c.Application.(typiobj.Destructor); ok {
+// 		if err = destructor.Destruct(container); err != nil {
+// 			return
+// 		}
+// 	}
+// 	return c.Modules.Destruct(container)
+// }
 
 // Preparing context
 // TODO: rename back to validate as conflicting with life cycle phase

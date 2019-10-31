@@ -15,11 +15,6 @@ type Provider interface {
 	Provide() []interface{}
 }
 
-// Destructor responsible to destruct dependency
-type Destructor interface {
-	Destruct(c *dig.Container) error
-}
-
 // CommandLiner responsible to give command
 type CommandLiner interface {
 	CommandLine() cli.Command
