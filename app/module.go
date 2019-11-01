@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
@@ -45,7 +44,7 @@ func (m applicationModule) Provide() []interface{} {
 }
 
 func (m applicationModule) loadConfig() (cfg *config.Config, err error) {
-	cfg = new(config.Config)
-	err = envconfig.Process(m.Configure().Prefix, cfg)
+	err = m.Configuration.Load()
+	cfg = m.Configuration.Spec.(*config.Config)
 	return
 }

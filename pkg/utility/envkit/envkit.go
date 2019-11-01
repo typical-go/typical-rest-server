@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli"
 )
 
@@ -38,7 +37,7 @@ func LoadEnvFile() (err error) {
 			err = os.Setenv(key, value)
 			builder.WriteString(" +" + key)
 		}
-		log.Info(builder.String())
+		fmt.Println(builder.String())
 	}
 	return
 }

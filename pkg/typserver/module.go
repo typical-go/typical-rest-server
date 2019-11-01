@@ -5,13 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
 )
+
+// Config is server configuration
+type Config struct {
+	Debug bool `default:"false"`
+}
 
 // Module of server
 func Module() interface{} {
@@ -43,8 +47,8 @@ func (s serverModule) Destroy() []interface{} {
 }
 
 func (s serverModule) loadConfig() (cfg *Config, err error) {
-	cfg = new(Config)
-	err = envconfig.Process(s.Configure().Prefix, cfg)
+	err = s.Configuration.Load()
+	cfg = s.Configuration.Spec.(*Config)
 	return
 }
 

@@ -11,7 +11,6 @@ import (
 	"github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
-	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
@@ -23,6 +22,15 @@ const (
 	migrationSrc = "scripts/db/migration"
 	seedSrc      = "scripts/db/seed"
 )
+
+// Config is postgres configuration
+type Config struct {
+	DBName   string `required:"true" default:typical-rest`
+	User     string `required:"true" default:"postgres"`
+	Password string `required:"true" default:"pgpass"`
+	Host     string `default:"localhost"`
+	Port     int    `default:"5432"`
+}
 
 // Module for postgres
 func Module() interface{} {
@@ -74,8 +82,8 @@ func (p postgresModule) Destroy() []interface{} {
 }
 
 func (p postgresModule) loadConfig() (cfg *Config, err error) {
-	cfg = new(Config)
-	err = envconfig.Process(p.Configure().Prefix, cfg)
+	err = p.Configuration.Load()
+	cfg = p.Configuration.Spec.(*Config)
 	return
 }
 
