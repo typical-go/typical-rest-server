@@ -12,38 +12,42 @@ Example of typical and scalable RESTful API Server for Go
 
 Use `./typicalw run` to compile and run local development. [Learn more](https://typical-go.github.io/learn-more/wrapper.html)
 
-## Configuration
+## Configurations
+
+| Name | Type | Default | Required |
+|---|---|---|---|
+|APP_ADDRESS|string|:8089|Yes|
 
 ### Server
 
-| Key | Type | Default | Required | Description |	
-|---|---|---|---|---|
-|SERVER_DEBUG|True or False|false|||
+| Name | Type | Default | Required |
+|---|---|---|---|
+|SERVER_DEBUG|bool|false||
 
-### PostgresDatabase
+### Postgres
 
-| Key | Type | Default | Required | Description |	
-|---|---|---|---|---|
-|PG_DBNAME|String||true||
-|PG_USER|String|postgres|true||
-|PG_PASSWORD|String|pgpass|true||
-|PG_HOST|String|localhost|||
-|PG_PORT|Integer|5432|||
+| Name | Type | Default | Required |
+|---|---|---|---|
+|PG_DBNAME|string||Yes|
+|PG_USER|string|postgres|Yes|
+|PG_PASSWORD|string|pgpass|Yes|
+|PG_HOST|string|localhost||
+|PG_PORT|int|5432||
 
 ### Redis
 
-| Key | Type | Default | Required | Description |	
-|---|---|---|---|---|
-|REDIS_HOST|String|localhost|true||
-|REDIS_PORT|String|6379|true||
-|REDIS_PASSWORD|String|redispass|||
-|REDIS_DB|Integer|0|||
-|REDIS_POOL_SIZE|Integer|20|true||
-|REDIS_DIAL_TIMEOUT|Duration|5s|true||
-|REDIS_READ_WRITE_TIMEOUT|Duration|3s|true||
-|REDIS_IDLE_TIMEOUT|Duration|5m|true||
-|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|true||
-|REDIS_MAX_CONN_AGE|Duration|30m|true||
+| Name | Type | Default | Required |
+|---|---|---|---|
+|REDIS_HOST|string|localhost|Yes|
+|REDIS_PORT|string|6379|Yes|
+|REDIS_PASSWORD|string|redispass||
+|REDIS_DB|int|0||
+|REDIS_POOL_SIZE|int|20|Yes|
+|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
+|REDIS_READ_WRITE_TIMEOUT|Duration|3s|Yes|
+|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
+|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
+|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
 
 ## Release Distribution
 
