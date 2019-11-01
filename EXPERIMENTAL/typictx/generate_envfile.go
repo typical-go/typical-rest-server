@@ -11,8 +11,8 @@ const (
 	defaultDotEnv = ".env"
 )
 
-// PrepareEnvFile to write .env file if not exist
-func PrepareEnvFile(ctx *Context) (err error) {
+// GenerateEnvfile to generate .env file if not exist
+func GenerateEnvfile(ctx *Context) (err error) {
 	if _, err = os.Stat(defaultDotEnv); !os.IsNotExist(err) {
 		return
 	}
