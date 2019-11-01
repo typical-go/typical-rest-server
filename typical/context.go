@@ -10,9 +10,9 @@ import (
 
 // Context instance of Context
 var Context = &typictx.Context{
-	Root:        "github.com/typical-go/typical-rest-server",
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
+	Root:        "github.com/typical-go/typical-rest-server",
 	Application: app.Module(),
 	Modules: []interface{}{
 		typserver.Module(),

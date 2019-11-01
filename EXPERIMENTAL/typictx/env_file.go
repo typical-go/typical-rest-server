@@ -1,17 +1,14 @@
 package typictx
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
 	defaultDotEnv = ".env"
-
-	envTemplate = `{{range .}}{{usage_key .}}={{usage_default .}}
-{{end}}`
 )
 
 // PrepareEnvFile to write .env file if not exist
@@ -25,8 +22,11 @@ func PrepareEnvFile(ctx *Context) (err error) {
 		return
 	}
 	defer file.Close()
-	for _, cfg := range ctx.Configurations() {
-		envconfig.Usagef(cfg.Prefix, cfg.Spec, file, envTemplate)
+	for _, cfg := range Configurations(ctx) {
+		for _, field := range cfg.ConfigFields() {
+			s := fmt.Sprintf("%s=%s\n", field.Name, field.Default)
+			file.WriteString(s)
+		}
 	}
 	return
 }

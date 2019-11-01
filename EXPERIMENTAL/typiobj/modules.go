@@ -47,15 +47,3 @@ func (m Modules) Destroy() (destructors []interface{}) {
 	}
 	return
 }
-
-// Helps information
-func (m Modules) Helps() (helps []Help) {
-	for _, module := range m {
-		var help Help
-		help.Name = Name(module)
-		help.Description = Description(module)
-		// TODO: configuration
-		helps = append(helps, help)
-	}
-	return
-}

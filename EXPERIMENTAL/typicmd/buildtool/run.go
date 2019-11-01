@@ -16,7 +16,7 @@ func Run(c *typictx.Context) {
 	app.Name = c.Name
 	app.Usage = ""
 	app.Description = c.Description
-	app.Version = c.Version
+	app.Version = c.Release.Version
 	app.Before = buildtool.cliBefore
 	app.Commands = buildtool.commands()
 	if err := app.Run(os.Args); err != nil {

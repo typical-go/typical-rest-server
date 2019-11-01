@@ -19,7 +19,7 @@ func Run(ctx *typictx.Context) {
 	app.Name = ctx.Name
 	app.Usage = ""
 	app.Description = ctx.Description
-	app.Version = ctx.Version
+	app.Version = ctx.Release.Version
 	app.Action = application.Run
 	app.Before = envkit.CliLoadEnvFile
 	// for _, cmd := range c.Application.Commands {
