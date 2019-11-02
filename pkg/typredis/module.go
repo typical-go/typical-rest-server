@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
 )
 
@@ -43,6 +43,22 @@ type redisModule struct {
 	Name string
 }
 
+// CommandLine return command
+func (r redisModule) CommandLine() cli.Command {
+	return cli.Command{
+		Name:   "redis",
+		Usage:  "Redis Utility Tool",
+		Before: typicli.LoadEnvFile,
+		Subcommands: []cli.Command{
+			{
+				Name:      "console",
+				ShortName: "c",
+				Usage:     "Redis interactive",
+				Action:    typicli.Action(r, r.console)},
+		},
+	}
+}
+
 // Provide dependencies
 func (r redisModule) Provide() []interface{} {
 	return []interface{}{
@@ -55,22 +71,6 @@ func (r redisModule) Provide() []interface{} {
 func (r redisModule) Destroy() []interface{} {
 	return []interface{}{
 		r.disconnect,
-	}
-}
-
-// CommandLine return command
-func (r redisModule) CommandLine() cli.Command {
-	return cli.Command{
-		Name:   "redis",
-		Usage:  "Redis Utility Tool",
-		Before: envkit.CliLoadEnvFile,
-		Subcommands: []cli.Command{
-			{
-				Name:      "console",
-				ShortName: "c",
-				Usage:     "Redis interactive",
-				Action:    typiobj.Action(r, r.console)},
-		},
 	}
 }
 

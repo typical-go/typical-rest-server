@@ -13,8 +13,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"github.com/typical-go/typical-rest-server/pkg/utility/envkit"
 	"github.com/urfave/cli"
 )
 
@@ -25,7 +25,7 @@ const (
 
 // Config is postgres configuration
 type Config struct {
-	DBName   string `required:"true" default:typical-rest`
+	DBName   string `required:"true" default:"typical-rest"`
 	User     string `required:"true" default:"postgres"`
 	Password string `required:"true" default:"pgpass"`
 	Host     string `default:"localhost"`
@@ -54,14 +54,14 @@ func (p postgresModule) CommandLine() cli.Command {
 		Name:      "postgres",
 		ShortName: "pg",
 		Usage:     "Postgres Database Tool",
-		Before:    envkit.CliLoadEnvFile,
+		Before:    typicli.LoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: typiobj.Action(p, p.createDB)},
-			{Name: "drop", Usage: "Drop Database", Action: typiobj.Action(p, p.dropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: typiobj.Action(p, p.migrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: typiobj.Action(p, p.rollbackDB)},
-			{Name: "seed", Usage: "Database Seeding", Action: typiobj.Action(p, p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL interactive", Action: typiobj.Action(p, p.console)},
+			{Name: "create", Usage: "Create New Database", Action: typicli.Action(p, p.createDB)},
+			{Name: "drop", Usage: "Drop Database", Action: typicli.Action(p, p.dropDB)},
+			{Name: "migrate", Usage: "Migrate Database", Action: typicli.Action(p, p.migrateDB)},
+			{Name: "rollback", Usage: "Rollback Database", Action: typicli.Action(p, p.rollbackDB)},
+			{Name: "seed", Usage: "Database Seeding", Action: typicli.Action(p, p.seedDB)},
+			{Name: "console", Usage: "PostgreSQL interactive", Action: typicli.Action(p, p.console)},
 		},
 	}
 }

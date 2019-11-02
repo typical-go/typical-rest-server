@@ -6,15 +6,9 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/urfave/cli"
 )
 
 const configKey = "CONFIG"
-
-// CliLoadEnvFile is cli version of LoadEnvFile
-func CliLoadEnvFile(ctx *cli.Context) (err error) {
-	return LoadEnvFile()
-}
 
 // LoadEnvFile to load environment from .env file
 func LoadEnvFile() (err error) {
