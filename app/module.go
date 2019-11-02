@@ -1,6 +1,8 @@
 package app
 
 import (
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
@@ -20,9 +22,9 @@ type applicationModule struct {
 	typiobj.Configuration
 }
 
-func (m applicationModule) CommandLine() cli.Command {
-	return cli.Command{
-		Name: "route", Description: "Print available API Routes", Action: Route,
+func (m applicationModule) AppCommands(ctx *typictx.Context) []cli.Command {
+	return []cli.Command{
+		{Name: "route", Description: "Print available API Routes", Action: typicli.Action(ctx, RouteList)},
 	}
 }
 

@@ -48,8 +48,8 @@ type postgresModule struct {
 	Name string
 }
 
-// CommandLine return the command
-func (p postgresModule) CommandLine() cli.Command {
+// Command of module
+func (p postgresModule) Command() cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",

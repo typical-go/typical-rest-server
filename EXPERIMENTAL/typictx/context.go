@@ -33,14 +33,14 @@ func (c *Context) Validate() error {
 	return nil
 }
 
-// Commands return list of command
-func (c *Context) Commands() (cmds []cli.Command) {
-	if commandliner, ok := c.Application.(typiobj.CommandLiner); ok {
-		cmds = append(cmds, commandliner.CommandLine())
+// BuildCommands return list of command for Build-Tool
+func (c *Context) BuildCommands() (cmds []cli.Command) {
+	if commandliner, ok := c.Application.(typiobj.BuildCLI); ok {
+		cmds = append(cmds, commandliner.Command())
 	}
 	for _, module := range c.Modules {
-		if commandliner, ok := module.(typiobj.CommandLiner); ok {
-			cmds = append(cmds, commandliner.CommandLine())
+		if commandliner, ok := module.(typiobj.BuildCLI); ok {
+			cmds = append(cmds, commandliner.Command())
 		}
 	}
 	return

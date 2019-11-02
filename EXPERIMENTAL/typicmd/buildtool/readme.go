@@ -83,9 +83,9 @@ func module(md *markdown.Markdown, module interface{}) {
 	if configurer, ok := module.(typiobj.Configurer); ok {
 		configTable(md, configurer.Configure().ConfigFields())
 	}
-	if commandliner, ok := module.(typiobj.CommandLiner); ok {
+	if cli, ok := module.(typiobj.BuildCLI); ok {
 		md.WriteString("Commands:\n")
-		cmd := commandliner.CommandLine()
+		cmd := cli.Command()
 		var cmdHelps []string
 		for _, subcmd := range cmd.Subcommands {
 			cmdHelps = append(cmdHelps, fmt.Sprintf("`./typicalw %s %s`: %s", cmd.Name, subcmd.Name, subcmd.Usage))

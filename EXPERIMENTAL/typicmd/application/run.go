@@ -22,10 +22,9 @@ func Run(ctx *typictx.Context) {
 		app.Action = typicli.Action(ctx, runner.Run())
 	}
 	app.Before = typicli.LoadEnvFile
-	// for _, cmd := range c.Application.Commands {
-	// 	cmd.Action = action(c, cmd.Action)
-	// 	app.Commands = append(app.Commands, cmd)
-	// }
+	if appCli, ok := ctx.Application.(typictx.AppCLI); ok {
+		app.Commands = appCli.AppCommands(ctx)
+	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err.Error())
 	}

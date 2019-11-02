@@ -23,6 +23,7 @@ func Action(obj interface{}, fn interface{}) func(ctx *cli.Context) error {
 		}()
 		go func() {
 			<-gracefulStop
+			fmt.Print("\n\n\n[[Application stop]]\n")
 			if destroyer, ok := obj.(typiobj.Destroyer); ok {
 				if err = typiobj.Destroy(di, destroyer); err != nil {
 					fmt.Println("Error: " + err.Error())

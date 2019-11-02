@@ -43,18 +43,14 @@ type redisModule struct {
 	Name string
 }
 
-// CommandLine return command
-func (r redisModule) CommandLine() cli.Command {
+// Command of module
+func (r redisModule) Command() cli.Command {
 	return cli.Command{
 		Name:   "redis",
-		Usage:  "Redis Utility Tool",
+		Usage:  "Redis Tool",
 		Before: typicli.LoadEnvFile,
 		Subcommands: []cli.Command{
-			{
-				Name:      "console",
-				ShortName: "c",
-				Usage:     "Redis interactive",
-				Action:    typicli.Action(r, r.console)},
+			{Name: "console", ShortName: "c", Usage: "Redis interactive", Action: typicli.Action(r, r.console)},
 		},
 	}
 }

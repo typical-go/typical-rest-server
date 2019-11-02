@@ -122,7 +122,7 @@ func (t buildtool) commands() (cmds []cli.Command) {
 		// 	},
 		// },
 	}
-	cmds = append(cmds, t.Commands()...)
+	cmds = append(cmds, t.BuildCommands()...)
 	return
 }
 
