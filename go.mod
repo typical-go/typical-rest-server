@@ -37,6 +37,7 @@ require (
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/stretchr/testify v1.3.0
 	github.com/urfave/cli v1.21.0
 	github.com/valyala/fasttemplate v1.0.1 // indirect

@@ -65,7 +65,11 @@ func (r redisModule) CommandLine() cli.Command {
 		Usage:  "Redis Utility Tool",
 		Before: envkit.CliLoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Action: typiobj.Action(r, r.console)},
+			{
+				Name:      "console",
+				ShortName: "c",
+				Usage:     "Redis interactive",
+				Action:    typiobj.Action(r, r.console)},
 		},
 	}
 }

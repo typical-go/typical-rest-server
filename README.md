@@ -26,7 +26,7 @@ Use `./typicalw test` to execute the unit testing.
 ## Application
 
 | Name | Type | Default | Required |
-|---|---|---|---|
+|---|---|---|:---:|
 |APP_ADDRESS|string|:8089|Yes|
 
 ## Modules
@@ -34,23 +34,32 @@ Use `./typicalw test` to execute the unit testing.
 ### Server
 
 | Name | Type | Default | Required |
-|---|---|---|---|
+|---|---|---|:---:|
 |SERVER_DEBUG|bool|false||
 
 ### Postgres
 
 | Name | Type | Default | Required |
-|---|---|---|---|
+|---|---|---|:---:|
 |PG_DBNAME|string||Yes|
 |PG_USER|string|postgres|Yes|
 |PG_PASSWORD|string|pgpass|Yes|
 |PG_HOST|string|localhost||
 |PG_PORT|int|5432||
 
+Commands:
+
+- `./typicalw postgres create`: Create New Database
+- `./typicalw postgres drop`: Drop Database
+- `./typicalw postgres migrate`: Migrate Database
+- `./typicalw postgres rollback`: Rollback Database
+- `./typicalw postgres seed`: Database Seeding
+- `./typicalw postgres console`: PostgreSQL interactive
+
 ### Redis
 
 | Name | Type | Default | Required |
-|---|---|---|---|
+|---|---|---|:---:|
 |REDIS_HOST|string|localhost|Yes|
 |REDIS_PORT|string|6379|Yes|
 |REDIS_PASSWORD|string|redispass||
@@ -61,6 +70,10 @@ Use `./typicalw test` to execute the unit testing.
 |REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
 |REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
 |REDIS_MAX_CONN_AGE|Duration|30m|Yes|
+
+Commands:
+
+- `./typicalw redis console`: Redis interactive
 
 ## Release Distribution
 
