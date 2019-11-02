@@ -21,10 +21,7 @@ var Context = &typictx.Context{
 	},
 	Release: typictx.Release{
 		Version: "0.8.4",
-		Targets: []string{
-			"linux/amd64",
-			"darwin/amd64",
-		},
+		Targets: []string{"linux/amd64", "darwin/amd64"},
 		Github: &typictx.Github{
 			Owner:    "typical-go",
 			RepoName: "typical-rest-server",
