@@ -50,7 +50,7 @@ func (r redisModule) Command() cli.Command {
 		Usage:  "Redis Tool",
 		Before: typicli.LoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Usage: "Redis interactive", Action: typicli.Action(r, r.console)},
+			{Name: "console", ShortName: "c", Usage: "Redis Interactive", Action: typicli.Action(r, r.console)},
 		},
 	}
 }

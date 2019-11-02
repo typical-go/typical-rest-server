@@ -61,7 +61,7 @@ func (p postgresModule) Command() cli.Command {
 			{Name: "migrate", Usage: "Migrate Database", Action: typicli.Action(p, p.migrateDB)},
 			{Name: "rollback", Usage: "Rollback Database", Action: typicli.Action(p, p.rollbackDB)},
 			{Name: "seed", Usage: "Database Seeding", Action: typicli.Action(p, p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL interactive", Action: typicli.Action(p, p.console)},
+			{Name: "console", Usage: "PostgreSQL Interactive", Action: typicli.Action(p, p.console)},
 		},
 	}
 }

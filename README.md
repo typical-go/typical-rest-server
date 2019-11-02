@@ -21,7 +21,7 @@ Use `./typicalw run` to compile and run local development.
 
 Use `./typicalw test` to execute the unit testing.
 
-[Learn more](https://typical-go.github.io/learn-more/wrapper.html)
+Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool.html)
 
 ## Application
 
@@ -53,7 +53,7 @@ Commands:
 - `./typicalw postgres migrate`: Migrate Database
 - `./typicalw postgres rollback`: Rollback Database
 - `./typicalw postgres seed`: Database Seeding
-- `./typicalw postgres console`: PostgreSQL interactive
+- `./typicalw postgres console`: PostgreSQL Interactive
 
 ### Redis
 
@@ -71,11 +71,11 @@ Commands:
 |REDIS_MAX_CONN_AGE|Duration|30m|Yes|
 
 Commands:
-- `./typicalw redis console`: Redis interactive
+- `./typicalw redis console`: Redis Interactive
 
 ## Release Distribution
 
 Use `./typicalw release` to make the release. You can find the binary at `release` folder.
 
-[Learn more](https://typical-go.github.io/learn-more/release.html)
+Learn more [Release Distribution](https://typical-go.github.io/learn-more/release-distribution.html)
 

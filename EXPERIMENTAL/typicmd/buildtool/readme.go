@@ -53,12 +53,12 @@ func infrastructure(md *markdown.Markdown) {
 func runInstruction(md *markdown.Markdown) {
 	md.Writeln("Use `./typicalw run` to compile and run local development.")
 	md.Writeln("Use `./typicalw test` to execute the unit testing.")
-	md.Writeln("[Learn more](https://typical-go.github.io/learn-more/wrapper.html)")
+	md.Writeln("Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool.html)")
 }
 
 func releaseDistribution(md *markdown.Markdown) {
 	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder.")
-	md.Writeln("[Learn more](https://typical-go.github.io/learn-more/release.html)")
+	md.Writeln("Learn more [Release Distribution](https://typical-go.github.io/learn-more/release-distribution.html)")
 }
 
 func application(md *markdown.Markdown, app interface{}) {
