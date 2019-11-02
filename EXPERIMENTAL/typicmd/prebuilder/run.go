@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/metadata"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
 )
@@ -25,9 +26,12 @@ const (
 
 // Run the prebuilder
 func Run(ctx *typictx.Context) {
-	var prebuilder prebuilder
-	var report report
 	var err error
+	var preb prebuilder
+	checker := checker{
+		contextChecksum: contextChecksum(),
+		buildToolBinary: !filekit.IsExist(typienv.BuildTool.BinPath),
+	}
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
 	}
@@ -37,18 +41,31 @@ func Run(ctx *typictx.Context) {
 	if err = typictx.GenerateEnvfile(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
-	if err := prebuilder.Initiate(ctx); err != nil {
+	if err := preb.Initiate(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
-	if report, err = prebuilder.Prebuild(); err != nil {
+	if checker.configuration, err = metadata.Update("config_fields", preb.ConfigFields); err != nil {
 		log.Fatal(err.Error())
 	}
-	checker := buildToolChecker{
-		BinaryNotExist:  !filekit.IsExist(typienv.BuildTool.BinPath),
-		PrebuildUpdated: report.Updated(),
-		HaveBuildArgs:   haveBuildArg(),
+	if checker.testTarget, err = Generate("test_target", testTarget{
+		ContextImport: preb.ContextImport,
+		Packages:      preb.Dirs,
+	}); err != nil {
+		log.Fatal(err.Error())
 	}
-	if checker.Check() {
+	if checker.mockTarget, err = Generate("mock_target", mockTarget{
+		ApplicationImports: preb.ApplicationImports,
+		MockTargets:        preb.ProjectFiles.Automocks(),
+	}); err != nil {
+		log.Fatal(err.Error())
+	}
+	if checker.constructor, err = Generate("constructor", constructor{
+		ApplicationImports: preb.ApplicationImports,
+		Constructors:       preb.ProjectFiles.Autowires(),
+	}); err != nil {
+		log.Fatal(err.Error())
+	}
+	if checker.checkBuildTool() {
 		log.Info("Build the build-tool")
 		if err := bash.GoBuild(typienv.BuildTool.BinPath, typienv.BuildTool.SrcPath); err != nil {
 			log.Fatal(err.Error())
@@ -56,7 +73,8 @@ func Run(ctx *typictx.Context) {
 	}
 }
 
-func haveBuildArg() bool {
+func contextChecksum() bool {
+	// NOTE: context checksum is passed by typicalw
 	if len(os.Args) > 1 {
 		return os.Args[1] == "1"
 	}

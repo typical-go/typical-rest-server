@@ -8,16 +8,6 @@ import (
 // Modules is list of module
 type Modules slice.Interfaces
 
-// Configurations return list of config
-func (m Modules) Configurations() (cfgs []Configuration) {
-	for _, module := range m {
-		if configurer, ok := module.(Configurer); ok {
-			cfgs = append(cfgs, configurer.Configure())
-		}
-	}
-	return
-}
-
 // Commands return list of command
 func (m Modules) Commands() (cmds []cli.Command) {
 	for _, module := range m {
