@@ -48,7 +48,6 @@ Use `./typicalw test` to execute the unit testing.
 |PG_PORT|int|5432||
 
 Commands:
-
 - `./typicalw postgres create`: Create New Database
 - `./typicalw postgres drop`: Drop Database
 - `./typicalw postgres migrate`: Migrate Database
@@ -72,7 +71,6 @@ Commands:
 |REDIS_MAX_CONN_AGE|Duration|30m|Yes|
 
 Commands:
-
 - `./typicalw redis console`: Redis interactive
 
 ## Release Distribution
