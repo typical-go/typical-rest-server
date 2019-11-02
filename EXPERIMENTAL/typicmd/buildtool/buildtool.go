@@ -136,7 +136,7 @@ func (t buildtool) buildBinary(ctx *cli.Context) error {
 }
 
 func (t buildtool) cleanProject(ctx *cli.Context) (err error) {
-	log.Info("Start clean the project")
+	log.Info("Clean the project")
 	log.Infof("  Remove %s", typienv.Bin)
 	if err = os.RemoveAll(typienv.Bin); err != nil {
 		return
@@ -238,6 +238,5 @@ func (t buildtool) generateReadme(ctx *cli.Context) (err error) {
 		return
 	}
 	defer file.Close()
-	Readme{Context: t.Context}.Markdown(file)
-	return
+	return readme(file, t.Context)
 }

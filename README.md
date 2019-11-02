@@ -6,17 +6,30 @@ Example of typical and scalable RESTful API Server for Go
 
 ## Prerequisite
 
-1. Install [Go](https://golang.org/doc/install) or `brew install go`
+1. [Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)
+2. [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Run
+## Infrastructure
 
-Use `./typicalw run` to compile and run local development. [Learn more](https://typical-go.github.io/learn-more/wrapper.html)
+Use `./typicalw docker up` to spin up infrastructure docker.
 
-## Configurations
+Use `./typicalw docker compose` to generate "docker-compose.yml" based on Typical Context.
+
+## Run & Test
+
+Use `./typicalw run` to compile and run local development.
+
+Use `./typicalw test` to execute the unit testing.
+
+[Learn more](https://typical-go.github.io/learn-more/wrapper.html)
+
+## Application
 
 | Name | Type | Default | Required |
 |---|---|---|---|
 |APP_ADDRESS|string|:8089|Yes|
+
+## Modules
 
 ### Server
 
@@ -51,5 +64,7 @@ Use `./typicalw run` to compile and run local development. [Learn more](https://
 
 ## Release Distribution
 
-Use `./typicalw release` to make the release. You can find the binary at `release` folder. [Learn more](https://typical-go.github.io/learn-more/release.html)
+Use `./typicalw release` to make the release. You can find the binary at `release` folder.
+
+[Learn more](https://typical-go.github.io/learn-more/release.html)
 
