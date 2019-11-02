@@ -2,6 +2,7 @@ package prebuilder
 
 import (
 	"os"
+	"os/exec"
 
 	"github.com/typical-go/typical-rest-server/pkg/utility/filekit"
 
@@ -31,6 +32,7 @@ func Run(ctx *typictx.Context) {
 	checker := checker{
 		contextChecksum: contextChecksum(),
 		buildToolBinary: !filekit.IsExist(typienv.BuildTool.BinPath),
+		readmeFile:      !filekit.IsExist(typienv.Readme),
 	}
 	if os.Getenv(debugEnv) != "" {
 		log.SetLevel(log.DebugLevel)
@@ -45,6 +47,9 @@ func Run(ctx *typictx.Context) {
 		log.Fatal(err.Error())
 	}
 	if checker.configuration, err = metadata.Update("config_fields", preb.ConfigFields); err != nil {
+		log.Fatal(err.Error())
+	}
+	if checker.buildCommands, err = metadata.Update("build_commands", preb.BuildCommands); err != nil {
 		log.Fatal(err.Error())
 	}
 	if checker.testTarget, err = Generate("test_target", testTarget{
@@ -68,6 +73,13 @@ func Run(ctx *typictx.Context) {
 	if checker.checkBuildTool() {
 		log.Info("Build the build-tool")
 		if err := bash.GoBuild(typienv.BuildTool.BinPath, typienv.BuildTool.SrcPath); err != nil {
+			log.Fatal(err.Error())
+		}
+	}
+	if checker.checkReadme() {
+		log.Info("Generate readme")
+		cmd := exec.Command(typienv.BuildTool.BinPath, "readme")
+		if err := cmd.Run(); err != nil {
 			log.Fatal(err.Error())
 		}
 	}

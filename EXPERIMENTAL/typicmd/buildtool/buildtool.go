@@ -14,10 +14,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-const (
-	readmeFile = "README.md"
-)
-
 type buildtool struct {
 	*typictx.Context
 }
@@ -233,8 +229,8 @@ func (t buildtool) releaseDistribution(ctx *cli.Context) (err error) {
 
 func (t buildtool) generateReadme(ctx *cli.Context) (err error) {
 	var file *os.File
-	log.Infof("Generate Readme: %s", readmeFile)
-	if file, err = os.Create(readmeFile); err != nil {
+	log.Infof("Generate Readme: %s", typienv.Readme)
+	if file, err = os.Create(typienv.Readme); err != nil {
 		return
 	}
 	defer file.Close()

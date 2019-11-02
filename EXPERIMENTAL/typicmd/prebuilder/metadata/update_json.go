@@ -12,7 +12,9 @@ func Update(name string, v interface{}) (updated bool, err error) {
 	filename := Path(name + ".json")
 	var cachedData, data []byte
 	cachedData, err = ioutil.ReadFile(filename)
-	data, _ = json.Marshal(v)
+	if data, err = json.Marshal(v); err != nil {
+		return
+	}
 	if os.IsNotExist(err) {
 		updated = true
 	} else {

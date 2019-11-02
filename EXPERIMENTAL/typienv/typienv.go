@@ -21,6 +21,7 @@ const (
 	defaultBuildTool  = "build-tool"
 	defaultDependency = "dependency"
 	defaultMetadata   = ".typical-metadata"
+	defaultReadme     = "README.md"
 )
 
 var (
@@ -32,6 +33,7 @@ var (
 	Mock       string
 	Release    string
 	AppName    string
+	Readme     string
 )
 
 type applicationFolder struct {
@@ -63,6 +65,7 @@ func init() {
 	}
 	Mock = mock()
 	Release = release()
+	Readme = defaultReadme
 }
 
 func cmd() string {

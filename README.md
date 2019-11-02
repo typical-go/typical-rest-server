@@ -41,7 +41,7 @@ Use `./typicalw test` to execute the unit testing.
 
 | Name | Type | Default | Required |
 |---|---|---|:---:|
-|PG_DBNAME|string||Yes|
+|PG_DBNAME|string|typical-rest|Yes|
 |PG_USER|string|postgres|Yes|
 |PG_PASSWORD|string|pgpass|Yes|
 |PG_HOST|string|localhost||

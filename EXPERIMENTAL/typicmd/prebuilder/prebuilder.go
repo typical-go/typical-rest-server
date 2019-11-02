@@ -1,6 +1,8 @@
 package prebuilder
 
 import (
+	"fmt"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
@@ -20,6 +22,7 @@ type prebuilder struct {
 	ApplicationImports golang.Imports
 	ContextImport      string
 	ConfigFields       []typiobj.ConfigField
+	BuildCommands      []string
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
@@ -37,5 +40,11 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
 	p.ConfigFields = typictx.ConfigFields(ctx)
+	for _, command := range ctx.BuildCommands() {
+		for _, subcommand := range command.Subcommands {
+			s := fmt.Sprintf("%s_%s", command.Name, subcommand.Name)
+			p.BuildCommands = append(p.BuildCommands, s)
+		}
+	}
 	return
 }

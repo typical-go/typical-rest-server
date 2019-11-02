@@ -7,6 +7,8 @@ type checker struct {
 	testTarget      bool
 	buildToolBinary bool
 	contextChecksum bool
+	buildCommands   bool
+	readmeFile      bool
 }
 
 func (r *checker) checkBuildTool() bool {
@@ -15,5 +17,12 @@ func (r *checker) checkBuildTool() bool {
 		r.configuration ||
 		r.testTarget ||
 		r.buildToolBinary ||
-		r.contextChecksum
+		r.contextChecksum ||
+		r.buildCommands
+}
+
+func (r *checker) checkReadme() bool {
+	return r.buildCommands ||
+		r.configuration ||
+		r.readmeFile
 }
