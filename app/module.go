@@ -24,7 +24,7 @@ type applicationModule struct {
 
 func (m applicationModule) AppCommands(ctx *typictx.Context) []cli.Command {
 	return []cli.Command{
-		{Name: "route", Description: "Print available API Routes", Action: typicli.Action(ctx, RouteList)},
+		{Name: "route", Usage: "Print available API Routes", Action: typicli.Action(ctx, taskRouteList)},
 	}
 }
 

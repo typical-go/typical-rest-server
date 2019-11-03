@@ -7,8 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/config"
 )
 
-// RouteList to return routes
-func RouteList(e *echo.Echo, cfg *config.Config) (err error) {
+func taskRouteList(e *echo.Echo, cfg *config.Config) (err error) {
 	m := make(map[string][]string)
 	for _, route := range e.Routes() {
 		if _, ok := m[route.Path]; ok {
