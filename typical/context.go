@@ -13,7 +13,7 @@ var Context = &typictx.Context{
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Root:        "github.com/typical-go/typical-rest-server",
-	Application: app.Module(),
+	AppModule:   app.Module(),
 	Modules: []interface{}{
 		typserver.Module(),
 		typpostgres.Module(),

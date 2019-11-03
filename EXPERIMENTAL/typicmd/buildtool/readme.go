@@ -28,7 +28,7 @@ func readme(w io.Writer, ctx *typictx.Context) (err error) {
 	md.H2("Run & Test")
 	runInstruction(md)
 	md.H2("Application")
-	application(md, ctx.Application)
+	application(md, ctx.AppModule)
 	md.H2("Modules")
 	for _, m := range ctx.Modules {
 		module(md, m)

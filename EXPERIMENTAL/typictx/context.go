@@ -11,7 +11,7 @@ type Context struct {
 	Name         string
 	Description  string
 	Root         string
-	Application  interface{}
+	AppModule    interface{}
 	Modules      slice.Interfaces
 	Release      Release
 	TestTargets  slice.Strings
@@ -27,7 +27,7 @@ func (c *Context) Validate() error {
 	if c.Root == "" {
 		return invalidContextError("Root can't not empty")
 	}
-	if _, ok := c.Application.(typiobj.Runner); !ok {
+	if _, ok := c.AppModule.(typiobj.Runner); !ok {
 		return invalidContextError("Application must implement Runner")
 	}
 	return nil
@@ -35,7 +35,7 @@ func (c *Context) Validate() error {
 
 // BuildCommands return list of command for Build-Tool
 func (c *Context) BuildCommands() (cmds []cli.Command) {
-	if commandliner, ok := c.Application.(typiobj.BuildCLI); ok {
+	if commandliner, ok := c.AppModule.(typiobj.BuildCLI); ok {
 		cmds = append(cmds, commandliner.Command())
 	}
 	for _, module := range c.Modules {
@@ -49,7 +49,7 @@ func (c *Context) BuildCommands() (cmds []cli.Command) {
 // Provide the dependencies
 func (c *Context) Provide() (constructors []interface{}) {
 	constructors = append(constructors, c.Constructors...)
-	if provider, ok := c.Application.(typiobj.Provider); ok {
+	if provider, ok := c.AppModule.(typiobj.Provider); ok {
 		constructors = append(constructors, provider.Provide()...)
 	}
 	for _, module := range c.Modules {
@@ -62,7 +62,7 @@ func (c *Context) Provide() (constructors []interface{}) {
 
 // Destroy the dependencies
 func (c *Context) Destroy() (destructors []interface{}) {
-	if destroyer, ok := c.Application.(typiobj.Destroyer); ok {
+	if destroyer, ok := c.AppModule.(typiobj.Destroyer); ok {
 		destructors = append(destructors, destroyer.Destroy()...)
 	}
 	for _, module := range c.Modules {
@@ -75,7 +75,7 @@ func (c *Context) Destroy() (destructors []interface{}) {
 
 // Prepare the run
 func (c *Context) Prepare() (preparations []interface{}) {
-	if preparer, ok := c.Application.(typiobj.Preparer); ok {
+	if preparer, ok := c.AppModule.(typiobj.Preparer); ok {
 		preparations = append(preparations, preparer.Prepare()...)
 	}
 	return
