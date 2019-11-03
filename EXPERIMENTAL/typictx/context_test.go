@@ -24,19 +24,19 @@ func TestContext_Validate(t *testing.T) {
 		errMsg  string
 	}{
 		{
-			typictx.Context{Application: invalidDummyApp{}, Name: "some-name", Root: "some-root"},
+			typictx.Context{AppModule: invalidDummyApp{}, Name: "some-name", Root: "some-root"},
 			"Invalid Context: Application must implement Runner",
 		},
 		{
-			typictx.Context{Application: dummyApp{}, Root: "some-root"},
+			typictx.Context{AppModule: dummyApp{}, Root: "some-root"},
 			"Invalid Context: Name can't not empty",
 		},
 		{
-			typictx.Context{Application: dummyApp{}, Name: "some-name"},
+			typictx.Context{AppModule: dummyApp{}, Name: "some-name"},
 			"Invalid Context: Root can't not empty",
 		},
 		{
-			typictx.Context{Application: dummyApp{}, Name: "some-name", Root: "some-root"},
+			typictx.Context{AppModule: dummyApp{}, Name: "some-name", Root: "some-root"},
 			"",
 		},
 	}
