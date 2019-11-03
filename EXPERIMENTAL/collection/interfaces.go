@@ -1,4 +1,4 @@
-package slice
+package collection
 
 // Interfaces is slice of interface{}
 type Interfaces []interface{}

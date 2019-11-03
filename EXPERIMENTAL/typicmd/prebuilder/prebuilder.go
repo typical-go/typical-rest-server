@@ -3,11 +3,10 @@ package prebuilder
 import (
 	"fmt"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
-
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
 
 	log "github.com/sirupsen/logrus"
 
@@ -18,7 +17,7 @@ import (
 
 type prebuilder struct {
 	ProjectFiles       *walker.ProjectFiles
-	Dirs               slice.Strings
+	Dirs               collection.Strings
 	ApplicationImports golang.Imports
 	ContextImport      string
 	ConfigFields       []typiobj.ConfigField
@@ -26,7 +25,7 @@ type prebuilder struct {
 }
 
 func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
-	var files slice.Strings
+	var files collection.Strings
 	if p.Dirs, files, err = scanProject(typienv.AppName); err != nil {
 		return
 	}

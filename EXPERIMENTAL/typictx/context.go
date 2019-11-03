@@ -1,7 +1,7 @@
 package typictx
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/slice"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/urfave/cli"
 )
@@ -12,11 +12,11 @@ type Context struct {
 	Description  string
 	Root         string
 	AppModule    interface{}
-	Modules      slice.Interfaces
+	Modules      collection.Interfaces
 	Release      Release
-	TestTargets  slice.Strings
-	MockTargets  slice.Strings
-	Constructors slice.Interfaces
+	TestTargets  collection.Strings
+	MockTargets  collection.Strings
+	Constructors collection.Interfaces
 }
 
 // Validate context
