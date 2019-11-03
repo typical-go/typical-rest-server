@@ -14,10 +14,7 @@ const (
 
 // ConfigFields return config list
 func ConfigFields(ctx *Context) (fields []typiobj.ConfigField) {
-	if configurer, ok := ctx.AppModule.(typiobj.Configurer); ok {
-		fields = append(fields, configurer.Configure().ConfigFields()...)
-	}
-	for _, module := range ctx.Modules {
+	for _, module := range ctx.AllModule() {
 		if configurer, ok := module.(typiobj.Configurer); ok {
 			fields = append(fields, configurer.Configure().ConfigFields()...)
 		}

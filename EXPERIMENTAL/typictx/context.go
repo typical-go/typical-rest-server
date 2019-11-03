@@ -3,6 +3,7 @@ package typictx
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
 	"github.com/urfave/cli"
 )
 
@@ -33,12 +34,16 @@ func (c *Context) Validate() error {
 	return nil
 }
 
+// AllModule return app module and modules
+func (c *Context) AllModule() (modules []interface{}) {
+	modules = append(modules, c.AppModule)
+	modules = append(modules, c.Modules...)
+	return
+}
+
 // BuildCommands return list of command for Build-Tool
 func (c *Context) BuildCommands() (cmds []cli.Command) {
-	if commandliner, ok := c.AppModule.(typiobj.BuildCLI); ok {
-		cmds = append(cmds, commandliner.Command())
-	}
-	for _, module := range c.Modules {
+	for _, module := range c.AllModule() {
 		if commandliner, ok := module.(typiobj.BuildCLI); ok {
 			cmds = append(cmds, commandliner.Command())
 		}
@@ -49,10 +54,7 @@ func (c *Context) BuildCommands() (cmds []cli.Command) {
 // Provide the dependencies
 func (c *Context) Provide() (constructors []interface{}) {
 	constructors = append(constructors, c.Constructors...)
-	if provider, ok := c.AppModule.(typiobj.Provider); ok {
-		constructors = append(constructors, provider.Provide()...)
-	}
-	for _, module := range c.Modules {
+	for _, module := range c.AllModule() {
 		if provider, ok := module.(typiobj.Provider); ok {
 			constructors = append(constructors, provider.Provide()...)
 		}
@@ -62,10 +64,7 @@ func (c *Context) Provide() (constructors []interface{}) {
 
 // Destroy the dependencies
 func (c *Context) Destroy() (destructors []interface{}) {
-	if destroyer, ok := c.AppModule.(typiobj.Destroyer); ok {
-		destructors = append(destructors, destroyer.Destroy()...)
-	}
-	for _, module := range c.Modules {
+	for _, module := range c.AllModule() {
 		if destroyer, ok := module.(typiobj.Destroyer); ok {
 			destructors = append(destructors, destroyer.Destroy()...)
 		}
@@ -75,8 +74,24 @@ func (c *Context) Destroy() (destructors []interface{}) {
 
 // Prepare the run
 func (c *Context) Prepare() (preparations []interface{}) {
-	if preparer, ok := c.AppModule.(typiobj.Preparer); ok {
-		preparations = append(preparations, preparer.Prepare()...)
+	for _, module := range c.AllModule() {
+		if preparer, ok := module.(typiobj.Preparer); ok {
+			preparations = append(preparations, preparer.Prepare()...)
+		}
+	}
+	return
+}
+
+// DockerCompose get docker compose
+func (c *Context) DockerCompose() (dc docker.Compose) {
+	dc.Version = "3"
+	dc.Services = make(map[string]interface{})
+	dc.Networks = make(map[string]interface{})
+	dc.Volumes = make(map[string]interface{})
+	for _, module := range c.AllModule() {
+		if composer, ok := module.(typiobj.DockerComposer); ok {
+			dc.Add(composer.DockerCompose())
+		}
 	}
 	return
 }

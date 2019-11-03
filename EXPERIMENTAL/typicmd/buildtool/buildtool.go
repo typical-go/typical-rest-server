@@ -1,12 +1,16 @@
 package buildtool
 
 import (
+	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
+	"gopkg.in/yaml.v2"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/releaser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -89,34 +93,34 @@ func (t buildtool) commands() (cmds []cli.Command) {
 			Usage:  "Generate readme document",
 			Action: t.generateReadme,
 		},
-		// {
-		// 	Name:  "docker",
-		// 	Usage: "Docker utility",
-		// 	// BeforeFunc: typienv.LoadEnvFile,
-		// 	Subcommands: []cli.Command{
-		// 		{
-		// 			Name:   "compose",
-		// 			Usage:  "Generate docker-compose.yaml",
-		// 			Action: t.dockerCompose,
-		// 		},
-		// 		{
-		// 			Name:  "up",
-		// 			Usage: "Create and start containers",
-		// 			Flags: []cli.Flag{
-		// 				cli.BoolFlag{
-		// 					Name:  "no-compose",
-		// 					Usage: "Create and start containers without generate docker-compose.yaml",
-		// 				},
-		// 			},
-		// 			Action: t.dockerUp,
-		// 		},
-		// 		{
-		// 			Name:   "down",
-		// 			Usage:  "Stop and remove containers, networks, images, and volumes",
-		// 			Action: t.dockerDown,
-		// 		},
-		// 	},
-		// },
+		{
+			Name:   "docker",
+			Usage:  "Docker utility",
+			Before: typicli.LoadEnvFile,
+			Subcommands: []cli.Command{
+				{
+					Name:   "compose",
+					Usage:  "Generate docker-compose.yaml",
+					Action: t.dockerCompose,
+				},
+				{
+					Name:  "up",
+					Usage: "Create and start containers",
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "no-compose",
+							Usage: "Create and start containers without generate docker-compose.yaml",
+						},
+					},
+					Action: t.dockerUp,
+				},
+				{
+					Name:   "down",
+					Usage:  "Stop and remove containers, networks, images, and volumes",
+					Action: t.dockerDown,
+				},
+			},
+		},
 	}
 	cmds = append(cmds, t.BuildCommands()...)
 	return
@@ -206,26 +210,25 @@ func (t buildtool) releaseDistribution(ctx *cli.Context) (err error) {
 	return
 }
 
-// func (t buildtool) dockerCompose(ctx *cli.Context) (err error) {
-// 	log.Info("Generate docker-compose.yml")
-// 	dockerCompose := t.DockerCompose()
-// 	d1, _ := yaml.Marshal(dockerCompose)
-// 	return ioutil.WriteFile("docker-compose.yml", d1, 0644)
-// }
+func (t buildtool) dockerCompose(ctx *cli.Context) (err error) {
+	log.Info("Generate docker-compose.yml")
+	out, _ := yaml.Marshal(t.DockerCompose())
+	return ioutil.WriteFile("docker-compose.yml", out, 0644)
+}
 
-// func (t buildtool) dockerUp(ctx *cli.Context) (err error) {
-// 	cmd := exec.Command("docker-compose", "up", "--remove-orphans", "-d")
-// 	cmd.Stderr = os.Stderr
-// 	cmd.Stdout = os.Stdout
-// 	return cmd.Run()
-// }
+func (t buildtool) dockerUp(ctx *cli.Context) (err error) {
+	cmd := exec.Command("docker-compose", "up", "--remove-orphans", "-d")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
 
-// func (t buildtool) dockerDown(ctx *cli.Context) (err error) {
-// 	cmd := exec.Command("docker-compose", "down")
-// 	cmd.Stderr = os.Stderr
-// 	cmd.Stdout = os.Stdout
-// 	return cmd.Run()
-// }
+func (t buildtool) dockerDown(ctx *cli.Context) (err error) {
+	cmd := exec.Command("docker-compose", "down")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
 
 func (t buildtool) generateReadme(ctx *cli.Context) (err error) {
 	var file *os.File

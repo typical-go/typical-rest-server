@@ -15,6 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
 	"github.com/urfave/cli"
 )
 
@@ -78,6 +79,33 @@ func (p postgresModule) Provide() []interface{} {
 func (p postgresModule) Destroy() []interface{} {
 	return []interface{}{
 		p.closeConnection,
+	}
+}
+
+func (p postgresModule) DockerCompose() docker.Compose {
+	return docker.Compose{
+		Services: map[string]interface{}{
+			"postgres": docker.Service{
+				Image: "postgres",
+				Environment: map[string]string{
+					"POSTGRES":          "${PG_USER:-postgres}",
+					"POSTGRES_PASSWORD": "${PG_PASSWORD:-pgpass}",
+					"PGDATA":            "/data/postgres",
+				},
+				Volumes:  []string{"postgres:/data/postgres"},
+				Ports:    []string{"${PG_PORT:-5432}:5432"},
+				Networks: []string{"postgres"},
+				Restart:  "unless-stopped",
+			},
+		},
+		Networks: map[string]interface{}{
+			"postgres": docker.Network{
+				Driver: "bridge",
+			},
+		},
+		Volumes: map[string]interface{}{
+			"postgres": nil,
+		},
 	}
 }
 
