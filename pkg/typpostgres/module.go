@@ -14,6 +14,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
 	"github.com/urfave/cli"
@@ -50,7 +51,7 @@ type postgresModule struct {
 }
 
 // Command of module
-func (p postgresModule) Command() cli.Command {
+func (p postgresModule) BuildCommand(ctx *typictx.Context) cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",

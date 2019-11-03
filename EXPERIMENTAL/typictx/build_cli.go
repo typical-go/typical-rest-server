@@ -1,4 +1,4 @@
-package typiobj
+package typictx
 
 import (
 	"github.com/urfave/cli"
@@ -6,10 +6,10 @@ import (
 
 // BuildCLI responsible to give command
 type BuildCLI interface {
-	Command() cli.Command
+	BuildCommand(ctx *Context) cli.Command
 }
 
-// IsBuildCLI return true if object implementation of CommandLiner
+// IsBuildCLI return true if object implementation of BuildCLI
 func IsBuildCLI(obj interface{}) (ok bool) {
 	_, ok = obj.(BuildCLI)
 	return
