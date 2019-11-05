@@ -31,6 +31,10 @@ func TestName(t *testing.T) {
 			obj:  struct{}{},
 			name: "struct {}",
 		},
+		{
+			obj:  nil,
+			name: "nil",
+		},
 	}
 	for _, tt := range testcases {
 		require.Equal(t, tt.name, typiobj.Name(tt.obj))
@@ -55,6 +59,10 @@ func TestDescription(t *testing.T) {
 		{
 			obj:         struct{}{},
 			description: "",
+		},
+		{
+			obj:         nil,
+			description: "nil",
 		},
 	}
 	for _, tt := range testcases {
