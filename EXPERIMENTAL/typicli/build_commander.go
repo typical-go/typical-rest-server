@@ -17,6 +17,7 @@ func IsBuildCommander(obj interface{}) (ok bool) {
 }
 
 // BuildCommands return list of build command
+// TODO: return command detail instead of list command for readme and metadata
 func BuildCommands(ctx *typictx.Context) (cmds []cli.Command) {
 	for _, module := range ctx.AllModule() {
 		if commander, ok := module.(BuildCommander); ok {
