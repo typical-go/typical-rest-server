@@ -13,17 +13,20 @@ import (
 
 // Run the application
 func Run(ctx *typictx.Context) {
+	ctxCli := &typicli.ContextCli{
+		Context: ctx,
+	}
 	app := cli.NewApp()
 	app.Name = ctx.Name
 	app.Usage = ""
 	app.Description = ctx.Description
 	app.Version = ctx.Release.Version
 	if runner, ok := ctx.AppModule.(typiobj.Runner); ok {
-		app.Action = typicli.Action(ctx, runner.Run())
+		app.Action = ctxCli.Action(runner.Run())
 	}
 	app.Before = typicli.LoadEnvFile
-	if appCli, ok := ctx.AppModule.(typictx.AppCLI); ok {
-		app.Commands = appCli.AppCommands(ctx)
+	if commander, ok := ctx.AppModule.(typicli.AppCommander); ok {
+		app.Commands = commander.AppCommands(ctxCli)
 	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err.Error())

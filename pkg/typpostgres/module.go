@@ -14,7 +14,6 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
@@ -51,19 +50,19 @@ type postgresModule struct {
 }
 
 // Command of module
-func (p postgresModule) BuildCommand(ctx *typictx.Context) cli.Command {
+func (p postgresModule) BuildCommand(c *typicli.ContextCli) cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",
 		Usage:     "Postgres Database Tool",
 		Before:    typicli.LoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: typicli.Action(p, p.createDB)},
-			{Name: "drop", Usage: "Drop Database", Action: typicli.Action(p, p.dropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: typicli.Action(p, p.migrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: typicli.Action(p, p.rollbackDB)},
-			{Name: "seed", Usage: "Database Seeding", Action: typicli.Action(p, p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL Interactive", Action: typicli.Action(p, p.console)},
+			{Name: "create", Usage: "Create New Database", Action: c.Action(p.createDB)},
+			{Name: "drop", Usage: "Drop Database", Action: c.Action(p.dropDB)},
+			{Name: "migrate", Usage: "Migrate Database", Action: c.Action(p.migrateDB)},
+			{Name: "rollback", Usage: "Rollback Database", Action: c.Action(p.rollbackDB)},
+			{Name: "seed", Usage: "Database Seeding", Action: c.Action(p.seedDB)},
+			{Name: "console", Usage: "PostgreSQL Interactive", Action: c.Action(p.console)},
 		},
 	}
 }

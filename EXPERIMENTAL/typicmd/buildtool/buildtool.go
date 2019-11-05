@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/releaser"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
@@ -90,7 +91,7 @@ func (t buildtool) commands() (cmds []cli.Command) {
 			Action: t.generateReadme,
 		},
 	}
-	cmds = append(cmds, t.BuildCommands()...)
+	cmds = append(cmds, typicli.BuildCommands(t.Context)...)
 	return
 }
 

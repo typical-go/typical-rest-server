@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 	"github.com/go-redis/redis"
@@ -47,13 +46,13 @@ type redisModule struct {
 }
 
 // BuildCommand of module
-func (r redisModule) BuildCommand(ctx *typictx.Context) cli.Command {
+func (r redisModule) BuildCommand(c *typicli.ContextCli) cli.Command {
 	return cli.Command{
 		Name:   "redis",
 		Usage:  "Redis Tool",
 		Before: typicli.LoadEnvFile,
 		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Usage: "Redis Interactive", Action: typicli.Action(r, r.console)},
+			{Name: "console", ShortName: "c", Usage: "Redis Interactive", Action: c.Action(r.console)},
 		},
 	}
 }

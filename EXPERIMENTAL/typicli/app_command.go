@@ -1,10 +1,10 @@
-package typictx
+package typicli
 
 import "github.com/urfave/cli"
 
 // AppCommander return command
 type AppCommander interface {
-	AppCommands(ctx *Context) []cli.Command
+	AppCommands(c *ContextCli) []cli.Command
 }
 
 // IsAppCommander return true if object implementation of AppCLI

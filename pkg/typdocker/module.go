@@ -2,7 +2,6 @@ package typdocker
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/urfave/cli"
 )
 
@@ -17,9 +16,9 @@ type dockerModule struct {
 	Name string
 }
 
-func (dockerModule) BuildCommand(ctx *typictx.Context) cli.Command {
+func (dockerModule) BuildCommand(c *typicli.ContextCli) cli.Command {
 	cmd := dockerCommand{
-		Context: ctx,
+		Context: c.Context,
 	}
 	return cli.Command{
 		Name:   "docker",

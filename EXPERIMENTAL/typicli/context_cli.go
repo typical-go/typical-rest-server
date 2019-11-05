@@ -6,13 +6,20 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/urfave/cli"
 	"go.uber.org/dig"
 )
 
-// Action cli
-func Action(obj interface{}, fn interface{}) func(ctx *cli.Context) error {
+// ContextCli implementation of CLI
+type ContextCli struct {
+	*typictx.Context
+}
+
+// Action to return action function
+func (c ContextCli) Action(fn interface{}) func(ctx *cli.Context) error {
 	return func(ctx *cli.Context) (err error) {
 		di := dig.New()
 		gracefulStop := make(chan os.Signal)
@@ -24,23 +31,17 @@ func Action(obj interface{}, fn interface{}) func(ctx *cli.Context) error {
 		go func() {
 			<-gracefulStop
 			fmt.Print("\n\n\n[[Application stop]]\n")
-			if destroyer, ok := obj.(typiobj.Destroyer); ok {
-				if err = typiobj.Destroy(di, destroyer); err != nil {
-					fmt.Println("Error: " + err.Error())
-					os.Exit(1)
-				}
+			if err = typiobj.Destroy(di, c); err != nil {
+				fmt.Println("Error: " + err.Error())
+				os.Exit(1)
 			}
 			os.Exit(0)
 		}()
-		if provider, ok := obj.(typiobj.Provider); ok {
-			if err = typiobj.Provide(di, provider); err != nil {
-				return
-			}
+		if err = typiobj.Provide(di, c); err != nil {
+			return
 		}
-		if preparer, ok := obj.(typiobj.Preparer); ok {
-			if err = typiobj.Prepare(di, preparer); err != nil {
-				return
-			}
+		if err = typiobj.Prepare(di, c); err != nil {
+			return
 		}
 		return di.Invoke(fn)
 	}

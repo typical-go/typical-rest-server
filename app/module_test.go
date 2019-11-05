@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 	"github.com/typical-go/typical-rest-server/app"
 )
@@ -14,4 +15,5 @@ func TestModule(t *testing.T) {
 	require.True(t, typiobj.IsConfigurer(m))
 	require.True(t, typiobj.IsPreparer(m))
 	require.True(t, typiobj.IsRunner(m))
+	require.True(t, typicli.IsAppCommander(m))
 }

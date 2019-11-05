@@ -3,7 +3,6 @@ package typictx
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"github.com/urfave/cli"
 )
 
 // Context of typical application
@@ -37,16 +36,6 @@ func (c *Context) Validate() error {
 func (c *Context) AllModule() (modules []interface{}) {
 	modules = append(modules, c.AppModule)
 	modules = append(modules, c.Modules...)
-	return
-}
-
-// BuildCommands return list of command for Build-Tool
-func (c *Context) BuildCommands() (cmds []cli.Command) {
-	for _, module := range c.AllModule() {
-		if commander, ok := module.(BuildCommander); ok {
-			cmds = append(cmds, commander.BuildCommand(c))
-		}
-	}
 	return
 }
 
