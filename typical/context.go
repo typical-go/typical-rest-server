@@ -3,6 +3,7 @@ package typical
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/app"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
@@ -15,6 +16,7 @@ var Context = &typictx.Context{
 	Root:        "github.com/typical-go/typical-rest-server",
 	AppModule:   app.Module(),
 	Modules: []interface{}{
+		typdocker.Module(),
 		typserver.Module(),
 		typpostgres.Module(),
 		typredis.Module(),

@@ -9,12 +9,6 @@ Example of typical and scalable RESTful API Server for Go
 1. [Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)
 2. [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Infrastructure
-
-Use `./typicalw docker up` to spin up infrastructure docker.
-
-Use `./typicalw docker compose` to generate "docker-compose.yml" based on Typical Context.
-
 ## Run & Test
 
 Use `./typicalw run` to compile and run local development.
@@ -30,6 +24,13 @@ Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool
 |APP_ADDRESS|string|:8089|Yes|
 
 ## Modules
+
+### Docker
+
+Commands:
+- `./typicalw docker compose`: Generate docker-compose.yaml
+- `./typicalw docker up`: Create and start containers
+- `./typicalw docker down`: Stop and remove containers, networks, images, and volumes
 
 ### Server
 

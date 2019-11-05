@@ -23,8 +23,6 @@ func readme(w io.Writer, ctx *typictx.Context) (err error) {
 	}
 	md.H2("Prerequisite")
 	prerequisite(md)
-	md.H2("Infrastructure")
-	infrastructure(md)
 	md.H2("Run & Test")
 	runInstruction(md)
 	md.H2("Application")
@@ -43,11 +41,6 @@ func prerequisite(md *markdown.Markdown) {
 		"[Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)",
 		"[Docker Compose](https://docs.docker.com/compose/install/)",
 	)
-}
-
-func infrastructure(md *markdown.Markdown) {
-	md.Writeln("Use `./typicalw docker up` to spin up infrastructure docker.")
-	md.Writeln("Use `./typicalw docker compose` to generate \"docker-compose.yml\" based on Typical Context.")
 }
 
 func runInstruction(md *markdown.Markdown) {
