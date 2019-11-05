@@ -43,8 +43,8 @@ func (c *Context) AllModule() (modules []interface{}) {
 // BuildCommands return list of command for Build-Tool
 func (c *Context) BuildCommands() (cmds []cli.Command) {
 	for _, module := range c.AllModule() {
-		if commandliner, ok := module.(BuildCLI); ok {
-			cmds = append(cmds, commandliner.BuildCommand(c))
+		if commander, ok := module.(BuildCommander); ok {
+			cmds = append(cmds, commander.BuildCommand(c))
 		}
 	}
 	return

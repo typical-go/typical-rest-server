@@ -70,10 +70,9 @@ func module(md *markdown.Markdown, module interface{}) {
 	if configurer, ok := module.(typiobj.Configurer); ok {
 		configTable(md, configurer.Configure().ConfigFields())
 	}
-	if cli, ok := module.(typictx.BuildCLI); ok {
+	if commmander, ok := module.(typictx.BuildCommander); ok {
 		md.WriteString("Commands:\n")
-		// NOTE: it is okay to passing nil context since nothing to execute
-		cmd := cli.BuildCommand(nil)
+		cmd := commmander.BuildCommand(nil) // NOTE: it is okay to passing nil context since nothing to execute
 		var cmdHelps []string
 		for _, subcmd := range cmd.Subcommands {
 			cmdHelps = append(cmdHelps, fmt.Sprintf("`./typicalw %s %s`: %s", cmd.Name, subcmd.Name, subcmd.Usage))
