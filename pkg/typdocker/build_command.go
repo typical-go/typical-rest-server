@@ -17,7 +17,7 @@ type dockerCommand struct {
 
 func (c dockerCommand) Compose(ctx *cli.Context) (err error) {
 	log.Info("Generate docker-compose.yml")
-	out, _ := yaml.Marshal(c.DockerCompose())
+	out, _ := yaml.Marshal(c.dockerCompose())
 	return ioutil.WriteFile("docker-compose.yml", out, 0644)
 }
 
@@ -33,4 +33,18 @@ func (c dockerCommand) Down(ctx *cli.Context) (err error) {
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
+}
+
+// DockerCompose get docker compose
+func (c dockerCommand) dockerCompose() (dc Compose) {
+	dc.Version = "3"
+	dc.Services = make(map[string]interface{})
+	dc.Networks = make(map[string]interface{})
+	dc.Volumes = make(map[string]interface{})
+	for _, module := range c.AllModule() {
+		if composer, ok := module.(DockerComposer); ok {
+			dc.Add(composer.DockerCompose())
+		}
+	}
+	return
 }

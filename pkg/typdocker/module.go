@@ -32,19 +32,13 @@ func (dockerModule) BuildCommand(ctx *typictx.Context) cli.Command {
 				Action: cmd.Compose,
 			},
 			{
-				Name:  "up",
-				Usage: "Create and start containers",
-				Flags: []cli.Flag{
-					cli.BoolFlag{
-						Name:  "no-compose",
-						Usage: "Create and start containers without generate docker-compose.yaml",
-					},
-				},
+				Name:   "up",
+				Usage:  "Spin up docker containers",
 				Action: cmd.Up,
 			},
 			{
 				Name:   "down",
-				Usage:  "Stop and remove containers, networks, images, and volumes",
+				Usage:  "Take down all docker containers",
 				Action: cmd.Down,
 			},
 		},

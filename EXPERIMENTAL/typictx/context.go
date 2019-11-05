@@ -3,7 +3,6 @@ package typictx
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
 	"github.com/urfave/cli"
 )
 
@@ -77,20 +76,6 @@ func (c *Context) Prepare() (preparations []interface{}) {
 	for _, module := range c.AllModule() {
 		if preparer, ok := module.(typiobj.Preparer); ok {
 			preparations = append(preparations, preparer.Prepare()...)
-		}
-	}
-	return
-}
-
-// DockerCompose get docker compose
-func (c *Context) DockerCompose() (dc docker.Compose) {
-	dc.Version = "3"
-	dc.Services = make(map[string]interface{})
-	dc.Networks = make(map[string]interface{})
-	dc.Volumes = make(map[string]interface{})
-	for _, module := range c.AllModule() {
-		if composer, ok := module.(typiobj.DockerComposer); ok {
-			dc.Add(composer.DockerCompose())
 		}
 	}
 	return

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 	"github.com/go-redis/redis"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
@@ -73,10 +73,10 @@ func (r redisModule) Destroy() []interface{} {
 	}
 }
 
-func (r redisModule) DockerCompose() docker.Compose {
-	return docker.Compose{
+func (r redisModule) DockerCompose() typdocker.Compose {
+	return typdocker.Compose{
 		Services: map[string]interface{}{
-			"redis": docker.Service{
+			"redis": typdocker.Service{
 				Image:    "redis:4.0.5-alpine",
 				Command:  `redis-server --requirepass "${REDIS_PASSOWORD:-redispass}"`,
 				Ports:    []string{`6379:6379`},

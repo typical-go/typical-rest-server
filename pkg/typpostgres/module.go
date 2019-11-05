@@ -16,7 +16,7 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj/docker"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )
 
@@ -83,10 +83,10 @@ func (p postgresModule) Destroy() []interface{} {
 	}
 }
 
-func (p postgresModule) DockerCompose() docker.Compose {
-	return docker.Compose{
+func (p postgresModule) DockerCompose() typdocker.Compose {
+	return typdocker.Compose{
 		Services: map[string]interface{}{
-			"postgres": docker.Service{
+			"postgres": typdocker.Service{
 				Image: "postgres",
 				Environment: map[string]string{
 					"POSTGRES":          "${PG_USER:-postgres}",
@@ -100,7 +100,7 @@ func (p postgresModule) DockerCompose() docker.Compose {
 			},
 		},
 		Networks: map[string]interface{}{
-			"postgres": docker.Network{
+			"postgres": typdocker.Network{
 				Driver: "bridge",
 			},
 		},

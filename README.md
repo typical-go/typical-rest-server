@@ -29,8 +29,8 @@ Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool
 
 Commands:
 - `./typicalw docker compose`: Generate docker-compose.yaml
-- `./typicalw docker up`: Create and start containers
-- `./typicalw docker down`: Stop and remove containers, networks, images, and volumes
+- `./typicalw docker up`: Spin up docker containers
+- `./typicalw docker down`: Take down all docker containers
 
 ### Server
 
