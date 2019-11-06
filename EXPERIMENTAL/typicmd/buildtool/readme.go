@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/iancoleman/strcase"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool/markdown"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
@@ -71,12 +70,13 @@ func module(md *markdown.Markdown, module interface{}) {
 	if configurer, ok := module.(typiobj.Configurer); ok {
 		configTable(md, configurer.Configure().ConfigFields())
 	}
-	if commmander, ok := module.(typicli.BuildCommander); ok {
+	cmd := command(nil, module)
+	if len(cmd.Subcommands) > 0 {
 		md.WriteString("Commands:\n")
-		cmd := commmander.BuildCommand(&typicli.ContextCli{}) // NOTE: it is fine to passed empty ContextCli since no execution
 		var cmdHelps []string
 		for _, subcmd := range cmd.Subcommands {
-			cmdHelps = append(cmdHelps, fmt.Sprintf("`./typicalw %s %s`: %s", cmd.Name, subcmd.Name, subcmd.Usage))
+			cmdHelps = append(cmdHelps,
+				fmt.Sprintf("`./typicalw %s %s`: %s", cmd.Name, subcmd.Name, subcmd.Usage))
 		}
 		md.UnorderedList(cmdHelps...)
 	}

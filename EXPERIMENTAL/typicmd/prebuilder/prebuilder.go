@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 
 	log "github.com/sirupsen/logrus"
@@ -40,7 +40,7 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
 	p.ConfigFields = typictx.ConfigFields(ctx)
-	for _, command := range typicli.BuildCommands(ctx) {
+	for _, command := range buildtool.Commands(ctx) {
 		for _, subcommand := range command.Subcommands {
 			s := fmt.Sprintf("%s_%s", command.Name, subcommand.Name)
 			p.BuildCommands = append(p.BuildCommands, s)
