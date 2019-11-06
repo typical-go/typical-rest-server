@@ -99,12 +99,12 @@ func (t buildtool) cliBefore(ctx *cli.Context) (err error) {
 }
 
 func (t buildtool) buildBinary(ctx *cli.Context) error {
-	log.Info("Build application binary")
+	log.Info("Build the application")
 	return bash.GoBuild(typienv.App.BinPath, typienv.App.SrcPath)
 }
 
 func (t buildtool) cleanProject(ctx *cli.Context) (err error) {
-	log.Info("Clean the project")
+	log.Info("Clean the application")
 	log.Infof("  Remove %s", typienv.Bin)
 	if err = os.RemoveAll(typienv.Bin); err != nil {
 		return
@@ -130,7 +130,7 @@ func (t buildtool) runBinary(ctx *cli.Context) (err error) {
 			return
 		}
 	}
-	log.Info("Run application binary")
+	log.Info("Run the application")
 	return bash.Run(typienv.App.BinPath, []string(ctx.Args())...)
 }
 
