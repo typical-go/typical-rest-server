@@ -7,22 +7,27 @@ import (
 )
 
 // Commands return list of command
-// TODO: return command detail instead of list command for readme and metadata
 func Commands(ctx *typictx.Context) (cmds []cli.Command) {
 	for _, module := range ctx.AllModule() {
-		cmds = append(cmds, command(ctx, module))
+		if cmd := command(ctx, module); cmd != nil {
+			cmds = append(cmds, *cmd)
+		}
 	}
 	return
 }
 
-func command(ctx *typictx.Context, module interface{}) cli.Command {
+func command(ctx *typictx.Context, module interface{}) *cli.Command {
 	if commander, ok := module.(typicli.BuildCommander); ok {
-		c := &typicli.ContextCli{Context: ctx}
-		return commander.BuildCommand(c)
+		cmd := commander.BuildCommand(&typicli.ContextCli{
+			Context: ctx,
+		})
+		return &cmd
 	}
 	if commander, ok := module.(typicli.Commander); ok {
-		c := &typicli.Cli{Obj: module}
-		return commander.Command(c)
+		cmd := commander.Command(&typicli.Cli{
+			Obj: module,
+		})
+		return &cmd
 	}
-	return cli.Command{}
+	return nil
 }

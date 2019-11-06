@@ -71,7 +71,7 @@ func module(md *markdown.Markdown, module interface{}) {
 		configTable(md, configurer.Configure().ConfigFields())
 	}
 	cmd := command(nil, module)
-	if len(cmd.Subcommands) > 0 {
+	if cmd != nil && len(cmd.Subcommands) > 0 {
 		md.WriteString("Commands:\n")
 		var cmdHelps []string
 		for _, subcmd := range cmd.Subcommands {
