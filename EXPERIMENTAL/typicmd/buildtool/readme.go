@@ -23,7 +23,7 @@ func readme(w io.Writer, ctx *typictx.Context) (err error) {
 	}
 	md.H2("Prerequisite")
 	prerequisite(md)
-	md.H2("Run & Test")
+	md.H2("Build")
 	runInstruction(md)
 	md.H2("Application")
 	application(md, ctx.AppModule)
@@ -39,19 +39,19 @@ func readme(w io.Writer, ctx *typictx.Context) (err error) {
 func prerequisite(md *markdown.Markdown) {
 	md.OrderedList(
 		"[Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)",
-		"[Docker Compose](https://docs.docker.com/compose/install/)",
 	)
 }
 
 func runInstruction(md *markdown.Markdown) {
-	md.Writeln("Use `./typicalw run` to compile and run local development.")
+	md.Writeln("Use `./typicalw build` to build the project.")
+	md.Writeln("Use `./typicalw run` to build and run the project.")
 	md.Writeln("Use `./typicalw test` to execute the unit testing.")
-	md.Writeln("Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool.html)")
+	md.Writeln("Learn more about [Build Tool](https://typical-go.github.io/learn-more/build-tool)")
 }
 
 func releaseDistribution(md *markdown.Markdown) {
 	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder.")
-	md.Writeln("Learn more [Release Distribution](https://typical-go.github.io/learn-more/release-distribution.html)")
+	md.Writeln("Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
 }
 
 func application(md *markdown.Markdown, app interface{}) {
