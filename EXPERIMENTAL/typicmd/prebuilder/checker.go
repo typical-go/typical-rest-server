@@ -1,8 +1,8 @@
 package prebuilder
 
 type checker struct {
-	mockTarget      bool
-	constructor     bool
+	mockTarget bool
+	// constructor     bool
 	configuration   bool
 	testTarget      bool
 	buildToolBinary bool
@@ -13,7 +13,6 @@ type checker struct {
 
 func (r *checker) checkBuildTool() bool {
 	return r.mockTarget ||
-		r.constructor ||
 		r.configuration ||
 		r.testTarget ||
 		r.buildToolBinary ||

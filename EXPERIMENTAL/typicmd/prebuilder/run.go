@@ -64,7 +64,7 @@ func Run(ctx *typictx.Context) {
 	}); err != nil {
 		log.Fatal(err.Error())
 	}
-	if checker.constructor, err = Generate("constructor", constructor{
+	if _, err = Generate("constructor", constructor{
 		ApplicationImports: preb.ApplicationImports,
 		Constructors:       preb.ProjectFiles.Autowires(),
 	}); err != nil {

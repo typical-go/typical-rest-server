@@ -13,7 +13,6 @@ func TestChecker_CheckBuildTool(t *testing.T) {
 	}{
 		{checker{}, false},
 		{checker{mockTarget: true}, true},
-		{checker{constructor: true}, true},
 		{checker{configuration: true}, true},
 		{checker{testTarget: true}, true},
 		{checker{buildToolBinary: true}, true},
