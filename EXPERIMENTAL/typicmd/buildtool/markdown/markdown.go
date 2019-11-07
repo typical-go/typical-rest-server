@@ -73,10 +73,12 @@ func (m *Markdown) H4(text string) (int, error) {
 	return m.Writelnf("#### %s", text)
 }
 
+// WriteString to write string
 func (m *Markdown) WriteString(s string) (int, error) {
 	return m.Write([]byte(s))
 }
 
+// Comment for comment
 func (m *Markdown) Comment(comment string) (int, error) {
 	return m.Writelnf("<!-- %s -->", comment)
 }

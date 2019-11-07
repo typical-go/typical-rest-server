@@ -24,3 +24,8 @@ func (e Errors) Error() string {
 	}
 	return builder.String()
 }
+
+// IsEmpty return true if no error
+func (e Errors) IsEmpty() bool {
+	return len(e) < 1
+}
