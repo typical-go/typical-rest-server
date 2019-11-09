@@ -38,34 +38,3 @@ func (c *Context) AllModule() (modules []interface{}) {
 	modules = append(modules, c.Modules...)
 	return
 }
-
-// Provide the dependencies
-func (c *Context) Provide() (constructors []interface{}) {
-	constructors = append(constructors, c.Constructors...)
-	for _, module := range c.AllModule() {
-		if provider, ok := module.(typiobj.Provider); ok {
-			constructors = append(constructors, provider.Provide()...)
-		}
-	}
-	return
-}
-
-// Destroy the dependencies
-func (c *Context) Destroy() (destructors []interface{}) {
-	for _, module := range c.AllModule() {
-		if destroyer, ok := module.(typiobj.Destroyer); ok {
-			destructors = append(destructors, destroyer.Destroy()...)
-		}
-	}
-	return
-}
-
-// Prepare the run
-func (c *Context) Prepare() (preparations []interface{}) {
-	for _, module := range c.AllModule() {
-		if preparer, ok := module.(typiobj.Preparer); ok {
-			preparations = append(preparations, preparer.Prepare()...)
-		}
-	}
-	return
-}
