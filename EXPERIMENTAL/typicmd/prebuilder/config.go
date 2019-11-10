@@ -1,10 +1,11 @@
-package typictx
+package prebuilder
 
 import (
 	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 )
 
@@ -13,7 +14,7 @@ const (
 )
 
 // ConfigFields return config list
-func ConfigFields(ctx *Context) (fields []typiobj.ConfigField) {
+func ConfigFields(ctx *typictx.Context) (fields []typiobj.ConfigField) {
 	for _, module := range ctx.AllModule() {
 		if configurer, ok := module.(typiobj.Configurer); ok {
 			fields = append(fields, configurer.Configure().ConfigFields()...)
@@ -23,7 +24,7 @@ func ConfigFields(ctx *Context) (fields []typiobj.ConfigField) {
 }
 
 // GenerateEnvfile to generate .env file if not exist
-func GenerateEnvfile(ctx *Context) (err error) {
+func GenerateEnvfile(ctx *typictx.Context) (err error) {
 	if _, err = os.Stat(defaultDotEnv); !os.IsNotExist(err) {
 		return
 	}

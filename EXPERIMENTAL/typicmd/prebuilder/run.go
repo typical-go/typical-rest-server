@@ -39,7 +39,7 @@ func Run(ctx *typictx.Context) {
 	if err = ctx.Validate(); err != nil {
 		log.Fatal(err.Error())
 	}
-	if err = typictx.GenerateEnvfile(ctx); err != nil {
+	if err = GenerateEnvfile(ctx); err != nil {
 		log.Fatal(err.Error())
 	}
 	if err := preb.Initiate(ctx); err != nil {

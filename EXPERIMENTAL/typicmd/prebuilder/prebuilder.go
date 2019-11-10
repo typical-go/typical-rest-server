@@ -39,7 +39,7 @@ func (p *prebuilder) Initiate(ctx *typictx.Context) (err error) {
 		p.ApplicationImports.AddImport("", ctx.Root+"/"+dir)
 	}
 	p.ApplicationImports.AddImport("", p.ContextImport)
-	p.ConfigFields = typictx.ConfigFields(ctx)
+	p.ConfigFields = ConfigFields(ctx)
 	for _, command := range buildtool.Commands(ctx) {
 		for _, subcommand := range command.Subcommands {
 			s := fmt.Sprintf("%s_%s", command.Name, subcommand.Name)
