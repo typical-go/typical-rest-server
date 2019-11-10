@@ -37,14 +37,17 @@ func (c *ContextCli) Action(fn interface{}) func(ctx *cli.Context) error {
 			}
 			os.Exit(0)
 		}()
-		if err = c.beforeStart(di); err != nil {
+		if err = c.provideDependency(di); err != nil {
+			return
+		}
+		if err = c.prepare(di); err != nil {
 			return
 		}
 		return di.Invoke(fn)
 	}
 }
 
-func (c *ContextCli) beforeStart(di *dig.Container) (err error) {
+func (c *ContextCli) provideDependency(di *dig.Container) (err error) {
 	if err = provide(di, c.Constructors...); err != nil {
 		return
 	}
@@ -55,6 +58,10 @@ func (c *ContextCli) beforeStart(di *dig.Container) (err error) {
 			}
 		}
 	}
+	return
+}
+
+func (c *ContextCli) prepare(di *dig.Container) (err error) {
 	for _, module := range c.AllModule() {
 		if preparer, ok := module.(typiobj.Preparer); ok {
 			if err = invoke(di, preparer.Prepare()...); err != nil {
