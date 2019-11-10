@@ -8,14 +8,21 @@ import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
 )
 
-type invalidDummyApp struct {
-}
+func TestContext_AllModule(t *testing.T) {
+	ctx := typictx.Context{
+		AppModule: dummyApp{},
+		Modules: []interface{}{
+			struct{}{},
+			struct{}{},
+			struct{}{},
+		},
+	}
+	require.Equal(t, 4, len(ctx.AllModule()))
+	require.Equal(t, ctx.AppModule, ctx.AllModule()[0])
+	for i, module := range ctx.Modules {
+		require.Equal(t, module, ctx.AllModule()[i+1])
+	}
 
-type dummyApp struct {
-}
-
-func (dummyApp) Run() (runFn interface{}) {
-	return
 }
 
 func TestContext_Validate(t *testing.T) {
@@ -48,4 +55,14 @@ func TestContext_Validate(t *testing.T) {
 			require.EqualError(t, err, tt.errMsg)
 		}
 	}
+}
+
+type invalidDummyApp struct {
+}
+
+type dummyApp struct {
+}
+
+func (dummyApp) Run() (runFn interface{}) {
+	return
 }
