@@ -74,44 +74,84 @@ func (r *Releaser) Distribution() (binaries []string, err error) {
 	return
 }
 
-// GithubRelease for github release
-func GithubRelease(binaries, changeLogs []string, rel typictx.Release, alpha bool) (err error) {
-	if rel.Github == nil {
-		return
+// ReleaseToGithub to release to Github
+func (r *Releaser) ReleaseToGithub(binaries, changeLogs []string) (err error) {
+	if r.Github == nil {
+		return errors.New("Missing Github field")
 	}
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
 		return errors.New("Environment 'GITHUB_TOKEN' is missing")
 	}
-	owner := rel.Github.Owner
-	repo := rel.Github.RepoName
+	owner := r.Github.Owner
+	repo := r.Github.RepoName
 	ctx0 := context.Background()
 	client := github.NewClient(oauth2.NewClient(ctx0, oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})))
-	releaser := githubReleaser{rel, alpha}
-	if releaser.IsReleased(ctx0, client.Repositories) {
-		log.Infof("Release for %s/%s (%s) already exist", owner, repo, rel.ReleaseTag(alpha))
-		return
+	if r.isGithubReleased(ctx0, client.Repositories) {
+		msg := fmt.Sprintf("Release for %s/%s (%s) already exist", owner, repo, r.ReleaseTag(r.Alpha))
+		log.Info(msg)
+		return errors.New(msg)
 	}
 	log.Info("Generate release note")
-	var releaseNote strings.Builder
+	var rn strings.Builder
 	for _, changelog := range changeLogs {
 		if !ignoring(changelog) {
-			releaseNote.WriteString(changelog)
-			releaseNote.WriteString("\n")
+			rn.WriteString(changelog)
+			rn.WriteString("\n")
 		}
 	}
 	log.Infof("Create github release for %s/%s", owner, repo)
 	var release *github.RepositoryRelease
-	release, err = releaser.CreateRelease(ctx0, client.Repositories, releaseNote.String())
-	if err != nil {
+	if release, err = r.createGithubRelease(ctx0, client.Repositories, rn.String()); err != nil {
 		return
 	}
 	for _, binary := range binaries {
 		log.Infof("Upload asset: %s", binary)
-		err = releaser.Upload(ctx0, client.Repositories, *release.ID, binary)
-		if err != nil {
+		if err = r.uploadToGithub(ctx0, client.Repositories, *release.ID, binary); err != nil {
 			return
 		}
 	}
+	return
+}
+
+func (r *Releaser) isGithubReleased(ctx context.Context, service *github.RepositoriesService) bool {
+	owner := r.Release.Github.Owner
+	repo := r.Release.Github.RepoName
+	tag := r.ReleaseTag(r.Alpha)
+	_, _, err := service.GetReleaseByTag(ctx, owner, repo, tag)
+	return err == nil
+}
+
+func (r *Releaser) createGithubRelease(ctx context.Context, service *github.RepositoriesService, releaseNote string) (release *github.RepositoryRelease, err error) {
+	releaseTag := r.ReleaseTag(r.Alpha)
+	release, _, err = service.CreateRelease(ctx,
+		r.Release.Github.Owner,
+		r.Release.Github.RepoName,
+		&github.RepositoryRelease{
+			Name:       github.String(fmt.Sprintf("%s - %s", r.ReleaseName(), releaseTag)),
+			TagName:    github.String(releaseTag),
+			Body:       github.String(releaseNote),
+			Draft:      github.Bool(false),
+			Prerelease: github.Bool(r.Alpha),
+		},
+	)
+	return
+}
+
+func (r *Releaser) uploadToGithub(ctx context.Context, service *github.RepositoriesService, repoID int64, binary string) (err error) {
+	binaryPath := fmt.Sprintf("%s/%s", typienv.Release, binary)
+	var file *os.File
+	if file, err = os.Open(binaryPath); err != nil {
+		return
+	}
+	_, _, err = service.UploadReleaseAsset(ctx,
+		r.Release.Github.Owner,
+		r.Release.Github.RepoName,
+		repoID,
+		&github.UploadOptions{
+			Name: binary,
+		},
+		file,
+	)
 	return
 }
