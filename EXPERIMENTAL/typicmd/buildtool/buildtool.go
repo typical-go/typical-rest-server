@@ -167,13 +167,19 @@ func (t buildtool) releaseDistribution(ctx *cli.Context) (err error) {
 			return
 		}
 	}
-	force := ctx.Bool("force")
-	alpha := ctx.Bool("alpha")
-	if binaries, changeLogs, err = releaser.ReleaseDistribution(t.Release, force, alpha); err != nil {
+	rel := releaser.Releaser{
+		Release: t.Release,
+		Force:   ctx.Bool("force"),
+		Alpha:   ctx.Bool("alpha"),
+	}
+	if changeLogs, err = rel.Git(); err != nil {
+		return
+	}
+	if binaries, err = rel.Distribution(); err != nil {
 		return
 	}
 	if !ctx.Bool("no-github") {
-		releaser.GithubRelease(binaries, changeLogs, t.Release, alpha)
+		releaser.GithubRelease(binaries, changeLogs, t.Release, rel.Alpha)
 	}
 	return
 }
