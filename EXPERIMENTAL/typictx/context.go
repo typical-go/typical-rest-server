@@ -1,6 +1,8 @@
 package typictx
 
 import (
+	"fmt"
+
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/collection"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
 )
@@ -19,7 +21,7 @@ type Context struct {
 }
 
 // Validate context
-func (c *Context) Validate() error {
+func (c *Context) Validate() (err error) {
 	if c.Name == "" {
 		return invalidContextError("Name can't not empty")
 	}
@@ -28,6 +30,9 @@ func (c *Context) Validate() error {
 	}
 	if _, ok := c.AppModule.(typiobj.Runner); !ok {
 		return invalidContextError("Application must implement Runner")
+	}
+	if err = c.Release.Validate(); err != nil {
+		return fmt.Errorf("Release: %s", err.Error())
 	}
 	return nil
 }

@@ -1,6 +1,8 @@
 package typictx
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -27,6 +29,19 @@ type Github struct {
 type Tagging struct {
 	WithGitBranch       bool
 	WithLatestGitCommit bool
+}
+
+// Validate the release
+func (r *Release) Validate() (err error) {
+	if len(r.Targets) < 1 {
+		return errors.New("Missing 'Targets'")
+	}
+	for _, target := range r.Targets {
+		if !strings.Contains(target, "/") {
+			return fmt.Errorf("Missing '/' in target '%s'", target)
+		}
+	}
+	return
 }
 
 // ReleaseTag to get release tag

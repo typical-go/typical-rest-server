@@ -27,12 +27,6 @@ type Releaser struct {
 
 // Git release and return change logs
 func (r *Releaser) Git() (changeLogs []string, err error) {
-	if len(r.Targets) < 0 {
-		msg := "Missing 'Targets' in Typical Context; The format should be '$GOOS/$GOARCH'"
-		log.Error(msg)
-		err = errors.New(msg)
-		return
-	}
 	git.Fetch()
 	defer git.Fetch()
 	status := git.Status()
