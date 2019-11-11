@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -154,4 +155,43 @@ func (r *Releaser) uploadToGithub(ctx context.Context, service *github.Repositor
 		file,
 	)
 	return
+}
+
+// ReleaseTag to get release tag
+func (r *Releaser) ReleaseTag(alpha bool) string {
+	var builder strings.Builder
+	builder.WriteString("v")
+	builder.WriteString(r.Version)
+	if alpha {
+		builder.WriteString("-alpha")
+	}
+	if r.WithGitBranch {
+		builder.WriteString("_")
+		builder.WriteString(git.Branch())
+	}
+	if r.WithLatestGitCommit {
+		builder.WriteString("_")
+		builder.WriteString(git.LatestCommit())
+	}
+	return builder.String()
+}
+
+// ReleaseName to get release name
+func (r *Releaser) ReleaseName() string {
+	name := r.Name
+	if name == "" {
+		dir, _ := os.Getwd()
+		name = filepath.Base(dir)
+	}
+	return name
+}
+
+// ReleaseBinary to get release binary
+func (r *Releaser) ReleaseBinary(os1, arch string, alpha bool) string {
+	return strings.Join([]string{
+		r.ReleaseName(),
+		r.ReleaseTag(alpha),
+		os1,
+		arch,
+	}, "_")
 }
