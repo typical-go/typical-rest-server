@@ -4,6 +4,7 @@ import (
 	"os"
 )
 
+// TODO: create struct for envkey and default value
 const (
 	envApp        = "TYPICAL_APP"
 	envBin        = "TYPICAL_BIN"
