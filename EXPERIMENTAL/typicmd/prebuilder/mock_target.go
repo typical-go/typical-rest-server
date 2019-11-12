@@ -2,9 +2,9 @@ package prebuilder
 
 import (
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/bash"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/debugkit"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/prebuilder/golang"
 	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typienv"
-	"github.com/typical-go/typical-rest-server/pkg/utility/debugkit"
 )
 
 type mockTarget struct {
