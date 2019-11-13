@@ -1,4 +1,4 @@
-package envkit
+package envfile
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 
 const configKey = "CONFIG"
 
-// LoadEnvFile to load environment from .env file
-func LoadEnvFile() (err error) {
+// Load to load environment from .env file
+func Load() (err error) {
 	configSource := os.Getenv(configKey)
 	var configs []string
 	var envMap map[string]string
