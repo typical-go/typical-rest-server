@@ -22,7 +22,7 @@ var Context = &typictx.Context{
 		typredis.Module(),
 	},
 	Release: typictx.Release{
-		Version: "0.8.4",
+		Version: "0.8.5",
 		Targets: []string{"linux/amd64", "darwin/amd64"},
 		Github: &typictx.Github{
 			Owner:    "typical-go",
