@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-go/pkg/typicli"
+	"github.com/typical-go/typical-go/pkg/typiobj"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-go/pkg/typiobj"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"

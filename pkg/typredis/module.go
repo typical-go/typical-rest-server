@@ -9,8 +9,8 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-go/pkg/typicli"
+	"github.com/typical-go/typical-go/pkg/typiobj"
 	"github.com/urfave/cli"
 )
 

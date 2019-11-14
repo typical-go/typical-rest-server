@@ -6,7 +6,7 @@ import (
 	"os/exec"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typictx"
+	"github.com/typical-go/typical-go/pkg/typictx"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 )

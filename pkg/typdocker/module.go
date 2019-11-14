@@ -1,7 +1,7 @@
 package typdocker
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
+	"github.com/typical-go/typical-go/pkg/typicli"
 	"github.com/urfave/cli"
 )
 

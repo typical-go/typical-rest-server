@@ -13,8 +13,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicli"
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typiobj"
+	"github.com/typical-go/typical-go/pkg/typicli"
+	"github.com/typical-go/typical-go/pkg/typiobj"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )

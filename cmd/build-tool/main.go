@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typicmd/buildtool"
+	"github.com/typical-go/typical-go/pkg/typicmd/buildtool"
 	_ "github.com/typical-go/typical-rest-server/cmd/internal/dependency"
 	"github.com/typical-go/typical-rest-server/typical"
 )
