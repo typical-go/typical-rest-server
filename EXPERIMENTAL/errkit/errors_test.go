@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/utility/errkit"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/errkit"
 )
 
 func TestErrors(t *testing.T) {
