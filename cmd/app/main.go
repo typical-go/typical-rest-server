@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typicmd/application"
-	_ "github.com/typical-go/typical-rest-server/cmd/internal/dependency"
+	_ "github.com/typical-go/typical-rest-server/internal/dependency"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 

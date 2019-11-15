@@ -9,11 +9,11 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
 
-// Context instance of Context
+// Context of project
 var Context = &typictx.Context{
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Root:        "github.com/typical-go/typical-rest-server",
+	Package:     "github.com/typical-go/typical-rest-server",
 	AppModule:   app.Module(),
 	Modules: []interface{}{
 		typdocker.Module(),

@@ -8,7 +8,7 @@ PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
 METADATA=${TYPICAL_METADATA:-.typical-metadata}
 
 mkdir -p $METADATA
-mkdir -p $CMD/internal/dependency
+mkdir -p internal/dependency
 
 CHECKSUM_PATH="$METADATA/checksum "
 CHECKSUM_DATA=$(cksum typical/context.go)

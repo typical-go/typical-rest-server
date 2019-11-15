@@ -14,7 +14,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-go/pkg/typicli"
-	"github.com/typical-go/typical-go/pkg/typiobj"
+	"github.com/typical-go/typical-go/pkg/typimodule"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )
@@ -37,7 +37,7 @@ type Config struct {
 func Module() interface{} {
 	return &postgresModule{
 		Name: "Postgres",
-		Configuration: typiobj.Configuration{
+		Configuration: typimodule.Configuration{
 			Prefix: "PG",
 			Spec:   &Config{},
 		},
@@ -45,7 +45,7 @@ func Module() interface{} {
 }
 
 type postgresModule struct {
-	typiobj.Configuration
+	typimodule.Configuration
 	Name string
 }
 

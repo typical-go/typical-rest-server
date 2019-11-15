@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/typical-go/typical-go/pkg/typicli"
-	"github.com/typical-go/typical-go/pkg/typiobj"
+	"github.com/typical-go/typical-go/pkg/typimodule"
 	"github.com/urfave/cli"
 )
 
@@ -33,7 +33,7 @@ type Config struct {
 func Module() interface{} {
 	return &redisModule{
 		Name: "Redis",
-		Configuration: typiobj.Configuration{
+		Configuration: typimodule.Configuration{
 			Prefix: "REDIS",
 			Spec:   &Config{},
 		},
@@ -41,7 +41,7 @@ func Module() interface{} {
 }
 
 type redisModule struct {
-	typiobj.Configuration
+	typimodule.Configuration
 	Name string
 }
 

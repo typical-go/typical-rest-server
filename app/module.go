@@ -2,15 +2,16 @@ package app
 
 import (
 	"github.com/typical-go/typical-go/pkg/typicli"
-	"github.com/typical-go/typical-go/pkg/typiobj"
+	"github.com/typical-go/typical-go/pkg/typictx"
+	"github.com/typical-go/typical-go/pkg/typimodule"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 )
 
 // Module of application
-func Module() interface{} {
+func Module() typictx.AppModule {
 	return applicationModule{
-		Configuration: typiobj.Configuration{
+		Configuration: typimodule.Configuration{
 			Prefix: "APP",
 			Spec:   &config.Config{},
 		},
@@ -18,7 +19,7 @@ func Module() interface{} {
 }
 
 type applicationModule struct {
-	typiobj.Configuration
+	typimodule.Configuration
 }
 
 func (m applicationModule) AppCommands(c *typicli.ContextCli) []cli.Command {
