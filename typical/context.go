@@ -5,6 +5,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typreadme"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
@@ -33,4 +34,5 @@ var Context = &typictx.Context{
 		// 	WithLatestGitCommit: true,
 		// },
 	},
+	ReadmeGenerator: typreadme.Generator{},
 }
