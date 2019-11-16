@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/typical-go/typical-go/pkg/typicmd/buildtool"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	_ "github.com/typical-go/typical-rest-server/internal/dependency"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
 func main() {
-	buildtool.Run(typical.Context)
+	typbuildtool.Run(typical.Context)
 }

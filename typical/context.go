@@ -1,7 +1,8 @@
 package typical
 
 import (
-	"github.com/typical-go/typical-go/pkg/typictx"
+	"github.com/typical-go/typical-go/pkg/typctx"
+	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
@@ -11,7 +12,7 @@ import (
 )
 
 // Context of project
-var Context = &typictx.Context{
+var Context = &typctx.Context{
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Package:     "github.com/typical-go/typical-rest-server",
@@ -22,14 +23,14 @@ var Context = &typictx.Context{
 		typpostgres.Module(),
 		typredis.Module(),
 	},
-	Release: typictx.Release{
+	Releaser: typrls.Releaser{
 		Version: "0.8.5",
-		Targets: []string{"linux/amd64", "darwin/amd64"},
-		Github: &typictx.Github{
+		Targets: []typrls.ReleaseTarget{"linux/amd64", "darwin/amd64"},
+		Publisher: &typrls.Github{
 			Owner:    "typical-go",
 			RepoName: "typical-rest-server",
 		},
-		// Tagging: typictx.Tagging{
+		// Tagging: typctx.Tagging{
 		// 	WithGitBranch:       true,
 		// 	WithLatestGitCommit: true,
 		// },

@@ -13,8 +13,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typicli"
-	"github.com/typical-go/typical-go/pkg/typimodule"
+	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/typmod"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )
@@ -37,7 +37,7 @@ type Config struct {
 func Module() interface{} {
 	return &postgresModule{
 		Name: "Postgres",
-		Configuration: typimodule.Configuration{
+		Configuration: typmod.Configuration{
 			Prefix: "PG",
 			Spec:   &Config{},
 		},
@@ -45,17 +45,17 @@ func Module() interface{} {
 }
 
 type postgresModule struct {
-	typimodule.Configuration
+	typmod.Configuration
 	Name string
 }
 
 // Command of module
-func (p postgresModule) Command(c *typicli.Cli) cli.Command {
+func (p postgresModule) Command(c *typcli.Cli) cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",
 		Usage:     "Postgres Database Tool",
-		Before:    typicli.LoadEnvFile,
+		Before:    typcli.LoadEnvFile,
 		Subcommands: []cli.Command{
 			{Name: "create", Usage: "Create New Database", Action: c.Action(p.createDB)},
 			{Name: "drop", Usage: "Drop Database", Action: c.Action(p.dropDB)},

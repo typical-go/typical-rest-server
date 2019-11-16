@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/typical-go/typical-go/pkg/typimodule"
+	"github.com/typical-go/typical-go/pkg/typmod"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
@@ -21,7 +21,7 @@ type Config struct {
 func Module() interface{} {
 	return &serverModule{
 		Name: "Server",
-		Configuration: typimodule.Configuration{
+		Configuration: typmod.Configuration{
 			Prefix: "SERVER",
 			Spec:   &Config{},
 		},
@@ -29,7 +29,7 @@ func Module() interface{} {
 }
 
 type serverModule struct {
-	typimodule.Configuration
+	typmod.Configuration
 	Name string
 }
 

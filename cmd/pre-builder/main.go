@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/typical-go/typical-go/pkg/typicmd/prebuilder"
+	"github.com/typical-go/typical-go/pkg/typprebuilder"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
 func main() {
-	prebuilder.Run(typical.Context)
+	typprebuilder.Run(typical.Context)
 }

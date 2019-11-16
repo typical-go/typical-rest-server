@@ -1,17 +1,17 @@
 package app
 
 import (
-	"github.com/typical-go/typical-go/pkg/typicli"
-	"github.com/typical-go/typical-go/pkg/typictx"
-	"github.com/typical-go/typical-go/pkg/typimodule"
+	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/typctx"
+	"github.com/typical-go/typical-go/pkg/typmod"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 )
 
 // Module of application
-func Module() typictx.AppModule {
+func Module() typctx.AppModule {
 	return applicationModule{
-		Configuration: typimodule.Configuration{
+		Configuration: typmod.Configuration{
 			Prefix: "APP",
 			Spec:   &config.Config{},
 		},
@@ -19,10 +19,10 @@ func Module() typictx.AppModule {
 }
 
 type applicationModule struct {
-	typimodule.Configuration
+	typmod.Configuration
 }
 
-func (m applicationModule) AppCommands(c *typicli.ContextCli) []cli.Command {
+func (m applicationModule) AppCommands(c *typcli.ContextCli) []cli.Command {
 	return []cli.Command{
 		{Name: "route", Usage: "Print available API Routes", Action: c.Action(taskRouteList)},
 	}

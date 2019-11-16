@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/typical-go/typical-go/pkg/typicmd/application"
+	"github.com/typical-go/typical-go/pkg/typapp"
 	_ "github.com/typical-go/typical-rest-server/internal/dependency"
 	"github.com/typical-go/typical-rest-server/typical"
 )
 
 func main() {
-	application.Run(typical.Context)
+	typapp.Run(typical.Context)
 }

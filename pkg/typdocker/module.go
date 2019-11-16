@@ -1,7 +1,7 @@
 package typdocker
 
 import (
-	"github.com/typical-go/typical-go/pkg/typicli"
+	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/urfave/cli"
 )
 
@@ -16,14 +16,14 @@ type dockerModule struct {
 	Name string
 }
 
-func (dockerModule) BuildCommand(c *typicli.ContextCli) cli.Command {
+func (dockerModule) BuildCommand(c *typcli.ContextCli) cli.Command {
 	cmd := dockerCommand{
 		Context: c.Context,
 	}
 	return cli.Command{
 		Name:   "docker",
 		Usage:  "Docker utility",
-		Before: typicli.LoadEnvFile,
+		Before: typcli.LoadEnvFile,
 		Subcommands: []cli.Command{
 			{
 				Name:   "compose",

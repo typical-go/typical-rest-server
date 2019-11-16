@@ -6,13 +6,13 @@ import (
 	"os/exec"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typictx"
+	"github.com/typical-go/typical-go/pkg/typctx"
 	"github.com/urfave/cli"
 	"gopkg.in/yaml.v2"
 )
 
 type dockerCommand struct {
-	*typictx.Context
+	*typctx.Context
 }
 
 func (c dockerCommand) Compose(ctx *cli.Context) (err error) {
