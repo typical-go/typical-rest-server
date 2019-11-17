@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/typical-go/typical-go/pkg/typmod"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
@@ -21,7 +21,7 @@ type Config struct {
 func Module() interface{} {
 	return &serverModule{
 		Name: "Server",
-		Configuration: typmod.Configuration{
+		Configuration: typcfg.Configuration{
 			Prefix: "SERVER",
 			Spec:   &Config{},
 		},
@@ -29,7 +29,7 @@ func Module() interface{} {
 }
 
 type serverModule struct {
-	typmod.Configuration
+	typcfg.Configuration
 	Name string
 }
 
@@ -46,14 +46,13 @@ func (s serverModule) Destroy() []interface{} {
 	}
 }
 
-func (s serverModule) loadConfig() (cfg *Config, err error) {
-	err = s.Configuration.Load()
-	cfg = s.Configuration.Spec.(*Config)
+func (s serverModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
+	err = loader.Load(s.Configuration, &cfg)
 	return
 }
 
 // Create new server
-func (s serverModule) Create(cfg *Config) *echo.Echo {
+func (s serverModule) Create(cfg Config) *echo.Echo {
 	server := echo.New()
 	server.HideBanner = true
 	server.Debug = cfg.Debug

@@ -1,6 +1,7 @@
 package typical
 
 import (
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typctx"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/app"
@@ -15,6 +16,7 @@ import (
 var Context = &typctx.Context{
 	Name:        "Typical-RESTful-Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
+	Version:     "0.8.5",
 	Package:     "github.com/typical-go/typical-rest-server",
 	AppModule:   app.Module(),
 	Modules: []interface{}{
@@ -24,16 +26,11 @@ var Context = &typctx.Context{
 		typredis.Module(),
 	},
 	Releaser: typrls.Releaser{
-		Version: "0.8.5",
-		Targets: []typrls.ReleaseTarget{"linux/amd64", "darwin/amd64"},
-		Publisher: &typrls.Github{
-			Owner:    "typical-go",
-			RepoName: "typical-rest-server",
+		Targets: []typrls.Target{"linux/amd64", "darwin/amd64"},
+		Publishers: []typrls.Publisher{
+			&typrls.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
 		},
-		// Tagging: typctx.Tagging{
-		// 	WithGitBranch:       true,
-		// 	WithLatestGitCommit: true,
-		// },
 	},
+	ConfigLoader:    typcfg.DefaultLoader(),
 	ReadmeGenerator: typreadme.Generator{},
 }

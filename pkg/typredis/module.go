@@ -6,11 +6,10 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-
 	"github.com/go-redis/redis"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
-	"github.com/typical-go/typical-go/pkg/typmod"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )
 
@@ -33,7 +32,7 @@ type Config struct {
 func Module() interface{} {
 	return &redisModule{
 		Name: "Redis",
-		Configuration: typmod.Configuration{
+		Configuration: typcfg.Configuration{
 			Prefix: "REDIS",
 			Spec:   &Config{},
 		},
@@ -41,7 +40,7 @@ func Module() interface{} {
 }
 
 type redisModule struct {
-	typmod.Configuration
+	typcfg.Configuration
 	Name string
 }
 
@@ -92,13 +91,12 @@ func (r redisModule) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (r redisModule) loadConfig() (cfg *Config, err error) {
-	err = r.Configuration.Load()
-	cfg = r.Configuration.Spec.(*Config)
+func (r redisModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
+	err = loader.Load(r.Configuration, &cfg)
 	return
 }
 
-func (redisModule) connect(cfg *Config) (client *redis.Client, err error) {
+func (redisModule) connect(cfg Config) (client *redis.Client, err error) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,

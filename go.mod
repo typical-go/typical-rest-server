@@ -22,7 +22,7 @@ require (
 	github.com/onsi/gomega v1.7.1 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.0.0-20191116163726-b30e83e16a4c
+	github.com/typical-go/typical-go v0.0.0-20191117082550-7ab2b3d8bc16
 	github.com/urfave/cli v1.22.1
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	go.uber.org/dig v1.8.0

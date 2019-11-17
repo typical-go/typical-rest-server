@@ -11,7 +11,7 @@ import (
 type params struct {
 	dig.In
 	*echo.Echo
-	*config.Config
+	config.Config
 	controller.BookCntrl
 	controller.AppCntrl
 }

@@ -13,8 +13,8 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
-	"github.com/typical-go/typical-go/pkg/typmod"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli"
 )
@@ -37,7 +37,7 @@ type Config struct {
 func Module() interface{} {
 	return &postgresModule{
 		Name: "Postgres",
-		Configuration: typmod.Configuration{
+		Configuration: typcfg.Configuration{
 			Prefix: "PG",
 			Spec:   &Config{},
 		},
@@ -45,7 +45,7 @@ func Module() interface{} {
 }
 
 type postgresModule struct {
-	typmod.Configuration
+	typcfg.Configuration
 	Name string
 }
 
@@ -109,13 +109,12 @@ func (p postgresModule) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (p postgresModule) loadConfig() (cfg *Config, err error) {
-	err = p.Configuration.Load()
-	cfg = p.Configuration.Spec.(*Config)
+func (p postgresModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
+	err = loader.Load(p.Configuration, &cfg)
 	return
 }
 
-func (p postgresModule) openConnection(cfg *Config) (db *sql.DB, err error) {
+func (p postgresModule) openConnection(cfg Config) (db *sql.DB, err error) {
 	log.Info("Open postgres connection")
 	if db, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
@@ -129,7 +128,7 @@ func (postgresModule) closeConnection(db *sql.DB) error {
 	return db.Close()
 }
 
-func (p postgresModule) createDB(cfg *Config) (err error) {
+func (p postgresModule) createDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -141,7 +140,7 @@ func (p postgresModule) createDB(cfg *Config) (err error) {
 	return
 }
 
-func (p postgresModule) dropDB(cfg *Config) (err error) {
+func (p postgresModule) dropDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -153,7 +152,7 @@ func (p postgresModule) dropDB(cfg *Config) (err error) {
 	return
 }
 
-func (p postgresModule) migrateDB(cfg *Config) (err error) {
+func (p postgresModule) migrateDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -164,7 +163,7 @@ func (p postgresModule) migrateDB(cfg *Config) (err error) {
 	return migration.Up()
 }
 
-func (p postgresModule) rollbackDB(cfg *Config) (err error) {
+func (p postgresModule) rollbackDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -175,7 +174,7 @@ func (p postgresModule) rollbackDB(cfg *Config) (err error) {
 	return migration.Down()
 }
 
-func (p postgresModule) seedDB(cfg *Config) (err error) {
+func (p postgresModule) seedDB(cfg Config) (err error) {
 	conn, err := sql.Open("postgres", p.dataSource(cfg))
 	if err != nil {
 		return
@@ -196,7 +195,7 @@ func (p postgresModule) seedDB(cfg *Config) (err error) {
 	return
 }
 
-func (postgresModule) console(cfg *Config) (err error) {
+func (postgresModule) console(cfg Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -206,12 +205,12 @@ func (postgresModule) console(cfg *Config) (err error) {
 	return cmd.Run()
 }
 
-func (postgresModule) dataSource(c *Config) string {
+func (postgresModule) dataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (postgresModule) adminDataSource(c *Config) string {
+func (postgresModule) adminDataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

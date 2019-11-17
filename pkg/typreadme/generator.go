@@ -6,6 +6,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typctx"
 
 	"github.com/typical-go/typical-go/pkg/typmod"
@@ -61,8 +62,8 @@ func releaseDistribution(md *markdown.Markdown) {
 }
 
 func application(md *markdown.Markdown, app interface{}) {
-	if configurer, ok := app.(typmod.Configurer); ok {
-		configTable(md, configurer.Configure().ConfigFields())
+	if configurer, ok := app.(typcfg.Configurer); ok {
+		configTable(md, configurer.Configure().Fields())
 	}
 }
 
@@ -73,8 +74,8 @@ func module(md *markdown.Markdown, module interface{}) {
 	if description := typmod.Description(module); description != "" {
 		md.Writeln(description)
 	}
-	if configurer, ok := module.(typmod.Configurer); ok {
-		configTable(md, configurer.Configure().ConfigFields())
+	if configurer, ok := module.(typcfg.Configurer); ok {
+		configTable(md, configurer.Configure().Fields())
 	}
 	cmd := typbuildtool.Command(nil, module)
 	if cmd != nil && len(cmd.Subcommands) > 0 {
@@ -88,7 +89,7 @@ func module(md *markdown.Markdown, module interface{}) {
 	}
 }
 
-func configTable(md *markdown.Markdown, fields []typmod.ConfigField) {
+func configTable(md *markdown.Markdown, fields []typcfg.Field) {
 	md.WriteString("| Name | Type | Default | Required |\n")
 	md.WriteString("|---|---|---|:---:|\n")
 	for _, field := range fields {

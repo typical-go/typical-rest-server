@@ -1,9 +1,9 @@
 package app
 
 import (
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-go/pkg/typctx"
-	"github.com/typical-go/typical-go/pkg/typmod"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 )
@@ -11,7 +11,7 @@ import (
 // Module of application
 func Module() typctx.AppModule {
 	return applicationModule{
-		Configuration: typmod.Configuration{
+		Configuration: typcfg.Configuration{
 			Prefix: "APP",
 			Spec:   &config.Config{},
 		},
@@ -19,7 +19,7 @@ func Module() typctx.AppModule {
 }
 
 type applicationModule struct {
-	typmod.Configuration
+	typcfg.Configuration
 }
 
 func (m applicationModule) AppCommands(c *typcli.ContextCli) []cli.Command {
@@ -45,8 +45,7 @@ func (m applicationModule) Provide() []interface{} {
 	}
 }
 
-func (m applicationModule) loadConfig() (cfg *config.Config, err error) {
-	err = m.Configuration.Load()
-	cfg = m.Configuration.Spec.(*config.Config)
+func (m applicationModule) loadConfig(loader typcfg.Loader) (cfg config.Config, err error) {
+	err = loader.Load(m.Configuration, &cfg)
 	return
 }

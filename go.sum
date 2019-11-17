@@ -126,6 +126,14 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/typical-go/typical-go v0.0.0-20191116163726-b30e83e16a4c h1:9lnrmxblk7Af+53GJU95Swd80LeCl6fq/anG9j+oPMk=
 github.com/typical-go/typical-go v0.0.0-20191116163726-b30e83e16a4c/go.mod h1:iyDcdr29NnPT666B5EpTzmMsAnyoqWeGsOHUBLunHeU=
+github.com/typical-go/typical-go v0.0.0-20191117075359-8c1d153f27af h1:eeFdQUfYeYLtd6s1CpG7++fkDpRxHktRmN8J9r2kxUE=
+github.com/typical-go/typical-go v0.0.0-20191117075359-8c1d153f27af/go.mod h1:iyDcdr29NnPT666B5EpTzmMsAnyoqWeGsOHUBLunHeU=
+github.com/typical-go/typical-go v0.0.0-20191117080901-8705ebb652ea h1:8Kw5Ij0aJ1OstxGuqKb7KNw4K5CfWbku0SW6ZBSVQXY=
+github.com/typical-go/typical-go v0.0.0-20191117080901-8705ebb652ea/go.mod h1:iyDcdr29NnPT666B5EpTzmMsAnyoqWeGsOHUBLunHeU=
+github.com/typical-go/typical-go v0.0.0-20191117082340-b85eb46d8b4f h1:4qAzF6b0I6BsIdgpaQyOMbmilChTbpmfmyWjvbVG7ow=
+github.com/typical-go/typical-go v0.0.0-20191117082340-b85eb46d8b4f/go.mod h1:iyDcdr29NnPT666B5EpTzmMsAnyoqWeGsOHUBLunHeU=
+github.com/typical-go/typical-go v0.0.0-20191117082550-7ab2b3d8bc16 h1:ig3I3TRZK+TANUSYRBW/QOSKRl7rWAmrkqgQkKYVq28=
+github.com/typical-go/typical-go v0.0.0-20191117082550-7ab2b3d8bc16/go.mod h1:iyDcdr29NnPT666B5EpTzmMsAnyoqWeGsOHUBLunHeU=
 github.com/typical-go/typical-rest-server v0.8.5/go.mod h1:n+0dw5uCiyVYHJJ+VcE8GSMe8ZCBrseMkQtG5EwrsJA=
 github.com/urfave/cli v1.21.0/go.mod h1:lxDj6qX9Q6lWQxIrbrT0nwecwUtRnhVZAJjJZrVUZZQ=
 github.com/urfave/cli v1.22.1 h1:+mkCCcOFKPnCmVYVcURKps1Xe+3zP90gSYGNfRkjoIY=
