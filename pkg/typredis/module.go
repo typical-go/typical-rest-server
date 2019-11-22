@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/go-redis/redis"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
@@ -64,6 +66,13 @@ func (r redisModule) Provide() []interface{} {
 	}
 }
 
+// Prepare the module
+func (r redisModule) Prepare() []interface{} {
+	return []interface{}{
+		r.ping,
+	}
+}
+
 // Destroy dependencies
 func (r redisModule) Destroy() []interface{} {
 	return []interface{}{
@@ -96,7 +105,7 @@ func (r redisModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
 	return
 }
 
-func (redisModule) connect(cfg Config) (client *redis.Client, err error) {
+func (redisModule) connect(cfg Config) (client *redis.Client) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -109,12 +118,15 @@ func (redisModule) connect(cfg Config) (client *redis.Client, err error) {
 		IdleCheckFrequency: cfg.IdleCheckFrequency,
 		MaxConnAge:         cfg.MaxConnAge,
 	})
-	err = client.Ping().Err()
 	return
 }
 
+func (redisModule) ping(client *redis.Client) error {
+	log.Info("Ping to Redis")
+	return client.Ping().Err()
+}
+
 func (redisModule) disconnect(client *redis.Client) (err error) {
-	fmt.Println("Redis Client close")
 	return client.Close()
 }
 
