@@ -71,7 +71,13 @@ func (p postgresModule) Command(c *typcli.Cli) cli.Command {
 func (p postgresModule) Provide() []interface{} {
 	return []interface{}{
 		p.loadConfig,
-		p.openConnection,
+		p.open,
+	}
+}
+
+func (p postgresModule) Prepare() []interface{} {
+	return []interface{}{
+		p.ping,
 	}
 }
 
@@ -114,17 +120,16 @@ func (p postgresModule) loadConfig(loader typcfg.Loader) (cfg Config, err error)
 	return
 }
 
-func (p postgresModule) openConnection(cfg Config) (db *sql.DB, err error) {
-	log.Info("Open postgres connection")
-	if db, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
-		return
-	}
-	err = db.Ping()
-	return
+func (p postgresModule) open(cfg Config) (*sql.DB, error) {
+	return sql.Open("postgres", p.dataSource(cfg))
+}
+
+func (p postgresModule) ping(db *sql.DB) error {
+	log.Info("Ping to Postgres")
+	return db.Ping()
 }
 
 func (postgresModule) closeConnection(db *sql.DB) error {
-	fmt.Println("Close postgres connection")
 	return db.Close()
 }
 
@@ -175,8 +180,8 @@ func (p postgresModule) rollbackDB(cfg Config) (err error) {
 }
 
 func (p postgresModule) seedDB(cfg Config) (err error) {
-	conn, err := sql.Open("postgres", p.dataSource(cfg))
-	if err != nil {
+	var conn *sql.DB
+	if conn, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
 	}
 	defer conn.Close()
