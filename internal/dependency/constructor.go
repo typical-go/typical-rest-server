@@ -7,6 +7,6 @@ import "github.com/typical-go/typical-rest-server/app/service"
 import "github.com/typical-go/typical-rest-server/typical"
 
 func init() {
-	typical.Context.Constructors.Add(repository.NewBookRepo)
-	typical.Context.Constructors.Add(service.NewBookService)
+	typical.Context.Constructors.Append(repository.NewBookRepo)
+	typical.Context.Constructors.Append(service.NewBookService)
 }

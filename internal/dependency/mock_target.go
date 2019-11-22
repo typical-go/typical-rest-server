@@ -5,6 +5,6 @@ package dependency
 import "github.com/typical-go/typical-rest-server/typical"
 
 func init() {
-	typical.Context.MockTargets.Add("app/repository/book_repo.go")
-	typical.Context.MockTargets.Add("app/service/book_service.go")
+	typical.Context.MockTargets.Append("app/repository/book_repo.go")
+	typical.Context.MockTargets.Append("app/service/book_service.go")
 }

@@ -3,13 +3,12 @@ package app
 import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
-	"github.com/typical-go/typical-go/pkg/typctx"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli"
 )
 
 // Module of application
-func Module() typctx.AppModule {
+func Module() interface{} {
 	return applicationModule{
 		Configuration: typcfg.Configuration{
 			Prefix: "APP",

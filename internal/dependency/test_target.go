@@ -5,9 +5,9 @@ package dependency
 import "github.com/typical-go/typical-rest-server/typical"
 
 func init() {
-	typical.Context.TestTargets.Add("./app")
-	typical.Context.TestTargets.Add("./app/config")
-	typical.Context.TestTargets.Add("./app/controller")
-	typical.Context.TestTargets.Add("./app/repository")
-	typical.Context.TestTargets.Add("./app/service")
+	typical.Context.TestTargets.Append("./app")
+	typical.Context.TestTargets.Append("./app/config")
+	typical.Context.TestTargets.Append("./app/controller")
+	typical.Context.TestTargets.Append("./app/repository")
+	typical.Context.TestTargets.Append("./app/service")
 }

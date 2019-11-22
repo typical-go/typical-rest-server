@@ -9,7 +9,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typctx"
 
-	"github.com/typical-go/typical-go/pkg/typmod"
+	"github.com/typical-go/typical-go/pkg/typmodule"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 )
 
@@ -68,10 +68,10 @@ func application(md *markdown.Markdown, app interface{}) {
 }
 
 func module(md *markdown.Markdown, module interface{}) {
-	if name := typmod.Name(module); name != "" {
+	if name := typmodule.Name(module); name != "" {
 		md.H3(strcase.ToCamel(name))
 	}
-	if description := typmod.Description(module); description != "" {
+	if description := typmodule.Description(module); description != "" {
 		md.Writeln(description)
 	}
 	if configurer, ok := module.(typcfg.Configurer); ok {
