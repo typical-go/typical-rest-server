@@ -34,7 +34,7 @@ func (m applicationModule) Prepare() []interface{} {
 	}
 }
 
-func (m applicationModule) Run() interface{} {
+func (m applicationModule) Action() interface{} {
 	return Start
 }
 
