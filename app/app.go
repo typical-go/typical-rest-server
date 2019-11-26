@@ -1,33 +1,43 @@
 package app
 
 import (
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-rest-server/app/config"
-	"github.com/typical-go/typical-rest-server/app/controller"
-	"go.uber.org/dig"
+	"github.com/urfave/cli"
 )
 
-type params struct {
-	dig.In
-	*echo.Echo
-	config.Config
-	controller.BookCntrl
-	controller.AppCntrl
+// Module of application
+func Module() interface{} {
+	return module{
+		Configuration: typcfg.Configuration{
+			Prefix: "APP",
+			Spec:   &config.Config{},
+		},
+	}
 }
 
-// Routes of API
-func Routes(p params) {
-	p.AppCntrl.Route(p.Echo)
-	p.BookCntrl.Route(p.Echo)
+type module struct {
+	typcfg.Configuration
 }
 
-// Middlewares for the service
-func Middlewares(p params) {
-	p.Echo.Use(middleware.Recover())
+func (m module) Action() interface{} {
+	return startServer
 }
 
-// Start the service
-func Start(p params) error {
-	return p.Echo.Start(p.Config.Address)
+func (m module) Provide() []interface{} {
+	return []interface{}{
+		m.loadConfig,
+	}
+}
+
+func (m module) loadConfig(loader typcfg.Loader) (cfg config.Config, err error) {
+	err = loader.Load(m.Configuration, &cfg)
+	return
+}
+
+func (m module) AppCommands(c *typcli.ContextCli) []cli.Command {
+	return []cli.Command{
+		{Name: "route", Usage: "Print available API Routes", Action: c.Action(taskRouteList)},
+	}
 }
