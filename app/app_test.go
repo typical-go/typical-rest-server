@@ -13,7 +13,6 @@ import (
 func TestModule(t *testing.T) {
 	m := app.Module()
 	require.True(t, typmodule.IsProvider(m))
-	require.True(t, typmodule.IsPreparer(m))
 	require.True(t, typcfg.IsConfigurer(m))
 	require.True(t, typcli.IsAppCommander(m))
 }
