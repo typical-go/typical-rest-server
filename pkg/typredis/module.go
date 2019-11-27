@@ -47,7 +47,7 @@ type redisModule struct {
 }
 
 // BuildCommand of module
-func (r redisModule) Command(c *typcli.Cli) cli.Command {
+func (r redisModule) Command(c typcli.Cli) cli.Command {
 	return cli.Command{
 		Name:   "redis",
 		Usage:  "Redis Tool",

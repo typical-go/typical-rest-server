@@ -50,7 +50,7 @@ type postgresModule struct {
 }
 
 // Command of module
-func (p postgresModule) Command(c *typcli.Cli) cli.Command {
+func (p postgresModule) Command(c typcli.Cli) cli.Command {
 	return cli.Command{
 		Name:      "postgres",
 		ShortName: "pg",

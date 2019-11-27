@@ -16,9 +16,9 @@ type dockerModule struct {
 	Name string
 }
 
-func (dockerModule) BuildCommand(c *typcli.ContextCli) cli.Command {
+func (dockerModule) BuildCommand(c typcli.Cli) cli.Command {
 	cmd := dockerCommand{
-		Context: c.Context,
+		Context: c.(*typcli.ContextCli).Context,
 	}
 	return cli.Command{
 		Name:   "docker",
