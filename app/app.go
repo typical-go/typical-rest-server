@@ -27,13 +27,11 @@ func (m module) Action() interface{} {
 
 func (m module) Provide() []interface{} {
 	return []interface{}{
-		m.loadConfig,
+		func(loader typcfg.Loader) (cfg config.Config, err error) {
+			err = loader.Load(m.Configuration, &cfg)
+			return
+		},
 	}
-}
-
-func (m module) loadConfig(loader typcfg.Loader) (cfg config.Config, err error) {
-	err = loader.Load(m.Configuration, &cfg)
-	return
 }
 
 func (m module) AppCommands(c *typcli.ContextCli) []cli.Command {

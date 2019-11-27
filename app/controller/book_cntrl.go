@@ -31,41 +31,39 @@ func (c *BookCntrl) Route(e *echo.Echo) {
 // Create book
 func (c *BookCntrl) Create(ctx echo.Context) (err error) {
 	var book repository.Book
-	err = ctx.Bind(&book)
-	if err != nil {
+	var lastInsertID int64
+	ctx0 := ctx.Request().Context()
+	if err = ctx.Bind(&book); err != nil {
 		return err
 	}
-	err = validator.New().Struct(book)
-	if err != nil {
+	if err = validator.New().Struct(book); err != nil {
 		return responsekit.InvalidRequest(ctx, err)
 	}
-	ctx0 := ctx.Request().Context()
-	result, err := c.BookService.Insert(ctx0, book)
-	if err != nil {
+	if lastInsertID, err = c.BookService.Insert(ctx0, book); err != nil {
 		return err
 	}
-	return responsekit.InsertSuccess(ctx, result)
+	return responsekit.InsertSuccess(ctx, lastInsertID)
 }
 
 // List of book
-func (c *BookCntrl) List(ctx echo.Context) error {
+func (c *BookCntrl) List(ctx echo.Context) (err error) {
+	var books []*repository.Book
 	ctx0 := ctx.Request().Context()
-	books, err := c.BookService.List(ctx0)
-	if err != nil {
+	if books, err = c.BookService.List(ctx0); err != nil {
 		return err
 	}
 	return ctx.JSON(http.StatusOK, books)
 }
 
 // Get book
-func (c *BookCntrl) Get(ctx echo.Context) error {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
+func (c *BookCntrl) Get(ctx echo.Context) (err error) {
+	var id int64
+	var book *repository.Book
+	ctx0 := ctx.Request().Context()
+	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
 		return responsekit.InvalidID(ctx, err)
 	}
-	ctx0 := ctx.Request().Context()
-	book, err := c.BookService.Find(ctx0, id)
-	if err != nil {
+	if book, err = c.BookService.Find(ctx0, id); err != nil {
 		return err
 	}
 	if book == nil {
@@ -75,14 +73,13 @@ func (c *BookCntrl) Get(ctx echo.Context) error {
 }
 
 // Delete book
-func (c *BookCntrl) Delete(ctx echo.Context) error {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
+func (c *BookCntrl) Delete(ctx echo.Context) (err error) {
+	var id int64
+	ctx0 := ctx.Request().Context()
+	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
 		return responsekit.InvalidID(ctx, err)
 	}
-	ctx0 := ctx.Request().Context()
-	err = c.BookService.Delete(ctx0, id)
-	if err != nil {
+	if err = c.BookService.Delete(ctx0, id); err != nil {
 		return err
 	}
 	return responsekit.DeleteSuccess(ctx, id)
@@ -91,20 +88,17 @@ func (c *BookCntrl) Delete(ctx echo.Context) error {
 // Update book
 func (c *BookCntrl) Update(ctx echo.Context) (err error) {
 	var book repository.Book
-	err = ctx.Bind(&book)
-	if err != nil {
+	ctx0 := ctx.Request().Context()
+	if err = ctx.Bind(&book); err != nil {
 		return err
 	}
 	if book.ID <= 0 {
 		return responsekit.InvalidID(ctx, err)
 	}
-	err = validator.New().Struct(book)
-	if err != nil {
+	if err = validator.New().Struct(book); err != nil {
 		return responsekit.InvalidRequest(ctx, err)
 	}
-	ctx0 := ctx.Request().Context()
-	err = c.BookService.Update(ctx0, book)
-	if err != nil {
+	if err = c.BookService.Update(ctx0, book); err != nil {
 		return err
 	}
 	return responsekit.UpdateSuccess(ctx, book.ID)

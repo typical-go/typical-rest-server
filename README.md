@@ -49,35 +49,3 @@ Commands:
 |PG_HOST|string|localhost||
 |PG_PORT|int|5432||
 
-Commands:
-- `./typicalw postgres create`: Create New Database
-- `./typicalw postgres drop`: Drop Database
-- `./typicalw postgres migrate`: Migrate Database
-- `./typicalw postgres rollback`: Rollback Database
-- `./typicalw postgres seed`: Database Seeding
-- `./typicalw postgres console`: PostgreSQL Interactive
-
-### Redis
-
-| Name | Type | Default | Required |
-|---|---|---|:---:|
-|REDIS_HOST|string|localhost|Yes|
-|REDIS_PORT|string|6379|Yes|
-|REDIS_PASSWORD|string|redispass||
-|REDIS_DB|int|0||
-|REDIS_POOL_SIZE|int|20|Yes|
-|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
-|REDIS_READ_WRITE_TIMEOUT|Duration|3s|Yes|
-|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
-|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
-|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
-
-Commands:
-- `./typicalw redis console`: Redis Interactive
-
-## Release Distribution
-
-Use `./typicalw release` to make the release. You can find the binary at `release` folder.
-
-Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)
-

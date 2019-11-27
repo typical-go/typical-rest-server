@@ -17,12 +17,12 @@ type BookRepoImpl struct {
 
 // Find book
 func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
+	var rows *sql.Rows
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
 		Where(sq.Eq{"id": id})
-	rows, err := builder.RunWith(r.DB).QueryContext(ctx)
-	if err != nil {
+	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
 		return
 	}
 	if rows.Next() {
@@ -33,18 +33,17 @@ func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err erro
 
 // List book
 func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
+	var rows *sql.Rows
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
 		From("books")
-	rows, err := builder.RunWith(r.DB).QueryContext(ctx)
-	if err != nil {
+	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
 		return
 	}
 	list = make([]*Book, 0)
 	for rows.Next() {
 		var book *Book
-		book, err = scanBook(rows)
-		if err != nil {
+		if book, err = scanBook(rows); err != nil {
 			return
 		}
 		list = append(list, book)
@@ -60,8 +59,7 @@ func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int6
 		Suffix("RETURNING \"id\"").
 		RunWith(r.DB).
 		PlaceholderFormat(sq.Dollar)
-	err = query.QueryRowContext(ctx).Scan(&book.ID)
-	if err != nil {
+	if err = query.QueryRowContext(ctx).Scan(&book.ID); err != nil {
 		return
 	}
 	lastInsertID = book.ID
@@ -90,8 +88,8 @@ func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
 
 func scanBook(rows *sql.Rows) (*Book, error) {
 	var book Book
-	err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt)
-	if err != nil {
+	var err error
+	if err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt); err != nil {
 		return nil, err
 	}
 	return &book, nil
