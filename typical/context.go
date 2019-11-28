@@ -14,7 +14,7 @@ import (
 
 // Context of project
 var Context = &typctx.Context{
-	Name:        "Typical-RESTful-Server",
+	Name:        "Typical REST Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.6",
 	Package:     "github.com/typical-go/typical-rest-server",
