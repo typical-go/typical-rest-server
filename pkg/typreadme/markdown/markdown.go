@@ -87,3 +87,8 @@ func (m *Markdown) Comment(comment string) (int, error) {
 func (m *Markdown) Writef(format string, args ...interface{}) (int, error) {
 	return m.WriteString(fmt.Sprintf(format, args...))
 }
+
+// Hr to print horizontal rule
+func (m *Markdown) Hr() (int, error) {
+	return m.Writeln("----")
+}
