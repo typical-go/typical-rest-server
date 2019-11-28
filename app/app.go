@@ -34,7 +34,7 @@ func (m module) Provide() []interface{} {
 	}
 }
 
-func (m module) AppCommands(c *typcli.ContextCli) []cli.Command {
+func (m module) AppCommands(c typcli.Cli) []cli.Command {
 	return []cli.Command{
 		{Name: "route", Usage: "Print available API Routes", Action: c.Action(taskRouteList)},
 	}
