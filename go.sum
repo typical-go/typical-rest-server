@@ -110,7 +110,7 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
-github.com/typical-go/typical-go v0.9.4 h1:EMAl7CmdlPGeA1jqyLbYHKCExEnmt004v1YIbcxsqOw=
+github.com/typical-go/typical-go v0.9.4 h1:i4+F8qo7GoF+3X71Xr/a7b9URmL8cHw38dc0EDIPGho=
 github.com/typical-go/typical-go v0.9.4/go.mod h1:lVBt3VfTmF7mJ+4LCECnjc3+/FqCEK8vp20f7ziDj7I=
 github.com/urfave/cli v1.21.0/go.mod h1:lxDj6qX9Q6lWQxIrbrT0nwecwUtRnhVZAJjJZrVUZZQ=
 github.com/urfave/cli v1.22.2 h1:gsqYFH8bb9ekPA12kRo0hfjngWQjkJPlN9R0N78BoUo=
