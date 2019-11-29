@@ -5,8 +5,14 @@ import (
 	"io"
 
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typmodule"
+
+	"github.com/iancoleman/strcase"
+
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-go/pkg/typctx"
+	"github.com/urfave/cli"
 
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 )
@@ -24,6 +30,19 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	}
 
 	md.H3("Usage")
+	appName := strcase.ToKebab(ctx.Name)
+	if typmodule.IsActionable(ctx.AppModule) {
+		md.Writef("- `%s`: Run the application\n", appName)
+	}
+	if commander, ok := ctx.AppModule.(typcli.AppCommander); ok {
+		for _, cmd := range commander.AppCommands(&dummyCli{}) {
+			md.Writef("- `%s %s`: %s\n", appName, cmd.Name, cmd.Usage)
+			for _, subcmd := range cmd.Subcommands {
+				md.Writef("\t- `%s %s %s`: %s\n", appName, cmd.Name, subcmd.Name, subcmd.Usage)
+			}
+		}
+		md.WriteString("\n")
+	}
 
 	fields := fields(ctx)
 	if len(fields) > 0 {
@@ -35,8 +54,7 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 			if field.Required {
 				required = "Yes"
 			}
-			md.WriteString(fmt.Sprintf("|%s|%s|%s|%s|\n",
-				field.Name, field.Type, field.Default, required))
+			md.WriteString(fmt.Sprintf("|%s|%s|%s|%s|\n", field.Name, field.Type, field.Default, required))
 		}
 		md.WriteString("\n")
 	}
@@ -78,4 +96,10 @@ func fields(ctx *typctx.Context) (fields []typcfg.Field) {
 	}
 	// TODO: sort by name
 	return
+}
+
+type dummyCli struct{}
+
+func (dummyCli) Action(fn interface{}) func(ctx *cli.Context) error {
+	return nil
 }
