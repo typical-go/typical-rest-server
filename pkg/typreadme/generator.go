@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typctx"
 
-	"github.com/typical-go/typical-go/pkg/typmodule"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 )
 
@@ -38,6 +36,7 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	md.H3("Release the destribution")
 	releaseDistribution(md)
 	md.H3("Command")
+	command(md, ctx)
 	return
 }
 
@@ -58,23 +57,12 @@ func releaseDistribution(md *markdown.Markdown) {
 	md.Writeln("Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
 }
 
-func module(md *markdown.Markdown, module interface{}) {
-	if name := typmodule.Name(module); name != "" {
-		md.H3(strcase.ToCamel(name))
-	}
-	if description := typmodule.Description(module); description != "" {
-		md.Writeln(description)
-	}
-
-	cmd := typbuildtool.Command(nil, module)
-	if cmd != nil && len(cmd.Subcommands) > 0 {
-		md.WriteString("Commands:\n")
-		var cmdHelps []string
+func command(md *markdown.Markdown, ctx *typctx.Context) {
+	for _, cmd := range typbuildtool.ModuleCommands(ctx) {
+		md.Writef("- `./typicalw %s`: %s\n", cmd.Name, cmd.Usage)
 		for _, subcmd := range cmd.Subcommands {
-			cmdHelps = append(cmdHelps,
-				fmt.Sprintf("`./typicalw %s %s`: %s", cmd.Name, subcmd.Name, subcmd.Usage))
+			md.Writef("\t- `./typicalw %s %s`: %s\n", cmd.Name, subcmd.Name, subcmd.Usage)
 		}
-		md.UnorderedList(cmdHelps...)
 	}
 }
 

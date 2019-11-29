@@ -52,3 +52,16 @@ Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-
 
 ### Command
 
+- `./typicalw docker`: Docker utility
+	- `./typicalw docker compose`: Generate docker-compose.yaml
+	- `./typicalw docker up`: Spin up docker containers
+	- `./typicalw docker down`: Take down all docker containers
+- `./typicalw postgres`: Postgres Database Tool
+	- `./typicalw postgres create`: Create New Database
+	- `./typicalw postgres drop`: Drop Database
+	- `./typicalw postgres migrate`: Migrate Database
+	- `./typicalw postgres rollback`: Rollback Database
+	- `./typicalw postgres seed`: Database Seeding
+	- `./typicalw postgres console`: PostgreSQL Interactive
+- `./typicalw redis`: Redis Tool
+	- `./typicalw redis console`: Redis Interactive
