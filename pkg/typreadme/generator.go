@@ -22,65 +22,60 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	if ctx.Description != "" {
 		md.Writeln(ctx.Description)
 	}
+
 	md.H3("Usage")
-	md.H3("Configuration")
-	configuration(md, ctx)
+
+	fields := fields(ctx)
+	if len(fields) > 0 {
+		md.H3("Configuration")
+		md.WriteString("| Name | Type | Default | Required |\n")
+		md.WriteString("|---|---|---|:---:|\n")
+		for _, field := range fields {
+			var required string
+			if field.Required {
+				required = "Yes"
+			}
+			md.WriteString(fmt.Sprintf("|%s|%s|%s|%s|\n",
+				field.Name, field.Type, field.Default, required))
+		}
+		md.WriteString("\n")
+	}
+
 	md.Hr()
 	md.H2("Development Guide")
+
 	md.H3("Prerequisite")
-	prerequisite(md)
-	md.H3("Build & Run")
-	buildAndRun(md)
-	md.H3("Test")
-	test(md)
-	md.H3("Release the destribution")
-	releaseDistribution(md)
-	md.H3("Command")
-	command(md, ctx)
-	return
-}
-
-func prerequisite(md *markdown.Markdown) {
 	md.Writeln("Install [Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)")
-}
 
-func buildAndRun(md *markdown.Markdown) {
+	md.H3("Build & Run")
 	md.Writeln("Use `./typicalw run` to build and run the project.")
-}
 
-func test(md *markdown.Markdown) {
+	md.H3("Test")
 	md.Writeln("Use `./typicalw test` to test the project.")
-}
 
-func releaseDistribution(md *markdown.Markdown) {
-	md.Writeln("Use `./typicalw release` to make the release. You can find the binary at `release` folder.")
-	md.Writeln("Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
-}
+	md.H3("Release the destribution")
+	md.Writeln("Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
 
-func command(md *markdown.Markdown, ctx *typctx.Context) {
-	for _, cmd := range typbuildtool.ModuleCommands(ctx) {
+	for i, cmd := range typbuildtool.ModuleCommands(ctx) {
+		if i < 1 {
+			md.H3("Other Command")
+		}
 		md.Writef("- `./typicalw %s`: %s\n", cmd.Name, cmd.Usage)
 		for _, subcmd := range cmd.Subcommands {
 			md.Writef("\t- `./typicalw %s %s`: %s\n", cmd.Name, subcmd.Name, subcmd.Usage)
 		}
 	}
+	return
 }
 
-func configuration(md *markdown.Markdown, ctx *typctx.Context) {
-	md.WriteString("| Name | Type | Default | Required |\n")
-	md.WriteString("|---|---|---|:---:|\n")
-	// TODO: sort by name
+func fields(ctx *typctx.Context) (fields []typcfg.Field) {
 	for _, module := range ctx.AllModule() {
 		if configurer, ok := module.(typcfg.Configurer); ok {
 			for _, field := range configurer.Configure().Fields() {
-				var required string
-				if field.Required {
-					required = "Yes"
-				}
-				md.WriteString(fmt.Sprintf("|%s|%s|%s|%s|\n",
-					field.Name, field.Type, field.Default, required))
+				fields = append(fields, field)
 			}
 		}
 	}
-	md.WriteString("\n")
+	// TODO: sort by name
+	return
 }

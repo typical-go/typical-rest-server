@@ -46,11 +46,9 @@ Use `./typicalw test` to test the project.
 
 ### Release the destribution
 
-Use `./typicalw release` to make the release. You can find the binary at `release` folder.
+Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)
 
-Learn more [Release Distribution](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)
-
-### Command
+### Other Command
 
 - `./typicalw docker`: Docker utility
 	- `./typicalw docker compose`: Generate docker-compose.yaml
