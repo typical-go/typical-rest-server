@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/typical-go/typical-go/pkg/typcfg"
-
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
 // Config is server configuration
@@ -19,40 +18,35 @@ type Config struct {
 
 // Module of server
 func Module() interface{} {
-	return &serverModule{
-		Name: "Server",
-		Configuration: typcfg.Configuration{
-			Prefix: "SERVER",
-			Spec:   &Config{},
-		},
+	return &module{}
+}
+
+type module struct{}
+
+func (s module) Configure() (prefix string, spec, loadFn interface{}) {
+	prefix = "SERVER"
+	spec = &Config{}
+	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
+		err = loader.Load(prefix, &cfg)
+		return
 	}
+	return
 }
 
-type serverModule struct {
-	typcfg.Configuration
-	Name string
-}
-
-func (s serverModule) Provide() []interface{} {
+func (s module) Provide() []interface{} {
 	return []interface{}{
-		s.loadConfig,
 		s.Create,
 	}
 }
 
-func (s serverModule) Destroy() []interface{} {
+func (s module) Destroy() []interface{} {
 	return []interface{}{
 		s.Shutdown,
 	}
 }
 
-func (s serverModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
-	err = loader.Load(s.Configuration, &cfg)
-	return
-}
-
 // Create new server
-func (s serverModule) Create(cfg Config) *echo.Echo {
+func (s module) Create(cfg Config) *echo.Echo {
 	server := echo.New()
 	server.HideBanner = true
 	server.Debug = cfg.Debug
@@ -71,7 +65,7 @@ func (s serverModule) Create(cfg Config) *echo.Echo {
 }
 
 // Shutdown the server
-func (s serverModule) Shutdown(server *echo.Echo) error {
+func (s module) Shutdown(server *echo.Echo) error {
 	fmt.Println("Server is shutting down")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

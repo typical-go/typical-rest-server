@@ -15,6 +15,6 @@ func TestModule(t *testing.T) {
 	require.True(t, typmodule.IsProvider(m))
 	require.True(t, typmodule.IsDestroyer(m))
 	require.True(t, typmodule.IsPreparer(m))
-	require.True(t, typcli.IsCommander(m))
+	require.True(t, typcli.IsModuleCommander(m))
 	require.True(t, typcfg.IsConfigurer(m))
 }

@@ -7,6 +7,8 @@ Example of typical and scalable RESTful API Server for Go
 ### Usage
 
 - `typical-rest-server`: Run the application
+- `typical-rest-server route`: Print available API Routes
+
 ### Configuration
 
 | Name | Type | Default | Required |

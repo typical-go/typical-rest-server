@@ -15,6 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/utility/envfile"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli/v2"
 )
@@ -35,60 +36,64 @@ type Config struct {
 
 // Module for postgres
 func Module() interface{} {
-	return &postgresModule{
-		Name: "Postgres",
-		Configuration: typcfg.Configuration{
-			Prefix: "PG",
-			Spec:   &Config{},
-		},
-	}
+	return &module{}
 }
 
-type postgresModule struct {
-	typcfg.Configuration
-	Name string
-}
+type module struct{}
 
 // Command of module
-func (p postgresModule) Command(c typcli.Cli) *cli.Command {
-	return &cli.Command{
-		Name:    "postgres",
-		Aliases: []string{"pg"},
-		Usage:   "Postgres Database Tool",
-		Before:  typcli.LoadEnvFile,
-		Subcommands: []*cli.Command{
-			{Name: "create", Usage: "Create New Database", Action: c.Action(p.createDB)},
-			{Name: "drop", Usage: "Drop Database", Action: c.Action(p.dropDB)},
-			{Name: "migrate", Usage: "Migrate Database", Action: c.Action(p.migrateDB)},
-			{Name: "rollback", Usage: "Rollback Database", Action: c.Action(p.rollbackDB)},
-			{Name: "seed", Usage: "Database Seeding", Action: c.Action(p.seedDB)},
-			{Name: "console", Usage: "PostgreSQL Interactive", Action: c.Action(p.console)},
+func (p module) Commands(c *typcli.ModuleCli) []*cli.Command {
+	return []*cli.Command{
+		{
+			Name:    "postgres",
+			Aliases: []string{"pg"},
+			Usage:   "Postgres Database Tool",
+			Before: func(ctx *cli.Context) error {
+				return envfile.Load()
+			},
+			Subcommands: []*cli.Command{
+				{Name: "create", Usage: "Create New Database", Action: c.Action(p.createDB)},
+				{Name: "drop", Usage: "Drop Database", Action: c.Action(p.dropDB)},
+				{Name: "migrate", Usage: "Migrate Database", Action: c.Action(p.migrateDB)},
+				{Name: "rollback", Usage: "Rollback Database", Action: c.Action(p.rollbackDB)},
+				{Name: "seed", Usage: "Database Seeding", Action: c.Action(p.seedDB)},
+				{Name: "console", Usage: "PostgreSQL Interactive", Action: c.Action(p.console)},
+			},
 		},
 	}
 }
 
 // Provide dependencies
-func (p postgresModule) Provide() []interface{} {
+func (p module) Provide() []interface{} {
 	return []interface{}{
-		p.loadConfig,
 		p.open,
 	}
 }
 
-func (p postgresModule) Prepare() []interface{} {
+func (p module) Prepare() []interface{} {
 	return []interface{}{
 		p.ping,
 	}
 }
 
+func (p module) Configure() (prefix string, spec, loadFn interface{}) {
+	prefix = "PG"
+	spec = &Config{}
+	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
+		err = loader.Load(prefix, &cfg)
+		return
+	}
+	return
+}
+
 // Destroy dependencies
-func (p postgresModule) Destroy() []interface{} {
+func (p module) Destroy() []interface{} {
 	return []interface{}{
 		p.closeConnection,
 	}
 }
 
-func (p postgresModule) DockerCompose() typdocker.Compose {
+func (p module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"postgres": typdocker.Service{
@@ -115,37 +120,38 @@ func (p postgresModule) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (p postgresModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
-	err = loader.Load(p.Configuration, &cfg)
-	return
-}
-
-func (p postgresModule) open(cfg Config) (*sql.DB, error) {
+func (p module) open(cfg Config) (*sql.DB, error) {
 	return sql.Open("postgres", p.dataSource(cfg))
 }
 
-func (p postgresModule) ping(db *sql.DB) error {
+func (p module) ping(db *sql.DB) error {
 	log.Info("Ping to Postgres")
 	return db.Ping()
 }
 
-func (postgresModule) closeConnection(db *sql.DB) error {
+func (module) closeConnection(db *sql.DB) error {
 	return db.Close()
 }
 
-func (p postgresModule) createDB(cfg Config) (err error) {
+func (p module) createDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
+	fmt.Println(cfg)
 	log.Infof("Postgres: %s", query)
 	if conn, err = sql.Open("postgres", p.adminDataSource(cfg)); err != nil {
 		return
 	}
 	defer conn.Close()
+	fmt.Println("1")
+	if err = conn.Ping(); err != nil {
+		return
+	}
+	fmt.Println("2")
 	_, err = conn.Exec(query)
 	return
 }
 
-func (p postgresModule) dropDB(cfg Config) (err error) {
+func (p module) dropDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -157,7 +163,7 @@ func (p postgresModule) dropDB(cfg Config) (err error) {
 	return
 }
 
-func (p postgresModule) migrateDB(cfg Config) (err error) {
+func (p module) migrateDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -168,7 +174,7 @@ func (p postgresModule) migrateDB(cfg Config) (err error) {
 	return migration.Up()
 }
 
-func (p postgresModule) rollbackDB(cfg Config) (err error) {
+func (p module) rollbackDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -179,7 +185,7 @@ func (p postgresModule) rollbackDB(cfg Config) (err error) {
 	return migration.Down()
 }
 
-func (p postgresModule) seedDB(cfg Config) (err error) {
+func (p module) seedDB(cfg Config) (err error) {
 	var conn *sql.DB
 	if conn, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
@@ -200,7 +206,7 @@ func (p postgresModule) seedDB(cfg Config) (err error) {
 	return
 }
 
-func (postgresModule) console(cfg Config) (err error) {
+func (module) console(cfg Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -210,12 +216,12 @@ func (postgresModule) console(cfg Config) (err error) {
 	return cmd.Run()
 }
 
-func (postgresModule) dataSource(c Config) string {
+func (module) dataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (postgresModule) adminDataSource(c Config) string {
+func (module) adminDataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

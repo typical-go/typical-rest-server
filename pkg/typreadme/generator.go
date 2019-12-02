@@ -12,7 +12,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-go/pkg/typctx"
-	"github.com/urfave/cli/v2"
 
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 )
@@ -35,14 +34,14 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 		md.Writef("- `%s`: Run the application\n", appName)
 	}
 	if commander, ok := ctx.AppModule.(typcli.AppCommander); ok {
-		for _, cmd := range commander.AppCommands(&dummyCli{}) {
+		for _, cmd := range commander.Commands(&typcli.AppCli{}) {
 			md.Writef("- `%s %s`: %s\n", appName, cmd.Name, cmd.Usage)
 			for _, subcmd := range cmd.Subcommands {
 				md.Writef("\t- `%s %s %s`: %s\n", appName, cmd.Name, subcmd.Name, subcmd.Usage)
 			}
 		}
-		md.WriteString("\n")
 	}
+	md.WriteString("\n")
 
 	fields := fields(ctx)
 	if len(fields) > 0 {
@@ -89,17 +88,12 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 func fields(ctx *typctx.Context) (fields []typcfg.Field) {
 	for _, module := range ctx.AllModule() {
 		if configurer, ok := module.(typcfg.Configurer); ok {
-			for _, field := range configurer.Configure().Fields() {
+			prefix, spec, _ := configurer.Configure()
+			for _, field := range typcfg.Fields(prefix, spec) {
 				fields = append(fields, field)
 			}
 		}
 	}
 	// TODO: sort by name
 	return
-}
-
-type dummyCli struct{}
-
-func (dummyCli) Action(fn interface{}) func(ctx *cli.Context) error {
-	return nil
 }

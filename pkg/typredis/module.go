@@ -6,13 +6,16 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/urfave/cli/v2"
+
+	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/utility/envfile"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-go/pkg/typcfg"
-	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-	"github.com/urfave/cli/v2"
 )
 
 // Config is Redis Configuration
@@ -32,55 +35,59 @@ type Config struct {
 
 // Module of redis
 func Module() interface{} {
-	return &redisModule{
-		Name: "Redis",
-		Configuration: typcfg.Configuration{
-			Prefix: "REDIS",
-			Spec:   &Config{},
-		},
-	}
+	return &module{}
 }
 
-type redisModule struct {
-	typcfg.Configuration
-	Name string
-}
+type module struct{}
 
-// BuildCommand of module
-func (r redisModule) Command(c typcli.Cli) *cli.Command {
-	return &cli.Command{
-		Name:   "redis",
-		Usage:  "Redis Tool",
-		Before: typcli.LoadEnvFile,
-		Subcommands: []*cli.Command{
-			{Name: "console", Aliases: []string{"c"}, Usage: "Redis Interactive", Action: c.Action(r.console)},
-		},
+func (r module) Configure() (prefix string, spec, loadFn interface{}) {
+	prefix = "REDIS"
+	spec = &Config{}
+	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
+		err = loader.Load(prefix, &cfg)
+		return
 	}
+	return
 }
 
 // Provide dependencies
-func (r redisModule) Provide() []interface{} {
+func (r module) Provide() []interface{} {
 	return []interface{}{
-		r.loadConfig,
 		r.connect,
 	}
 }
 
 // Prepare the module
-func (r redisModule) Prepare() []interface{} {
+func (r module) Prepare() []interface{} {
 	return []interface{}{
 		r.ping,
 	}
 }
 
 // Destroy dependencies
-func (r redisModule) Destroy() []interface{} {
+func (r module) Destroy() []interface{} {
 	return []interface{}{
 		r.disconnect,
 	}
 }
 
-func (r redisModule) DockerCompose() typdocker.Compose {
+// BuildCommand of module
+func (r module) Commands(c *typcli.ModuleCli) []*cli.Command {
+	return []*cli.Command{
+		{
+			Name:  "redis",
+			Usage: "Redis Tool",
+			Before: func(ctx *cli.Context) error {
+				return envfile.Load()
+			},
+			Subcommands: []*cli.Command{
+				{Name: "console", Aliases: []string{"c"}, Usage: "Redis Interactive", Action: c.Action(r.console)},
+			},
+		},
+	}
+}
+
+func (r module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"redis": typdocker.Service{
@@ -100,12 +107,7 @@ func (r redisModule) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (r redisModule) loadConfig(loader typcfg.Loader) (cfg Config, err error) {
-	err = loader.Load(r.Configuration, &cfg)
-	return
-}
-
-func (redisModule) connect(cfg Config) (client *redis.Client) {
+func (module) connect(cfg Config) (client *redis.Client) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -121,16 +123,16 @@ func (redisModule) connect(cfg Config) (client *redis.Client) {
 	return
 }
 
-func (redisModule) ping(client *redis.Client) error {
+func (module) ping(client *redis.Client) error {
 	log.Info("Ping to Redis")
 	return client.Ping().Err()
 }
 
-func (redisModule) disconnect(client *redis.Client) (err error) {
+func (module) disconnect(client *redis.Client) (err error) {
 	return client.Close()
 }
 
-func (redisModule) console(config *Config) (err error) {
+func (module) console(config *Config) (err error) {
 	args := []string{
 		"-h", config.Host,
 		"-p", config.Port,

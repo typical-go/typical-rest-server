@@ -31,7 +31,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.9.5
+	github.com/typical-go/typical-go v0.9.6
 	github.com/urfave/cli v1.22.2
 	github.com/urfave/cli/v2 v2.0.0
 	github.com/valyala/fasttemplate v1.1.0 // indirect
