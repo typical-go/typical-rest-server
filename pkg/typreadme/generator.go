@@ -6,6 +6,7 @@ import (
 
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typmodule"
+	"github.com/typical-go/typical-go/pkg/utility/coll"
 
 	"github.com/iancoleman/strcase"
 
@@ -42,14 +43,15 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 		}
 	}
 	md.WriteString("\n")
-
-	fields := fields(ctx)
-	if len(fields) > 0 {
+	keys, fieldMap := fields(ctx)
+	keys.Sort()
+	if len(keys) > 0 {
 		md.H3("Configuration")
 		md.WriteString("| Name | Type | Default | Required |\n")
 		md.WriteString("|---|---|---|:---:|\n")
-		for _, field := range fields {
+		for _, key := range keys {
 			var required string
+			field := fieldMap[key]
 			if field.Required {
 				required = "Yes"
 			}
@@ -85,12 +87,14 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	return
 }
 
-func fields(ctx *typctx.Context) (fields []typcfg.Field) {
+func fields(ctx *typctx.Context) (keys coll.Strings, m map[string]typcfg.Field) {
+	m = make(map[string]typcfg.Field)
 	for _, module := range ctx.AllModule() {
 		if configurer, ok := module.(typcfg.Configurer); ok {
 			prefix, spec, _ := configurer.Configure()
 			for _, field := range typcfg.Fields(prefix, spec) {
-				fields = append(fields, field)
+				m[field.Name] = field
+				keys.Append(field.Name)
 			}
 		}
 	}

@@ -13,23 +13,23 @@ Example of typical and scalable RESTful API Server for Go
 
 | Name | Type | Default | Required |
 |---|---|---|:---:|
-|SERVER_DEBUG|bool|false||
-|PG_DBNAME|string|typical-rest|Yes|
-|PG_USER|string|postgres|Yes|
-|PG_PASSWORD|string|pgpass|Yes|
-|PG_HOST|string|localhost||
-|PG_PORT|int|5432||
-|REDIS_HOST|string|localhost|Yes|
-|REDIS_PORT|string|6379|Yes|
-|REDIS_PASSWORD|string|redispass||
-|REDIS_DB|int|0||
-|REDIS_POOL_SIZE|int|20|Yes|
-|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
-|REDIS_READ_WRITE_TIMEOUT|Duration|3s|Yes|
-|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
-|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
-|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
 |APP_ADDRESS|string|:8089|Yes|
+|PG_DBNAME|string|typical-rest|Yes|
+|PG_HOST|string|localhost||
+|PG_PASSWORD|string|pgpass|Yes|
+|PG_PORT|int|5432||
+|PG_USER|string|postgres|Yes|
+|REDIS_DB|int|0||
+|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
+|REDIS_HOST|string|localhost|Yes|
+|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
+|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
+|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
+|REDIS_PASSWORD|string|redispass||
+|REDIS_POOL_SIZE|int|20|Yes|
+|REDIS_PORT|string|6379|Yes|
+|REDIS_READ_WRITE_TIMEOUT|Duration|3s|Yes|
+|SERVER_DEBUG|bool|false||
 
 ----
 
