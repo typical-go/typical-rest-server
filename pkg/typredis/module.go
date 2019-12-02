@@ -12,7 +12,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 // Config is Redis Configuration
@@ -47,13 +47,13 @@ type redisModule struct {
 }
 
 // BuildCommand of module
-func (r redisModule) Command(c typcli.Cli) cli.Command {
-	return cli.Command{
+func (r redisModule) Command(c typcli.Cli) *cli.Command {
+	return &cli.Command{
 		Name:   "redis",
 		Usage:  "Redis Tool",
 		Before: typcli.LoadEnvFile,
-		Subcommands: []cli.Command{
-			{Name: "console", ShortName: "c", Usage: "Redis Interactive", Action: c.Action(r.console)},
+		Subcommands: []*cli.Command{
+			{Name: "console", Aliases: []string{"c"}, Usage: "Redis Interactive", Action: c.Action(r.console)},
 		},
 	}
 }

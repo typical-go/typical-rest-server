@@ -12,7 +12,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-go/pkg/typctx"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 )

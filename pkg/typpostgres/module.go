@@ -16,7 +16,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcli"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -50,13 +50,13 @@ type postgresModule struct {
 }
 
 // Command of module
-func (p postgresModule) Command(c typcli.Cli) cli.Command {
-	return cli.Command{
-		Name:      "postgres",
-		ShortName: "pg",
-		Usage:     "Postgres Database Tool",
-		Before:    typcli.LoadEnvFile,
-		Subcommands: []cli.Command{
+func (p postgresModule) Command(c typcli.Cli) *cli.Command {
+	return &cli.Command{
+		Name:    "postgres",
+		Aliases: []string{"pg"},
+		Usage:   "Postgres Database Tool",
+		Before:  typcli.LoadEnvFile,
+		Subcommands: []*cli.Command{
 			{Name: "create", Usage: "Create New Database", Action: c.Action(p.createDB)},
 			{Name: "drop", Usage: "Drop Database", Action: c.Action(p.dropDB)},
 			{Name: "migrate", Usage: "Migrate Database", Action: c.Action(p.migrateDB)},
