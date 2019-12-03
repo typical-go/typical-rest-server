@@ -1,5 +1,3 @@
-// +build typical
-
 package main
 
 import (

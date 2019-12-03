@@ -1,27 +1,20 @@
 #!/bin/bash
 set -e
 
-BIN=${TYPICAL_BIN:-bin}
-CMD=${TYPICAL_CMD:-cmd}
-BUILD_TOOL=${TYPICAL_BUILD_TOOL:-build-tool}
-PRE_BUILDER=${TYPICAL_PRE_BUILDER:-pre-builder}
-METADATA=${TYPICAL_METADATA:-.typical-metadata}
-
-CHECKSUM_PATH="$METADATA/checksum "
 CHECKSUM_DATA=$(cksum typical/context.go)
 
 if ! [ -s .typical-metadata/checksum ]; then
-	mkdir -p $METADATA
-	cksum typical/context.go > $CHECKSUM_PATH
+	mkdir -p .typical-metadata
+	cksum typical/context.go > .typical-metadata/checksum
 else
-	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat $CHECKSUM_PATH )" ] ; echo $?)
+	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-metadata/checksum )" ] ; echo $?)
 fi
 
-if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f $BIN/$PRE_BUILDER ]] ; then 
-	echo $CHECKSUM_DATA > $CHECKSUM_PATH
-	echo "Build the pre-builder"
-	go build -tags typical -o $BIN/$PRE_BUILDER ./$CMD/$PRE_BUILDER
+if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f bin/typical-rest-server-prebuilder ]] ; then 
+	echo $CHECKSUM_DATA > .typical-metadata/checksum
+	echo "Build the prebuilder"
+	go build -o bin/typical-rest-server-prebuilder ./cmd/typical-rest-server-prebuilder
 fi
 
-./$BIN/$PRE_BUILDER $CHECKSUM_UPDATED
-./$BIN/$BUILD_TOOL $@
+./bin/typical-rest-server-prebuilder $CHECKSUM_UPDATED
+./bin/typical-rest-server-buildtool $@
