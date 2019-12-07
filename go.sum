@@ -116,6 +116,8 @@ github.com/typical-go/typical-go v0.9.6 h1:52FJpocmRnrIJcfUtMQu/kSwZW6niw2O7QzVV
 github.com/typical-go/typical-go v0.9.6/go.mod h1:LBhzPCMNZYC0HZ4nCj3V42RvloFMefFNvgkHnAShN+c=
 github.com/typical-go/typical-go v0.9.7 h1:v4zccD4LMfSCaLwkd51PRdmA4AZTEEtH4V0Pl2jZIjM=
 github.com/typical-go/typical-go v0.9.7/go.mod h1:LBhzPCMNZYC0HZ4nCj3V42RvloFMefFNvgkHnAShN+c=
+github.com/typical-go/typical-go v0.9.8 h1:r6vjHQAq9S5dNAfYx0+ek1CI9rnFEcUQY63q4P6lqCg=
+github.com/typical-go/typical-go v0.9.8/go.mod h1:7qbV2CpwulvgDWI6TpYe+sP2bJDFI1W5lD4dYj0Hp6w=
 github.com/urfave/cli v1.21.0/go.mod h1:lxDj6qX9Q6lWQxIrbrT0nwecwUtRnhVZAJjJZrVUZZQ=
 github.com/urfave/cli v1.22.2 h1:gsqYFH8bb9ekPA12kRo0hfjngWQjkJPlN9R0N78BoUo=
 github.com/urfave/cli v1.22.2/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
@@ -147,6 +149,8 @@ golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLL
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 h1:SVwTIAaPC2U/AvvLNZ2a7OVsmBpC8L5BlwK1whH3hm0=
 golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
+golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 h1:pE8b58s1HRDMi8RDc79m0HISf9D4TzseP40cEA6IGfs=
+golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=

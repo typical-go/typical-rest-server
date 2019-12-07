@@ -1,6 +1,6 @@
 module github.com/typical-go/typical-rest-server
 
-go 1.12
+go 1.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
@@ -31,7 +31,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.9.7
+	github.com/typical-go/typical-go v0.9.8
 	github.com/urfave/cli v1.22.2
 	github.com/urfave/cli/v2 v2.0.0
 	github.com/valyala/fasttemplate v1.1.0 // indirect
