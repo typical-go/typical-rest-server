@@ -32,7 +32,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
 	github.com/typical-go/typical-go v0.9.8
-	github.com/urfave/cli v1.22.2
 	github.com/urfave/cli/v2 v2.0.0
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
