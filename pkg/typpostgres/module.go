@@ -34,19 +34,13 @@ type Config struct {
 	Port     int    `default:"5432"`
 }
 
-// Module for postgres
-func Module(dbname string) interface{} {
-	return &module{
-		dbname: dbname,
-	}
+// Module of postgres
+type Module struct {
+	DBName string
 }
 
-type module struct {
-	dbname string
-}
-
-// Command of module
-func (p module) Commands(c *typcli.ModuleCli) []*cli.Command {
+// Commands of module
+func (p Module) Commands(c *typcli.ModuleCli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -67,23 +61,25 @@ func (p module) Commands(c *typcli.ModuleCli) []*cli.Command {
 	}
 }
 
-// Provide dependencies
-func (p module) Provide() []interface{} {
+// Provide the dependencies
+func (p Module) Provide() []interface{} {
 	return []interface{}{
 		p.open,
 	}
 }
 
-func (p module) Prepare() []interface{} {
+// Prepare the module
+func (p Module) Prepare() []interface{} {
 	return []interface{}{
 		p.ping,
 	}
 }
 
-func (p module) Configure() (prefix string, spec, loadFn interface{}) {
+// Configure the module
+func (p Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
 	spec = &Config{
-		DBName: p.dbname,
+		DBName: p.DBName,
 	}
 	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
@@ -93,13 +89,14 @@ func (p module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // Destroy dependencies
-func (p module) Destroy() []interface{} {
+func (p Module) Destroy() []interface{} {
 	return []interface{}{
 		p.closeConnection,
 	}
 }
 
-func (p module) DockerCompose() typdocker.Compose {
+// DockerCompose template
+func (p Module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"postgres": typdocker.Service{
@@ -126,20 +123,20 @@ func (p module) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (p module) open(cfg Config) (*sql.DB, error) {
+func (p Module) open(cfg Config) (*sql.DB, error) {
 	return sql.Open("postgres", p.dataSource(cfg))
 }
 
-func (p module) ping(db *sql.DB) error {
+func (p Module) ping(db *sql.DB) error {
 	log.Info("Ping to Postgres")
 	return db.Ping()
 }
 
-func (module) closeConnection(db *sql.DB) error {
+func (Module) closeConnection(db *sql.DB) error {
 	return db.Close()
 }
 
-func (p module) createDB(cfg Config) (err error) {
+func (p Module) createDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	fmt.Println(cfg)
@@ -155,7 +152,7 @@ func (p module) createDB(cfg Config) (err error) {
 	return
 }
 
-func (p module) dropDB(cfg Config) (err error) {
+func (p Module) dropDB(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -167,7 +164,7 @@ func (p module) dropDB(cfg Config) (err error) {
 	return
 }
 
-func (p module) migrateDB(cfg Config) (err error) {
+func (p Module) migrateDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -178,7 +175,7 @@ func (p module) migrateDB(cfg Config) (err error) {
 	return migration.Up()
 }
 
-func (p module) rollbackDB(cfg Config) (err error) {
+func (p Module) rollbackDB(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -189,7 +186,7 @@ func (p module) rollbackDB(cfg Config) (err error) {
 	return migration.Down()
 }
 
-func (p module) seedDB(cfg Config) (err error) {
+func (p Module) seedDB(cfg Config) (err error) {
 	var conn *sql.DB
 	if conn, err = sql.Open("postgres", p.dataSource(cfg)); err != nil {
 		return
@@ -210,7 +207,7 @@ func (p module) seedDB(cfg Config) (err error) {
 	return
 }
 
-func (module) console(cfg Config) (err error) {
+func (Module) console(cfg Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -220,12 +217,12 @@ func (module) console(cfg Config) (err error) {
 	return cmd.Run()
 }
 
-func (module) dataSource(c Config) string {
+func (Module) dataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (module) adminDataSource(c Config) string {
+func (Module) adminDataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

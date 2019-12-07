@@ -11,7 +11,7 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := typpostgres.Module()
+	m := &typpostgres.Module{}
 	require.True(t, typmodule.IsProvider(m))
 	require.True(t, typmodule.IsDestroyer(m))
 	require.True(t, typmodule.IsPreparer(m))
