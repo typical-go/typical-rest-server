@@ -27,7 +27,7 @@ const (
 
 // Config is postgres configuration
 type Config struct {
-	DBName   string `required:"true" default:"typical-rest"`
+	DBName   string `required:"true"`
 	User     string `required:"true" default:"postgres"`
 	Password string `required:"true" default:"pgpass"`
 	Host     string `default:"localhost"`
@@ -35,11 +35,15 @@ type Config struct {
 }
 
 // Module for postgres
-func Module() interface{} {
-	return &module{}
+func Module(dbname string) interface{} {
+	return &module{
+		dbname: dbname,
+	}
 }
 
-type module struct{}
+type module struct {
+	dbname string
+}
 
 // Command of module
 func (p module) Commands(c *typcli.ModuleCli) []*cli.Command {
@@ -78,7 +82,9 @@ func (p module) Prepare() []interface{} {
 
 func (p module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
-	spec = &Config{}
+	spec = &Config{
+		DBName: p.dbname,
+	}
 	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
@@ -142,11 +148,9 @@ func (p module) createDB(cfg Config) (err error) {
 		return
 	}
 	defer conn.Close()
-	fmt.Println("1")
 	if err = conn.Ping(); err != nil {
 		return
 	}
-	fmt.Println("2")
 	_, err = conn.Exec(query)
 	return
 }

@@ -14,7 +14,7 @@ Example of typical and scalable RESTful API Server for Go
 | Name | Type | Default | Required |
 |---|---|---|:---:|
 |APP_ADDRESS|string|:8089|Yes|
-|PG_DBNAME|string|typical-rest|Yes|
+|PG_DBNAME|string||Yes|
 |PG_HOST|string|localhost||
 |PG_PASSWORD|string|pgpass|Yes|
 |PG_PORT|int|5432||

@@ -21,7 +21,7 @@ var Context = &typctx.Context{
 	Modules: []interface{}{
 		typdocker.Module(),
 		typserver.Module(),
-		typpostgres.Module(),
+		typpostgres.Module("sample"),
 		typredis.Module(),
 	},
 	ReadmeGenerator: typreadme.Generator{},
