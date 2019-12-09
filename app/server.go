@@ -14,6 +14,7 @@ type server struct {
 	config.Config
 	controller.BookCntrl
 	controller.AppCntrl
+	controller.MusicCntrl
 }
 
 // Start the service
@@ -24,6 +25,6 @@ func startServer(p server) error {
 	// Routes
 	p.AppCntrl.Route(p.Echo)
 	p.BookCntrl.Route(p.Echo)
-
+	p.MusicCntrl.Route(p.Echo)
 	return p.Echo.Start(p.Config.Address)
 }
