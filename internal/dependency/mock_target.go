@@ -8,4 +8,5 @@ func init() {
 	typical.Context.MockTargets.Append("app/repository/book_repo.go")
 	typical.Context.MockTargets.Append("app/repository/music_repo.go")
 	typical.Context.MockTargets.Append("app/service/book_service.go")
+	typical.Context.MockTargets.Append("app/service/music_service.go")
 }

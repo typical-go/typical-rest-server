@@ -13,10 +13,10 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// BookCntrl is controller to book entity
+// MusicCntrl is controller to Music entity
 type MusicCntrl struct {
 	dig.In
-	service.BookService
+	service.MusicService
 }
 
 // Route to define API Route
@@ -28,78 +28,78 @@ func (c *MusicCntrl) Route(e *echo.Echo) {
 	e.DELETE("musics/:id", c.Delete)
 }
 
-// Create book
+// Create music
 func (c *MusicCntrl) Create(ctx echo.Context) (err error) {
-	var book repository.Book
+	var music repository.Music
 	var lastInsertID int64
 	ctx0 := ctx.Request().Context()
-	if err = ctx.Bind(&book); err != nil {
+	if err = ctx.Bind(&music); err != nil {
 		return err
 	}
-	if err = validator.New().Struct(book); err != nil {
+	if err = validator.New().Struct(music); err != nil {
 		return responsekit.InvalidRequest(ctx, err)
 	}
-	if lastInsertID, err = c.BookService.Insert(ctx0, book); err != nil {
+	if lastInsertID, err = c.MusicService.Insert(ctx0, music); err != nil {
 		return err
 	}
 	return responsekit.InsertSuccess(ctx, lastInsertID)
 }
 
-// List of book
+// List of music
 func (c *MusicCntrl) List(ctx echo.Context) (err error) {
-	var books []*repository.Book
+	var musics []*repository.Music
 	ctx0 := ctx.Request().Context()
-	if books, err = c.BookService.List(ctx0); err != nil {
+	if musics, err = c.MusicService.List(ctx0); err != nil {
 		return err
 	}
-	return ctx.JSON(http.StatusOK, books)
+	return ctx.JSON(http.StatusOK, musics)
 }
 
-// Get book
+// Get music
 func (c *MusicCntrl) Get(ctx echo.Context) (err error) {
 	var id int64
-	var book *repository.Book
+	var music *repository.Music
 	ctx0 := ctx.Request().Context()
 	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
 		return responsekit.InvalidID(ctx, err)
 	}
-	if book, err = c.BookService.Find(ctx0, id); err != nil {
+	if music, err = c.MusicService.Find(ctx0, id); err != nil {
 		return err
 	}
-	if book == nil {
+	if music == nil {
 		return responsekit.NotFound(ctx, id)
 	}
-	return ctx.JSON(http.StatusOK, book)
+	return ctx.JSON(http.StatusOK, music)
 }
 
-// Delete book
+// Delete music
 func (c *MusicCntrl) Delete(ctx echo.Context) (err error) {
 	var id int64
 	ctx0 := ctx.Request().Context()
 	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
 		return responsekit.InvalidID(ctx, err)
 	}
-	if err = c.BookService.Delete(ctx0, id); err != nil {
+	if err = c.MusicService.Delete(ctx0, id); err != nil {
 		return err
 	}
 	return responsekit.DeleteSuccess(ctx, id)
 }
 
-// Update book
+// Update music
 func (c *MusicCntrl) Update(ctx echo.Context) (err error) {
-	var book repository.Book
+	var music repository.Music
 	ctx0 := ctx.Request().Context()
-	if err = ctx.Bind(&book); err != nil {
+	if err = ctx.Bind(&music); err != nil {
 		return err
 	}
-	if book.ID <= 0 {
+	if music.ID <= 0 {
 		return responsekit.InvalidID(ctx, err)
 	}
-	if err = validator.New().Struct(book); err != nil {
+	if err = validator.New().Struct(music); err != nil {
 		return responsekit.InvalidRequest(ctx, err)
 	}
-	if err = c.BookService.Update(ctx0, book); err != nil {
+	if err = c.MusicService.Update(ctx0, music); err != nil {
 		return err
 	}
-	return responsekit.UpdateSuccess(ctx, book.ID)
+	return responsekit.UpdateSuccess(ctx, music.ID)
 }
