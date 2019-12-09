@@ -66,3 +66,5 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 	- `./typicalw postgres rollback`: Rollback Database
 	- `./typicalw postgres seed`: Database Seeding
 	- `./typicalw postgres console`: PostgreSQL Interactive
+- `./typicalw rest`: rest application utility
+	- `./typicalw rest scaffold`: Scaffold the MVC

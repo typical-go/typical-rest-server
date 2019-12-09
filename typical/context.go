@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
 
@@ -25,6 +26,7 @@ var Context = &typctx.Context{
 		&typpostgres.Module{
 			DBName: "sample",
 		},
+		&typrest.Module{},
 	},
 	ReadmeGenerator: typreadme.Generator{},
 	Releaser: &typrls.Releaser{
