@@ -35,7 +35,7 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 		md.Writef("- `%s`: Run the application\n", appName)
 	}
 	if commander, ok := ctx.AppModule.(typcli.AppCommander); ok {
-		for _, cmd := range commander.Commands(&typcli.AppCli{}) {
+		for _, cmd := range commander.AppCommands(&typcli.AppCli{}) {
 			md.Writef("- `%s %s`: %s\n", appName, cmd.Name, cmd.Usage)
 			for _, subcmd := range cmd.Subcommands {
 				md.Writef("\t- `%s %s %s`: %s\n", appName, cmd.Name, subcmd.Name, subcmd.Usage)
@@ -98,6 +98,5 @@ func fields(ctx *typctx.Context) (keys coll.Strings, m map[string]typcfg.Field) 
 			}
 		}
 	}
-	// TODO: sort by name
 	return
 }

@@ -16,14 +16,11 @@ type Config struct {
 	Debug bool `default:"false"`
 }
 
-// Module of server
-func Module() interface{} {
-	return &module{}
-}
+// Module of Server
+type Module struct{}
 
-type module struct{}
-
-func (s module) Configure() (prefix string, spec, loadFn interface{}) {
+// Configure server
+func (s *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "SERVER"
 	spec = &Config{}
 	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
@@ -33,20 +30,22 @@ func (s module) Configure() (prefix string, spec, loadFn interface{}) {
 	return
 }
 
-func (s module) Provide() []interface{} {
+// Provide dependencies
+func (s *Module) Provide() []interface{} {
 	return []interface{}{
 		s.Create,
 	}
 }
 
-func (s module) Destroy() []interface{} {
+// Destroy dependencies
+func (s *Module) Destroy() []interface{} {
 	return []interface{}{
 		s.Shutdown,
 	}
 }
 
 // Create new server
-func (s module) Create(cfg Config) *echo.Echo {
+func (s *Module) Create(cfg Config) *echo.Echo {
 	server := echo.New()
 	server.HideBanner = true
 	server.Debug = cfg.Debug
@@ -65,7 +64,7 @@ func (s module) Create(cfg Config) *echo.Echo {
 }
 
 // Shutdown the server
-func (s module) Shutdown(server *echo.Echo) error {
+func (s *Module) Shutdown(server *echo.Echo) error {
 	fmt.Println("Server is shutting down")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

@@ -19,9 +19,9 @@ var Context = &typctx.Context{
 	Package:     "github.com/typical-go/typical-rest-server",
 	AppModule:   app.Module(),
 	Modules: []interface{}{
-		typdocker.Module(),
-		typserver.Module(),
-		typredis.Module(),
+		&typdocker.Module{},
+		&typserver.Module{},
+		&typredis.Module{},
 		&typpostgres.Module{
 			DBName: "sample",
 		},

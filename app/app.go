@@ -18,7 +18,7 @@ func (m module) Action() interface{} {
 	return startServer
 }
 
-func (m module) Commands(c *typcli.AppCli) []*cli.Command {
+func (m module) AppCommands(c *typcli.AppCli) []*cli.Command {
 	return []*cli.Command{
 		{Name: "route", Usage: "Print available API Routes", Action: c.Action(taskRouteList)},
 	}

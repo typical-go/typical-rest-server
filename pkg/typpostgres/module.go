@@ -39,8 +39,8 @@ type Module struct {
 	DBName string
 }
 
-// Commands of module
-func (p Module) Commands(c *typcli.ModuleCli) []*cli.Command {
+// BuildCommands of module
+func (p Module) BuildCommands(c *typcli.BuildCli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",

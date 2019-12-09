@@ -33,14 +33,11 @@ type Config struct {
 	MaxConnAge         time.Duration `envconfig:"MAX_CONN_AGE" default:"30m" required:"true"`
 }
 
-// Module of redis
-func Module() interface{} {
-	return &module{}
-}
+// Module of Redis
+type Module struct{}
 
-type module struct{}
-
-func (r module) Configure() (prefix string, spec, loadFn interface{}) {
+// Configure Redis
+func (r *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "REDIS"
 	spec = &Config{}
 	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
@@ -51,28 +48,28 @@ func (r module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // Provide dependencies
-func (r module) Provide() []interface{} {
+func (r *Module) Provide() []interface{} {
 	return []interface{}{
 		r.connect,
 	}
 }
 
 // Prepare the module
-func (r module) Prepare() []interface{} {
+func (r *Module) Prepare() []interface{} {
 	return []interface{}{
 		r.ping,
 	}
 }
 
 // Destroy dependencies
-func (r module) Destroy() []interface{} {
+func (r *Module) Destroy() []interface{} {
 	return []interface{}{
 		r.disconnect,
 	}
 }
 
-// BuildCommand of module
-func (r module) Commands(c *typcli.ModuleCli) []*cli.Command {
+// BuildCommands of module
+func (r *Module) BuildCommands(c *typcli.BuildCli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -87,7 +84,8 @@ func (r module) Commands(c *typcli.ModuleCli) []*cli.Command {
 	}
 }
 
-func (r module) DockerCompose() typdocker.Compose {
+// DockerCompose template
+func (r *Module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"redis": typdocker.Service{
@@ -107,7 +105,7 @@ func (r module) DockerCompose() typdocker.Compose {
 	}
 }
 
-func (module) connect(cfg Config) (client *redis.Client) {
+func (*Module) connect(cfg Config) (client *redis.Client) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -123,16 +121,16 @@ func (module) connect(cfg Config) (client *redis.Client) {
 	return
 }
 
-func (module) ping(client *redis.Client) error {
+func (*Module) ping(client *redis.Client) error {
 	log.Info("Ping to Redis")
 	return client.Ping().Err()
 }
 
-func (module) disconnect(client *redis.Client) (err error) {
+func (*Module) disconnect(client *redis.Client) (err error) {
 	return client.Close()
 }
 
-func (module) console(config *Config) (err error) {
+func (*Module) console(config *Config) (err error) {
 	args := []string{
 		"-h", config.Host,
 		"-p", config.Port,

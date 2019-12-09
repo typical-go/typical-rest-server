@@ -57,6 +57,8 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 	- `./typicalw docker compose`: Generate docker-compose.yaml
 	- `./typicalw docker up`: Spin up docker containers
 	- `./typicalw docker down`: Take down all docker containers
+- `./typicalw redis`: Redis Tool
+	- `./typicalw redis console`: Redis Interactive
 - `./typicalw postgres`: Postgres Database Tool
 	- `./typicalw postgres create`: Create New Database
 	- `./typicalw postgres drop`: Drop Database
@@ -64,5 +66,3 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 	- `./typicalw postgres rollback`: Rollback Database
 	- `./typicalw postgres seed`: Database Seeding
 	- `./typicalw postgres console`: PostgreSQL Interactive
-- `./typicalw redis`: Redis Tool
-	- `./typicalw redis console`: Redis Interactive

@@ -10,7 +10,7 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := typserver.Module()
+	m := &typserver.Module{}
 	require.True(t, typmodule.IsProvider(m))
 	require.True(t, typmodule.IsDestroyer(m))
 	require.True(t, typcfg.IsConfigurer(m))
