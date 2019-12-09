@@ -21,11 +21,11 @@ type BookCntrl struct {
 
 // Route to define API Route
 func (c *BookCntrl) Route(e *echo.Echo) {
-	e.GET("book", c.List)
-	e.POST("book", c.Create)
-	e.GET("book/:id", c.Get)
-	e.PUT("book", c.Update)
-	e.DELETE("book/:id", c.Delete)
+	e.GET("books", c.List)
+	e.POST("books", c.Create)
+	e.GET("books/:id", c.Get)
+	e.PUT("books", c.Update)
+	e.DELETE("books/:id", c.Delete)
 }
 
 // Create book
