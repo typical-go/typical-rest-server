@@ -4,17 +4,13 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typmodule"
-	"github.com/typical-go/typical-go/pkg/utility/coll"
-
 	"github.com/iancoleman/strcase"
-
-	"github.com/typical-go/typical-go/pkg/typcfg"
-	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typctx"
-
+	"github.com/typical-go/typical-go/pkg/typobj"
+	"github.com/typical-go/typical-go/pkg/utility/coll"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
+	"github.com/urfave/cli/v2"
 )
 
 // Generator responsible to generate readme
@@ -31,11 +27,11 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 
 	md.H3("Usage")
 	appName := strcase.ToKebab(ctx.Name)
-	if typmodule.IsActionable(ctx.AppModule) {
+	if typobj.IsActionable(ctx.AppModule) {
 		md.Writef("- `%s`: Run the application\n", appName)
 	}
-	if commander, ok := ctx.AppModule.(typcli.AppCommander); ok {
-		for _, cmd := range commander.AppCommands(&typcli.AppCli{}) {
+	if commander, ok := ctx.AppModule.(typobj.AppCommander); ok {
+		for _, cmd := range commander.AppCommands(&dummyCli{}) {
 			md.Writef("- `%s %s`: %s\n", appName, cmd.Name, cmd.Usage)
 			for _, subcmd := range cmd.Subcommands {
 				md.Writef("\t- `%s %s %s`: %s\n", appName, cmd.Name, subcmd.Name, subcmd.Usage)
@@ -87,16 +83,30 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	return
 }
 
-func fields(ctx *typctx.Context) (keys coll.Strings, m map[string]typcfg.Field) {
-	m = make(map[string]typcfg.Field)
+func fields(ctx *typctx.Context) (keys coll.Strings, m map[string]typobj.Field) {
+	m = make(map[string]typobj.Field)
 	for _, module := range ctx.AllModule() {
-		if configurer, ok := module.(typcfg.Configurer); ok {
+		if configurer, ok := module.(typobj.Configurer); ok {
 			prefix, spec, _ := configurer.Configure()
-			for _, field := range typcfg.Fields(prefix, spec) {
+			for _, field := range typobj.Fields(prefix, spec) {
 				m[field.Name] = field
 				keys.Append(field.Name)
 			}
 		}
 	}
 	return
+}
+
+type dummyCli struct{}
+
+func (*dummyCli) Action(fn interface{}) func(ctx *cli.Context) error {
+	return func(ctx *cli.Context) error {
+		return nil
+	}
+}
+
+func (*dummyCli) PreparedAction(fn interface{}) func(ctx *cli.Context) error {
+	return func(ctx *cli.Context) error {
+		return nil
+	}
 }

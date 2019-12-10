@@ -13,8 +13,7 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typcfg"
-	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/typobj"
 	"github.com/typical-go/typical-go/pkg/utility/envfile"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli/v2"
@@ -40,7 +39,7 @@ type Module struct {
 }
 
 // BuildCommands of module
-func (p Module) BuildCommands(c *typcli.BuildCli) []*cli.Command {
+func (p Module) BuildCommands(c typobj.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -81,7 +80,7 @@ func (p Module) Configure() (prefix string, spec, loadFn interface{}) {
 	spec = &Config{
 		DBName: p.DBName,
 	}
-	loadFn = func(loader typcfg.Loader) (cfg Config, err error) {
+	loadFn = func(loader typobj.Loader) (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}
