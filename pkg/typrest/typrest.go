@@ -39,7 +39,7 @@ func (m *Module) scaffold(ctx *cli.Context) (err error) {
 		},
 		runner.WriteTemplate{
 			Target:   fmt.Sprintf("app/service/%s_service.go", e.SmallCase),
-			Template: repoTmpl,
+			Template: serviceTmpl,
 			Data:     e,
 		},
 	)
