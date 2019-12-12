@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/typobj"
-	"github.com/typical-go/typical-go/pkg/typobj"
-	"github.com/typical-go/typical-go/pkg/typobj"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 )
 
