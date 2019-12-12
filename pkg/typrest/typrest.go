@@ -3,7 +3,7 @@ package typrest
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-go/pkg/typcli"
+	"github.com/typical-go/typical-go/pkg/typobj"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
 	"github.com/typical-go/typical-go/pkg/utility/runner"
 	"github.com/urfave/cli/v2"
@@ -13,7 +13,7 @@ import (
 type Module struct{}
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c *typcli.BuildCli) []*cli.Command {
+func (m *Module) BuildCommands(c *typobj.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "rest",
