@@ -13,7 +13,7 @@ import (
 type Module struct{}
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c *typobj.Cli) []*cli.Command {
+func (m *Module) BuildCommands(c typobj.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "rest",
