@@ -145,24 +145,24 @@ func TestBookController_Update(t *testing.T) {
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
-	t.Run("When invalid message request", func(t *testing.T) {
+	t.Run("WHEN invalid message request", func(t *testing.T) {
 		_, err := echokit.DoPUT(bookCntrl.Update, "/", `{}`)
 		require.EqualError(t, err, "code=400, message=Invalid ID")
 	})
-	t.Run("When invalid message request", func(t *testing.T) {
+	t.Run("WHEN invalid message request", func(t *testing.T) {
 		_, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1}`)
 		require.EqualError(t, err, "code=400, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag")
 	})
-	t.Run("When invalid json format", func(t *testing.T) {
+	t.Run("WHEN invalid json format", func(t *testing.T) {
 		_, err := echokit.DoPUT(bookCntrl.Update, "/", `invalid}`)
 		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 	})
-	t.Run("When error", func(t *testing.T) {
+	t.Run("WHEN error", func(t *testing.T) {
 		bookSvc.EXPECT().Update(gomock.Any(), gomock.Any()).Return(fmt.Errorf("some-update-error"))
 		_, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1,"author":"some-author", "title":"some-title"}`)
 		require.EqualError(t, err, "code=500, message=some-update-error")
 	})
-	t.Run("When success", func(t *testing.T) {
+	t.Run("WHEN success", func(t *testing.T) {
 		bookSvc.EXPECT().Update(gomock.Any(), gomock.Any()).Return(nil)
 		rr, err := echokit.DoPUT(bookCntrl.Update, "/", `{"id": 1, "author":"some-author", "title":"some-title"}`)
 		require.NoError(t, err)
