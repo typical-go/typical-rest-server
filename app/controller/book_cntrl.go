@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -8,7 +9,6 @@ import (
 
 	"github.com/typical-go/typical-rest-server/app/repository"
 	"github.com/typical-go/typical-rest-server/app/service"
-	"github.com/typical-go/typical-rest-server/pkg/utility/responsekit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -37,12 +37,14 @@ func (c *BookCntrl) Create(ctx echo.Context) (err error) {
 		return err
 	}
 	if err = validator.New().Struct(book); err != nil {
-		return responsekit.InvalidRequest(ctx, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if lastInsertID, err = c.BookService.Insert(ctx0, book); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
-	return responsekit.InsertSuccess(ctx, lastInsertID)
+	return ctx.JSON(http.StatusCreated, GeneralResponse{
+		Message: fmt.Sprintf("Success insert new book #%d", lastInsertID),
+	})
 }
 
 // List of book
@@ -50,7 +52,7 @@ func (c *BookCntrl) List(ctx echo.Context) (err error) {
 	var books []*repository.Book
 	ctx0 := ctx.Request().Context()
 	if books, err = c.BookService.List(ctx0); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return ctx.JSON(http.StatusOK, books)
 }
@@ -61,13 +63,13 @@ func (c *BookCntrl) Get(ctx echo.Context) (err error) {
 	var book *repository.Book
 	ctx0 := ctx.Request().Context()
 	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
-		return responsekit.InvalidID(ctx, err)
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
 	if book, err = c.BookService.Find(ctx0, id); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	if book == nil {
-		return responsekit.NotFound(ctx, id)
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Book#%d not found", id))
 	}
 	return ctx.JSON(http.StatusOK, book)
 }
@@ -77,12 +79,14 @@ func (c *BookCntrl) Delete(ctx echo.Context) (err error) {
 	var id int64
 	ctx0 := ctx.Request().Context()
 	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
-		return responsekit.InvalidID(ctx, err)
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
 	if err = c.BookService.Delete(ctx0, id); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return responsekit.DeleteSuccess(ctx, id)
+	return ctx.JSON(http.StatusOK, GeneralResponse{
+		Message: fmt.Sprintf("Success delete book #%d", id),
+	})
 }
 
 // Update book
@@ -93,13 +97,15 @@ func (c *BookCntrl) Update(ctx echo.Context) (err error) {
 		return err
 	}
 	if book.ID <= 0 {
-		return responsekit.InvalidID(ctx, err)
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
 	if err = validator.New().Struct(book); err != nil {
-		return responsekit.InvalidRequest(ctx, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if err = c.BookService.Update(ctx0, book); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return responsekit.UpdateSuccess(ctx, book.ID)
+	return ctx.JSON(http.StatusOK, GeneralResponse{
+		Message: fmt.Sprintf("Success update book #%d", book.ID),
+	})
 }
