@@ -71,7 +71,7 @@ func (Generator) Generate(ctx *typctx.Context, w io.Writer) (err error) {
 	md.H3("Release the destribution")
 	md.Writeln("Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
 
-	for i, cmd := range typbuildtool.ModuleCommands(ctx) {
+	for i, cmd := range typbuildtool.BuildCommands(ctx) {
 		if i < 1 {
 			md.H3("Other Command")
 		}
