@@ -7,11 +7,11 @@ import (
 
 // Music represented  music entity
 type Music struct {
-	ID        int64     
-	Title     string    
-	Author    string    
-	UpdatedAt time.Time 
-	CreatedAt time.Time 
+	ID        int64
+	Title     string
+	Author    string
+	UpdatedAt time.Time
+	CreatedAt time.Time
 }
 
 // MusicRepo to handle music  entity
@@ -21,4 +21,9 @@ type MusicRepo interface {
 	Insert(ctx context.Context, music Music) (lastInsertID int64, err error)
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, music Music) error
+}
+
+// NewMusicRepo return new instance of MusicRepo
+func NewMusicRepo(impl CachedMusicRepoImpl) MusicRepo {
+	return &impl
 }

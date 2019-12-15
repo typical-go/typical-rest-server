@@ -28,24 +28,23 @@ func (m *Module) BuildCommands(c typobj.Cli) []*cli.Command {
 func (m *Module) scaffold(ctx *cli.Context) (err error) {
 	e := Entity{
 		Name:           "music",
-		TableName:      "musics",
-		TypeName:       "Music",
+		Table:          "musics",
+		Type:           "Music",
+		Cache:          "MUSIC",
 		ProjectPackage: "github.com/typical-go/typical-rest-server",
 	}
 	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
+	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
+	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)
 	servicePath := fmt.Sprintf("app/service/%s_service.go", e.Name)
 	os.Remove(repoPath)
+	os.Remove(repoImplPath)
+	os.Remove(cachedRepoImplPath)
 	os.Remove(servicePath)
 	return runn.Execute(
-		runner.WriteTemplate{
-			Target:   repoPath,
-			Template: repoTmpl,
-			Data:     e,
-		},
-		runner.WriteTemplate{
-			Target:   servicePath,
-			Template: serviceTmpl,
-			Data:     e,
-		},
+		runner.WriteTemplate{Target: repoPath, Template: repoTemplate, Data: e},
+		runner.WriteTemplate{Target: repoImplPath, Template: repoImplTemplate, Data: e},
+		runner.WriteTemplate{Target: cachedRepoImplPath, Template: cachedRepoImplTemplate, Data: e},
+		runner.WriteTemplate{Target: servicePath, Template: serviceTemplate, Data: e},
 	)
 }

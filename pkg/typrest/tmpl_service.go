@@ -1,25 +1,25 @@
 package typrest
 
-const serviceTmpl = `package service
+const serviceTemplate = `package service
 
 import (
 	"{{.ProjectPackage}}/app/repository"
 	"go.uber.org/dig"
 )
 
-// {{.TypeName}}Service contain logic for {{.TypeName}}Controller
-type {{.TypeName}}Service interface {
-	repository.{{.TypeName}}Repo
+// {{.Type}}Service contain logic for {{.Type}}Controller
+type {{.Type}}Service interface {
+	repository.{{.Type}}Repo
 }
 
-// {{.TypeName}}ServiceImpl is implementation of {{.TypeName}}Service
-type {{.TypeName}}ServiceImpl struct {
+// {{.Type}}ServiceImpl is implementation of {{.Type}}Service
+type {{.Type}}ServiceImpl struct {
 	dig.In
-	repository.{{.TypeName}}Repo
+	repository.{{.Type}}Repo
 }
 
-// New{{.TypeName}}Service return new instance of {{.TypeName}}Service
-func New{{.TypeName}}Service(impl {{.TypeName}}ServiceImpl) {{.TypeName}}Service {
+// New{{.Type}}Service return new instance of {{.Type}}Service
+func New{{.Type}}Service(impl {{.Type}}ServiceImpl) {{.Type}}Service {
 	return &impl
 }
 `
