@@ -37,14 +37,17 @@ func (m *Module) scaffold(ctx *cli.Context) (err error) {
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
 	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)
 	servicePath := fmt.Sprintf("app/service/%s_service.go", e.Name)
+	controllerPath := fmt.Sprintf("app/controller/%s_cntrl.go", e.Name)
 	os.Remove(repoPath)
 	os.Remove(repoImplPath)
 	os.Remove(cachedRepoImplPath)
 	os.Remove(servicePath)
+	os.Remove(controllerPath)
 	return runn.Execute(
 		runner.WriteTemplate{Target: repoPath, Template: repoTemplate, Data: e},
 		runner.WriteTemplate{Target: repoImplPath, Template: repoImplTemplate, Data: e},
 		runner.WriteTemplate{Target: cachedRepoImplPath, Template: cachedRepoImplTemplate, Data: e},
 		runner.WriteTemplate{Target: servicePath, Template: serviceTemplate, Data: e},
+		runner.WriteTemplate{Target: controllerPath, Template: constrollerTemplate, Data: e},
 	)
 }

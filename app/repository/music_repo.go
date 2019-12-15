@@ -7,11 +7,11 @@ import (
 
 // Music represented  music entity
 type Music struct {
-	ID        int64
-	Title     string
-	Author    string
-	UpdatedAt time.Time
-	CreatedAt time.Time
+	ID        int64     
+	Title     string    
+	Author    string    
+	UpdatedAt time.Time 
+	CreatedAt time.Time 
 }
 
 // MusicRepo to handle music  entity
@@ -27,3 +27,4 @@ type MusicRepo interface {
 func NewMusicRepo(impl CachedMusicRepoImpl) MusicRepo {
 	return &impl
 }
+
