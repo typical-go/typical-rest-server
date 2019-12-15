@@ -17,11 +17,10 @@ type Module struct{}
 func (m *Module) BuildCommands(c typobj.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:  "rest",
-			Usage: "rest application utility",
-			Subcommands: []*cli.Command{
-				{Name: "scaffold", Aliases: []string{"s"}, Usage: "Scaffold the MVC", Action: m.scaffold},
-			},
+			Name:    "generate",
+			Aliases: []string{"g"},
+			Usage:   "Generate CRUD (experimental)",
+			Action:  m.scaffold,
 		},
 	}
 }
