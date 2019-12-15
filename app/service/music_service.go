@@ -5,7 +5,7 @@ import (
 	"go.uber.org/dig"
 )
 
-// MusicService contain logic for Music Controller
+// MusicService contain logic for MusicController
 type MusicService interface {
 	repository.MusicRepo
 }
