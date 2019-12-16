@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/typical-go/typical-go/pkg/typobj"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
 	"github.com/typical-go/typical-go/pkg/utility/runner"
 	"github.com/urfave/cli/v2"
@@ -14,7 +14,7 @@ import (
 type Module struct{}
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c typobj.Cli) []*cli.Command {
+func (m *Module) BuildCommands(c typcore.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "generate",
@@ -25,6 +25,12 @@ func (m *Module) BuildCommands(c typobj.Cli) []*cli.Command {
 	}
 }
 
+// ID        int64     `json:"id"`
+// Title     string    `json:"title" validate:"required"`
+// Author    string    `json:"author" validate:"required"`
+// UpdatedAt time.Time `json:"updated_at"`
+// CreatedAt time.Time `json:"created_at"`
+
 func (m *Module) scaffold(ctx *cli.Context) (err error) {
 	e := Entity{
 		Name:           "music",
@@ -32,6 +38,12 @@ func (m *Module) scaffold(ctx *cli.Context) (err error) {
 		Type:           "Music",
 		Cache:          "MUSIC",
 		ProjectPackage: "github.com/typical-go/typical-rest-server",
+		Fields: []Field{
+			{Name: "ID", Type: "int64"},
+			{Name: "Title", Type: "string"},
+			{Name: "UpdatedAt", Type: "time.Time"},
+			{Name: "CreatedAt", Type: "time.Time"},
+		},
 	}
 	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)

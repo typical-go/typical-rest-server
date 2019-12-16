@@ -9,11 +9,8 @@ import (
 
 // {{.Type}} represented  {{.Name}} entity
 type {{.Type}} struct {
-	ID        int64     
-	Title     string    
-	Author    string    
-	UpdatedAt time.Time 
-	CreatedAt time.Time 
+	{{range $field := .Fields}}{{$field.Name}} {{$field.Type}}
+	{{end}}
 }
 
 // {{.Type}}Repo to handle {{.Name}}  entity

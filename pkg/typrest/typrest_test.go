@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/typobj"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typmodule"
 )
 
@@ -13,5 +13,5 @@ func TestModule(t *testing.T) {
 	require.True(t, typmodule.IsProvider(m))
 	require.True(t, typmodule.IsDestroyer(m))
 	require.True(t, typmodule.IsProvider(m))
-	require.True(t, typobj.IsBuildCommander(m))
+	require.True(t, typcore.IsBuildCommander(m))
 }
