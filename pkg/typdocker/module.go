@@ -9,11 +9,13 @@ import (
 // Module of Docker
 type Module struct{}
 
+type docker struct {
+	*typcore.Context
+}
+
 // BuildCommands is command collection to called from
 func (*Module) BuildCommands(c typcore.Cli) []*cli.Command {
-	cmd := dockerCommand{
-		Context: c.Context(),
-	}
+	d := docker{Context: c.Context()}
 	return []*cli.Command{
 		{
 			Name:  "docker",
@@ -22,21 +24,10 @@ func (*Module) BuildCommands(c typcore.Cli) []*cli.Command {
 				return envfile.Load()
 			},
 			Subcommands: []*cli.Command{
-				{
-					Name:   "compose",
-					Usage:  "Generate docker-compose.yaml",
-					Action: cmd.Compose,
-				},
-				{
-					Name:   "up",
-					Usage:  "Spin up docker containers",
-					Action: cmd.Up,
-				},
-				{
-					Name:   "down",
-					Usage:  "Take down all docker containers",
-					Action: cmd.Down,
-				},
+				d.composeCmd(),
+				d.upCmd(),
+				d.downCmd(),
+				d.wipeCmd(),
 			},
 		},
 	}
