@@ -55,8 +55,10 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 
 - `./typicalw docker`: Docker utility
 	- `./typicalw docker compose`: Generate docker-compose.yaml
-	- `./typicalw docker up`: Spin up docker containers
-	- `./typicalw docker down`: Take down all docker containers
+	- `./typicalw docker up`: Spin up docker containers according docker-compose
+	- `./typicalw docker down`: Take down all docker containers according docker-compose
+	- `./typicalw docker wipe`: Kill all running docker container
+- `./typicalw readme`: Generate README.md
 - `./typicalw redis`: Redis Tool
 	- `./typicalw redis console`: Redis Interactive
 - `./typicalw postgres`: Postgres Database Tool

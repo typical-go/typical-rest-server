@@ -8,7 +8,7 @@ import (
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typobj"
+	"github.com/typical-go/typical-go/pkg/typcore"
 )
 
 // Config is server configuration
@@ -23,7 +23,7 @@ type Module struct{}
 func (s *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "SERVER"
 	spec = &Config{}
-	loadFn = func(loader typobj.Loader) (cfg Config, err error) {
+	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

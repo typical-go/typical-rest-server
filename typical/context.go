@@ -1,7 +1,7 @@
 package typical
 
 import (
-	"github.com/typical-go/typical-go/pkg/typctx"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
@@ -13,14 +13,19 @@ import (
 )
 
 // Context of project
-var Context = &typctx.Context{
+var Context = &typcore.Context{
 	Name:        "Typical REST Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.9",
 	Package:     "github.com/typical-go/typical-rest-server",
-	AppModule:   app.Module(),
+
+	AppModule: app.Module(),
+
 	Modules: []interface{}{
 		&typdocker.Module{},
+		&typreadme.Module{},
+
+		// REST Server Modules
 		&typserver.Module{},
 		&typredis.Module{},
 		&typpostgres.Module{
@@ -28,7 +33,7 @@ var Context = &typctx.Context{
 		},
 		&typrest.Module{},
 	},
-	ReadmeGenerator: typreadme.Generator{},
+
 	Releaser: &typrls.Releaser{
 		Targets: []typrls.Target{"linux/amd64", "darwin/amd64"},
 		Publishers: []typrls.Publisher{
