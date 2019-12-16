@@ -8,7 +8,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/typical-go/typical-go/pkg/typobj"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/utility/envfile"
 
 	log "github.com/sirupsen/logrus"
@@ -39,7 +39,7 @@ type Module struct{}
 func (r *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "REDIS"
 	spec = &Config{}
-	loadFn = func(loader typobj.Loader) (cfg Config, err error) {
+	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}
@@ -68,7 +68,7 @@ func (r *Module) Destroy() []interface{} {
 }
 
 // BuildCommands of module
-func (r *Module) BuildCommands(c typobj.Cli) []*cli.Command {
+func (r *Module) BuildCommands(c typcore.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",

@@ -6,16 +6,13 @@ import (
 	"os/exec"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 )
 
-type context interface {
-	AllModule() []interface{}
-}
-
 type dockerCommand struct {
-	context
+	*typcore.Context
 }
 
 func (c dockerCommand) Compose(ctx *cli.Context) (err error) {

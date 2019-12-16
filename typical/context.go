@@ -1,7 +1,7 @@
 package typical
 
 import (
-	"github.com/typical-go/typical-go/pkg/typctx"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
@@ -12,7 +12,7 @@ import (
 )
 
 // Context of project
-var Context = &typctx.Context{
+var Context = &typcore.Context{
 	Name:        "Typical REST Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.9",
