@@ -15,7 +15,7 @@ import (
 var Context = &typcore.Context{
 	Name:        "Typical REST Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.9",
+	Version:     "0.8.10",
 	Package:     "github.com/typical-go/typical-rest-server",
 
 	AppModule: app.Module(),
