@@ -57,10 +57,11 @@ func generate(e Entity) error {
 	os.Remove(servicePath)
 	os.Remove(controllerPath)
 	return runn.Execute(
-		runner.WriteTemplate{Target: repoPath, Template: repoTemplate, Data: e},
-		runner.WriteTemplate{Target: repoImplPath, Template: repoImplTemplate, Data: e},
-		runner.WriteTemplate{Target: cachedRepoImplPath, Template: cachedRepoImplTemplate, Data: e},
-		runner.WriteTemplate{Target: servicePath, Template: serviceTemplate, Data: e},
-		runner.WriteTemplate{Target: controllerPath, Template: constrollerTemplate, Data: e},
+		runner.NewWriteTemplate(repoPath, repoTemplate, e),
+		runner.NewWriteTemplate(repoImplPath, repoImplTemplate, e),
+		runner.NewWriteTemplate(cachedRepoImplPath, cachedRepoImplTemplate, e),
+		runner.NewWriteTemplate(servicePath, serviceTemplate, e),
+		runner.NewWriteTemplate(controllerPath, constrollerTemplate, e),
+		runner.NewGoFmt(repoPath, repoImplPath),
 	)
 }

@@ -57,7 +57,10 @@ func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) ({{.Name}} *{{.T
 		return
 	}
 	if rows.Next() {
-		{{.Name}}, err = scan{{.Type}}(rows)
+		{{$var_name:=.Name}}var {{$var_name}}0 {{.Type}}
+		if err = rows.Scan({{range $field := .Fields}}&{{$var_name}}0.{{$field.Name}}, {{end}}); err != nil {
+			return nil, err
+		}
 	}
 	return
 }
@@ -73,11 +76,11 @@ func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err er
 	}
 	list = make([]*{{.Type}}, 0)
 	for rows.Next() {
-		var {{.Name}} *{{.Type}}
-		if {{.Name}}, err = scan{{.Type}}(rows); err != nil {
-			return
+		{{$var_name:=.Name}}var {{$var_name}}0 {{.Type}}
+		if err = rows.Scan({{range $field := .Fields}}&{{$var_name}}0.{{$field.Name}}, {{end}}); err != nil {
+			return nil, err
 		}
-		list = append(list, {{.Name}})
+		list = append(list, &{{$var_name}}0)
 	}
 	return
 }
@@ -115,15 +118,6 @@ func (r *{{.Type}}RepoImpl) Update(ctx context.Context, {{.Name}} {{.Type}}) (er
 		Where(sq.Eq{"id": {{.Name}}.ID})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
 	return
-}
-
-func scan{{.Type}}(rows *sql.Rows) (*{{.Type}}, error) {
-	{{$var_name:=.Name}}var {{$var_name}} {{.Type}}
-	var err error
-	if err = rows.Scan({{range $field := .Fields}}&{{$var_name}}.{{$field.Name}}, {{end}}); err != nil {
-		return nil, err
-	}
-	return &{{.Name}}, nil
 }
 `
 

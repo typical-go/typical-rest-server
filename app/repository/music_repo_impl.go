@@ -26,7 +26,10 @@ func (r *MusicRepoImpl) Find(ctx context.Context, id int64) (music *Music, err e
 		return
 	}
 	if rows.Next() {
-		music, err = scanMusic(rows)
+		var music0 Music
+		if err = rows.Scan(&music0.ID, &music0.Artist, &music0.UpdatedAt, &music0.CreatedAt); err != nil {
+			return nil, err
+		}
 	}
 	return
 }
@@ -42,11 +45,11 @@ func (r *MusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
 	}
 	list = make([]*Music, 0)
 	for rows.Next() {
-		var music *Music
-		if music, err = scanMusic(rows); err != nil {
-			return
+		var music0 Music
+		if err = rows.Scan(&music0.ID, &music0.Artist, &music0.UpdatedAt, &music0.CreatedAt); err != nil {
+			return nil, err
 		}
-		list = append(list, music)
+		list = append(list, &music0)
 	}
 	return
 }
@@ -83,13 +86,4 @@ func (r *MusicRepoImpl) Update(ctx context.Context, music Music) (err error) {
 		Where(sq.Eq{"id": music.ID})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
 	return
-}
-
-func scanMusic(rows *sql.Rows) (*Music, error) {
-	var music Music
-	var err error
-	if err = rows.Scan(&music.ID, &music.Artist, &music.UpdatedAt, &music.CreatedAt); err != nil {
-		return nil, err
-	}
-	return &music, nil
 }
