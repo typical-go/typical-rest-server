@@ -12,13 +12,9 @@ type Entity struct {
 
 // Field of entity
 type Field struct {
-	Name string
-	Type string
-}
-
-// JsonedName is name for json response
-func (f Field) JsonedName() string {
-	return f.Name
+	Name   string
+	Type   string
+	Column string
 }
 
 // StructTag of Field
