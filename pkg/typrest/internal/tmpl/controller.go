@@ -1,6 +1,7 @@
-package typrest
+package tmpl
 
-const constrollerTemplate = `package controller
+// Controller template
+const Controller = `package controller
 
 import (
 	"fmt"
@@ -23,11 +24,11 @@ type {{.Type}}Cntrl struct {
 
 // Route to define API Route
 func (c *{{.Type}}Cntrl) Route(e *echo.Echo) {
-	e.GET("{{.Name}}s", c.List)
-	e.POST("{{.Name}}s", c.Create)
-	e.GET("{{.Name}}s/:id", c.Get)
-	e.PUT("{{.Name}}s", c.Update)
-	e.DELETE("{{.Name}}s/:id", c.Delete)
+	e.GET("{{.Table}}", c.List)
+	e.POST("{{.Table}}", c.Create)
+	e.GET("{{.Table}}/:id", c.Get)
+	e.PUT("{{.Table}}", c.Update)
+	e.DELETE("{{.Table}}/:id", c.Delete)
 }
 
 // Create {{.Name}}

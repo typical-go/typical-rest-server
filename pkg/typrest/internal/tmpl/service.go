@@ -1,6 +1,7 @@
-package typrest
+package tmpl
 
-const serviceTemplate = `package service
+// Service temmplate
+const Service = `package service
 
 import (
 	"{{.ProjectPackage}}/app/repository"

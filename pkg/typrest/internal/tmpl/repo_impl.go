@@ -1,35 +1,7 @@
-package typrest
+package tmpl
 
-const repoTemplate = `package repository
-
-import (
-	"context"
-	"time"
-)
-
-// {{.Type}} represented  {{.Name}} entity
-type {{.Type}} struct {
-	{{range $field := .Fields}}{{$field.Name}} {{$field.Type}} {{$field.StructTag}}
-	{{end}}
-}
-
-// {{.Type}}Repo to handle {{.Name}}  entity
-type {{.Type}}Repo interface {
-	Find(ctx context.Context, id int64) (*{{.Type}}, error)
-	List(ctx context.Context) ([]*{{.Type}}, error)
-	Insert(ctx context.Context, {{.Name}} {{.Type}}) (lastInsertID int64, err error)
-	Delete(ctx context.Context, id int64) error
-	Update(ctx context.Context, {{.Name}} {{.Type}}) error
-}
-
-// New{{.Type}}Repo return new instance of {{.Type}}Repo
-func New{{.Type}}Repo(impl Cached{{.Type}}RepoImpl) {{.Type}}Repo {
-	return &impl
-}
-
-`
-
-const repoImplTemplate = `package repository
+// RepoImpl template
+const RepoImpl = `package repository
 
 import (
 	"context"
@@ -117,63 +89,6 @@ func (r *{{.Type}}RepoImpl) Update(ctx context.Context, {{.Name}} {{.Type}}) (er
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": {{.Name}}.ID})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
-	return
-}
-`
-
-const cachedRepoImplTemplate = `package repository
-
-import (
-	"context"
-	"fmt"
-	"time"
-
-	log "github.com/sirupsen/logrus"
-
-	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/pkg/utility/cachekit"
-	"go.uber.org/dig"
-)
-
-// Cached{{.Type}}RepoImpl is cached implementation of {{.Name}} repository
-type Cached{{.Type}}RepoImpl struct {
-	dig.In
-	{{.Type}}RepoImpl
-	Redis *redis.Client
-}
-
-// Find {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) ({{.Name}} *{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:FIND:%d", id)
-	{{.Name}} = new({{.Type}})
-	redisClient := r.Redis.WithContext(ctx)
-	if err = cachekit.Get(redisClient, cacheKey, {{.Name}}); err == nil {
-		log.Infof("Using cache %s", cacheKey)
-		return
-	}
-	if {{.Name}}, err = r.{{.Type}}RepoImpl.Find(ctx, id); err != nil {
-		return
-	}
-	if err2 := cachekit.Set(redisClient, cacheKey, {{.Name}}, 20*time.Second); err2 != nil {
-		log.Fatal(err2.Error())
-	}
-	return
-}
-
-// List of {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:LIST")
-	redisClient := r.Redis.WithContext(ctx)
-	if err = cachekit.Get(redisClient, cacheKey, &list); err == nil {
-		log.Infof("Using cache %s", cacheKey)
-		return
-	}
-	if list, err = r.{{.Type}}RepoImpl.List(ctx); err != nil {
-		return
-	}
-	if err2 := cachekit.Set(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
-		log.Fatal(err2.Error())
-	}
 	return
 }
 `

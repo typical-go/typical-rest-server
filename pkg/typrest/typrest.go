@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/typical-go/typical-rest-server/pkg/typrest/internal/tmpl"
+
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
 	"github.com/typical-go/typical-go/pkg/utility/runner"
@@ -57,11 +59,11 @@ func generate(e Entity) error {
 	os.Remove(servicePath)
 	os.Remove(controllerPath)
 	return runn.Execute(
-		runner.NewWriteTemplate(repoPath, repoTemplate, e),
-		runner.NewWriteTemplate(repoImplPath, repoImplTemplate, e),
-		runner.NewWriteTemplate(cachedRepoImplPath, cachedRepoImplTemplate, e),
-		runner.NewWriteTemplate(servicePath, serviceTemplate, e),
-		runner.NewWriteTemplate(controllerPath, constrollerTemplate, e),
+		runner.NewWriteTemplate(repoPath, tmpl.Repo, e),
+		runner.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
+		runner.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
+		runner.NewWriteTemplate(servicePath, tmpl.Service, e),
+		runner.NewWriteTemplate(controllerPath, tmpl.Controller, e),
 		runner.NewGoFmt(repoPath, repoImplPath),
 	)
 }
