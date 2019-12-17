@@ -20,18 +20,12 @@ func (m *Module) BuildCommands(c typcore.Cli) []*cli.Command {
 			Name:    "generate",
 			Aliases: []string{"g"},
 			Usage:   "Generate CRUD (experimental)",
-			Action:  m.scaffold,
+			Action:  m.generate,
 		},
 	}
 }
 
-// ID        int64     `json:"id"`
-// Title     string    `json:"title" validate:"required"`
-// Author    string    `json:"author" validate:"required"`
-// UpdatedAt time.Time `json:"updated_at"`
-// CreatedAt time.Time `json:"created_at"`
-
-func (m *Module) scaffold(ctx *cli.Context) (err error) {
+func (m *Module) generate(ctx *cli.Context) (err error) {
 	e := Entity{
 		Name:           "music",
 		Table:          "musics",
@@ -39,12 +33,19 @@ func (m *Module) scaffold(ctx *cli.Context) (err error) {
 		Cache:          "MUSIC",
 		ProjectPackage: "github.com/typical-go/typical-rest-server",
 		Fields: []Field{
-			{Name: "ID", Type: "int64"},
-			{Name: "Title", Type: "string"},
-			{Name: "UpdatedAt", Type: "time.Time"},
-			{Name: "CreatedAt", Type: "time.Time"},
+			{Name: "ID", Column: "id", Type: "int64", StructTag: "`json:\"id\"`"},
+			{Name: "Artist", Column: "artist", Type: "string", StructTag: "`json:\"artist\"`"},
+			{Name: "UpdatedAt", Column: "updated_at", Type: "time.Time", StructTag: "`json:\"updated_at\"`"},
+			{Name: "CreatedAt", Column: "created_at", Type: "time.Time", StructTag: "`json:\"created_at\"`"},
+		},
+		Forms: []Field{
+			{Name: "Artist", Column: "artist", Type: "string"},
 		},
 	}
+	return generate(e)
+}
+
+func generate(e Entity) error {
 	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
 	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)

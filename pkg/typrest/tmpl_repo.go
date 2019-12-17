@@ -9,7 +9,7 @@ import (
 
 // {{.Type}} represented  {{.Name}} entity
 type {{.Type}} struct {
-	{{range $field := .Fields}}{{$field.Name}} {{$field.Type}}
+	{{range $field := .Fields}}{{$field.Name}} {{$field.Type}} {{$field.StructTag}}
 	{{end}}
 }
 
@@ -50,7 +50,7 @@ type {{.Type}}RepoImpl struct {
 func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) ({{.Name}} *{{.Type}}, err error) {
 	var rows *sql.Rows
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
+	builder := psql.Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
 		From("{{.Table}}").
 		Where(sq.Eq{"id": id})
 	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
@@ -66,7 +66,7 @@ func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) ({{.Name}} *{{.T
 func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
 	var rows *sql.Rows
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
+	builder := psql.Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
 		From("{{.Table}}")
 	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
 		return
@@ -84,9 +84,9 @@ func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err er
 
 // Insert {{.Name}}
 func (r *{{.Type}}RepoImpl) Insert(ctx context.Context, {{.Name}} {{.Type}}) (lastInsertID int64, err error) {
-	query := sq.Insert("{{.Table}}").
-		Columns("title", "author").
-		Values({{.Name}}.Title, {{.Name}}.Author).
+	{{$var_name:=.Name}}query := sq.Insert("{{.Table}}").
+		Columns({{range $field := .Forms}}"{{$field.Column}}",{{end}}).
+		Values({{range $field := .Forms}}{{$var_name}}.{{$field.Name}},{{end}}).
 		Suffix("RETURNING \"id\"").
 		RunWith(r.DB).
 		PlaceholderFormat(sq.Dollar)
@@ -107,10 +107,10 @@ func (r *{{.Type}}RepoImpl) Delete(ctx context.Context, id int64) (err error) {
 
 // Update {{.Name}}
 func (r *{{.Type}}RepoImpl) Update(ctx context.Context, {{.Name}} {{.Type}}) (err error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	{{$var_name:=.Name}}psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	builder := psql.Update("{{.Table}}").
-		Set("title", {{.Name}}.Title).
-		Set("author", {{.Name}}.Author).
+		{{range $field := .Forms}}Set("{{$field.Column}}", {{$var_name}}.{{$field.Name}}).
+		{{end}}
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": {{.Name}}.ID})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
@@ -118,9 +118,9 @@ func (r *{{.Type}}RepoImpl) Update(ctx context.Context, {{.Name}} {{.Type}}) (er
 }
 
 func scan{{.Type}}(rows *sql.Rows) (*{{.Type}}, error) {
-	var {{.Name}} {{.Type}}
+	{{$var_name:=.Name}}var {{$var_name}} {{.Type}}
 	var err error
-	if err = rows.Scan(&{{.Name}}.ID, &{{.Name}}.Title, &{{.Name}}.Author, &{{.Name}}.UpdatedAt, &{{.Name}}.CreatedAt); err != nil {
+	if err = rows.Scan({{range $field := .Fields}}&{{$var_name}}.{{$field.Name}}, {{end}}); err != nil {
 		return nil, err
 	}
 	return &{{.Name}}, nil

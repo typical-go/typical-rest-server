@@ -7,10 +7,10 @@ import (
 
 // Music represented  music entity
 type Music struct {
-	ID        int64
-	Title     string
-	UpdatedAt time.Time
-	CreatedAt time.Time
+	ID        int64     `json:"id"`
+	Artist    string    `json:"artist"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // MusicRepo to handle music  entity
