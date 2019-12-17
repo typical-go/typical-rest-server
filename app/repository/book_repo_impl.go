@@ -26,7 +26,11 @@ func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err erro
 		return
 	}
 	if rows.Next() {
-		book, err = scanBook(rows)
+		var book0 Book
+		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
+			return nil, err
+		}
+		book = &book0
 	}
 	return
 }
@@ -42,11 +46,11 @@ func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 	}
 	list = make([]*Book, 0)
 	for rows.Next() {
-		var book *Book
-		if book, err = scanBook(rows); err != nil {
-			return
+		var book0 Book
+		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
+			return nil, err
 		}
-		list = append(list, book)
+		list = append(list, &book0)
 	}
 	return
 }
@@ -84,13 +88,4 @@ func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
 		Where(sq.Eq{"id": book.ID})
 	_, err = builder.RunWith(r.DB).ExecContext(ctx)
 	return
-}
-
-func scanBook(rows *sql.Rows) (*Book, error) {
-	var book Book
-	var err error
-	if err = rows.Scan(&book.ID, &book.Title, &book.Author, &book.UpdatedAt, &book.CreatedAt); err != nil {
-		return nil, err
-	}
-	return &book, nil
 }
