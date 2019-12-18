@@ -3,6 +3,9 @@ package typrails
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+
+	"github.com/iancoleman/strcase"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/utility/coll"
@@ -15,70 +18,77 @@ type Fetcher struct {
 	*sql.DB
 }
 
+// InfoSchema is infomation schema from database
+type InfoSchema struct {
+	ColumnName string
+	DataType   string
+}
+
 // Fetch entity from database based on table name
-func (f *Fetcher) Fetch(tableName string) (e *Entity, err error) {
+func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
 	var infos []InfoSchema
 	if infos, err = f.infoSchema(tableName); err != nil {
 		return
 	}
-	var fields []Field
-	if fields, err = f.standardFields(infos); err != nil {
+	var std coll.KeyStrings
+	std.Add("id", "int4")
+	std.Add("updated_at", "timestamp")
+	std.Add("created_at", "timestamp")
+	fields := f.convert(infos)
+	if err = f.validate(std, fields); err != nil {
 		return
 	}
-	forms := f.formFields(infos)
+	entityName := EntityName(tableName)
 	e = &Entity{
-		Name:           "music",
-		Table:          "musics",
-		Type:           "Music",
-		Cache:          "MUSIC",
-		ProjectPackage: "github.com/typical-go/typical-rest-server",
-		Fields:         append(fields, forms...),
-		Forms:          forms,
+		Name:           entityName,
+		Table:          tableName,
+		Type:           strcase.ToCamel(entityName),
+		Cache:          strings.ToUpper(tableName),
+		ProjectPackage: pkg,
+		Fields:         fields,
+		Forms:          f.filter(std, fields),
 	}
 	return
 }
 
-func (f *Fetcher) standardFields(infos []InfoSchema) (stdFields []Field, err error) {
-	stdFields = []Field{
-		{
-			Name:      "ID",
-			Column:    "id",
-			Type:      "int64",
-			Udt:       "int4",
-			StructTag: "`json:\"id\"`",
-		},
-		{
-			Name:      "UpdatedAt",
-			Column:    "updated_at",
-			Type:      "time.Time",
-			Udt:       "timestamp",
-			StructTag: "`json:\"updated_at\"`",
-		},
-		{
-			Name:      "CreatedAt",
-			Column:    "created_at",
-			Type:      "time.Time",
-			Udt:       "timestamp",
-			StructTag: "`json:\"created_at\"`",
-		},
+func (f *Fetcher) filter(std coll.KeyStrings, fields []Field) (filtered []Field) {
+fields:
+	for _, field := range fields {
+		for _, ks := range std {
+			if ks.Key == field.Column {
+				continue fields
+			}
+		}
+		filtered = append(filtered, field)
+	}
+	return
+}
+
+func (f *Fetcher) validate(std coll.KeyStrings, fields []Field) (err error) {
+	fieldMap := make(map[string]string)
+	for _, field := range fields {
+		fieldMap[field.Column] = field.Udt
 	}
 	var errs coll.Errors
-field_loop:
-	for _, field := range stdFields {
-		for _, info := range infos {
-			if info.ColumnName == field.Column && info.DataType == field.Udt {
-				continue field_loop
+	for _, ks := range std {
+		if udt, ok := fieldMap[ks.Key]; ok {
+			if ks.String == udt {
+				continue
 			}
 		}
 		errs.Append(fmt.Errorf("\"%s\" with underlying data type \"%s\" is missing",
-			field.Column, field.Udt))
+			ks.Key, ks.String))
 	}
+
 	err = errs.Unwrap()
 	return
 }
 
 //
-func (f *Fetcher) formFields(infos []InfoSchema) (forms []Field) {
+func (f *Fetcher) convert(infos []InfoSchema) (fields []Field) {
+	for _, info := range infos {
+		fields = append(fields, CreateField(info.ColumnName, info.DataType))
+	}
 	return
 }
 
@@ -100,7 +110,13 @@ func (f *Fetcher) infoSchema(tableName string) (infos []InfoSchema, err error) {
 	return
 }
 
-type InfoSchema struct {
-	ColumnName string
-	DataType   string
+// EntityName return entity name
+func EntityName(tableName string) string {
+	if strings.HasSuffix(tableName, "es") {
+		return tableName[0 : len(tableName)-2]
+	}
+	if strings.HasSuffix(tableName, "s") {
+		return tableName[0 : len(tableName)-1]
+	}
+	return tableName
 }

@@ -18,6 +18,7 @@ func TestFetcher(t *testing.T) {
 	testcases := []struct {
 		data map[string]string
 		err  error
+		*typrails.Entity
 	}{
 		{
 			data: map[string]string{
@@ -29,8 +30,25 @@ func TestFetcher(t *testing.T) {
 		{
 			data: map[string]string{
 				"id":         "int4",
+				"name":       "varchar",
 				"created_at": "timestamp",
 				"updated_at": "timestamp",
+			},
+			Entity: &typrails.Entity{
+				Name:           "book",
+				Type:           "Book",
+				Table:          "books",
+				Cache:          "BOOKS",
+				ProjectPackage: "some-package",
+				Fields: []typrails.Field{
+					{Name: "ID", Type: "int64", Udt: "int4", Column: "id", StructTag: "`json:\"id\"`"},
+					{Name: "Name", Type: "string", Udt: "varchar", Column: "name", StructTag: "`json:\"name\"`"},
+					{Name: "CreatedAt", Type: "time.Time", Udt: "timestamp", Column: "created_at", StructTag: "`json:\"created_at\"`"},
+					{Name: "UpdatedAt", Type: "time.Time", Udt: "timestamp", Column: "updated_at", StructTag: "`json:\"updated_at\"`"},
+				},
+				Forms: []typrails.Field{
+					{Name: "Name", Type: "string", Udt: "varchar", Column: "name", StructTag: "`json:\"name\"`"},
+				},
 			},
 		},
 		{
@@ -49,8 +67,25 @@ func TestFetcher(t *testing.T) {
 		for key, value := range tt.data {
 			rows.AddRow(key, value)
 		}
-		mock.ExpectQuery(query).WithArgs("some-table").WillReturnRows(rows)
-		_, err = fetcher.Fetch("some-table")
+		mock.ExpectQuery(query).WithArgs("books").WillReturnRows(rows)
+		entity, err := fetcher.Fetch("some-package", "books")
 		require.EqualValues(t, tt.err, err)
+		require.EqualValues(t, tt.Entity, entity)
+		// raw, _ := json.MarshalIndent(entity, "", "   ")
+		// fmt.Println(string(raw))
+	}
+}
+
+func TestEntityName(t *testing.T) {
+	testcases := []struct {
+		TableName  string
+		EntityName string
+	}{
+		{TableName: "book", EntityName: "book"},
+		{TableName: "books", EntityName: "book"},
+		{TableName: "aliases", EntityName: "alias"},
+	}
+	for _, tt := range testcases {
+		require.Equal(t, tt.EntityName, typrails.EntityName(tt.TableName))
 	}
 }
