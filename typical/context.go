@@ -6,9 +6,9 @@ import (
 	"github.com/typical-go/typical-rest-server/app"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typrails"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
 
@@ -24,6 +24,7 @@ var Context = &typcore.Context{
 	Modules: []interface{}{
 		&typdocker.Module{},
 		&typreadme.Module{},
+		&typrails.Module{},
 
 		// REST Server Modules
 		&typserver.Module{},
@@ -31,7 +32,6 @@ var Context = &typcore.Context{
 		&typpostgres.Module{
 			DBName: "sample",
 		},
-		&typrest.Module{},
 	},
 
 	Releaser: &typrls.Releaser{

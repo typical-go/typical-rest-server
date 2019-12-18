@@ -1,4 +1,4 @@
-package typrest
+package typrails
 
 import (
 	"testing"

@@ -1,10 +1,10 @@
-package typrest
+package typrails
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/typical-go/typical-rest-server/pkg/typrest/internal/tmpl"
+	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
@@ -12,22 +12,21 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Module of typrest
+// Module of typrails
 type Module struct{}
 
 // BuildCommands is commands to exectuce from Build-Tool
 func (m *Module) BuildCommands(c typcore.Cli) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:    "generate",
-			Aliases: []string{"g"},
-			Usage:   "Generate CRUD (experimental)",
-			Action:  m.generate,
+			Name:   "rails",
+			Usage:  "Rails-like generator",
+			Action: m.scaffold,
 		},
 	}
 }
 
-func (m *Module) generate(ctx *cli.Context) (err error) {
+func (m *Module) scaffold(ctx *cli.Context) (err error) {
 	e := Entity{
 		Name:           "music",
 		Table:          "musics",

@@ -1,4 +1,4 @@
-package typrest
+package typrails
 
 // Entity of database
 type Entity struct {
