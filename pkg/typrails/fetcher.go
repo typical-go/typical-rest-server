@@ -40,19 +40,38 @@ func (f *Fetcher) Fetch(tableName string) (e *Entity, err error) {
 
 func (f *Fetcher) standardFields(infos []InfoSchema) (stdFields []Field, err error) {
 	stdFields = []Field{
-		{Name: "ID", Column: "id", Type: "int64", StructTag: "`json:\"id\"`"},
-		{Name: "UpdatedAt", Column: "updated_at", Type: "time.Time", StructTag: "`json:\"updated_at\"`"},
-		{Name: "CreatedAt", Column: "created_at", Type: "time.Time", StructTag: "`json:\"created_at\"`"},
+		{
+			Name:      "ID",
+			Column:    "id",
+			Type:      "int64",
+			Udt:       "int4",
+			StructTag: "`json:\"id\"`",
+		},
+		{
+			Name:      "UpdatedAt",
+			Column:    "updated_at",
+			Type:      "time.Time",
+			Udt:       "timestamp",
+			StructTag: "`json:\"updated_at\"`",
+		},
+		{
+			Name:      "CreatedAt",
+			Column:    "created_at",
+			Type:      "time.Time",
+			Udt:       "timestamp",
+			StructTag: "`json:\"created_at\"`",
+		},
 	}
 	var errs coll.Errors
 field_loop:
 	for _, field := range stdFields {
 		for _, info := range infos {
-			if info.ColumnName == field.Column {
+			if info.ColumnName == field.Column && info.DataType == field.Udt {
 				continue field_loop
 			}
 		}
-		errs.Append(fmt.Errorf("\"%s\" is missing", field.Column))
+		errs.Append(fmt.Errorf("\"%s\" with underlying data type \"%s\" is missing",
+			field.Column, field.Udt))
 	}
 	err = errs.Unwrap()
 	return
@@ -64,7 +83,7 @@ func (f *Fetcher) formFields(infos []InfoSchema) (forms []Field) {
 }
 
 func (f *Fetcher) infoSchema(tableName string) (infos []InfoSchema, err error) {
-	columns := sq.Select("column_name", "data_type").
+	columns := sq.Select("column_name", "udt_name").
 		From("information_schema.COLUMNS").
 		Where(sq.Eq{"table_name": tableName})
 	var rows *sql.Rows

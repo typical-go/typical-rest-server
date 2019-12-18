@@ -15,6 +15,7 @@ type Entity struct {
 type Field struct {
 	Name      string
 	Type      string
+	Udt       string
 	Column    string
 	StructTag string
 }
