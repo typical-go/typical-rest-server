@@ -7,11 +7,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) rollbackCmd(c typcore.Cli) *cli.Command {
+func (m Module) rollbackCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "rollback",
 		Usage:  "Rollback Database",
-		Action: c.Action(m.rollback),
+		Action: c.Action(m, m.rollback),
 	}
 }
 

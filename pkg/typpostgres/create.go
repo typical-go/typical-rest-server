@@ -9,11 +9,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) createCmd(c typcore.Cli) *cli.Command {
+func (m Module) createCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "create",
 		Usage:  "Create New Database",
-		Action: c.Action(m.create),
+		Action: c.Action(m, m.create),
 	}
 }
 

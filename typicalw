@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-CHECKSUM_DATA=$(cksum typical/context.go)
+CHECKSUM_DATA=$(cksum typical/descriptor.go)
 
 if ! [ -s .typical-metadata/checksum ]; then
 	mkdir -p .typical-metadata
-	cksum typical/context.go > .typical-metadata/checksum
+	cksum typical/descriptor.go > .typical-metadata/checksum
 else
 	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-metadata/checksum )" ] ; echo $?)
 fi

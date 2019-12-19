@@ -7,7 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/envfile"
+	"github.com/typical-go/typical-go/pkg/utility/common"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
 	"github.com/typical-go/typical-go/pkg/utility/runner"
 	"github.com/urfave/cli/v2"
@@ -19,14 +19,14 @@ type Module struct {
 }
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c typcore.Cli) []*cli.Command {
+func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	// m.Context = c.Context()
 	return []*cli.Command{
 		{
 			Name:  "rails",
 			Usage: "Rails-like generator",
 			Before: func(ctx *cli.Context) error {
-				return envfile.Load()
+				return common.LoadEnvFile()
 			},
 			Action: c.PreparedAction(m.scaffold),
 		},

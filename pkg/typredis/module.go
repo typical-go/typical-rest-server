@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/envfile"
+	"github.com/typical-go/typical-go/pkg/utility/common"
 
 	log "github.com/sirupsen/logrus"
 
@@ -68,16 +68,21 @@ func (r *Module) Destroy() []interface{} {
 }
 
 // BuildCommands of module
-func (r *Module) BuildCommands(c typcore.Cli) []*cli.Command {
+func (r *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
 			Usage: "Redis Tool",
 			Before: func(ctx *cli.Context) error {
-				return envfile.Load()
+				return common.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
-				{Name: "console", Aliases: []string{"c"}, Usage: "Redis Interactive", Action: c.Action(r.console)},
+				{
+					Name:    "console",
+					Aliases: []string{"c"},
+					Usage:   "Redis Interactive",
+					Action:  c.Action(r, r.console),
+				},
 			},
 		},
 	}

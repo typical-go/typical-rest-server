@@ -9,11 +9,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) dropCmd(c typcore.Cli) *cli.Command {
+func (m Module) dropCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "drop",
 		Usage:  "Drop Database",
-		Action: c.Action(m.drop),
+		Action: c.Action(m, m.drop),
 	}
 }
 

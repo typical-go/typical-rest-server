@@ -2,7 +2,7 @@ package typdocker
 
 import (
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/envfile"
+	"github.com/typical-go/typical-go/pkg/utility/common"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,14 +14,14 @@ type docker struct {
 }
 
 // BuildCommands is command collection to called from
-func (*Module) BuildCommands(c typcore.Cli) []*cli.Command {
-	d := docker{Context: c.Context()}
+func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
+	d := docker{Context: c}
 	return []*cli.Command{
 		{
 			Name:  "docker",
 			Usage: "Docker utility",
 			Before: func(ctx *cli.Context) error {
-				return envfile.Load()
+				return common.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
 				d.composeCmd(),

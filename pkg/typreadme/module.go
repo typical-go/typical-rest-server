@@ -13,8 +13,8 @@ type readme struct {
 }
 
 // BuildCommands to be shown in BuildTool
-func (*Module) BuildCommands(c typcore.Cli) []*cli.Command {
-	r := readme{Context: c.Context()}
+func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
+	r := readme{Context: c}
 	return []*cli.Command{
 		r.generateCmd(),
 	}

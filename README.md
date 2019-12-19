@@ -59,6 +59,7 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 	- `./typicalw docker down`: Take down all docker containers according docker-compose
 	- `./typicalw docker wipe`: Kill all running docker container
 - `./typicalw readme`: Generate README.md
+- `./typicalw rails`: Rails-like generator
 - `./typicalw redis`: Redis Tool
 	- `./typicalw redis console`: Redis Interactive
 - `./typicalw postgres`: Postgres Database Tool
@@ -66,7 +67,6 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 	- `./typicalw postgres drop`: Drop Database
 	- `./typicalw postgres migrate`: Migrate Database
 	- `./typicalw postgres rollback`: Rollback Database
-	- `./typicalw postgres seed`: Database Seeding
+	- `./typicalw postgres seed`: Data seeding
+	- `./typicalw postgres reset`: Reset Database
 	- `./typicalw postgres console`: PostgreSQL Interactive
-- `./typicalw rest`: rest application utility
-	- `./typicalw rest scaffold`: Scaffold the MVC

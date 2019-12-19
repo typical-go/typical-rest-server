@@ -35,7 +35,7 @@ func (r *readme) generate(ctx *cli.Context) (err error) {
 		md.Writef("- `%s`: Run the application\n", appName)
 	}
 	if commander, ok := r.AppModule.(typcore.AppCommander); ok {
-		for _, cmd := range commander.AppCommands(&dummyCli{}) {
+		for _, cmd := range commander.AppCommands(&typcore.Context{}) {
 			md.Writef("- `%s %s`: %s\n", appName, cmd.Name, cmd.Usage)
 			for _, subcmd := range cmd.Subcommands {
 				md.Writef("\t- `%s %s %s`: %s\n", appName, cmd.Name, subcmd.Name, subcmd.Usage)
@@ -75,7 +75,7 @@ func (r *readme) generate(ctx *cli.Context) (err error) {
 	md.H3("Release the destribution")
 	md.Writeln("Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)")
 
-	for i, cmd := range typbuildtool.BuildCommands(r.Context) {
+	for i, cmd := range typbuildtool.BuildCommands(r.ProjectDescriptor) {
 		if i < 1 {
 			md.H3("Other Command")
 		}
@@ -99,26 +99,4 @@ func (r *readme) fields() (keys coll.Strings, m map[string]typcore.Field) {
 		}
 	}
 	return
-}
-
-type dummyCli struct{}
-
-func (*dummyCli) Action(fn interface{}) func(ctx *cli.Context) error {
-	return func(ctx *cli.Context) error {
-		return nil
-	}
-}
-
-func (*dummyCli) PreparedAction(fn interface{}) func(ctx *cli.Context) error {
-	return func(ctx *cli.Context) error {
-		return nil
-	}
-}
-
-func (*dummyCli) Context() *typcore.Context {
-	return nil
-}
-
-func (*dummyCli) Object() interface{} {
-	return nil
 }

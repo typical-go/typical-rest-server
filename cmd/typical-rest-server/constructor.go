@@ -9,8 +9,8 @@ import (
 )
 
 func init() {
-	typical.Context.Constructors.Append(repository.NewBookRepo)
-	typical.Context.Constructors.Append(repository.NewMusicRepo)
-	typical.Context.Constructors.Append(service.NewBookService)
-	typical.Context.Constructors.Append(service.NewMusicService)
+	typical.Descriptor.Constructors.Append(repository.NewBookRepo)
+	typical.Descriptor.Constructors.Append(repository.NewMusicRepo)
+	typical.Descriptor.Constructors.Append(service.NewBookService)
+	typical.Descriptor.Constructors.Append(service.NewMusicService)
 }

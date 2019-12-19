@@ -17,7 +17,7 @@ func (m module) Action() interface{} {
 	return startServer
 }
 
-func (m module) AppCommands(c typcore.Cli) []*cli.Command {
+func (m module) AppCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{Name: "route", Usage: "Print available API Routes", Action: c.PreparedAction(taskRouteList)},
 	}

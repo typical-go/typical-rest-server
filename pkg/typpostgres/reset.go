@@ -5,11 +5,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) resetCmd(c typcore.Cli) *cli.Command {
+func (m Module) resetCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "reset",
 		Usage:  "Reset Database",
-		Action: c.Action(m.reset),
+		Action: c.Action(m, m.reset),
 	}
 }
 

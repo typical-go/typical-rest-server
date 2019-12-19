@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/envfile"
+	"github.com/typical-go/typical-go/pkg/utility/common"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli/v2"
 )
@@ -34,14 +34,14 @@ type Module struct {
 }
 
 // BuildCommands of module
-func (m Module) BuildCommands(c typcore.Cli) []*cli.Command {
+func (m Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
 			Aliases: []string{"pg"},
 			Usage:   "Postgres Database Tool",
 			Before: func(ctx *cli.Context) error {
-				return envfile.Load()
+				return common.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
 				m.createCmd(c),

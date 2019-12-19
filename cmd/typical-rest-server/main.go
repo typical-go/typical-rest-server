@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	typapp.Run(typical.Context)
+	typapp.Run(typical.Descriptor)
 }
