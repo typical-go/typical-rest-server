@@ -93,11 +93,13 @@ func (f *Fetcher) convert(infos []InfoSchema) (fields []Field) {
 }
 
 func (f *Fetcher) infoSchema(tableName string) (infos []InfoSchema, err error) {
-	columns := sq.Select("column_name", "udt_name").
+	query := sq.Select("column_name", "udt_name").
 		From("information_schema.COLUMNS").
-		Where(sq.Eq{"table_name": tableName})
+		Where(sq.Eq{"table_name": tableName}).
+		RunWith(f.DB).
+		PlaceholderFormat(sq.Dollar)
 	var rows *sql.Rows
-	if rows, err = columns.RunWith(f.DB).Query(); err != nil {
+	if rows, err = query.Query(); err != nil {
 		return
 	}
 	for rows.Next() {

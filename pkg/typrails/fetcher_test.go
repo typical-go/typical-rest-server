@@ -71,8 +71,6 @@ func TestFetcher(t *testing.T) {
 		entity, err := fetcher.Fetch("some-package", "books")
 		require.EqualValues(t, tt.err, err)
 		require.EqualValues(t, tt.Entity, entity)
-		// raw, _ := json.MarshalIndent(entity, "", "   ")
-		// fmt.Println(string(raw))
 	}
 }
 

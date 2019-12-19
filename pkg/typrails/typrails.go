@@ -7,46 +7,41 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 
 	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/utility/envfile"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
 	"github.com/typical-go/typical-go/pkg/utility/runner"
 	"github.com/urfave/cli/v2"
 )
 
 // Module of typrails
-type Module struct{}
+type Module struct {
+	// *typcore.Context
+}
 
 // BuildCommands is commands to exectuce from Build-Tool
 func (m *Module) BuildCommands(c typcore.Cli) []*cli.Command {
+	// m.Context = c.Context()
 	return []*cli.Command{
 		{
-			Name:   "rails",
-			Usage:  "Rails-like generator",
-			Action: m.scaffold,
+			Name:  "rails",
+			Usage: "Rails-like generator",
+			Before: func(ctx *cli.Context) error {
+				return envfile.Load()
+			},
+			Action: c.PreparedAction(m.scaffold),
 		},
 	}
 }
 
-func (m *Module) scaffold(ctx *cli.Context) (err error) {
-	e := Entity{
-		Name:           "music",
-		Table:          "musics",
-		Type:           "Music",
-		Cache:          "MUSIC",
-		ProjectPackage: "github.com/typical-go/typical-rest-server",
-		Fields: []Field{
-			{Name: "ID", Column: "id", Type: "int64", StructTag: "`json:\"id\"`"},
-			{Name: "Artist", Column: "artist", Type: "string", StructTag: "`json:\"artist\"`"},
-			{Name: "UpdatedAt", Column: "updated_at", Type: "time.Time", StructTag: "`json:\"updated_at\"`"},
-			{Name: "CreatedAt", Column: "created_at", Type: "time.Time", StructTag: "`json:\"created_at\"`"},
-		},
-		Forms: []Field{
-			{Name: "Artist", Column: "artist", Type: "string"},
-		},
+func (m *Module) scaffold(f Fetcher) (err error) {
+	var e *Entity
+	if e, err = f.Fetch("github.com/typical-go/typical-rest-server", "musics"); err != nil {
+		return
 	}
 	return generate(e)
 }
 
-func generate(e Entity) error {
+func generate(e *Entity) error {
 	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
 	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)

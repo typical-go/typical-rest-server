@@ -21,7 +21,7 @@ type CachedMusicRepoImpl struct {
 
 // Find music entity
 func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (music *Music, err error) {
-	cacheKey := fmt.Sprintf("MUSIC:FIND:%d", id)
+	cacheKey := fmt.Sprintf("MUSICS:FIND:%d", id)
 	music = new(Music)
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, music); err == nil {
@@ -39,7 +39,7 @@ func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (music *Music,
 
 // List of music entity
 func (r *CachedMusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
-	cacheKey := fmt.Sprintf("MUSIC:LIST")
+	cacheKey := fmt.Sprintf("MUSICS:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
