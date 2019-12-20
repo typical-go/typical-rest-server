@@ -22,16 +22,14 @@ var Descriptor = &typcore.ProjectDescriptor{
 	AppModule: app.Module(),
 
 	Modules: []interface{}{
-		&typdocker.Module{},
-		&typreadme.Module{},
-		&typrails.Module{},
+		typdocker.Module(),
+		typreadme.Module(),
+		typrails.Module(),
 
-		// REST Server Modules
-		&typserver.Module{},
-		&typredis.Module{},
-		&typpostgres.Module{
-			DBName: "sample",
-		},
+		// REST-Server-Sample Modules
+		typserver.Module(),
+		typredis.Module(),
+		typpostgres.Module("sample"),
 	},
 
 	Releaser: &typrls.Releaser{

@@ -6,14 +6,18 @@ import (
 )
 
 // Module of readme
-type Module struct{}
+func Module() interface{} {
+	return &module{}
+}
+
+type module struct{}
 
 type readme struct {
 	*typcore.Context
 }
 
 // BuildCommands to be shown in BuildTool
-func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (*module) BuildCommands(c *typcore.Context) []*cli.Command {
 	r := readme{Context: c}
 	return []*cli.Command{
 		r.generateCmd(),

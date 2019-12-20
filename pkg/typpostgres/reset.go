@@ -5,7 +5,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) resetCmd(c *typcore.Context) *cli.Command {
+func (m module) resetCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "reset",
 		Usage:  "Reset Database",
@@ -13,7 +13,7 @@ func (m Module) resetCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m Module) reset(cfg Config) (err error) {
+func (m module) reset(cfg Config) (err error) {
 	if err = m.drop(cfg); err != nil {
 		return
 	}

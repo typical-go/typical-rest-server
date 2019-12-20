@@ -6,15 +6,19 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Module of Docker
-type Module struct{}
+// Module of docker
+func Module() interface{} {
+	return &module{}
+}
+
+type module struct{}
 
 type docker struct {
 	*typcore.Context
 }
 
 // BuildCommands is command collection to called from
-func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (*module) BuildCommands(c *typcore.Context) []*cli.Command {
 	d := docker{Context: c}
 	return []*cli.Command{
 		{

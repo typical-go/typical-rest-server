@@ -9,7 +9,7 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := &typpostgres.Module{}
+	m := typpostgres.Module("some-dbname")
 	require.True(t, typcore.IsProvider(m))
 	require.True(t, typcore.IsDestroyer(m))
 	require.True(t, typcore.IsPreparer(m))

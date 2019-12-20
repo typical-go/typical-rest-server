@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m Module) migrateCmd(c *typcore.Context) *cli.Command {
+func (m module) migrateCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "migrate",
 		Usage:  "Migrate Database",
@@ -15,7 +15,7 @@ func (m Module) migrateCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m Module) migrate(cfg Config) (err error) {
+func (m module) migrate(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)

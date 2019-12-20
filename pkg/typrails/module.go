@@ -6,10 +6,14 @@ import (
 )
 
 // Module of typrails
-type Module struct{}
+func Module() interface{} {
+	return &module{}
+}
+
+type module struct{}
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (m *module) BuildCommands(c *typcore.Context) []*cli.Command {
 	r := rails{c}
 	return []*cli.Command{
 		r.scaffoldCmd(),

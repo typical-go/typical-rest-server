@@ -14,22 +14,19 @@ const (
 	seedSrc      = "scripts/db/seed"
 )
 
-// Config is postgres configuration
-type Config struct {
-	DBName   string `required:"true"`
-	User     string `required:"true" default:"postgres"`
-	Password string `required:"true" default:"pgpass"`
-	Host     string `default:"localhost"`
-	Port     int    `default:"5432"`
+// Module of postgress
+func Module(dbname string) interface{} {
+	return &module{
+		DBName: dbname,
+	}
 }
 
-// Module of postgres
-type Module struct {
+type module struct {
 	DBName string
 }
 
 // Configure the module
-func (m Module) Configure() (prefix string, spec, loadFn interface{}) {
+func (m module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
 	spec = &Config{
 		DBName: m.DBName,
@@ -42,7 +39,7 @@ func (m Module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // BuildCommands of module
-func (m Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (m module) BuildCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -65,21 +62,21 @@ func (m Module) BuildCommands(c *typcore.Context) []*cli.Command {
 }
 
 // Provide the dependencies
-func (m Module) Provide() []interface{} {
+func (m module) Provide() []interface{} {
 	return []interface{}{
 		m.connect,
 	}
 }
 
 // Prepare the module
-func (m Module) Prepare() []interface{} {
+func (m module) Prepare() []interface{} {
 	return []interface{}{
 		m.ping,
 	}
 }
 
 // Destroy dependencies
-func (m Module) Destroy() []interface{} {
+func (m module) Destroy() []interface{} {
 	return []interface{}{
 		m.disconnect,
 	}
