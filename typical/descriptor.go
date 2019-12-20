@@ -16,7 +16,7 @@ import (
 var Descriptor = &typcore.ProjectDescriptor{
 	Name:        "Typical REST Server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.10",
+	Version:     "0.8.11",
 	Package:     "github.com/typical-go/typical-rest-server",
 
 	AppModule: app.Module(),

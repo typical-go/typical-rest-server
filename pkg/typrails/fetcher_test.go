@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/typical-go/typical-go/pkg/utility/coll"
+
 	"github.com/typical-go/typical-rest-server/pkg/typrails"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -16,24 +18,20 @@ func TestFetcher(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 	testcases := []struct {
-		data map[string]string
+		data *coll.KeyStrings
 		err  error
 		*typrails.Entity
 	}{
 		{
-			data: map[string]string{
-				"column1": "type1",
-				"column2": "type2",
-			},
-			err: errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
+			data: new(coll.KeyStrings).Add("column1", "type1"),
+			err:  errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
 		},
 		{
-			data: map[string]string{
-				"id":         "int4",
-				"name":       "varchar",
-				"created_at": "timestamp",
-				"updated_at": "timestamp",
-			},
+			data: new(coll.KeyStrings).
+				Add("id", "int4").
+				Add("name", "varchar").
+				Add("created_at", "timestamp").
+				Add("updated_at", "timestamp"),
 			Entity: &typrails.Entity{
 				Name:           "book",
 				Type:           "Book",
@@ -52,25 +50,24 @@ func TestFetcher(t *testing.T) {
 			},
 		},
 		{
-			data: map[string]string{
-				"id":         "int",
-				"created_at": "timestamp",
-				"updated_at": "timestamp",
-			},
+			data: new(coll.KeyStrings).
+				Add("id", "int").
+				Add("created_at", "timestamp").
+				Add("updated_at", "timestamp"),
 			err: errors.New("\"id\" with underlying data type \"int4\" is missing"),
 		},
 	}
 	fetcher := typrails.Fetcher{DB: db}
-	query := regexp.QuoteMeta("SELECT column_name, udt_name FROM information_schema.COLUMNS WHERE table_name = ?")
-	for _, tt := range testcases {
+	query := regexp.QuoteMeta("SELECT column_name, udt_name FROM information_schema.COLUMNS WHERE table_name = $1")
+	for i, tt := range testcases {
 		rows := sqlmock.NewRows([]string{"column_name", "data_type"})
-		for key, value := range tt.data {
-			rows.AddRow(key, value)
+		for _, ks := range *tt.data {
+			rows.AddRow(ks.Key, ks.String)
 		}
 		mock.ExpectQuery(query).WithArgs("books").WillReturnRows(rows)
 		entity, err := fetcher.Fetch("some-package", "books")
-		require.EqualValues(t, tt.err, err)
-		require.EqualValues(t, tt.Entity, entity)
+		require.EqualValues(t, tt.err, err, i)
+		require.EqualValues(t, tt.Entity, entity, i)
 	}
 }
 
