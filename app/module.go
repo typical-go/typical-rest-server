@@ -14,12 +14,10 @@ func Module() interface{} {
 type module struct{}
 
 func (m module) Action() interface{} {
-	return startServer
-}
-
-func (m module) AppCommands(c *typcore.Context) []*cli.Command {
-	return []*cli.Command{
-		{Name: "route", Usage: "Print available API Routes", Action: c.PreparedAction(taskRouteList)},
+	return func(s server) error {
+		s.Middleware()
+		s.Route()
+		return s.Start()
 	}
 }
 
@@ -31,4 +29,10 @@ func (m module) Configure() (prefix string, spec, loadFn interface{}) {
 		return
 	}
 	return
+}
+
+func (m module) AppCommands(c *typcore.Context) []*cli.Command {
+	return []*cli.Command{
+		{Name: "route", Usage: "Print available API Routes", Action: c.PreparedAction(taskRouteList)},
+	}
 }

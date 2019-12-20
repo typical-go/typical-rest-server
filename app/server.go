@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-rest-server/app/config"
@@ -17,14 +19,19 @@ type server struct {
 	controller.MusicCntrl
 }
 
-// Start the service
-func startServer(p server) error {
-	// Middlewares
-	p.Use(middleware.Recover())
+func (s server) Middleware() {
+	s.Use(middleware.Recover())
+}
 
-	// Routes
-	p.AppCntrl.Route(p.Echo)
-	p.BookCntrl.Route(p.Echo)
-	p.MusicCntrl.Route(p.Echo)
-	return p.Echo.Start(p.Config.Address)
+func (s server) Route() {
+	s.AppCntrl.Route(s.Echo)
+	s.BookCntrl.Route(s.Echo)
+	s.MusicCntrl.Route(s.Echo)
+}
+
+func (s server) Start() (err error) {
+	if err = s.Echo.Start(s.Config.Address); err != nil {
+		return fmt.Errorf("App: %w", err.Error())
+	}
+	return
 }
