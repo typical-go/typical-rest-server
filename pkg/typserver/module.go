@@ -63,9 +63,11 @@ func (s *module) Create(cfg Config) *echo.Echo {
 }
 
 // Shutdown the server
-func (s *module) Shutdown(server *echo.Echo) error {
-	fmt.Println("Server is shutting down")
+func (s *module) Shutdown(server *echo.Echo) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	return server.Shutdown(ctx)
+	if err = server.Shutdown(ctx); err != nil {
+		return fmt.Errorf("Server: Shutdown: %w", err)
+	}
+	return
 }
