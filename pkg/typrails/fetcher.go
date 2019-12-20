@@ -30,6 +30,10 @@ func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
 	if infos, err = f.infoSchema(tableName); err != nil {
 		return
 	}
+	if len(infos) < 1 {
+		err = fmt.Errorf("No column in '%s'", tableName)
+		return
+	}
 	var std coll.KeyStrings
 	std.Add("id", "int4")
 	std.Add("updated_at", "timestamp")
