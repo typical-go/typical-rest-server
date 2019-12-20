@@ -31,7 +31,7 @@ func (s server) Route() {
 
 func (s server) Start() (err error) {
 	if err = s.Echo.Start(s.Config.Address); err != nil {
-		return fmt.Errorf("App: %w", err.Error())
+		return fmt.Errorf("App: %w", err)
 	}
 	return
 }
