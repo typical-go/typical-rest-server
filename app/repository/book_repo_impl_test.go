@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"testing"
@@ -83,12 +84,18 @@ func TestBookRepitory_Find(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
-	querySQL := regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)
+	sql := regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)
 	t.Run("WHEN sql error", func(t *testing.T) {
-		mock.ExpectQuery(querySQL).WithArgs(123).
-			WillReturnError(fmt.Errorf("some-find-error"))
+		mock.ExpectQuery(sql).WithArgs(123).WillReturnError(errors.New("some-find-error"))
 		_, err := repo.Find(ctx0, 123)
 		require.EqualError(t, err, "some-find-error")
+	})
+	t.Run("WHEN result set", func(t *testing.T) {
+		rows := sqlmock.NewRows([]string{"id", "title", "author"}).
+			AddRow("some-id", "some-title", "some-author")
+		mock.ExpectQuery(sql).WithArgs(123).WillReturnRows(rows)
+		_, err := repo.Find(ctx0, 123)
+		require.EqualError(t, err, "sql: expected 3 destination arguments in Scan, not 5")
 	})
 	t.Run("WHEN okay", func(t *testing.T) {
 		expected := &repository.Book{
@@ -98,9 +105,9 @@ func TestBookRepitory_Find(t *testing.T) {
 			UpdatedAt: time.Now(),
 			CreatedAt: time.Now(),
 		}
-		mock.ExpectQuery(querySQL).WithArgs(123).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "title", "author", "updated_at", "created_at"}).
-				AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt))
+		rows := sqlmock.NewRows([]string{"id", "title", "author", "updated_at", "created_at"}).
+			AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt)
+		mock.ExpectQuery(sql).WithArgs(123).WillReturnRows(rows)
 		book, err := repo.Find(ctx0, 123)
 		require.NoError(t, err)
 		require.Equal(t, expected, book)
@@ -113,14 +120,14 @@ func TestBookRepoImpl_List(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
-	listSQL := `SELECT id, title, author, updated_at, created_at FROM books`
+	sql := `SELECT id, title, author, updated_at, created_at FROM books`
 	t.Run("WHEN sql error", func(t *testing.T) {
-		mock.ExpectQuery(listSQL).WillReturnError(fmt.Errorf("some-list-error"))
+		mock.ExpectQuery(sql).WillReturnError(fmt.Errorf("some-list-error"))
 		_, err := repo.List(ctx0)
 		require.EqualError(t, err, "some-list-error")
 	})
 	t.Run("WHEN wrong dataset", func(t *testing.T) {
-		mock.ExpectQuery(listSQL).WillReturnRows(sqlmock.NewRows([]string{"id", "title"}).
+		mock.ExpectQuery(sql).WillReturnRows(sqlmock.NewRows([]string{"id", "title"}).
 			AddRow(1, "one").
 			AddRow(2, "two"))
 		_, err := repo.List(ctx0)
@@ -135,7 +142,7 @@ func TestBookRepoImpl_List(t *testing.T) {
 		for _, expected := range expecteds {
 			rows.AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt)
 		}
-		mock.ExpectQuery(listSQL).WillReturnRows(rows)
+		mock.ExpectQuery(sql).WillReturnRows(rows)
 		books, err := repo.List(ctx0)
 		require.NoError(t, err)
 		require.Equal(t, expecteds, books)
