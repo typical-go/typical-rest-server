@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/typical-go/typical-rest-server/pkg/typrails"
 	"go.uber.org/dig"
 )
 
@@ -63,7 +64,7 @@ func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int6
 		Insert("books").
 		Columns("title", "author").Values(book.Title, book.Author).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
 	if err = builder.QueryRowContext(ctx).Scan(&book.ID); err != nil {
 		return
 	}
@@ -76,7 +77,7 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	query := sq.
 		Delete("books").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
 	_, err = query.ExecContext(ctx)
 	return
 }
@@ -89,7 +90,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
 		Set("author", book.Author).
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": book.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }

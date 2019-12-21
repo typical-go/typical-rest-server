@@ -39,12 +39,23 @@ func (r *rails) scaffold(ctx *cli.Context, f Fetcher) (err error) {
 	return generate(e)
 }
 
-func generate(e *Entity) error {
-	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
-	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
-	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)
-	servicePath := fmt.Sprintf("app/service/%s_service.go", e.Name)
-	controllerPath := fmt.Sprintf("app/controller/%s_cntrl.go", e.Name)
+func generate(e *Entity) (err error) {
+	path := "app/repository"
+	repoPath := fmt.Sprintf("%s/%s_repo.go", path, e.Name)
+	repoImplPath := fmt.Sprintf("%s/%s_repo_impl.go", path, e.Name)
+	cachedRepoImplPath := fmt.Sprintf("%s/cached_%s_repo_impl.go", path, e.Name)
+	servicePath := fmt.Sprintf("%s/%s_service.go", path, e.Name)
+	controllerPath := fmt.Sprintf("%s/%s_cntrl.go", path, e.Name)
+	transactionalPath := fmt.Sprintf("%s/transactional.go", path)
+	transactionalTestPath := fmt.Sprintf("%s/transactional_test.go", path)
+	if !common.IsFileExist(transactionalPath) {
+		if err = runn.Execute(
+			runner.NewWriteString(transactionalPath, tmpl.Transactional),
+			runner.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
+		); err != nil {
+			return err
+		}
+	}
 	if common.IsFileExist(repoPath) {
 		return fmt.Errorf("%s already exist", repoPath)
 	}
