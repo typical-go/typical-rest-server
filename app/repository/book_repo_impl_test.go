@@ -8,24 +8,16 @@ import (
 	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/alicebob/miniredis"
-	"github.com/go-redis/redis"
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/app/repository"
 )
 
-func TestBookRepo_Insert(t *testing.T) {
+func TestBookRepoImpl_Insert(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	testRedis, err := miniredis.Run()
-	require.NoError(t, err)
-	defer testRedis.Close()
-	repo := repository.NewBookRepo(repository.CachedBookRepoImpl{
-		BookRepoImpl: repository.BookRepoImpl{DB: db},
-		Redis:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
-	})
+	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
 	insertSQL := regexp.QuoteMeta(`INSERT INTO books (title,author) VALUES ($1,$2) RETURNING "id"`)
 	t.Run("sql error", func(t *testing.T) {
@@ -47,13 +39,7 @@ func TestBookRepitory_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	testRedis, err := miniredis.Run()
-	require.NoError(t, err)
-	defer testRedis.Close()
-	repo := repository.NewBookRepo(repository.CachedBookRepoImpl{
-		BookRepoImpl: repository.BookRepoImpl{DB: db},
-		Redis:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
-	})
+	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
 	updateSQL := regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)
 	t.Run("sql error", func(t *testing.T) {
@@ -70,17 +56,11 @@ func TestBookRepitory_Update(t *testing.T) {
 	})
 }
 
-func TestBookRepo_Delete(t *testing.T) {
+func TestBookRepoImpl_Delete(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	testRedis, err := miniredis.Run()
-	require.NoError(t, err)
-	defer testRedis.Close()
-	repo := repository.NewBookRepo(repository.CachedBookRepoImpl{
-		BookRepoImpl: repository.BookRepoImpl{DB: db},
-		Redis:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
-	})
+	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
 	deleteSQL := regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)
 	t.Run("sql error", func(t *testing.T) {
@@ -101,13 +81,7 @@ func TestBookRepitory_Find(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	testRedis, err := miniredis.Run()
-	require.NoError(t, err)
-	defer testRedis.Close()
-	repo := repository.NewBookRepo(repository.CachedBookRepoImpl{
-		BookRepoImpl: repository.BookRepoImpl{DB: db},
-		Redis:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
-	})
+	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
 	querySQL := regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)
 	t.Run("WHEN sql error", func(t *testing.T) {
@@ -115,9 +89,6 @@ func TestBookRepitory_Find(t *testing.T) {
 			WillReturnError(fmt.Errorf("some-find-error"))
 		_, err := repo.Find(ctx0, 123)
 		require.EqualError(t, err, "some-find-error")
-	})
-	t.Run("WHEN cache available", func(t *testing.T) {
-
 	})
 	t.Run("WHEN okay", func(t *testing.T) {
 		expected := &repository.Book{
@@ -133,23 +104,14 @@ func TestBookRepitory_Find(t *testing.T) {
 		book, err := repo.Find(ctx0, 123)
 		require.NoError(t, err)
 		require.Equal(t, expected, book)
-		data, _ := testRedis.Get("BOOK:FIND:123")
-		defer testRedis.FlushAll()
-		require.Equal(t, `{"id":123,"title":"some-title","author":"some-author"}`, data)
 	})
 }
 
-func TestBookRepo_List(t *testing.T) {
+func TestBookRepoImpl_List(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	testRedis, err := miniredis.Run()
-	require.NoError(t, err)
-	defer testRedis.Close()
-	repo := repository.NewBookRepo(repository.CachedBookRepoImpl{
-		BookRepoImpl: repository.BookRepoImpl{DB: db},
-		Redis:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
-	})
+	repo := repository.BookRepoImpl{DB: db}
 	ctx0 := context.Background()
 	listSQL := `SELECT id, title, author, updated_at, created_at FROM books`
 	t.Run("WHEN sql error", func(t *testing.T) {
@@ -177,20 +139,5 @@ func TestBookRepo_List(t *testing.T) {
 		books, err := repo.List(ctx0)
 		require.NoError(t, err)
 		require.Equal(t, expecteds, books)
-		data, _ := testRedis.Get("BOOK:LIST")
-		defer testRedis.FlushAll()
-		require.Equal(t, `[{"id":1234,"title":"some-title4","author":"some-author4"},{"id":1235,"title":"some-title5","author":"some-author5"}]`, data)
 	})
-	t.Run("WHEN cache available", func(t *testing.T) {
-		testRedis.Set("BOOK:LIST", `[{"id":1234,"title":"some-title4","author":"some-author4"},{"id":1235,"title":"some-title5","author":"some-author5"}]`)
-		// defer testRedis.FlushAll()
-		books, err := repo.List(ctx0)
-		require.NoError(t, err)
-		require.Equal(t, []*repository.Book{
-			&repository.Book{ID: 1234, Title: "some-title4", Author: "some-author4"},
-			&repository.Book{ID: 1235, Title: "some-title5", Author: "some-author5"},
-		}, books)
-
-	})
-
 }
