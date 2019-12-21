@@ -18,17 +18,18 @@ type BookRepoImpl struct {
 // Find book
 func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
 	var rows *sql.Rows
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
+	builder := sq.
+		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
-		Where(sq.Eq{"id": id})
-	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
+		Where(sq.Eq{"id": id}).
+		PlaceholderFormat(sq.Dollar).RunWith(r)
+	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
 	if rows.Next() {
 		var book0 Book
 		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
-			return nil, err
+			return
 		}
 		book = &book0
 	}
@@ -38,17 +39,18 @@ func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err erro
 // List book
 func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 	var rows *sql.Rows
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Select("id", "title", "author", "updated_at", "created_at").
-		From("books")
-	if rows, err = builder.RunWith(r.DB).QueryContext(ctx); err != nil {
+	builder := sq.
+		Select("id", "title", "author", "updated_at", "created_at").
+		From("books").
+		PlaceholderFormat(sq.Dollar).RunWith(r)
+	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
 	list = make([]*Book, 0)
 	for rows.Next() {
 		var book0 Book
 		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
-			return nil, err
+			return
 		}
 		list = append(list, &book0)
 	}
@@ -57,13 +59,12 @@ func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 
 // Insert book
 func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int64, err error) {
-	query := sq.Insert("books").
-		Columns("title", "author").
-		Values(book.Title, book.Author).
+	builder := sq.
+		Insert("books").
+		Columns("title", "author").Values(book.Title, book.Author).
 		Suffix("RETURNING \"id\"").
-		RunWith(r.DB).
-		PlaceholderFormat(sq.Dollar)
-	if err = query.QueryRowContext(ctx).Scan(&book.ID); err != nil {
+		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+	if err = builder.QueryRowContext(ctx).Scan(&book.ID); err != nil {
 		return
 	}
 	lastInsertID = book.ID
@@ -72,20 +73,23 @@ func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int6
 
 // Delete book
 func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Delete("books").Where(sq.Eq{"id": id})
-	_, err = builder.RunWith(r.DB).ExecContext(ctx)
+	query := sq.
+		Delete("books").
+		Where(sq.Eq{"id": id}).
+		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+	_, err = query.ExecContext(ctx)
 	return
 }
 
 // Update book
 func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	builder := psql.Update("books").
+	builder := sq.
+		Update("books").
 		Set("title", book.Title).
 		Set("author", book.Author).
 		Set("updated_at", time.Now()).
-		Where(sq.Eq{"id": book.ID})
-	_, err = builder.RunWith(r.DB).ExecContext(ctx)
+		Where(sq.Eq{"id": book.ID}).
+		PlaceholderFormat(sq.Dollar).RunWith(TxCtx(ctx, r))
+	_, err = builder.ExecContext(ctx)
 	return
 }
