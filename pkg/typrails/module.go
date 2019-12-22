@@ -12,10 +12,21 @@ func Module() interface{} {
 
 type module struct{}
 
+type rails struct {
+	*typcore.Context
+}
+
 // BuildCommands is commands to exectuce from Build-Tool
 func (m *module) BuildCommands(c *typcore.Context) []*cli.Command {
 	r := rails{c}
 	return []*cli.Command{
-		r.scaffoldCmd(),
+		{
+			Name:  "rails",
+			Usage: "Rails-like generation",
+			Subcommands: []*cli.Command{
+				r.scaffoldCmd(),
+				r.repositoryCmd(),
+			},
+		},
 	}
 }
