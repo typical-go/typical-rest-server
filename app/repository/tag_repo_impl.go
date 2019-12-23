@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )
 
@@ -23,7 +23,7 @@ func (r *TagRepoImpl) Find(ctx context.Context, id int64) (e *Tag, err error) {
 		Select("id", "type", "attributes", "value", "updated_at", "created_at").
 		From("tags").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -42,7 +42,7 @@ func (r *TagRepoImpl) List(ctx context.Context) (list []*Tag, err error) {
 	builder := sq.
 		Select("id", "type", "attributes", "value", "updated_at", "created_at").
 		From("tags").
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (r *TagRepoImpl) Insert(ctx context.Context, e Tag) (lastInsertID int64, er
 		Columns("type", "attributes", "value").
 		Values(e.Type, e.Attributes, e.Value).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if err = builder.QueryRowContext(ctx).Scan(&e.ID); err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func (r *TagRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	builder := sq.
 		Delete("tags").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }
@@ -91,7 +91,7 @@ func (r *TagRepoImpl) Update(ctx context.Context, e Tag) (err error) {
 		Set("value", e.Value).
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": e.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }

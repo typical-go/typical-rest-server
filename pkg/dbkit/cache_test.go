@@ -1,4 +1,4 @@
-package cachekit_test
+package dbkit_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/utility/cachekit"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 type Val struct {
@@ -19,7 +19,7 @@ func TestSet(t *testing.T) {
 	require.NoError(t, err)
 	defer testRedis.Close()
 	client := redis.NewClient(&redis.Options{Addr: testRedis.Addr()})
-	err = cachekit.Set(client, "some-key", &Val{
+	err = dbkit.SetCache(client, "some-key", &Val{
 		SomeField: "some-value",
 	}, 3*time.Second)
 	require.NoError(t, err)
@@ -37,17 +37,17 @@ func TestGet(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: testRedis.Addr()})
 	var val Val
 	t.Run("WHEN no cache yet", func(t *testing.T) {
-		err := cachekit.Get(client, "some-key", &val)
+		err := dbkit.GetCache(client, "some-key", &val)
 		require.EqualError(t, err, "redis: nil")
 	})
 	t.Run("WHEN invalid cache", func(t *testing.T) {
 		testRedis.Set("some-key", `invalid-json}`)
-		err := cachekit.Get(client, "some-key", &val)
+		err := dbkit.GetCache(client, "some-key", &val)
 		require.EqualError(t, err, "invalid character 'i' looking for beginning of value")
 	})
 	t.Run("WHEN ok", func(t *testing.T) {
 		testRedis.Set("some-key", `{"some_field":"some-value"}`)
-		err := cachekit.Get(client, "some-key", &val)
+		err := dbkit.GetCache(client, "some-key", &val)
 		require.NoError(t, err)
 		require.Equal(t, Val{
 			SomeField: "some-value",

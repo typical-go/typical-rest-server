@@ -2,6 +2,9 @@ package typrails
 
 import (
 	"fmt"
+	"go/build"
+	"os"
+	"os/exec"
 
 	"github.com/typical-go/typical-go/pkg/utility/common"
 	"github.com/typical-go/typical-go/pkg/utility/runn"
@@ -46,7 +49,12 @@ func generateRepository(e *Entity) (err error) {
 		runner.NewWriteTemplate(repoPath, tmpl.Repo, e),
 		runner.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
 		runner.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
-		runner.NewGoFmt(repoPath, repoImplPath),
+		func() error {
+			cmd := exec.Command(fmt.Sprintf("%s/bin/goimports", build.Default.GOPATH),
+				"-w", repoPath, repoImplPath)
+			cmd.Stderr = os.Stderr
+			return cmd.Run()
+		},
 	)
 }
 

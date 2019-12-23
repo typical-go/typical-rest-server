@@ -16,7 +16,6 @@ type server struct {
 	config.Config
 	controller.BookCntrl
 	controller.AppCntrl
-	controller.MusicCntrl
 }
 
 func (s server) Middleware() {
@@ -26,7 +25,6 @@ func (s server) Middleware() {
 func (s server) Route() {
 	s.AppCntrl.Route(s.Echo)
 	s.BookCntrl.Route(s.Echo)
-	s.MusicCntrl.Route(s.Echo)
 }
 
 func (s server) Start() (err error) {

@@ -1,4 +1,4 @@
-package cachekit
+package dbkit
 
 import (
 	"encoding/json"
@@ -7,14 +7,14 @@ import (
 	"github.com/go-redis/redis"
 )
 
-// Set the cache
-func Set(client *redis.Client, key string, val interface{}, exp time.Duration) error {
+// SetCache to set cache
+func SetCache(client *redis.Client, key string, val interface{}, exp time.Duration) error {
 	data, _ := json.Marshal(val)
 	return client.Set(key, data, exp).Err()
 }
 
-// Get the cache
-func Get(client *redis.Client, key string, val interface{}) (err error) {
+// GetCache to get cache
+func GetCache(client *redis.Client, key string, val interface{}) (err error) {
 	data, err := client.Get(key).Bytes()
 	if err != nil {
 		return err

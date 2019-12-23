@@ -7,7 +7,7 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 func TestTransactional(t *testing.T) {
@@ -20,14 +20,14 @@ func TestTransactional(t *testing.T) {
 	t.Run("WHEN begin error", func(t *testing.T) {
 		ctx := context.Background()
 		trx.CommitMe(&ctx)
-		require.EqualError(t, typrails.ErrCtx(ctx),
+		require.EqualError(t, dbkit.ErrCtx(ctx),
 			"all expectations were already fulfilled, call to database transaction Begin was not expected")
 	})
 	t.Run("WHEN commit error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectBegin()
 		trx.CommitMe(&ctx)()
-		require.EqualError(t, typrails.ErrCtx(ctx),
+		require.EqualError(t, dbkit.ErrCtx(ctx),
 			"all expectations were already fulfilled, call to Commit transaction was not expected")
 	})
 	t.Run("WHEN okay", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestTransactional(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectCommit()
 		trx.CommitMe(&ctx)()
-		require.NoError(t, typrails.ErrCtx(ctx))
-		require.NotNil(t, typrails.TxCtx(ctx, nil))
+		require.NoError(t, dbkit.ErrCtx(ctx))
+		require.NotNil(t, dbkit.TxCtx(ctx, nil))
 	})
 }

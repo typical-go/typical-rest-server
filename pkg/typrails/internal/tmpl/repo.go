@@ -6,6 +6,7 @@ const Repo = `package repository
 import (
 	"context"
 	"time"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 // {{.Type}} represented  {{.Name}} entity

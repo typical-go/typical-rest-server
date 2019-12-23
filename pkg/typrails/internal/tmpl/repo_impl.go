@@ -10,7 +10,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"go.uber.org/dig"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 // {{.Type}}RepoImpl is implementation {{.Name}} repository
@@ -26,7 +26,7 @@ func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, e
 		Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
 		From("{{.Table}}").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -45,7 +45,7 @@ func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err er
 	builder := sq.
 		Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
 		From("{{.Table}}").
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -67,7 +67,7 @@ func (r *{{.Type}}RepoImpl) Insert(ctx context.Context, e {{.Type}}) (lastInsert
 		Columns({{range $field := .Forms}}"{{$field.Column}}",{{end}}).
 		Values({{range $field := .Forms}}e.{{$field.Name}},{{end}}).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if err = builder.QueryRowContext(ctx).Scan(&e.ID); err != nil {
 		return
 	}
@@ -80,7 +80,7 @@ func (r *{{.Type}}RepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	builder := sq.
 		Delete("{{.Table}}").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }
@@ -93,7 +93,7 @@ func (r *{{.Type}}RepoImpl) Update(ctx context.Context, e {{.Type}}) (err error)
 		{{end}}
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": e.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }

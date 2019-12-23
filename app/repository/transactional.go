@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )
 
@@ -21,13 +21,13 @@ func (t *Transactional) CommitMe(ctx *context.Context) func() {
 		err error
 	)
 	if tx, err = t.DB.BeginTx(*ctx, nil); err != nil {
-		*ctx = typrails.SetErrCtx(*ctx, err)
+		*ctx = dbkit.SetErrCtx(*ctx, err)
 		return func() {}
 	}
-	*ctx = typrails.SetTxCtx(*ctx, tx)
+	*ctx = dbkit.SetTxCtx(*ctx, tx)
 	return func() {
 		if err = tx.Commit(); err != nil {
-			*ctx = typrails.SetErrCtx(*ctx, err)
+			*ctx = dbkit.SetErrCtx(*ctx, err)
 		}
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )
 
@@ -17,19 +17,19 @@ type MusicRepoImpl struct {
 }
 
 // Find music
-func (r *MusicRepoImpl) Find(ctx context.Context, id int64) (music *Music, err error) {
+func (r *MusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "artist", "updated_at", "created_at").
 		From("musics").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
 	if rows.Next() {
-		music = new(Music)
-		if err = rows.Scan(&music.ID, &music.Artist, &music.UpdatedAt, &music.CreatedAt); err != nil {
+		e = new(Music)
+		if err = rows.Scan(&e.ID, &e.Artist, &e.UpdatedAt, &e.CreatedAt); err != nil {
 			return nil, err
 		}
 	}
@@ -42,33 +42,33 @@ func (r *MusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
 	builder := sq.
 		Select("id", "artist", "updated_at", "created_at").
 		From("musics").
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
 	list = make([]*Music, 0)
 	for rows.Next() {
-		var music0 Music
-		if err = rows.Scan(&music0.ID, &music0.Artist, &music0.UpdatedAt, &music0.CreatedAt); err != nil {
+		var e0 Music
+		if err = rows.Scan(&e0.ID, &e0.Artist, &e0.UpdatedAt, &e0.CreatedAt); err != nil {
 			return
 		}
-		list = append(list, &music0)
+		list = append(list, &e0)
 	}
 	return
 }
 
 // Insert music
-func (r *MusicRepoImpl) Insert(ctx context.Context, music Music) (lastInsertID int64, err error) {
+func (r *MusicRepoImpl) Insert(ctx context.Context, e Music) (lastInsertID int64, err error) {
 	builder := sq.
 		Insert("musics").
 		Columns("artist").
-		Values(music.Artist).
+		Values(e.Artist).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
-	if err = builder.QueryRowContext(ctx).Scan(&music.ID); err != nil {
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+	if err = builder.QueryRowContext(ctx).Scan(&e.ID); err != nil {
 		return
 	}
-	lastInsertID = music.ID
+	lastInsertID = e.ID
 	return
 }
 
@@ -77,19 +77,19 @@ func (r *MusicRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	builder := sq.
 		Delete("musics").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }
 
 // Update music
-func (r *MusicRepoImpl) Update(ctx context.Context, music Music) (err error) {
+func (r *MusicRepoImpl) Update(ctx context.Context, e Music) (err error) {
 	builder := sq.
 		Update("musics").
-		Set("artist", music.Artist).
+		Set("artist", e.Artist).
 		Set("updated_at", time.Now()).
-		Where(sq.Eq{"id": music.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		Where(sq.Eq{"id": e.ID}).
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }

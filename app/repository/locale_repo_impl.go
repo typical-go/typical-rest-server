@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )
 
@@ -23,7 +23,7 @@ func (r *LocaleRepoImpl) Find(ctx context.Context, id int64) (e *Locale, err err
 		Select("id", "lang_code", "country_code", "updated_at", "created_at").
 		From("locales").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -42,7 +42,7 @@ func (r *LocaleRepoImpl) List(ctx context.Context) (list []*Locale, err error) {
 	builder := sq.
 		Select("id", "lang_code", "country_code", "updated_at", "created_at").
 		From("locales").
-		PlaceholderFormat(sq.Dollar).RunWith(r)
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (r *LocaleRepoImpl) Insert(ctx context.Context, e Locale) (lastInsertID int
 		Columns("lang_code", "country_code").
 		Values(e.LangCode, e.CountryCode).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if err = builder.QueryRowContext(ctx).Scan(&e.ID); err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func (r *LocaleRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	builder := sq.
 		Delete("locales").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }
@@ -90,7 +90,7 @@ func (r *LocaleRepoImpl) Update(ctx context.Context, e Locale) (err error) {
 		Set("country_code", e.CountryCode).
 		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": e.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(typrails.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	_, err = builder.ExecContext(ctx)
 	return
 }

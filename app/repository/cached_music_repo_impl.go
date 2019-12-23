@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/pkg/utility/cachekit"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )
 
@@ -20,18 +20,18 @@ type CachedMusicRepoImpl struct {
 }
 
 // Find music entity
-func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (music *Music, err error) {
+func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:FIND:%d", id)
-	music = new(Music)
+	e = new(Music)
 	redisClient := r.Redis.WithContext(ctx)
-	if err = cachekit.Get(redisClient, cacheKey, music); err == nil {
+	if err = dbkit.GetCache(redisClient, cacheKey, e); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if music, err = r.MusicRepoImpl.Find(ctx, id); err != nil {
+	if e, err = r.MusicRepoImpl.Find(ctx, id); err != nil {
 		return
 	}
-	if err2 := cachekit.Set(redisClient, cacheKey, music, 20*time.Second); err2 != nil {
+	if err2 := dbkit.SetCache(redisClient, cacheKey, e, 20*time.Second); err2 != nil {
 		log.Fatal(err2.Error())
 	}
 	return
@@ -41,14 +41,14 @@ func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (music *Music,
 func (r *CachedMusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:LIST")
 	redisClient := r.Redis.WithContext(ctx)
-	if err = cachekit.Get(redisClient, cacheKey, &list); err == nil {
+	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
 	if list, err = r.MusicRepoImpl.List(ctx); err != nil {
 		return
 	}
-	if err2 := cachekit.Set(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
+	if err2 := dbkit.SetCache(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
 		log.Fatal(err2.Error())
 	}
 	return

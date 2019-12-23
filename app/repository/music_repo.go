@@ -13,13 +13,13 @@ type Music struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// MusicRepo to handle music  entity
+// MusicRepo to handle musics entity
 type MusicRepo interface {
-	Find(ctx context.Context, id int64) (*Music, error)
-	List(ctx context.Context) ([]*Music, error)
-	Insert(ctx context.Context, music Music) (lastInsertID int64, err error)
-	Delete(ctx context.Context, id int64) error
-	Update(ctx context.Context, music Music) error
+	Find(context.Context, int64) (*Music, error)
+	List(context.Context) ([]*Music, error)
+	Insert(context.Context, Music) (lastInsertID int64, err error)
+	Delete(context.Context, int64) error
+	Update(context.Context, Music) error
 }
 
 // NewMusicRepo return new instance of MusicRepo

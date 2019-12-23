@@ -78,7 +78,6 @@ func TestEntityName(t *testing.T) {
 	}{
 		{TableName: "book", EntityName: "book"},
 		{TableName: "books", EntityName: "book"},
-		{TableName: "aliases", EntityName: "alias"},
 	}
 	for _, tt := range testcases {
 		require.Equal(t, tt.EntityName, typrails.EntityName(tt.TableName))
