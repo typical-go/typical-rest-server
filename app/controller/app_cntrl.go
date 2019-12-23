@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/pkg/utility/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 

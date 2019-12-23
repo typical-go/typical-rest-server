@@ -6,13 +6,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/app/controller"
 	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/pkg/utility/echokit"
-
 	"github.com/typical-go/typical-rest-server/mock"
-
-	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
 func TestBookController_Get(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/utility/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
 func TestHealthCheck_SetStatusOK(t *testing.T) {
