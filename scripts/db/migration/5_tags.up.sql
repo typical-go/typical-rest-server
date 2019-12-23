@@ -1,0 +1,8 @@
+CREATE TABLE tags (
+    id serial PRIMARY KEY,
+    "type" VARCHAR (255) NOT NULL,
+    attributes JSONB, 
+    "value" VARCHAR (255) NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
