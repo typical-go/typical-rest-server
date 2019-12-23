@@ -14,13 +14,13 @@ type {{.Type}} struct {
 	{{end}}
 }
 
-// {{.Type}}Repo to handle {{.Name}}  entity
+// {{.Type}}Repo to handle {{.Table}} entity
 type {{.Type}}Repo interface {
-	Find(ctx context.Context, id int64) (*{{.Type}}, error)
-	List(ctx context.Context) ([]*{{.Type}}, error)
-	Insert(ctx context.Context, {{.Name}} {{.Type}}) (lastInsertID int64, err error)
-	Delete(ctx context.Context, id int64) error
-	Update(ctx context.Context, {{.Name}} {{.Type}}) error
+	Find(context.Context, int64) (*{{.Type}}, error)
+	List(context.Context) ([]*{{.Type}}, error)
+	Insert(context.Context, {{.Type}}) (lastInsertID int64, err error)
+	Delete(context.Context, int64) error
+	Update(context.Context, {{.Type}}) error
 }
 
 // New{{.Type}}Repo return new instance of {{.Type}}Repo

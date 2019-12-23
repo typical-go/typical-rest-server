@@ -1,7 +1,4 @@
-package tmpl
-
-// CachedRepoImpl template
-const CachedRepoImpl = `package repository
+package repository
 
 import (
 	"context"
@@ -15,23 +12,23 @@ import (
 	"go.uber.org/dig"
 )
 
-// Cached{{.Type}}RepoImpl is cached implementation of {{.Name}} repository
-type Cached{{.Type}}RepoImpl struct {
+// CachedDataSourceRepoImpl is cached implementation of data_source repository
+type CachedDataSourceRepoImpl struct {
 	dig.In
-	{{.Type}}RepoImpl
+	DataSourceRepoImpl
 	Redis *redis.Client
 }
 
-// Find {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:FIND:%d", id)
-	e = new({{.Type}})
+// Find data_source entity
+func (r *CachedDataSourceRepoImpl) Find(ctx context.Context, id int64) (e *DataSource, err error) {
+	cacheKey := fmt.Sprintf("DATA_SOURCES:FIND:%d", id)
+	e = new(DataSource)
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, e); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if e, err = r.{{.Type}}RepoImpl.Find(ctx, id); err != nil {
+	if e, err = r.DataSourceRepoImpl.Find(ctx, id); err != nil {
 		return
 	}
 	if err2 := cachekit.Set(redisClient, cacheKey, e, 20*time.Second); err2 != nil {
@@ -40,15 +37,15 @@ func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Typ
 	return
 }
 
-// List of {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:LIST")
+// List of data_source entity
+func (r *CachedDataSourceRepoImpl) List(ctx context.Context) (list []*DataSource, err error) {
+	cacheKey := fmt.Sprintf("DATA_SOURCES:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.{{.Type}}RepoImpl.List(ctx); err != nil {
+	if list, err = r.DataSourceRepoImpl.List(ctx); err != nil {
 		return
 	}
 	if err2 := cachekit.Set(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
@@ -56,4 +53,3 @@ func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, 
 	}
 	return
 }
-`

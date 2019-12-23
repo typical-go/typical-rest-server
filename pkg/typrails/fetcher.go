@@ -118,9 +118,6 @@ func (f *Fetcher) infoSchema(tableName string) (infos []InfoSchema, err error) {
 
 // EntityName return entity name
 func EntityName(tableName string) string {
-	if strings.HasSuffix(tableName, "es") {
-		return tableName[0 : len(tableName)-2]
-	}
 	if strings.HasSuffix(tableName, "s") {
 		return tableName[0 : len(tableName)-1]
 	}

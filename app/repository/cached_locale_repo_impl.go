@@ -1,7 +1,4 @@
-package tmpl
-
-// CachedRepoImpl template
-const CachedRepoImpl = `package repository
+package repository
 
 import (
 	"context"
@@ -15,23 +12,23 @@ import (
 	"go.uber.org/dig"
 )
 
-// Cached{{.Type}}RepoImpl is cached implementation of {{.Name}} repository
-type Cached{{.Type}}RepoImpl struct {
+// CachedLocaleRepoImpl is cached implementation of locale repository
+type CachedLocaleRepoImpl struct {
 	dig.In
-	{{.Type}}RepoImpl
+	LocaleRepoImpl
 	Redis *redis.Client
 }
 
-// Find {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:FIND:%d", id)
-	e = new({{.Type}})
+// Find locale entity
+func (r *CachedLocaleRepoImpl) Find(ctx context.Context, id int64) (e *Locale, err error) {
+	cacheKey := fmt.Sprintf("LOCALES:FIND:%d", id)
+	e = new(Locale)
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, e); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if e, err = r.{{.Type}}RepoImpl.Find(ctx, id); err != nil {
+	if e, err = r.LocaleRepoImpl.Find(ctx, id); err != nil {
 		return
 	}
 	if err2 := cachekit.Set(redisClient, cacheKey, e, 20*time.Second); err2 != nil {
@@ -40,15 +37,15 @@ func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Typ
 	return
 }
 
-// List of {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
-	cacheKey := fmt.Sprintf("{{.Cache}}:LIST")
+// List of locale entity
+func (r *CachedLocaleRepoImpl) List(ctx context.Context) (list []*Locale, err error) {
+	cacheKey := fmt.Sprintf("LOCALES:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = cachekit.Get(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.{{.Type}}RepoImpl.List(ctx); err != nil {
+	if list, err = r.LocaleRepoImpl.List(ctx); err != nil {
 		return
 	}
 	if err2 := cachekit.Set(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
@@ -56,4 +53,3 @@ func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, 
 	}
 	return
 }
-`
