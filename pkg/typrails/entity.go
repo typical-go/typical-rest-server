@@ -52,6 +52,9 @@ func fieldType(udt string) string {
 		return "string"
 	case "timestamp":
 		return "time.Time"
+	case "json":
+	case "jsonb":
+		return "dbkit.JSON"
 	}
 	return "interface{}"
 }
