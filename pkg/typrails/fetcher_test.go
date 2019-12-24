@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/typical-go/typical-go/pkg/utility/coll"
+	"github.com/typical-go/typical-go/pkg/common"
 
 	"github.com/typical-go/typical-rest-server/pkg/typrails"
 
@@ -18,16 +18,16 @@ func TestFetcher(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 	testcases := []struct {
-		data *coll.KeyStrings
+		data *common.KeyStrings
 		err  error
 		*typrails.Entity
 	}{
 		{
-			data: new(coll.KeyStrings).Add("column1", "type1"),
+			data: new(common.KeyStrings).Add("column1", "type1"),
 			err:  errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
 		},
 		{
-			data: new(coll.KeyStrings).
+			data: new(common.KeyStrings).
 				Add("id", "int4").
 				Add("name", "varchar").
 				Add("created_at", "timestamp").
@@ -50,7 +50,7 @@ func TestFetcher(t *testing.T) {
 			},
 		},
 		{
-			data: new(coll.KeyStrings).
+			data: new(common.KeyStrings).
 				Add("id", "int").
 				Add("created_at", "timestamp").
 				Add("updated_at", "timestamp"),

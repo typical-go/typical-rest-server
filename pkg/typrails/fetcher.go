@@ -8,7 +8,7 @@ import (
 	"github.com/iancoleman/strcase"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/typical-go/typical-go/pkg/utility/coll"
+	"github.com/typical-go/typical-go/pkg/common"
 	"go.uber.org/dig"
 )
 
@@ -34,7 +34,7 @@ func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
 		err = fmt.Errorf("No column in '%s'", tableName)
 		return
 	}
-	var std coll.KeyStrings
+	var std common.KeyStrings
 	std.Add("id", "int4")
 	std.Add("updated_at", "timestamp")
 	std.Add("created_at", "timestamp")
@@ -55,7 +55,7 @@ func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
 	return
 }
 
-func (f *Fetcher) filter(std coll.KeyStrings, fields []Field) (filtered []Field) {
+func (f *Fetcher) filter(std common.KeyStrings, fields []Field) (filtered []Field) {
 fields:
 	for _, field := range fields {
 		for _, ks := range std {
@@ -68,12 +68,12 @@ fields:
 	return
 }
 
-func (f *Fetcher) validate(std coll.KeyStrings, fields []Field) (err error) {
+func (f *Fetcher) validate(std common.KeyStrings, fields []Field) (err error) {
 	fieldMap := make(map[string]string)
 	for _, field := range fields {
 		fieldMap[field.Column] = field.Udt
 	}
-	var errs coll.Errors
+	var errs common.Errors
 	for _, ks := range std {
 		if udt, ok := fieldMap[ks.Key]; ok {
 			if ks.String == udt {

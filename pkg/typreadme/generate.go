@@ -7,7 +7,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/coll"
+	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/typical-go/typical-rest-server/pkg/typreadme/markdown"
 	"github.com/urfave/cli/v2"
 )
@@ -87,7 +87,7 @@ func (r *readme) generate(ctx *cli.Context) (err error) {
 	return
 }
 
-func (r *readme) fields() (keys coll.Strings, m map[string]typcore.Field) {
+func (r *readme) fields() (keys common.Strings, m map[string]typcore.Field) {
 	m = make(map[string]typcore.Field)
 	for _, module := range r.AllModule() {
 		if configurer, ok := module.(typcore.Configurer); ok {

@@ -1,7 +1,7 @@
 package typrails
 
 import (
-	"github.com/typical-go/typical-go/pkg/utility/common"
+	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/urfave/cli/v2"
 )
 

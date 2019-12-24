@@ -5,7 +5,7 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/utility/common"
+	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/urfave/cli/v2"
 )
 

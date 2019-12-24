@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-go/pkg/utility/common"
-	"github.com/typical-go/typical-go/pkg/utility/runn"
-	"github.com/typical-go/typical-go/pkg/utility/runner"
+	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/runn"
+	"github.com/typical-go/typical-go/pkg/runn/stdrun"
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 )
 
@@ -17,8 +17,8 @@ func generateController(e *Entity) (err error) {
 	if common.IsFileExist(controllerPath) {
 		return fmt.Errorf("%s already exist", controllerPath)
 	}
-	return runn.Execute(
-		runner.NewWriteTemplate(controllerPath, tmpl.Controller, e),
+	return runn.Run(
+		stdrun.NewWriteTemplate(controllerPath, tmpl.Controller, e),
 	)
 }
 
@@ -27,8 +27,8 @@ func generateService(e *Entity) (err error) {
 	if common.IsFileExist(servicePath) {
 		return fmt.Errorf("%s already exist", servicePath)
 	}
-	return runn.Execute(
-		runner.NewWriteTemplate(servicePath, tmpl.Service, e),
+	return runn.Run(
+		stdrun.NewWriteTemplate(servicePath, tmpl.Service, e),
 	)
 }
 
@@ -45,10 +45,10 @@ func generateRepository(e *Entity) (err error) {
 	if common.IsFileExist(cachedRepoImplPath) {
 		return fmt.Errorf("%s already exist", cachedRepoImplPath)
 	}
-	return runn.Execute(
-		runner.NewWriteTemplate(repoPath, tmpl.Repo, e),
-		runner.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
-		runner.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
+	return runn.Run(
+		stdrun.NewWriteTemplate(repoPath, tmpl.Repo, e),
+		stdrun.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
+		stdrun.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
 		func() error {
 			cmd := exec.Command(fmt.Sprintf("%s/bin/goimports", build.Default.GOPATH),
 				"-w", repoPath, repoImplPath)
@@ -64,8 +64,8 @@ func generateTransactional() (err error) {
 	if common.IsFileExist(transactionalPath) {
 		return nil
 	}
-	return runn.Execute(
-		runner.NewWriteString(transactionalPath, tmpl.Transactional),
-		runner.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
+	return runn.Run(
+		stdrun.NewWriteString(transactionalPath, tmpl.Transactional),
+		stdrun.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
 	)
 }
