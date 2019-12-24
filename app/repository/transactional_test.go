@@ -3,6 +3,7 @@ package repository_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
@@ -29,6 +30,19 @@ func TestTransactional(t *testing.T) {
 		commitFn()
 		require.EqualError(t, dbkit.ErrCtx(ctx), "unexpected-error")
 	})
+	t.Run("WHEN panic occurred before commit", func(t *testing.T) {
+		ctx := context.Background()
+		mock.ExpectBegin()
+		fn := trx.CommitMe(&ctx)
+		func(ctx context.Context) { // service level
+			defer fn()
+			dbkit.SetErrCtx(ctx, fmt.Errorf("some-logic-error"))
+			func(ctx context.Context) { // repository level
+				panic("something-dangerous")
+			}(ctx)
+		}(ctx)
+		require.EqualError(t, dbkit.ErrCtx(ctx), "something-dangerous")
+	})
 	t.Run("WHEN begin error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectBegin().WillReturnError(errors.New("some-begin-error"))
@@ -53,5 +67,4 @@ func TestTransactional(t *testing.T) {
 		require.EqualError(t, commitFn(), "some-rollback-error")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "unexpected-error")
 	})
-
 }
