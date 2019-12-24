@@ -2,6 +2,7 @@ package repository_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
@@ -17,25 +18,40 @@ func TestTransactional(t *testing.T) {
 	trx := repository.Transactional{
 		DB: db,
 	}
+	t.Run("WHEN error occurred before commit", func(t *testing.T) {
+		ctx := context.Background()
+		mock.ExpectBegin()
+		mock.ExpectRollback()
+		commitFn := trx.CommitMe(&ctx)
+		func(ctx context.Context) {
+			dbkit.SetErrCtx(ctx, errors.New("unexpected-error"))
+		}(ctx)
+		commitFn()
+		require.EqualError(t, dbkit.ErrCtx(ctx), "unexpected-error")
+	})
 	t.Run("WHEN begin error", func(t *testing.T) {
 		ctx := context.Background()
-		trx.CommitMe(&ctx)
-		require.EqualError(t, dbkit.ErrCtx(ctx),
-			"all expectations were already fulfilled, call to database transaction Begin was not expected")
+		mock.ExpectBegin().WillReturnError(errors.New("some-begin-error"))
+		require.EqualError(t, trx.CommitMe(&ctx)(), "some-begin-error")
 	})
 	t.Run("WHEN commit error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectBegin()
-		trx.CommitMe(&ctx)()
-		require.EqualError(t, dbkit.ErrCtx(ctx),
-			"all expectations were already fulfilled, call to Commit transaction was not expected")
-	})
-	t.Run("WHEN okay", func(t *testing.T) {
-		ctx := context.Background()
-		mock.ExpectBegin()
-		mock.ExpectCommit()
-		trx.CommitMe(&ctx)()
+		mock.ExpectCommit().WillReturnError(errors.New("some-commit-error"))
+		require.EqualError(t, trx.CommitMe(&ctx)(), "some-commit-error")
 		require.NoError(t, dbkit.ErrCtx(ctx))
 		require.NotNil(t, dbkit.TxCtx(ctx, nil))
 	})
+	t.Run("WHEN rolback error", func(t *testing.T) {
+		ctx := context.Background()
+		mock.ExpectBegin()
+		mock.ExpectRollback().WillReturnError(errors.New("some-rollback-error"))
+		commitFn := trx.CommitMe(&ctx)
+		func(ctx context.Context) {
+			dbkit.SetErrCtx(ctx, errors.New("unexpected-error"))
+		}(ctx)
+		require.EqualError(t, commitFn(), "some-rollback-error")
+		require.EqualError(t, dbkit.ErrCtx(ctx), "unexpected-error")
+	})
+
 }
