@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/typical-go/typical-go/pkg/common"
-
 	"github.com/typical-go/typical-rest-server/pkg/typrails"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -65,21 +64,8 @@ func TestFetcher(t *testing.T) {
 			rows.AddRow(ks.Key, ks.String)
 		}
 		mock.ExpectQuery(query).WithArgs("books").WillReturnRows(rows)
-		entity, err := fetcher.Fetch("some-package", "books")
+		entity, err := fetcher.Fetch("some-package", "books", "book")
 		require.EqualValues(t, tt.err, err, i)
 		require.EqualValues(t, tt.Entity, entity, i)
-	}
-}
-
-func TestEntityName(t *testing.T) {
-	testcases := []struct {
-		TableName  string
-		EntityName string
-	}{
-		{TableName: "book", EntityName: "book"},
-		{TableName: "books", EntityName: "book"},
-	}
-	for _, tt := range testcases {
-		require.Equal(t, tt.EntityName, typrails.EntityName(tt.TableName))
 	}
 }
