@@ -1,7 +1,0 @@
-CREATE TABLE locales (
-    id serial PRIMARY KEY,
-    lang_code VARCHAR (255) NOT NULL,
-    country_code VARCHAR (255) NOT NULL,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
