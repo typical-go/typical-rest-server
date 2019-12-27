@@ -1,6 +1,8 @@
 package typrails
 
 import (
+	"errors"
+
 	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/urfave/cli/v2"
 )
@@ -10,7 +12,7 @@ func (r *rails) repositoryCmd() *cli.Command {
 		Name:      "repository",
 		Aliases:   []string{"repo"},
 		Usage:     "Generate Repository from tablename",
-		ArgsUsage: "[table name]",
+		ArgsUsage: "[table] [entity]",
 		Before: func(ctx *cli.Context) error {
 			return common.LoadEnvFile()
 		},
@@ -19,12 +21,18 @@ func (r *rails) repositoryCmd() *cli.Command {
 }
 
 func (r *rails) repository(ctx *cli.Context, f Fetcher) (err error) {
-	tableName := ctx.Args().First()
-	if tableName == "" {
-		return cli.ShowCommandHelp(ctx, "rails")
+	var (
+		table  string
+		entity string
+		e      *Entity
+	)
+	if table = ctx.Args().First(); table == "" {
+		return errors.New("Missing 'table': check `./typicalw rails repository help` for more detail")
 	}
-	var e *Entity
-	if e, err = f.Fetch(r.Package, tableName); err != nil {
+	if entity = ctx.Args().Get(1); entity == "" {
+		return errors.New("Missing 'entity': check `./typicalw rails repository help` for more detail")
+	}
+	if e, err = f.Fetch(r.Package, table, entity); err != nil {
 		return
 	}
 	if err = generateTransactional(); err != nil {

@@ -25,13 +25,13 @@ type InfoSchema struct {
 }
 
 // Fetch entity from database based on table name
-func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
+func (f *Fetcher) Fetch(pkg, table, entity string) (e *Entity, err error) {
 	var infos []InfoSchema
-	if infos, err = f.infoSchema(tableName); err != nil {
+	if infos, err = f.infoSchema(table); err != nil {
 		return
 	}
 	if len(infos) < 1 {
-		err = fmt.Errorf("No column in '%s'", tableName)
+		err = fmt.Errorf("No column in '%s'", table)
 		return
 	}
 	var std common.KeyStrings
@@ -42,12 +42,11 @@ func (f *Fetcher) Fetch(pkg, tableName string) (e *Entity, err error) {
 	if err = f.validate(std, fields); err != nil {
 		return
 	}
-	entityName := EntityName(tableName)
 	e = &Entity{
-		Name:           entityName,
-		Table:          tableName,
-		Type:           strcase.ToCamel(entityName),
-		Cache:          strings.ToUpper(tableName),
+		Name:           entity,
+		Table:          table,
+		Type:           strcase.ToCamel(entity),
+		Cache:          strings.ToUpper(table),
 		ProjectPackage: pkg,
 		Fields:         fields,
 		Forms:          f.filter(std, fields),
@@ -114,12 +113,4 @@ func (f *Fetcher) infoSchema(tableName string) (infos []InfoSchema, err error) {
 		infos = append(infos, info)
 	}
 	return
-}
-
-// EntityName return entity name
-func EntityName(tableName string) string {
-	if strings.HasSuffix(tableName, "s") {
-		return tableName[0 : len(tableName)-1]
-	}
-	return tableName
 }
