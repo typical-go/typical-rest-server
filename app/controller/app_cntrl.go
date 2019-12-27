@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/railskit"
 	"go.uber.org/dig"
 )
 
@@ -21,7 +21,7 @@ func (c *AppCntrl) Route(e *echo.Echo) {
 
 // Health end point for health check
 func (c *AppCntrl) Health(ctx echo.Context) error {
-	return echokit.NewHealthCheck().
+	return railskit.NewHealthCheck().
 		Add("database", c.MYSQL.Ping()).
 		Send(ctx)
 }

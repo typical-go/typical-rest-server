@@ -1,4 +1,4 @@
-package echokit
+package echotest
 
 import (
 	"net/http"

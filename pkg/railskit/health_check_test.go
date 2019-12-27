@@ -1,15 +1,15 @@
-package echokit_test
+package railskit_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/railskit"
 )
 
 func TestHealthCheck_SetStatusOK(t *testing.T) {
-	healthcheck := echokit.NewHealthCheck().
+	healthcheck := railskit.NewHealthCheck().
 		Add("component_1", nil).
 		Add("component_2", fmt.Errorf("some error"))
 
@@ -19,23 +19,23 @@ func TestHealthCheck_SetStatusOK(t *testing.T) {
 
 func TestHealthCheck_NotOK(t *testing.T) {
 	testcases := []struct {
-		HealthCheck echokit.HealthCheck
+		HealthCheck railskit.HealthCheck
 		NotOK       bool
 	}{
 		{
-			echokit.NewHealthCheck().
+			railskit.NewHealthCheck().
 				Add("component_1", nil).
 				Add("component_2", nil),
 			false,
 		},
 		{
-			echokit.NewHealthCheck().
+			railskit.NewHealthCheck().
 				Add("component_1", nil).
 				Add("component_2", fmt.Errorf("some error")),
 			true,
 		},
 		{
-			echokit.NewHealthCheck().
+			railskit.NewHealthCheck().
 				Add("component_1", fmt.Errorf("some error")).
 				Add("component_2", fmt.Errorf("some error")),
 			true,
