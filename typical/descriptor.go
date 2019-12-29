@@ -32,10 +32,7 @@ var Descriptor = &typcore.ProjectDescriptor{
 		typpostgres.Module("sample"),
 	},
 
-	Releaser: &typrls.Releaser{
-		Targets: []typrls.Target{"linux/amd64", "darwin/amd64"},
-		Publishers: []typrls.Publisher{
-			&typrls.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
-		},
-	},
+	Releaser: typrls.New().WithPublisher(
+		typrls.GithubPublisher("typical-go", "typical-rest-server"),
+	),
 }

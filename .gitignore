@@ -1,7 +1,7 @@
 /vendor
 /bin
 /release
-/.typical-metadata
+/.typical-tmp
 
 .envrc
 .env

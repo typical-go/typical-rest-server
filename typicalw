@@ -3,15 +3,15 @@ set -e
 
 CHECKSUM_DATA=$(cksum typical/descriptor.go)
 
-if ! [ -s .typical-metadata/checksum ]; then
-	mkdir -p .typical-metadata
-	cksum typical/descriptor.go > .typical-metadata/checksum
+if ! [ -s .typical-tmp/checksum ]; then
+	mkdir -p .typical-tmp
+	cksum typical/descriptor.go > .typical-tmp/checksum
 else
-	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-metadata/checksum )" ] ; echo $?)
+	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-tmp/checksum )" ] ; echo $?)
 fi
 
 if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f bin/typical-rest-server-buildtool ]] ; then 
-	echo $CHECKSUM_DATA > .typical-metadata/checksum
+	echo $CHECKSUM_DATA > .typical-tmp/checksum
 	echo "Compile Typical-Build"
 	go build -o bin/typical-rest-server-buildtool ./cmd/typical-rest-server-buildtool
 fi
