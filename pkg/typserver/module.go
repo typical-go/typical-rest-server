@@ -11,15 +11,16 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcore"
 )
 
-// Module of Server
-func Module() interface{} {
-	return &module{}
+// New server module
+func New() *Module {
+	return &Module{}
 }
 
-type module struct{}
+// Module of server
+type Module struct{}
 
 // Configure server
-func (s *module) Configure() (prefix string, spec, loadFn interface{}) {
+func (s *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "SERVER"
 	spec = &Config{}
 	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
@@ -30,21 +31,21 @@ func (s *module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // Provide dependencies
-func (s *module) Provide() []interface{} {
+func (s *Module) Provide() []interface{} {
 	return []interface{}{
 		s.Create,
 	}
 }
 
 // Destroy dependencies
-func (s *module) Destroy() []interface{} {
+func (s *Module) Destroy() []interface{} {
 	return []interface{}{
 		s.Shutdown,
 	}
 }
 
 // Create new server
-func (s *module) Create(cfg Config) *echo.Echo {
+func (s *Module) Create(cfg Config) *echo.Echo {
 	server := echo.New()
 	server.HideBanner = true
 	server.Debug = cfg.Debug
@@ -63,7 +64,7 @@ func (s *module) Create(cfg Config) *echo.Echo {
 }
 
 // Shutdown the server
-func (s *module) Shutdown(server *echo.Echo) (err error) {
+func (s *Module) Shutdown(server *echo.Echo) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err = server.Shutdown(ctx); err != nil {

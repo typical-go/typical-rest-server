@@ -9,6 +9,6 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := typrails.Module()
+	m := typrails.New()
 	require.True(t, typcore.IsBuildCommander(m))
 }

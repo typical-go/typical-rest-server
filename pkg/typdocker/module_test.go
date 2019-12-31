@@ -9,6 +9,6 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := typdocker.Module()
+	m := typdocker.New()
 	require.True(t, typcore.IsBuildCommander(m))
 }

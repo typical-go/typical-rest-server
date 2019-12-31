@@ -5,19 +5,20 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Module of readme
-func Module() interface{} {
-	return &module{}
+// New readme module
+func New() *Module {
+	return &Module{}
 }
 
-type module struct{}
+// Module of readme
+type Module struct{}
 
 type readme struct {
 	*typcore.Context
 }
 
 // BuildCommands to be shown in BuildTool
-func (*module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	r := readme{Context: c}
 	return []*cli.Command{
 		r.generateCmd(),

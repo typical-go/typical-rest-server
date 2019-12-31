@@ -23,12 +23,12 @@ var Descriptor = &typcore.ProjectDescriptor{
 
 	Modules: []interface{}{
 		// General
-		typdocker.Module(),
-		typreadme.Module(),
-		typrails.Module(),
+		typdocker.New(),
+		typreadme.New(),
+		typrails.New(),
 
 		// HTTP Server
-		typserver.Module(),
+		typserver.New(),
 
 		// Redis
 		typredis.New(),
