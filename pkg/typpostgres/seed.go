@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m module) seedCmd(c *typcore.Context) *cli.Command {
+func (m *Module) seedCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "seed",
 		Usage:  "Data seeding",
@@ -17,7 +17,7 @@ func (m module) seedCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m module) seed(cfg Config) (err error) {
+func (m *Module) seed(cfg Config) (err error) {
 	var conn *sql.DB
 	if conn, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		return

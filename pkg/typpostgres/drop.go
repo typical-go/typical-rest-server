@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m module) dropCmd(c *typcore.Context) *cli.Command {
+func (m *Module) dropCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "drop",
 		Usage:  "Drop Database",
@@ -17,7 +17,7 @@ func (m module) dropCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m module) drop(cfg Config) (err error) {
+func (m *Module) drop(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)

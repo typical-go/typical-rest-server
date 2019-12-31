@@ -4,8 +4,8 @@ import (
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,19 +14,24 @@ const (
 	seedSrc      = "scripts/db/seed"
 )
 
-// Module of postgress
-func Module(dbname string) interface{} {
-	return &module{
-		DBName: dbname,
-	}
+// New postgres module
+func New() *Module {
+	return &Module{}
 }
 
-type module struct {
+// Module of postgres
+type Module struct {
 	DBName string
 }
 
+// WithDBName to set database name
+func (m *Module) WithDBName(dbname string) *Module {
+	m.DBName = dbname
+	return m
+}
+
 // Configure the module
-func (m module) Configure() (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
 	spec = &Config{
 		DBName: m.DBName,
@@ -39,7 +44,7 @@ func (m module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // BuildCommands of module
-func (m module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -62,21 +67,21 @@ func (m module) BuildCommands(c *typcore.Context) []*cli.Command {
 }
 
 // Provide the dependencies
-func (m module) Provide() []interface{} {
+func (m *Module) Provide() []interface{} {
 	return []interface{}{
 		m.connect,
 	}
 }
 
 // Prepare the module
-func (m module) Prepare() []interface{} {
+func (m *Module) Prepare() []interface{} {
 	return []interface{}{
 		m.ping,
 	}
 }
 
 // Destroy dependencies
-func (m module) Destroy() []interface{} {
+func (m *Module) Destroy() []interface{} {
 	return []interface{}{
 		m.disconnect,
 	}

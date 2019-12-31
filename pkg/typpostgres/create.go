@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m module) createCmd(c *typcore.Context) *cli.Command {
+func (m *Module) createCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "create",
 		Usage:  "Create New Database",
@@ -17,7 +17,7 @@ func (m module) createCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m module) create(cfg Config) (err error) {
+func (m *Module) create(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)

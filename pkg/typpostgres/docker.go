@@ -3,7 +3,7 @@ package typpostgres
 import "github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 // DockerCompose template
-func (m module) DockerCompose() typdocker.Compose {
+func (m *Module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"postgres": typdocker.Service{

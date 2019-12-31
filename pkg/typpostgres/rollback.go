@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m module) rollbackCmd(c *typcore.Context) *cli.Command {
+func (m *Module) rollbackCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "rollback",
 		Usage:  "Rollback Database",
@@ -15,7 +15,7 @@ func (m module) rollbackCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (m module) rollback(cfg Config) (err error) {
+func (m *Module) rollback(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + migrationSrc
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
