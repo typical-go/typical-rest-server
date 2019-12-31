@@ -29,10 +29,12 @@ func (m module) seed(cfg Config) (err error) {
 		log.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
 		if b, err = ioutil.ReadFile(sqlFile); err != nil {
-			return
+			log.Error(err.Error())
+			continue
 		}
 		if _, err = conn.Exec(string(b)); err != nil {
-			return
+			log.Error(err.Error())
+			continue
 		}
 	}
 	return
