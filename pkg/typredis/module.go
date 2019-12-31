@@ -1,20 +1,21 @@
 package typredis
 
 import (
-	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
 
-// Module of redis
-func Module() interface{} {
-	return &module{}
+// New Redis Module
+func New() *Module {
+	return &Module{}
 }
 
-type module struct{}
+// Module of Redis
+type Module struct{}
 
 // BuildCommands of module
-func (r *module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (r *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -30,7 +31,7 @@ func (r *module) BuildCommands(c *typcore.Context) []*cli.Command {
 }
 
 // Configure Redis
-func (r *module) Configure() (prefix string, spec, loadFn interface{}) {
+func (r *Module) Configure() (prefix string, spec, loadFn interface{}) {
 	prefix = "REDIS"
 	spec = &Config{}
 	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
@@ -41,21 +42,21 @@ func (r *module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // Provide dependencies
-func (r *module) Provide() []interface{} {
+func (r *Module) Provide() []interface{} {
 	return []interface{}{
 		r.connect,
 	}
 }
 
 // Prepare the module
-func (r *module) Prepare() []interface{} {
+func (r *Module) Prepare() []interface{} {
 	return []interface{}{
 		r.ping,
 	}
 }
 
 // Destroy dependencies
-func (r *module) Destroy() []interface{} {
+func (r *Module) Destroy() []interface{} {
 	return []interface{}{
 		r.disconnect,
 	}

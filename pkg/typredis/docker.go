@@ -3,7 +3,7 @@ package typredis
 import "github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 // DockerCompose template
-func (*module) DockerCompose() typdocker.Compose {
+func (*Module) DockerCompose() typdocker.Compose {
 	return typdocker.Compose{
 		Services: map[string]interface{}{
 			"redis": typdocker.Service{

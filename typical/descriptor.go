@@ -31,7 +31,7 @@ var Descriptor = &typcore.ProjectDescriptor{
 		typserver.Module(),
 
 		// Redis
-		typredis.Module(),
+		typredis.New(),
 
 		// Database
 		typpostgres.New().WithDBName("sample"),

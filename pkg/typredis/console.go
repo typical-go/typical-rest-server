@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m *module) consoleCmd(c *typcore.Context) *cli.Command {
+func (m *Module) consoleCmd(c *typcore.Context) *cli.Command {
 	return &cli.Command{
 		Name:    "console",
 		Aliases: []string{"c"},
@@ -17,7 +17,7 @@ func (m *module) consoleCmd(c *typcore.Context) *cli.Command {
 	}
 }
 
-func (*module) console(config *Config) (err error) {
+func (*Module) console(config *Config) (err error) {
 	args := []string{
 		"-h", config.Host,
 		"-p", config.Port,

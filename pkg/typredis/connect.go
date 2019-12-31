@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis"
 )
 
-func (*module) connect(cfg Config) (client *redis.Client) {
+func (*Module) connect(cfg Config) (client *redis.Client) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -22,14 +22,14 @@ func (*module) connect(cfg Config) (client *redis.Client) {
 	return
 }
 
-func (*module) ping(client *redis.Client) (err error) {
+func (*Module) ping(client *redis.Client) (err error) {
 	if err = client.Ping().Err(); err != nil {
 		return fmt.Errorf("Redis: Ping: %w", err)
 	}
 	return
 }
 
-func (*module) disconnect(client *redis.Client) (err error) {
+func (*Module) disconnect(client *redis.Client) (err error) {
 	if err = client.Close(); err != nil {
 		return fmt.Errorf("Redis: Disconnect: %w", err)
 	}
