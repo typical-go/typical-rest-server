@@ -23,14 +23,18 @@ func (d *docker) compose(ctx *cli.Context) (err error) {
 	return ioutil.WriteFile("docker-compose.yml", out, 0644)
 }
 
-func (d *docker) dockerCompose() (dc Compose) {
-	dc.Version = "3"
-	dc.Services = make(map[string]interface{})
-	dc.Networks = make(map[string]interface{})
-	dc.Volumes = make(map[string]interface{})
+func (d *docker) dockerCompose() (root *ComposeObject) {
+	root = &ComposeObject{
+		Version:  d.Version,
+		Services: make(Services),
+		Networks: make(Networks),
+		Volumes:  make(Volumes),
+	}
 	for _, module := range d.AllModule() {
-		if composer, ok := module.(DockerComposer); ok {
-			dc.Add(composer.DockerCompose())
+		if composer, ok := module.(Composer); ok {
+			if obj := composer.DockerCompose(d.Version); obj != nil {
+				root.Append(obj)
+			}
 		}
 	}
 	return

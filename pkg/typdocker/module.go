@@ -8,19 +8,30 @@ import (
 
 // New docker module
 func New() *Module {
-	return &Module{}
+	return &Module{
+		Version: "3",
+	}
 }
 
 // Module of docker
-type Module struct{}
+type Module struct {
+	Version Version
+}
 
 type docker struct {
 	*typcore.Context
+	Version Version
+}
+
+// WithVersion to set the version
+func (m *Module) WithVersion(version Version) *Module {
+	m.Version = version
+	return m
 }
 
 // BuildCommands is command collection to called from
-func (*Module) BuildCommands(c *typcore.Context) []*cli.Command {
-	d := docker{Context: c}
+func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
+	d := docker{c, m.Version}
 	return []*cli.Command{
 		{
 			Name:  "docker",
