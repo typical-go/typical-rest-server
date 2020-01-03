@@ -6,8 +6,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Module of application
-func Module() interface{} {
+// New application
+func New() interface{} {
 	return module{}
 }
 

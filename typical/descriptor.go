@@ -19,7 +19,7 @@ var Descriptor = &typcore.ProjectDescriptor{
 	Version:     "0.8.14",
 	Package:     "github.com/typical-go/typical-rest-server",
 
-	AppModule: app.Module(),
+	AppModule: app.New(),
 
 	Modules: []interface{}{
 		// General
