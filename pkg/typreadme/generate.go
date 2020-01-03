@@ -23,7 +23,7 @@ func (r *readme) generateCmd() *cli.Command {
 				return
 			}
 			defer file.Close()
-			if err = generate(file, nil); err != nil {
+			if err = generate(file, r.readmeObj()); err != nil {
 				return
 			}
 			return
@@ -67,8 +67,7 @@ func (r *readme) otherCommands() (details CommandDetails) {
 func (r *readme) configs() (details typcore.ConfigDetails) {
 	keys, configMap := typcore.CreateConfigMap(r.ProjectDescriptor)
 	sort.Strings(keys)
-	configMap.ValueBy(keys...)
-	return
+	return configMap.ValueBy(keys...)
 }
 
 func generate(w io.Writer, o *ReadmeObject) (err error) {

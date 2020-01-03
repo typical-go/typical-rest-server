@@ -54,19 +54,21 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 ### Other Command
 
 - `./typicalw docker`: Docker utility
-	- `./typicalw docker compose`: Generate docker-compose.yaml
-	- `./typicalw docker up`: Spin up docker containers according docker-compose
-	- `./typicalw docker down`: Take down all docker containers according docker-compose
-	- `./typicalw docker wipe`: Kill all running docker container
+- `./typicalw docker compose`: Generate docker-compose.yaml
+- `./typicalw docker up`: Spin up docker containers according docker-compose
+- `./typicalw docker down`: Take down all docker containers according docker-compose
+- `./typicalw docker wipe`: Kill all running docker container
 - `./typicalw readme`: Generate README.md
-- `./typicalw rails`: Rails-like generator
+- `./typicalw rails`: Rails-like generation
+- `./typicalw rails scaffold`: Generate CRUD API
+- `./typicalw rails repository`: Generate Repository from tablename
 - `./typicalw redis`: Redis Tool
-	- `./typicalw redis console`: Redis Interactive
+- `./typicalw redis console`: Redis Interactive
 - `./typicalw postgres`: Postgres Database Tool
-	- `./typicalw postgres create`: Create New Database
-	- `./typicalw postgres drop`: Drop Database
-	- `./typicalw postgres migrate`: Migrate Database
-	- `./typicalw postgres rollback`: Rollback Database
-	- `./typicalw postgres seed`: Data seeding
-	- `./typicalw postgres reset`: Reset Database
-	- `./typicalw postgres console`: PostgreSQL Interactive
+- `./typicalw postgres create`: Create New Database
+- `./typicalw postgres drop`: Drop Database
+- `./typicalw postgres migrate`: Migrate Database
+- `./typicalw postgres rollback`: Rollback Database
+- `./typicalw postgres seed`: Data seeding
+- `./typicalw postgres reset`: Reset Database
+- `./typicalw postgres console`: PostgreSQL Interactive
