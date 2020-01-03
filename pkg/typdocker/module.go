@@ -30,8 +30,7 @@ func (m *Module) WithVersion(version Version) *Module {
 }
 
 // BuildCommands is command collection to called from
-func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
-	d := docker{c, m.Version}
+func (m *Module) BuildCommands(ctx *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "docker",
@@ -40,10 +39,10 @@ func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 				return common.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
-				d.composeCmd(),
-				d.upCmd(),
-				d.downCmd(),
-				d.wipeCmd(),
+				m.composeCmd(ctx),
+				upCmd(),
+				downCmd(),
+				wipeCmd(),
 			},
 		},
 	}

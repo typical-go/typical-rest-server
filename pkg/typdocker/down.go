@@ -7,17 +7,15 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (d *docker) downCmd() *cli.Command {
+func downCmd() *cli.Command {
 	return &cli.Command{
-		Name:   "down",
-		Usage:  "Take down all docker containers according docker-compose",
-		Action: d.down,
+		Name:  "down",
+		Usage: "Take down all docker containers according docker-compose",
+		Action: func(ctx *cli.Context) (err error) {
+			cmd := exec.Command("docker-compose", "down")
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
+			return cmd.Run()
+		},
 	}
-}
-
-func (d *docker) down(ctx *cli.Context) (err error) {
-	cmd := exec.Command("docker-compose", "down")
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
 }
