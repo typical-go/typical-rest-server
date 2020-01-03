@@ -6,8 +6,10 @@ Example of typical and scalable RESTful API Server for Go
 
 ### Usage
 
-- `typical-rest-server`: Run the application
-- `typical-rest-server route`: Print available API Routes
+| Bash Snippet | Usage |
+|---|---|
+|`typical-rest-server`|Run the application|
+|`typical-rest-server route`|Print available API Routes|
 
 ### Configuration
 
@@ -43,32 +45,33 @@ Install [Go](https://golang.org/doc/install) (It is recommend to install via [Ho
 
 Use `./typicalw run` to build and run the project.
 
-### Test
+### Testing
 
 Use `./typicalw test` to test the project.
 
-### Release the destribution
+### Release the distribution
 
 Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)
 
-### Other Command
-
-- `./typicalw docker`: Docker utility
-- `./typicalw docker compose`: Generate docker-compose.yaml
-- `./typicalw docker up`: Spin up docker containers according docker-compose
-- `./typicalw docker down`: Take down all docker containers according docker-compose
-- `./typicalw docker wipe`: Kill all running docker container
-- `./typicalw readme`: Generate README.md
-- `./typicalw rails`: Rails-like generation
-- `./typicalw rails scaffold`: Generate CRUD API
-- `./typicalw rails repository`: Generate Repository from tablename
-- `./typicalw redis`: Redis Tool
-- `./typicalw redis console`: Redis Interactive
-- `./typicalw postgres`: Postgres Database Tool
-- `./typicalw postgres create`: Create New Database
-- `./typicalw postgres drop`: Drop Database
-- `./typicalw postgres migrate`: Migrate Database
-- `./typicalw postgres rollback`: Rollback Database
-- `./typicalw postgres seed`: Data seeding
-- `./typicalw postgres reset`: Reset Database
-- `./typicalw postgres console`: PostgreSQL Interactive
+### Others
+| Bash Snippet | Usage |
+|---|---|
+|`./typicalw docker`|Docker utility|
+|`./typicalw docker compose`|Generate docker-compose.yaml|
+|`./typicalw docker up`|Spin up docker containers according docker-compose|
+|`./typicalw docker down`|Take down all docker containers according docker-compose|
+|`./typicalw docker wipe`|Kill all running docker container|
+|`./typicalw readme`|Generate README.md|
+|`./typicalw rails`|Rails-like generation|
+|`./typicalw rails scaffold`|Generate CRUD API|
+|`./typicalw rails repository`|Generate Repository from tablename|
+|`./typicalw redis`|Redis Tool|
+|`./typicalw redis console`|Redis Interactive|
+|`./typicalw postgres`|Postgres Database Tool|
+|`./typicalw postgres create`|Create New Database|
+|`./typicalw postgres drop`|Drop Database|
+|`./typicalw postgres migrate`|Migrate Database|
+|`./typicalw postgres rollback`|Rollback Database|
+|`./typicalw postgres seed`|Data seeding|
+|`./typicalw postgres reset`|Reset Database|
+|`./typicalw postgres console`|PostgreSQL Interactive|
