@@ -34,7 +34,7 @@ func (f *Fetcher) Fetch(pkg, table, entity string) (e *Entity, err error) {
 		err = fmt.Errorf("No column in '%s'", table)
 		return
 	}
-	var std common.KeyStrings
+	var std common.StringDictionary
 	std.Add("id", "int4")
 	std.Add("updated_at", "timestamp")
 	std.Add("created_at", "timestamp")
@@ -54,7 +54,7 @@ func (f *Fetcher) Fetch(pkg, table, entity string) (e *Entity, err error) {
 	return
 }
 
-func (f *Fetcher) filter(std common.KeyStrings, fields []Field) (filtered []Field) {
+func (f *Fetcher) filter(std common.StringDictionary, fields []Field) (filtered []Field) {
 fields:
 	for _, field := range fields {
 		for _, ks := range std {
@@ -67,7 +67,7 @@ fields:
 	return
 }
 
-func (f *Fetcher) validate(std common.KeyStrings, fields []Field) (err error) {
+func (f *Fetcher) validate(std common.StringDictionary, fields []Field) (err error) {
 	fieldMap := make(map[string]string)
 	for _, field := range fields {
 		fieldMap[field.Column] = field.Udt
@@ -75,12 +75,12 @@ func (f *Fetcher) validate(std common.KeyStrings, fields []Field) (err error) {
 	var errs common.Errors
 	for _, ks := range std {
 		if udt, ok := fieldMap[ks.Key]; ok {
-			if ks.String == udt {
+			if ks.Value == udt {
 				continue
 			}
 		}
 		errs.Append(fmt.Errorf("\"%s\" with underlying data type \"%s\" is missing",
-			ks.Key, ks.String))
+			ks.Key, ks.Value))
 	}
 
 	err = errs.Unwrap()
