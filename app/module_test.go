@@ -9,7 +9,7 @@ import (
 )
 
 func TestModule(t *testing.T) {
-	m := app.Module()
+	m := app.New()
 	require.True(t, typcore.IsConfigurer(m))
 	require.True(t, typcore.IsAppCommander(m))
 }

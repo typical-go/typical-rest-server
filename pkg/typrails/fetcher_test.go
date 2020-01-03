@@ -17,16 +17,16 @@ func TestFetcher(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 	testcases := []struct {
-		data *common.KeyStrings
+		data *common.StringDictionary
 		err  error
 		*typrails.Entity
 	}{
 		{
-			data: new(common.KeyStrings).Add("column1", "type1"),
+			data: new(common.StringDictionary).Add("column1", "type1"),
 			err:  errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
 		},
 		{
-			data: new(common.KeyStrings).
+			data: new(common.StringDictionary).
 				Add("id", "int4").
 				Add("name", "varchar").
 				Add("created_at", "timestamp").
@@ -49,7 +49,7 @@ func TestFetcher(t *testing.T) {
 			},
 		},
 		{
-			data: new(common.KeyStrings).
+			data: new(common.StringDictionary).
 				Add("id", "int").
 				Add("created_at", "timestamp").
 				Add("updated_at", "timestamp"),
@@ -61,7 +61,7 @@ func TestFetcher(t *testing.T) {
 	for i, tt := range testcases {
 		rows := sqlmock.NewRows([]string{"column_name", "data_type"})
 		for _, ks := range *tt.data {
-			rows.AddRow(ks.Key, ks.String)
+			rows.AddRow(ks.Key, ks.Value)
 		}
 		mock.ExpectQuery(query).WithArgs("books").WillReturnRows(rows)
 		entity, err := fetcher.Fetch("some-package", "books", "book")
