@@ -23,7 +23,7 @@ type Cached{{.Type}}RepoImpl struct {
 }
 
 // Find {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, err error) {
+func (r *Cached{{.Type}}RepoImpl) FindOne(ctx context.Context, id int64) (e *{{.Type}}, err error) {
 	cacheKey := fmt.Sprintf("{{.Cache}}:FIND:%d", id)
 	e = new({{.Type}})
 	redisClient := r.Redis.WithContext(ctx)
@@ -31,7 +31,7 @@ func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Typ
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if e, err = r.{{.Type}}RepoImpl.Find(ctx, id); err != nil {
+	if e, err = r.{{.Type}}RepoImpl.FindOne(ctx, id); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, e, 20*time.Second); err2 != nil {
@@ -41,14 +41,14 @@ func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Typ
 }
 
 // List of {{.Name}} entity
-func (r *Cached{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
+func (r *Cached{{.Type}}RepoImpl) Find(ctx context.Context) (list []*{{.Type}}, err error) {
 	cacheKey := fmt.Sprintf("{{.Cache}}:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.{{.Type}}RepoImpl.List(ctx); err != nil {
+	if list, err = r.{{.Type}}RepoImpl.Find(ctx); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, list, 20*time.Second); err2 != nil {

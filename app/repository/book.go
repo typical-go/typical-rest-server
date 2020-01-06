@@ -16,9 +16,9 @@ type Book struct {
 
 // BookRepo to get book data from databasesa
 type BookRepo interface {
-	Find(ctx context.Context, id int64) (*Book, error)
-	List(ctx context.Context) ([]*Book, error)
-	Insert(ctx context.Context, book Book) (lastInsertID int64, err error)
+	FindOne(ctx context.Context, id int64) (*Book, error)
+	Find(ctx context.Context) ([]*Book, error)
+	Create(ctx context.Context, book Book) (lastInsertID int64, err error)
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, book Book) error
 }

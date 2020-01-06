@@ -21,7 +21,7 @@ type CachedBookRepoImpl struct {
 }
 
 // Find book entity
-func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
+func (r *CachedBookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:FIND:%d", id)
 	book = new(Book)
 	redisClient := r.Redis.WithContext(ctx)
@@ -29,7 +29,7 @@ func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, er
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if book, err = r.BookRepoImpl.Find(ctx, id); err != nil {
+	if book, err = r.BookRepoImpl.FindOne(ctx, id); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, book, 20*time.Second); err2 != nil {
@@ -39,14 +39,14 @@ func (r *CachedBookRepoImpl) Find(ctx context.Context, id int64) (book *Book, er
 }
 
 // List of book entity
-func (r *CachedBookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
+func (r *CachedBookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.BookRepoImpl.List(ctx); err != nil {
+	if list, err = r.BookRepoImpl.Find(ctx); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, list, 20*time.Second); err2 != nil {

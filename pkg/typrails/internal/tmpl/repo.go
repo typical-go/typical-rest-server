@@ -17,9 +17,9 @@ type {{.Type}} struct {
 
 // {{.Type}}Repo to handle {{.Table}} entity
 type {{.Type}}Repo interface {
-	Find(context.Context, int64) (*{{.Type}}, error)
-	List(context.Context) ([]*{{.Type}}, error)
-	Insert(context.Context, {{.Type}}) (lastInsertID int64, err error)
+	FindOne(context.Context, int64) (*{{.Type}}, error)
+	Find(context.Context) ([]*{{.Type}}, error)
+	Create(context.Context, {{.Type}}) (lastInsertID int64, err error)
 	Delete(context.Context, int64) error
 	Update(context.Context, {{.Type}}) error
 }

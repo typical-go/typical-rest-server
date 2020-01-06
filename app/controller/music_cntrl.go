@@ -21,79 +21,89 @@ type MusicCntrl struct {
 
 // Route to define API Route
 func (c *MusicCntrl) Route(e *echo.Echo) {
-	e.GET("musics", c.List)
+	e.GET("musics", c.Find)
 	e.POST("musics", c.Create)
-	e.GET("musics/:id", c.Get)
+	e.GET("musics/:id", c.FindOne)
 	e.PUT("musics", c.Update)
 	e.DELETE("musics/:id", c.Delete)
 }
 
 // Create music
-func (c *MusicCntrl) Create(ctx echo.Context) (err error) {
-	var music repository.Music
-	var lastInsertID int64
-	ctx0 := ctx.Request().Context()
-	if err = ctx.Bind(&music); err != nil {
+func (c *MusicCntrl) Create(ec echo.Context) (err error) {
+	var (
+		music        repository.Music
+		lastInsertID int64
+		ctx          = ec.Request().Context()
+	)
+	if err = ec.Bind(&music); err != nil {
 		return err
 	}
 	if err = validator.New().Struct(music); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if lastInsertID, err = c.MusicService.Insert(ctx0, music); err != nil {
+	if lastInsertID, err = c.MusicService.Create(ctx, music); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
-	return ctx.JSON(http.StatusCreated, GeneralResponse{
+	return ec.JSON(http.StatusCreated, GeneralResponse{
 		Message: fmt.Sprintf("Success insert new music #%d", lastInsertID),
 	})
 }
 
-// List of music
-func (c *MusicCntrl) List(ctx echo.Context) (err error) {
-	var musics []*repository.Music
-	ctx0 := ctx.Request().Context()
-	if musics, err = c.MusicService.List(ctx0); err != nil {
+// Find musics
+func (c *MusicCntrl) Find(ec echo.Context) (err error) {
+	var (
+		musics []*repository.Music
+		ctx    = ec.Request().Context()
+	)
+	if musics, err = c.MusicService.Find(ctx); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, musics)
+	return ec.JSON(http.StatusOK, musics)
 }
 
-// Get music
-func (c *MusicCntrl) Get(ctx echo.Context) (err error) {
-	var id int64
-	var music *repository.Music
-	ctx0 := ctx.Request().Context()
-	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
+// FindOne music
+func (c *MusicCntrl) FindOne(ec echo.Context) (err error) {
+	var (
+		id    int64
+		music *repository.Music
+		ctx   = ec.Request().Context()
+	)
+	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
-	if music, err = c.MusicService.Find(ctx0, id); err != nil {
+	if music, err = c.MusicService.FindOne(ctx, id); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	if music == nil {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Music#%d not found", id))
 	}
-	return ctx.JSON(http.StatusOK, music)
+	return ec.JSON(http.StatusOK, music)
 }
 
 // Delete music
-func (c *MusicCntrl) Delete(ctx echo.Context) (err error) {
-	var id int64
-	ctx0 := ctx.Request().Context()
-	if id, err = strconv.ParseInt(ctx.Param("id"), 10, 64); err != nil {
+func (c *MusicCntrl) Delete(ec echo.Context) (err error) {
+	var (
+		id   int64
+		ctx0 = ec.Request().Context()
+	)
+	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
 	if err = c.MusicService.Delete(ctx0, id); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, GeneralResponse{
+	return ec.JSON(http.StatusOK, GeneralResponse{
 		Message: fmt.Sprintf("Success delete music #%d", id),
 	})
 }
 
 // Update music
-func (c *MusicCntrl) Update(ctx echo.Context) (err error) {
-	var music repository.Music
-	ctx0 := ctx.Request().Context()
-	if err = ctx.Bind(&music); err != nil {
+func (c *MusicCntrl) Update(ec echo.Context) (err error) {
+	var (
+		music repository.Music
+		ctx   = ec.Request().Context()
+	)
+	if err = ec.Bind(&music); err != nil {
 		return err
 	}
 	if music.ID <= 0 {
@@ -102,10 +112,10 @@ func (c *MusicCntrl) Update(ctx echo.Context) (err error) {
 	if err = validator.New().Struct(music); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.MusicService.Update(ctx0, music); err != nil {
+	if err = c.MusicService.Update(ctx, music); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, GeneralResponse{
+	return ec.JSON(http.StatusOK, GeneralResponse{
 		Message: fmt.Sprintf("Success update music #%d", music.ID),
 	})
 }

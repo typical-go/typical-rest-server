@@ -18,7 +18,7 @@ type BookRepoImpl struct {
 }
 
 // Find book
-func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err error) {
+func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
@@ -41,7 +41,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, id int64) (book *Book, err erro
 }
 
 // List book
-func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
@@ -63,8 +63,8 @@ func (r *BookRepoImpl) List(ctx context.Context) (list []*Book, err error) {
 	return
 }
 
-// Insert book
-func (r *BookRepoImpl) Insert(ctx context.Context, book Book) (lastInsertID int64, err error) {
+// Create book
+func (r *BookRepoImpl) Create(ctx context.Context, book Book) (lastInsertID int64, err error) {
 	builder := sq.
 		Insert("books").
 		Columns("title", "author").Values(book.Title, book.Author).

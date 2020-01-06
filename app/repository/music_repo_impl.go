@@ -17,7 +17,7 @@ type MusicRepoImpl struct {
 }
 
 // Find music
-func (r *MusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err error) {
+func (r *MusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "artist", "updated_at", "created_at").
@@ -37,7 +37,7 @@ func (r *MusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err error
 }
 
 // List music
-func (r *MusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
+func (r *MusicRepoImpl) Find(ctx context.Context) (list []*Music, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "artist", "updated_at", "created_at").
@@ -57,8 +57,8 @@ func (r *MusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
 	return
 }
 
-// Insert music
-func (r *MusicRepoImpl) Insert(ctx context.Context, e Music) (lastInsertID int64, err error) {
+// Create music
+func (r *MusicRepoImpl) Create(ctx context.Context, e Music) (lastInsertID int64, err error) {
 	builder := sq.
 		Insert("musics").
 		Columns("artist").

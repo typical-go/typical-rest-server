@@ -15,9 +15,9 @@ type Music struct {
 
 // MusicRepo to handle musics entity
 type MusicRepo interface {
-	Find(context.Context, int64) (*Music, error)
-	List(context.Context) ([]*Music, error)
-	Insert(context.Context, Music) (lastInsertID int64, err error)
+	FindOne(context.Context, int64) (*Music, error)
+	Find(context.Context) ([]*Music, error)
+	Create(context.Context, Music) (lastInsertID int64, err error)
 	Delete(context.Context, int64) error
 	Update(context.Context, Music) error
 }

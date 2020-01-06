@@ -20,7 +20,7 @@ type {{.Type}}RepoImpl struct {
 }
 
 // Find {{.Name}}
-func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, err error) {
+func (r *{{.Type}}RepoImpl) FindOne(ctx context.Context, id int64) (e *{{.Type}}, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
@@ -40,7 +40,7 @@ func (r *{{.Type}}RepoImpl) Find(ctx context.Context, id int64) (e *{{.Type}}, e
 }
 
 // List {{.Name}}
-func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err error) {
+func (r *{{.Type}}RepoImpl) Find(ctx context.Context) (list []*{{.Type}}, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select({{range $field := .Fields}}"{{$field.Column}}",{{end}}).
@@ -61,9 +61,9 @@ func (r *{{.Type}}RepoImpl) List(ctx context.Context) (list []*{{.Type}}, err er
 }
 
 // Insert {{.Name}}
-func (r *{{.Type}}RepoImpl) Insert(ctx context.Context, e {{.Type}}) (lastInsertID int64, err error) {
+func (r *{{.Type}}RepoImpl) Create(ctx context.Context, e {{.Type}}) (lastInsertID int64, err error) {
 	builder := sq.
-		Insert("{{.Table}}").
+		Create("{{.Table}}").
 		Columns({{range $field := .Forms}}"{{$field.Column}}",{{end}}).
 		Values({{range $field := .Forms}}e.{{$field.Name}},{{end}}).
 		Suffix("RETURNING \"id\"").

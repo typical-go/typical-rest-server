@@ -33,7 +33,7 @@ func generateService(e *Entity) (err error) {
 }
 
 func generateRepository(e *Entity) (err error) {
-	repoPath := fmt.Sprintf("app/repository/%s_repo.go", e.Name)
+	repoPath := fmt.Sprintf("app/repository/%s.go", e.Name)
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
 	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)
 	if common.IsFileExist(repoPath) {

@@ -16,7 +16,7 @@ import (
 	"github.com/typical-go/typical-rest-server/app/repository"
 )
 
-func TestBookRepoImpl_Insert(t *testing.T) {
+func TestBookRepoImpl_Create(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -26,7 +26,7 @@ func TestBookRepoImpl_Insert(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
 		mock.ExpectQuery(sql).WithArgs("some-title", "some-author").
 			WillReturnError(fmt.Errorf("some-insert-error"))
-		_, err = repo.Insert(ctx, repository.Book{Title: "some-title", Author: "some-author"})
+		_, err = repo.Create(ctx, repository.Book{Title: "some-title", Author: "some-author"})
 		require.EqualError(t, err, "some-insert-error")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "some-insert-error")
 	})
@@ -34,7 +34,7 @@ func TestBookRepoImpl_Insert(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectQuery(sql).WithArgs("some-title", "some-author").
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(999))
-		id, err := repo.Insert(ctx, repository.Book{Title: "some-title", Author: "some-author"})
+		id, err := repo.Create(ctx, repository.Book{Title: "some-title", Author: "some-author"})
 		require.NoError(t, err)
 		require.Equal(t, int64(999), id)
 	})
@@ -86,7 +86,7 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 	})
 }
 
-func TestBookRepitory_Find(t *testing.T) {
+func TestBookRepitory_FindOne(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -95,7 +95,7 @@ func TestBookRepitory_Find(t *testing.T) {
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
 		mock.ExpectQuery(sql).WithArgs(123).WillReturnError(errors.New("some-find-error"))
-		_, err := repo.Find(ctx, 123)
+		_, err := repo.FindOne(ctx, 123)
 		require.EqualError(t, err, "some-find-error")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "some-find-error")
 	})
@@ -104,7 +104,7 @@ func TestBookRepitory_Find(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "title", "author"}).
 			AddRow("some-id", "some-title", "some-author")
 		mock.ExpectQuery(sql).WithArgs(123).WillReturnRows(rows)
-		_, err := repo.Find(ctx, 123)
+		_, err := repo.FindOne(ctx, 123)
 		require.EqualError(t, err, "sql: expected 3 destination arguments in Scan, not 5")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "sql: expected 3 destination arguments in Scan, not 5")
 	})
@@ -120,13 +120,13 @@ func TestBookRepitory_Find(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "title", "author", "updated_at", "created_at"}).
 			AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt)
 		mock.ExpectQuery(sql).WithArgs(123).WillReturnRows(rows)
-		book, err := repo.Find(ctx, 123)
+		book, err := repo.FindOne(ctx, 123)
 		require.NoError(t, err)
 		require.Equal(t, expected, book)
 	})
 }
 
-func TestBookRepoImpl_List(t *testing.T) {
+func TestBookRepoImpl_Find(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -135,7 +135,7 @@ func TestBookRepoImpl_List(t *testing.T) {
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
 		mock.ExpectQuery(sql).WillReturnError(fmt.Errorf("some-list-error"))
-		_, err := repo.List(ctx)
+		_, err := repo.Find(ctx)
 		require.EqualError(t, err, "some-list-error")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "some-list-error")
 	})
@@ -144,7 +144,7 @@ func TestBookRepoImpl_List(t *testing.T) {
 		mock.ExpectQuery(sql).WillReturnRows(sqlmock.NewRows([]string{"id", "title"}).
 			AddRow(1, "one").
 			AddRow(2, "two"))
-		_, err := repo.List(ctx)
+		_, err := repo.Find(ctx)
 		require.EqualError(t, err, "sql: expected 2 destination arguments in Scan, not 5")
 		require.EqualError(t, dbkit.ErrCtx(ctx), "sql: expected 2 destination arguments in Scan, not 5")
 	})
@@ -159,7 +159,7 @@ func TestBookRepoImpl_List(t *testing.T) {
 			rows.AddRow(expected.ID, expected.Title, expected.Author, expected.UpdatedAt, expected.CreatedAt)
 		}
 		mock.ExpectQuery(sql).WillReturnRows(rows)
-		books, err := repo.List(ctx)
+		books, err := repo.Find(ctx)
 		require.NoError(t, err)
 		require.Equal(t, expecteds, books)
 	})

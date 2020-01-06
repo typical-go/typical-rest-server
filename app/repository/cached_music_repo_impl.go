@@ -20,7 +20,7 @@ type CachedMusicRepoImpl struct {
 }
 
 // Find music entity
-func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err error) {
+func (r *CachedMusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:FIND:%d", id)
 	e = new(Music)
 	redisClient := r.Redis.WithContext(ctx)
@@ -28,7 +28,7 @@ func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if e, err = r.MusicRepoImpl.Find(ctx, id); err != nil {
+	if e, err = r.MusicRepoImpl.FindOne(ctx, id); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, e, 20*time.Second); err2 != nil {
@@ -38,14 +38,14 @@ func (r *CachedMusicRepoImpl) Find(ctx context.Context, id int64) (e *Music, err
 }
 
 // List of music entity
-func (r *CachedMusicRepoImpl) List(ctx context.Context) (list []*Music, err error) {
+func (r *CachedMusicRepoImpl) Find(ctx context.Context) (list []*Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.MusicRepoImpl.List(ctx); err != nil {
+	if list, err = r.MusicRepoImpl.Find(ctx); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, list, 20*time.Second); err2 != nil {
