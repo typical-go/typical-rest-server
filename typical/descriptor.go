@@ -12,32 +12,34 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 )
 
-// Descriptor of Typical REST Server
-var Descriptor = &typcore.ProjectDescriptor{
-	Name:        "Typical REST Server",
-	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.15",
-	Package:     "github.com/typical-go/typical-rest-server",
+var (
+	docker   = typdocker.New()
+	readme   = typreadme.New()
+	rails    = typrails.New()
+	server   = typserver.New()
+	redis    = typredis.New()
+	postgres = typpostgres.New().WithDBName("sample")
 
-	AppModule: app.New(),
+	// Descriptor of Typical REST Server
+	Descriptor = &typcore.ProjectDescriptor{
+		Name:        "Typical REST Server",
+		Description: "Example of typical and scalable RESTful API Server for Go",
+		Version:     "0.8.15",
+		Package:     "github.com/typical-go/typical-rest-server",
 
-	Modules: []interface{}{
-		// General
-		typdocker.New(),
-		typreadme.New(),
-		typrails.New(),
+		AppModule: app.New(),
 
-		// HTTP Server
-		typserver.New(),
+		Modules: []interface{}{
+			docker,
+			readme,
+			rails,
+			server,
+			redis,
+			postgres,
+		},
 
-		// Redis
-		typredis.New(),
-
-		// Database
-		typpostgres.New().WithDBName("sample"),
-	},
-
-	Releaser: typrls.New().WithPublisher(
-		typrls.GithubPublisher("typical-go", "typical-rest-server"),
-	),
-}
+		Releaser: typrls.New().WithPublisher(
+			typrls.GithubPublisher("typical-go", "typical-rest-server"),
+		),
+	}
+)
