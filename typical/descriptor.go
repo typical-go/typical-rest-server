@@ -13,12 +13,12 @@ import (
 )
 
 var (
-	docker   = typdocker.New()
 	readme   = typreadme.New()
 	rails    = typrails.New()
 	server   = typserver.New()
 	redis    = typredis.New()
 	postgres = typpostgres.New().WithDBName("sample")
+	docker   = typdocker.New().WithComposers(postgres, redis)
 
 	// Descriptor of Typical REST Server
 	Descriptor = &typcore.ProjectDescriptor{

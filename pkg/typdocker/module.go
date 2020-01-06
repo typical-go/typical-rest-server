@@ -15,17 +15,19 @@ func New() *Module {
 
 // Module of docker
 type Module struct {
-	Version Version
-}
-
-type docker struct {
-	*typcore.Context
-	Version Version
+	Version   Version
+	Composers []Composer
 }
 
 // WithVersion to set the version
 func (m *Module) WithVersion(version Version) *Module {
 	m.Version = version
+	return m
+}
+
+// WithComposers to set the composers
+func (m *Module) WithComposers(composers ...Composer) *Module {
+	m.Composers = composers
 	return m
 }
 

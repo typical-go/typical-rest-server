@@ -1,6 +1,7 @@
 package typdocker
 
 import (
+	"errors"
 	"io/ioutil"
 
 	log "github.com/sirupsen/logrus"
@@ -14,12 +15,12 @@ func (m *Module) composeCmd(ctx *typcore.Context) *cli.Command {
 		Name:  "compose",
 		Usage: "Generate docker-compose.yaml",
 		Action: func(c *cli.Context) (err error) {
-			var (
-				out []byte
-				obj = dockerCompose(ctx.ProjectDescriptor, m.Version)
-			)
+			if len(m.Composers) < 1 {
+				return errors.New("No composers is set")
+			}
+			var out []byte
 			log.Info("Generate docker-compose.yml")
-			if out, err = yaml.Marshal(obj); err != nil {
+			if out, err = yaml.Marshal(m.dockerCompose()); err != nil {
 				return
 			}
 			if err = ioutil.WriteFile("docker-compose.yml", out, 0644); err != nil {
@@ -30,18 +31,16 @@ func (m *Module) composeCmd(ctx *typcore.Context) *cli.Command {
 	}
 }
 
-func dockerCompose(d *typcore.ProjectDescriptor, version Version) (root *ComposeObject) {
+func (m *Module) dockerCompose() (root *ComposeObject) {
 	root = &ComposeObject{
-		Version:  version,
+		Version:  m.Version,
 		Services: make(Services),
 		Networks: make(Networks),
 		Volumes:  make(Volumes),
 	}
-	for _, module := range d.AllModule() {
-		if composer, ok := module.(Composer); ok {
-			if obj := composer.DockerCompose(version); obj != nil {
-				root.Append(obj)
-			}
+	for _, composer := range m.Composers {
+		if obj := composer.DockerCompose(m.Version); obj != nil {
+			root.Append(obj)
 		}
 	}
 	return
