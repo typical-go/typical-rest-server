@@ -25,7 +25,7 @@ var (
 	Descriptor = typcore.ProjectDescriptor{
 		Name:        "Typical REST Server",
 		Description: "Example of typical and scalable RESTful API Server for Go",
-		Version:     "0.8.15",
+		Version:     "0.8.16",
 		Package:     "github.com/typical-go/typical-rest-server",
 
 		App: typcore.NewApp().
