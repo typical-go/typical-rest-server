@@ -13,30 +13,53 @@ import (
 )
 
 var (
-	readme   = typreadme.New()
-	rails    = typrails.New()
-	server   = typserver.New()
-	redis    = typredis.New()
-	postgres = typpostgres.New().WithDBName("sample")
-	docker   = typdocker.New().WithComposers(postgres, redis)
+	application = app.New()
+	readme      = typreadme.New()
+	rails       = typrails.New()
+	server      = typserver.New()
+	redis       = typredis.New()
+	postgres    = typpostgres.New().WithDBName("sample")
+	docker      = typdocker.New().WithComposers(postgres, redis)
 
 	// Descriptor of Typical REST Server
-	Descriptor = &typcore.ProjectDescriptor{
+	Descriptor = typcore.ProjectDescriptor{
 		Name:        "Typical REST Server",
 		Description: "Example of typical and scalable RESTful API Server for Go",
 		Version:     "0.8.15",
 		Package:     "github.com/typical-go/typical-rest-server",
 
-		AppModule: app.New(),
+		App: typcore.NewApp().
+			WithEntryPoint(application).
+			WithProvide(
+				server,
+				redis,
+				postgres,
+			).
+			WithDestroy(
+				server,
+				redis,
+				postgres,
+			).
+			WithPrepare(
+				redis,
+				postgres,
+			),
 
-		Modules: []interface{}{
+		BuildCommands: []typcore.BuildCommander{
 			docker,
 			readme,
-			rails,
-			server,
-			redis,
 			postgres,
+			redis,
+			rails,
 		},
+
+		Configuration: typcore.NewConfiguration().
+			WithConfigure(
+				application,
+				server,
+				redis,
+				postgres,
+			),
 
 		Releaser: typrls.New().WithPublisher(
 			typrls.GithubPublisher("typical-go", "typical-rest-server"),

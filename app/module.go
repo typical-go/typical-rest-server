@@ -7,13 +7,15 @@ import (
 )
 
 // New application
-func New() interface{} {
-	return module{}
+func New() *Module {
+	return &Module{}
 }
 
-type module struct{}
+// Module of application
+type Module struct{}
 
-func (m module) Action() interface{} {
+// EntryPoint of application
+func (m Module) EntryPoint() interface{} {
 	return func(s server) error {
 		s.Middleware()
 		s.Route()
@@ -21,18 +23,20 @@ func (m module) Action() interface{} {
 	}
 }
 
-func (m module) Configure() (prefix string, spec, loadFn interface{}) {
+// Configure application
+func (m Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "APP"
 	spec = &config.Config{}
-	loadFn = func(loader typcore.ConfigLoader) (cfg config.Config, err error) {
+	loadFn = func() (cfg config.Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}
 	return
 }
 
-func (m module) AppCommands(c *typcore.Context) []*cli.Command {
+// AppCommands return comamnd
+func (m Module) AppCommands(c *typcore.AppContext) []*cli.Command {
 	return []*cli.Command{
-		{Name: "route", Usage: "Print available API Routes", Action: c.PreparedAction(taskRouteList)},
+		{Name: "route", Usage: "Print available API Routes", Action: c.ActionFunc(taskRouteList)},
 	}
 }

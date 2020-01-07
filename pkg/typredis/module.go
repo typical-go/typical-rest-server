@@ -6,16 +6,16 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// Module of Redis
+type Module struct{}
+
 // New Redis Module
 func New() *Module {
 	return &Module{}
 }
 
-// Module of Redis
-type Module struct{}
-
 // BuildCommands of module
-func (r *Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (r *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -31,10 +31,10 @@ func (r *Module) BuildCommands(c *typcore.Context) []*cli.Command {
 }
 
 // Configure Redis
-func (r *Module) Configure() (prefix string, spec, loadFn interface{}) {
+func (r *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "REDIS"
 	spec = &Config{}
-	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
+	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

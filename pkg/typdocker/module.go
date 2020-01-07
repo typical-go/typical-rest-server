@@ -32,7 +32,7 @@ func (m *Module) WithComposers(composers ...Composer) *Module {
 }
 
 // BuildCommands is command collection to called from
-func (m *Module) BuildCommands(ctx *typcore.Context) []*cli.Command {
+func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "docker",

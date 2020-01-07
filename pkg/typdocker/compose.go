@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func (m *Module) composeCmd(ctx *typcore.Context) *cli.Command {
+func (m *Module) composeCmd(ctx *typcore.BuildContext) *cli.Command {
 	return &cli.Command{
 		Name:  "compose",
 		Usage: "Generate docker-compose.yaml",

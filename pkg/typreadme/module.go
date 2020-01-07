@@ -46,7 +46,7 @@ func (m *Module) WithTemplate(template string) *Module {
 }
 
 // BuildCommands to be shown in BuildTool
-func (m *Module) BuildCommands(ctx *typcore.Context) []*cli.Command {
+func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "readme",
@@ -85,16 +85,15 @@ func (m *Module) BuildCommands(ctx *typcore.Context) []*cli.Command {
 
 func appCommands(d *typcore.ProjectDescriptor) (infos CommandInfos) {
 	appName := strcase.ToKebab(d.Name) // TODO: use typenv instead
-	if typcore.IsActionable(d.AppModule) {
+	if d.App.EntryPoint() != nil {
 		infos.Append(&CommandInfo{
 			Snippet: appName,
 			Usage:   "Run the application",
 		})
 	}
-	if commander, ok := d.AppModule.(typcore.AppCommander); ok {
-		for _, cmd := range commander.AppCommands(&typcore.Context{}) {
-			addCliCommandInfo(&infos, appName, cmd)
-		}
+	for _, cmd := range d.App.AppCommands(typcore.NewAppContext(nil)) {
+		addCliCommandInfo(&infos, appName, cmd)
+
 	}
 	return
 }
@@ -107,7 +106,7 @@ func otherCommands(d *typcore.ProjectDescriptor) (infos CommandInfos) {
 }
 
 func configs(d *typcore.ProjectDescriptor) (infos ConfigInfos) {
-	keys, configMap := typcore.CreateConfigMap(d)
+	keys, configMap := d.Configuration.ConfigMap()
 	sort.Strings(keys)
 	for _, cfg := range configMap.ValueBy(keys...) {
 		var required string

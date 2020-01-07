@@ -9,11 +9,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m *Module) seedCmd(c *typcore.Context) *cli.Command {
+func (m *Module) seedCmd(c *typcore.BuildContext) *cli.Command {
 	return &cli.Command{
 		Name:   "seed",
 		Usage:  "Data seeding",
-		Action: c.Action(m, m.seed),
+		Action: c.ActionFunc(m.seed),
 	}
 }
 

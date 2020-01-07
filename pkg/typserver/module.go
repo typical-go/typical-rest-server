@@ -20,10 +20,10 @@ func New() *Module {
 type Module struct{}
 
 // Configure server
-func (s *Module) Configure() (prefix string, spec, loadFn interface{}) {
+func (s *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "SERVER"
 	spec = &Config{}
-	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
+	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

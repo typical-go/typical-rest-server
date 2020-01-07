@@ -31,12 +31,12 @@ func (m *Module) WithDBName(dbname string) *Module {
 }
 
 // Configure the module
-func (m *Module) Configure() (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
 	spec = &Config{
 		DBName: m.DBName,
 	}
-	loadFn = func(loader typcore.ConfigLoader) (cfg Config, err error) {
+	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}
@@ -44,7 +44,7 @@ func (m *Module) Configure() (prefix string, spec, loadFn interface{}) {
 }
 
 // BuildCommands of module
-func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (m *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",

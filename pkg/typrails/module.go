@@ -14,11 +14,11 @@ func New() *Module {
 type Module struct{}
 
 type rails struct {
-	*typcore.Context
+	*typcore.BuildContext
 }
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c *typcore.Context) []*cli.Command {
+func (m *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
 	r := rails{c}
 	return []*cli.Command{
 		{

@@ -9,11 +9,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m *Module) consoleCmd(c *typcore.Context) *cli.Command {
+func (m *Module) consoleCmd(c *typcore.BuildContext) *cli.Command {
 	return &cli.Command{
 		Name:   "console",
 		Usage:  "PostgreSQL Interactive",
-		Action: c.Action(m, m.console),
+		Action: c.ActionFunc(m.console),
 	}
 }
 

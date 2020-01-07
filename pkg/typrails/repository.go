@@ -16,7 +16,7 @@ func (r *rails) repositoryCmd() *cli.Command {
 		Before: func(ctx *cli.Context) error {
 			return common.LoadEnvFile()
 		},
-		Action: r.PreparedAction(r.repository),
+		Action: r.ActionFunc(r.repository),
 	}
 }
 

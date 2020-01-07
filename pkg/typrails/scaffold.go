@@ -16,7 +16,7 @@ func (r *rails) scaffoldCmd() *cli.Command {
 		Before: func(ctx *cli.Context) error {
 			return common.LoadEnvFile()
 		},
-		Action: r.PreparedAction(r.scaffold),
+		Action: r.ActionFunc(r.scaffold),
 	}
 }
 

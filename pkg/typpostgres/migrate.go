@@ -7,11 +7,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func (m *Module) migrateCmd(c *typcore.Context) *cli.Command {
+func (m *Module) migrateCmd(c *typcore.BuildContext) *cli.Command {
 	return &cli.Command{
 		Name:   "migrate",
 		Usage:  "Migrate Database",
-		Action: c.Action(m, m.migrate),
+		Action: c.ActionFunc(m.migrate),
 	}
 }
 
