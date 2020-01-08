@@ -7,15 +7,41 @@ import (
 )
 
 // Module of Redis
-type Module struct{}
+type Module struct {
+	Host     string
+	Port     string
+	Password string
+}
 
 // New Redis Module
 func New() *Module {
-	return &Module{}
+	return &Module{
+		Host:     "localhost",
+		Port:     "6379",
+		Password: "redispass",
+	}
+}
+
+// WithHost to set host
+func (m *Module) WithHost(host string) *Module {
+	m.Host = host
+	return m
+}
+
+// WithPort to set port
+func (m *Module) WithPort(port string) *Module {
+	m.Port = port
+	return m
+}
+
+// WithPassword to set password
+func (m *Module) WithPassword(password string) *Module {
+	m.Password = password
+	return m
 }
 
 // BuildCommands of module
-func (r *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
+func (m *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -24,16 +50,20 @@ func (r *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
 				return common.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
-				r.consoleCmd(c),
+				m.consoleCmd(c),
 			},
 		},
 	}
 }
 
 // Configure Redis
-func (r *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "REDIS"
-	spec = &Config{}
+	spec = &Config{
+		Host:     m.Host,
+		Port:     m.Port,
+		Password: m.Password,
+	}
 	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
@@ -42,22 +72,22 @@ func (r *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, lo
 }
 
 // Provide dependencies
-func (r *Module) Provide() []interface{} {
+func (m *Module) Provide() []interface{} {
 	return []interface{}{
-		r.connect,
+		m.connect,
 	}
 }
 
 // Prepare the module
-func (r *Module) Prepare() []interface{} {
+func (m *Module) Prepare() []interface{} {
 	return []interface{}{
-		r.ping,
+		m.ping,
 	}
 }
 
 // Destroy dependencies
-func (r *Module) Destroy() []interface{} {
+func (m *Module) Destroy() []interface{} {
 	return []interface{}{
-		r.disconnect,
+		m.disconnect,
 	}
 }

@@ -16,7 +16,7 @@ var (
 	application = app.New()
 	readme      = typreadme.New()
 	rails       = typrails.New()
-	server      = typserver.New()
+	server      = typserver.New().WithDebug(true)
 	redis       = typredis.New()
 	postgres    = typpostgres.New().WithDBName("sample")
 	docker      = typdocker.New().WithComposers(postgres, redis)
@@ -61,8 +61,9 @@ var (
 				postgres,
 			),
 
-		Releaser: typrls.New().WithPublisher(
-			typrls.GithubPublisher("typical-go", "typical-rest-server"),
-		),
+		Releaser: typrls.New().
+			WithPublisher(
+				typrls.GithubPublisher("typical-go", "typical-rest-server"),
+			),
 	}
 )

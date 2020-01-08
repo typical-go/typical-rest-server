@@ -14,14 +14,23 @@ const (
 	seedSrc      = "scripts/db/seed"
 )
 
-// New postgres module
-func New() *Module {
-	return &Module{}
-}
-
 // Module of postgres
 type Module struct {
-	DBName string
+	DBName   string
+	User     string
+	Password string
+	Host     string
+	Port     int
+}
+
+// New postgres module
+func New() *Module {
+	return &Module{
+		User:     "postgres",
+		Password: "pgpass",
+		Host:     "localhost",
+		Port:     5432,
+	}
 }
 
 // WithDBName to set database name
@@ -30,11 +39,39 @@ func (m *Module) WithDBName(dbname string) *Module {
 	return m
 }
 
+// WithUser to set user
+func (m *Module) WithUser(user string) *Module {
+	m.User = user
+	return m
+}
+
+// WithHost to set host
+func (m *Module) WithHost(host string) *Module {
+	m.Host = host
+	return m
+}
+
+// WithPort to set port
+func (m *Module) WithPort(port int) *Module {
+	m.Port = port
+	return m
+}
+
+// WithPassword to set password
+func (m *Module) WithPassword(password string) *Module {
+	m.Password = password
+	return m
+}
+
 // Configure the module
 func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "PG"
 	spec = &Config{
-		DBName: m.DBName,
+		DBName:   m.DBName,
+		User:     m.User,
+		Password: m.Password,
+		Host:     m.Host,
+		Port:     m.Port,
 	}
 	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)

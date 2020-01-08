@@ -11,18 +11,28 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcore"
 )
 
+// Module of server
+type Module struct {
+	Debug bool
+}
+
 // New server module
 func New() *Module {
 	return &Module{}
 }
 
-// Module of server
-type Module struct{}
+// WithDebug to set debug
+func (m *Module) WithDebug(debug bool) *Module {
+	m.Debug = debug
+	return m
+}
 
 // Configure server
-func (s *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
 	prefix = "SERVER"
-	spec = &Config{}
+	spec = &Config{
+		Debug: m.Debug,
+	}
 	loadFn = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
@@ -31,21 +41,21 @@ func (s *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, lo
 }
 
 // Provide dependencies
-func (s *Module) Provide() []interface{} {
+func (m *Module) Provide() []interface{} {
 	return []interface{}{
-		s.Create,
+		m.Create,
 	}
 }
 
 // Destroy dependencies
-func (s *Module) Destroy() []interface{} {
+func (m *Module) Destroy() []interface{} {
 	return []interface{}{
-		s.Shutdown,
+		m.Shutdown,
 	}
 }
 
 // Create new server
-func (s *Module) Create(cfg Config) *echo.Echo {
+func (m *Module) Create(cfg Config) *echo.Echo {
 	server := echo.New()
 	server.HideBanner = true
 	server.Debug = cfg.Debug
@@ -64,7 +74,7 @@ func (s *Module) Create(cfg Config) *echo.Echo {
 }
 
 // Shutdown the server
-func (s *Module) Shutdown(server *echo.Echo) (err error) {
+func (m *Module) Shutdown(server *echo.Echo) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err = server.Shutdown(ctx); err != nil {

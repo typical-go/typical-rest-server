@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// New application
+// New application [nowire]
 func New() *Module {
 	return &Module{}
 }
