@@ -5,7 +5,7 @@ import (
 	"go.uber.org/dig"
 )
 
-// BookService contain logic for Book Controller
+// BookService contain logic for Book Controller [mock]
 type BookService interface {
 	repository.BookRepo
 }
@@ -16,7 +16,7 @@ type BookServiceImpl struct {
 	repository.BookRepo
 }
 
-// NewBookService return new instance of BookService
+// NewBookService return new instance of BookService [autowire]
 func NewBookService(impl BookServiceImpl) BookService {
 	return &impl
 }

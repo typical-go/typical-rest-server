@@ -13,7 +13,7 @@ type Music struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// MusicRepo to handle musics entity
+// MusicRepo to handle musics entity [mock]
 type MusicRepo interface {
 	FindOne(context.Context, int64) (*Music, error)
 	Find(context.Context) ([]*Music, error)
@@ -22,7 +22,7 @@ type MusicRepo interface {
 	Update(context.Context, Music) error
 }
 
-// NewMusicRepo return new instance of MusicRepo
+// NewMusicRepo return new instance of MusicRepo [autowire]
 func NewMusicRepo(impl CachedMusicRepoImpl) MusicRepo {
 	return &impl
 }

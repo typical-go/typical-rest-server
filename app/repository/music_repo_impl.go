@@ -16,7 +16,7 @@ type MusicRepoImpl struct {
 	*sql.DB
 }
 
-// Find music
+// FindOne music
 func (r *MusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, err error) {
 	var rows *sql.Rows
 	builder := sq.
@@ -36,7 +36,7 @@ func (r *MusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, err er
 	return
 }
 
-// List music
+// Find musics
 func (r *MusicRepoImpl) Find(ctx context.Context) (list []*Music, err error) {
 	var rows *sql.Rows
 	builder := sq.
@@ -48,11 +48,11 @@ func (r *MusicRepoImpl) Find(ctx context.Context) (list []*Music, err error) {
 	}
 	list = make([]*Music, 0)
 	for rows.Next() {
-		var e0 Music
-		if err = rows.Scan(&e0.ID, &e0.Artist, &e0.UpdatedAt, &e0.CreatedAt); err != nil {
+		var e Music
+		if err = rows.Scan(&e.ID, &e.Artist, &e.UpdatedAt, &e.CreatedAt); err != nil {
 			return
 		}
-		list = append(list, &e0)
+		list = append(list, &e)
 	}
 	return
 }

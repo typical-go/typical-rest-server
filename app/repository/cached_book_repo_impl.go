@@ -20,7 +20,7 @@ type CachedBookRepoImpl struct {
 	Redis *redis.Client
 }
 
-// Find book entity
+// FindOne book
 func (r *CachedBookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:FIND:%d", id)
 	book = new(Book)
@@ -38,7 +38,7 @@ func (r *CachedBookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book,
 	return
 }
 
-// List of book entity
+// Find books
 func (r *CachedBookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:LIST")
 	redisClient := r.Redis.WithContext(ctx)

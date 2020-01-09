@@ -14,7 +14,7 @@ type Book struct {
 	CreatedAt time.Time `json:"-"`
 }
 
-// BookRepo to get book data from databasesa
+// BookRepo to get book data from database [mock]
 type BookRepo interface {
 	FindOne(ctx context.Context, id int64) (*Book, error)
 	Find(ctx context.Context) ([]*Book, error)
@@ -23,7 +23,7 @@ type BookRepo interface {
 	Update(ctx context.Context, book Book) error
 }
 
-// NewBookRepo return new instance of BookRepo
+// NewBookRepo return new instance of BookRepo [autowire]
 func NewBookRepo(impl CachedBookRepoImpl) BookRepo {
 	return &impl
 }

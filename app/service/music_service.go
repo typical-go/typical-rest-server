@@ -5,7 +5,7 @@ import (
 	"go.uber.org/dig"
 )
 
-// MusicService contain logic for MusicController
+// MusicService contain logic for MusicController [mock]
 type MusicService interface {
 	repository.MusicRepo
 }
@@ -16,7 +16,7 @@ type MusicServiceImpl struct {
 	repository.MusicRepo
 }
 
-// NewMusicService return new instance of MusicService
+// NewMusicService return new instance of MusicService [autowire]
 func NewMusicService(impl MusicServiceImpl) MusicService {
 	return &impl
 }

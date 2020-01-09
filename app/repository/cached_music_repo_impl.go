@@ -19,7 +19,7 @@ type CachedMusicRepoImpl struct {
 	Redis *redis.Client
 }
 
-// Find music entity
+// FindOne musics
 func (r *CachedMusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:FIND:%d", id)
 	e = new(Music)
@@ -37,7 +37,7 @@ func (r *CachedMusicRepoImpl) FindOne(ctx context.Context, id int64) (e *Music, 
 	return
 }
 
-// List of music entity
+// Find musics
 func (r *CachedMusicRepoImpl) Find(ctx context.Context) (list []*Music, err error) {
 	cacheKey := fmt.Sprintf("MUSICS:LIST")
 	redisClient := r.Redis.WithContext(ctx)

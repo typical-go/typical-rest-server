@@ -51,11 +51,11 @@ func (r *{{.Type}}RepoImpl) Find(ctx context.Context) (list []*{{.Type}}, err er
 	}
 	list = make([]*{{.Type}}, 0)
 	for rows.Next() {
-		var e0 {{.Type}}
-		if err = rows.Scan({{range $field := .Fields}}&e0.{{$field.Name}}, {{end}}); err != nil {
+		var e {{.Type}}
+		if err = rows.Scan({{range $field := .Fields}}&e.{{$field.Name}}, {{end}}); err != nil {
 			return 
 		}
-		list = append(list, &e0)
+		list = append(list, &e)
 	}
 	return
 }
