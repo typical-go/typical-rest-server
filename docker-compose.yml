@@ -4,18 +4,18 @@ services:
     image: postgres
     environment:
       PGDATA: /data/postgres
-      POSTGRES: ${PG_USER:-postgres}
-      POSTGRES_PASSWORD: ${PG_PASSWORD:-pgpass}
+      POSTGRES: postgres
+      POSTGRES_PASSWORD: pgpass
     volumes:
     - postgres:/data/postgres
     ports:
-    - ${PG_PORT:-5432}:5432
+    - 5432:5432
     networks:
     - postgres
     restart: unless-stopped
   redis:
     image: redis:4.0.5-alpine
-    command: redis-server --requirepass "${REDIS_PASSOWORD:-redispass}"
+    command: redis-server --requirepass "redispass"
     volumes:
     - redis:/data
     ports:

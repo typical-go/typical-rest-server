@@ -1,16 +1,20 @@
 package typredis
 
-import "github.com/typical-go/typical-rest-server/pkg/typdocker"
+import (
+	"fmt"
+
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+)
 
 // DockerCompose template
-func (*Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObject {
+func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObject {
 	if version.IsV3() {
 		return &typdocker.ComposeObject{
 			Services: typdocker.Services{
 				"redis": typdocker.Service{
 					Image:    "redis:4.0.5-alpine",
-					Command:  `redis-server --requirepass "${REDIS_PASSOWORD:-redispass}"`,
-					Ports:    []string{`6379:6379`},
+					Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, m.Password),
+					Ports:    []string{fmt.Sprintf("%s:6379", m.Port)},
 					Networks: []string{"redis"},
 					Volumes:  []string{"redis:/data"},
 				},

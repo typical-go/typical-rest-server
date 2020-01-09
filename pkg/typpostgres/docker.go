@@ -1,6 +1,10 @@
 package typpostgres
 
-import "github.com/typical-go/typical-rest-server/pkg/typdocker"
+import (
+	"fmt"
+
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+)
 
 // DockerCompose template
 func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObject {
@@ -10,12 +14,12 @@ func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObje
 				"postgres": typdocker.Service{
 					Image: "postgres",
 					Environment: map[string]string{
-						"POSTGRES":          "${PG_USER:-postgres}",
-						"POSTGRES_PASSWORD": "${PG_PASSWORD:-pgpass}",
+						"POSTGRES":          m.User,
+						"POSTGRES_PASSWORD": m.Password,
 						"PGDATA":            "/data/postgres",
 					},
 					Volumes:  []string{"postgres:/data/postgres"},
-					Ports:    []string{"${PG_PORT:-5432}:5432"},
+					Ports:    []string{fmt.Sprintf("%d:5432", m.Port)},
 					Networks: []string{"postgres"},
 					Restart:  "unless-stopped",
 				},
