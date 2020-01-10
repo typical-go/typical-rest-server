@@ -16,20 +16,24 @@ const (
 
 // Module of postgres
 type Module struct {
-	DBName   string
-	User     string
-	Password string
-	Host     string
-	Port     int
+	DBName      string
+	User        string
+	Password    string
+	Host        string
+	Port        int
+	DockerImage string
+	DockerName  string
 }
 
 // New postgres module
 func New() *Module {
 	return &Module{
-		User:     "postgres",
-		Password: "pgpass",
-		Host:     "localhost",
-		Port:     5432,
+		User:        "postgres",
+		Password:    "pgpass",
+		Host:        "localhost",
+		Port:        5432,
+		DockerImage: "postgres",
+		DockerName:  "postgres",
 	}
 }
 
@@ -60,6 +64,11 @@ func (m *Module) WithPort(port int) *Module {
 // WithPassword to set password
 func (m *Module) WithPassword(password string) *Module {
 	m.Password = password
+	return m
+}
+
+// WithDockerName
+func (m *Module) WithDockerName(dockerName string) *Module {
 	return m
 }
 

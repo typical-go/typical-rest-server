@@ -11,8 +11,8 @@ func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObje
 	if version.IsV3() {
 		return &typdocker.ComposeObject{
 			Services: typdocker.Services{
-				"postgres": typdocker.Service{
-					Image: "postgres",
+				m.DockerName: typdocker.Service{
+					Image: m.DockerImage,
 					Environment: map[string]string{
 						"POSTGRES":          m.User,
 						"POSTGRES_PASSWORD": m.Password,
@@ -20,17 +20,17 @@ func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObje
 					},
 					Volumes:  []string{"postgres:/data/postgres"},
 					Ports:    []string{fmt.Sprintf("%d:5432", m.Port)},
-					Networks: []string{"postgres"},
+					Networks: []string{m.DockerName},
 					Restart:  "unless-stopped",
 				},
 			},
 			Networks: typdocker.Networks{
-				"postgres": typdocker.Network{
+				m.DockerName: typdocker.Network{
 					Driver: "bridge",
 				},
 			},
 			Volumes: typdocker.Volumes{
-				"postgres": nil,
+				m.DockerName: nil,
 			},
 		}
 	}

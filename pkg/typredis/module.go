@@ -8,17 +8,21 @@ import (
 
 // Module of Redis
 type Module struct {
-	Host     string
-	Port     string
-	Password string
+	Host        string
+	Port        string
+	Password    string
+	DockerName  string
+	DockerImage string
 }
 
 // New Redis Module
 func New() *Module {
 	return &Module{
-		Host:     "localhost",
-		Port:     "6379",
-		Password: "redispass",
+		Host:        "localhost",
+		Port:        "6379",
+		Password:    "redispass",
+		DockerImage: "redis:4.0.5-alpine",
+		DockerName:  "redis",
 	}
 }
 
@@ -37,6 +41,18 @@ func (m *Module) WithPort(port string) *Module {
 // WithPassword to set password
 func (m *Module) WithPassword(password string) *Module {
 	m.Password = password
+	return m
+}
+
+// WithDockerImage to set docker image
+func (m *Module) WithDockerImage(dockerImage string) *Module {
+	m.DockerImage = dockerImage
+	return m
+}
+
+// WithDockerName to set docker name
+func (m *Module) WithDockerName(dockerName string) *Module {
+	m.DockerName = dockerName
 	return m
 }
 

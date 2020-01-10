@@ -19,7 +19,11 @@ var (
 	server      = typserver.New().WithDebug(true)
 	redis       = typredis.New()
 	postgres    = typpostgres.New().WithDBName("sample")
-	docker      = typdocker.New().WithComposers(postgres, redis)
+
+	docker = typdocker.New().WithComposers(
+		postgres,
+		redis,
+	)
 
 	// Descriptor of Typical REST Server
 	Descriptor = typcore.ProjectDescriptor{
