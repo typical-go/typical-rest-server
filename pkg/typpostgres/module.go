@@ -67,8 +67,15 @@ func (m *Module) WithPassword(password string) *Module {
 	return m
 }
 
-// WithDockerName
+// WithDockerName to set docker name
 func (m *Module) WithDockerName(dockerName string) *Module {
+	m.DockerName = dockerName
+	return m
+}
+
+// WithDockerImage to set docker image
+func (m *Module) WithDockerImage(dockerImage string) *Module {
+	m.DockerImage = dockerImage
 	return m
 }
 
