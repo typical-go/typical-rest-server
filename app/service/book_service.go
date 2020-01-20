@@ -16,7 +16,7 @@ type BookServiceImpl struct {
 	repository.BookRepo
 }
 
-// NewBookService return new instance of BookService [autowire]
+// NewBookService return new instance of BookService [constructor]
 func NewBookService(impl BookServiceImpl) BookService {
 	return &impl
 }

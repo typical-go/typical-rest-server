@@ -22,7 +22,7 @@ type MusicRepo interface {
 	Update(context.Context, Music) error
 }
 
-// NewMusicRepo return new instance of MusicRepo [autowire]
+// NewMusicRepo return new instance of MusicRepo [constructor]
 func NewMusicRepo(impl CachedMusicRepoImpl) MusicRepo {
 	return &impl
 }

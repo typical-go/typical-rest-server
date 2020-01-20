@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	typical.Descriptor.Constructors.Append(
+	typical.Descriptor.AppendConstructor(
 		repository.NewBookRepo,
 		repository.NewMusicRepo,
 		service.NewBookService,

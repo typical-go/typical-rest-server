@@ -16,7 +16,7 @@ type MusicServiceImpl struct {
 	repository.MusicRepo
 }
 
-// NewMusicService return new instance of MusicService [autowire]
+// NewMusicService return new instance of MusicService [constructor]
 func NewMusicService(impl MusicServiceImpl) MusicService {
 	return &impl
 }

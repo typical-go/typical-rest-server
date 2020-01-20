@@ -1,19 +1,34 @@
 #!/bin/bash
+
 set -e
+
+if ! [ -s .typical-tmp/build-tool/main.go ]; then
+	mkdir -p .typical-tmp/build-tool
+	echo "package main
+
+import (
+	\"github.com/typical-go/typical-go/pkg/typbuildtool\"
+	\"github.com/typical-go/typical-rest-server/typical\"
+)
+
+func main() {
+	typbuildtool.Run(&typical.Descriptor)
+}" >> .typical-tmp/build-tool/main.go
+fi
 
 CHECKSUM_DATA=$(cksum typical/descriptor.go)
 
 if ! [ -s .typical-tmp/checksum ]; then
 	mkdir -p .typical-tmp
-	cksum typical/descriptor.go > .typical-tmp/checksum
+	echo $CHECKSUM_DATA > .typical-tmp/checksum
 else
 	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-tmp/checksum )" ] ; echo $?)
 fi
 
-if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f bin/typical-rest-server-buildtool ]] ; then 
+if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f ./.typical-tmp/bin/build-tool ]] ; then 
 	echo $CHECKSUM_DATA > .typical-tmp/checksum
 	echo "Compile Typical-Build"
-	go build -o bin/typical-rest-server-buildtool ./cmd/typical-rest-server-buildtool
+	go build -o .typical-tmp/bin/build-tool .typical-tmp/build-tool/main.go
 fi
 
-./bin/typical-rest-server-buildtool $@
+./.typical-tmp/bin/build-tool $@

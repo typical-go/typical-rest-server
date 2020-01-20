@@ -23,7 +23,7 @@ type BookRepo interface {
 	Update(ctx context.Context, book Book) error
 }
 
-// NewBookRepo return new instance of BookRepo [autowire]
+// NewBookRepo return new instance of BookRepo [constructor]
 func NewBookRepo(impl CachedBookRepoImpl) BookRepo {
 	return &impl
 }
