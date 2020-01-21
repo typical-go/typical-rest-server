@@ -12,7 +12,6 @@ Example of typical and scalable RESTful API Server for Go
 | Bash Snippet | Usage |
 |---|---|
 |`typical-rest-server`|Run the application|
-|`typical-rest-server route`|Print available API Routes|
 
 ### Configuration
 
@@ -44,19 +43,17 @@ Example of typical and scalable RESTful API Server for Go
 
 Install [Go](https://golang.org/doc/install) (It is recommend to install via [Homebrew](https://brew.sh/) `brew install go`)
 
-### Build & Run
+### Quick Start
 
-Use `./typicalw run` to build and run the project.
+```bash
+./typicalw docker up # equivalent with `docker-compose up -d`
+./typicalw pg reset # drop, create and migrate postgres database
+./typicalw test # run test 
+./typicalw run # run the application
+./typicalw release # release the distribution
+```
 
-### Testing
-
-Use `./typicalw test` to test the project.
-
-### Release the distribution
-
-Use `./typicalw release` to make the release. [Learn More](https://typical-go.github.io/learn-more/build-tool/release-distribution.html)
-
-### Others
+### Other Commands
 | Bash Snippet | Usage |
 |---|---|
 |`./typicalw docker`|Docker utility|
@@ -65,11 +62,6 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 |`./typicalw docker down`|Take down all docker containers according docker-compose|
 |`./typicalw docker wipe`|Kill all running docker container|
 |`./typicalw readme`|Generate README Documentation|
-|`./typicalw rails`|Rails-like generation|
-|`./typicalw rails scaffold`|Generate CRUD API|
-|`./typicalw rails repository`|Generate Repository from tablename|
-|`./typicalw redis`|Redis Tool|
-|`./typicalw redis console`|Redis Interactive|
 |`./typicalw postgres`|Postgres Database Tool|
 |`./typicalw postgres create`|Create New Database|
 |`./typicalw postgres drop`|Drop Database|
@@ -78,3 +70,8 @@ Use `./typicalw release` to make the release. [Learn More](https://typical-go.gi
 |`./typicalw postgres seed`|Data seeding|
 |`./typicalw postgres reset`|Reset Database|
 |`./typicalw postgres console`|PostgreSQL Interactive|
+|`./typicalw redis`|Redis Tool|
+|`./typicalw redis console`|Redis Interactive|
+|`./typicalw rails`|Rails-like generation|
+|`./typicalw rails scaffold`|Generate CRUD API|
+|`./typicalw rails repository`|Generate Repository from tablename|
