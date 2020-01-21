@@ -30,8 +30,12 @@ Install [Go](https://golang.org/doc/install) (It is recommend to install via [Ho
 ### Quick Start
 
 ```bash
-./typicalw docker up # equivalent with `docker-compose up -d`
-./typicalw pg reset # drop, create and migrate postgres database
+./typicalw docker up # equivalent with `docker-compose up -d` (if infrastructure not up)
+./typicalw pg reset # drop, create and migrate postgres database (if database not ready)
+
+./typicalw readme # generate readme (if there is readme update)
+./typicalw mock # generate mock (if require mock)
+
 ./typicalw test # run test 
 ./typicalw run # run the application
 ./typicalw release # release the distribution
