@@ -23,9 +23,9 @@ func (m *Module) seed(cfg Config) (err error) {
 		return
 	}
 	defer conn.Close()
-	files, _ := ioutil.ReadDir(seedSrc)
+	files, _ := ioutil.ReadDir(m.SeedSource)
 	for _, f := range files {
-		sqlFile := seedSrc + "/" + f.Name()
+		sqlFile := m.SeedSource + "/" + f.Name()
 		log.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
 		if b, err = ioutil.ReadFile(sqlFile); err != nil {

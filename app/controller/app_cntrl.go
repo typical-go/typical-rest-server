@@ -1,17 +1,16 @@
 package controller
 
 import (
-	"database/sql"
-
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/pkg/railskit"
+	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"go.uber.org/dig"
 )
 
 // AppCntrl handle API related with application itself
 type AppCntrl struct {
 	dig.In
-	MYSQL *sql.DB
+	Postgres *typpostgres.DB
 }
 
 // Route to define API Route
@@ -22,6 +21,6 @@ func (c *AppCntrl) Route(e *echo.Echo) {
 // Health end point for health check
 func (c *AppCntrl) Health(ctx echo.Context) error {
 	return railskit.NewHealthCheck().
-		Add("database", c.MYSQL.Ping()).
+		Add("postgres", c.Postgres.Ping()).
 		Send(ctx)
 }

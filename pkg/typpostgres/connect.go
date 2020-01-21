@@ -5,22 +5,28 @@ import (
 	"fmt"
 )
 
-func (m *Module) connect(cfg Config) (db *sql.DB, err error) {
-	db, err = sql.Open("postgres", m.dataSource(cfg))
-	if err != nil {
+// DB is postgres database handle
+type DB struct {
+	*sql.DB
+}
+
+func (m *Module) connect(cfg Config) (pgDB *DB, err error) {
+	var db *sql.DB
+	if db, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
 	}
+	pgDB = &DB{db}
 	return
 }
 
-func (*Module) disconnect(db *sql.DB) (err error) {
+func (*Module) disconnect(db *DB) (err error) {
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("Postgres: Disconnect: %w", err)
 	}
 	return
 }
 
-func (m *Module) ping(db *sql.DB) (err error) {
+func (m *Module) ping(db *DB) (err error) {
 	if err = db.Ping(); err != nil {
 		return fmt.Errorf("Postgres: Ping: %w", err)
 	}

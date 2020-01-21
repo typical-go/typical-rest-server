@@ -7,6 +7,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 
 	"go.uber.org/dig"
 )
@@ -14,10 +15,10 @@ import (
 // BookRepoImpl is implementation book repository
 type BookRepoImpl struct {
 	dig.In
-	*sql.DB
+	*typpostgres.DB
 }
 
-// Find book
+// FindOne book
 func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err error) {
 	var rows *sql.Rows
 	builder := sq.

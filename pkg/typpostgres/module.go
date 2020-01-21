@@ -10,30 +10,40 @@ import (
 )
 
 const (
-	migrationSrc = "scripts/db/migration"
-	seedSrc      = "scripts/db/seed"
+	defaultUser            = "postgres"
+	defaultPassword        = "pgpass"
+	defaultHost            = "localhost"
+	defaultPort            = 5432
+	defaultDockerImage     = "postgres"
+	defaultDockerName      = "postgres"
+	defaultMigrationSource = "scripts/db/migration"
+	defaultSeedSource      = "scripts/db/seed"
 )
 
 // Module of postgres
 type Module struct {
-	DBName      string
-	User        string
-	Password    string
-	Host        string
-	Port        int
-	DockerImage string
-	DockerName  string
+	DBName          string
+	User            string
+	Password        string
+	Host            string
+	Port            int
+	DockerImage     string
+	DockerName      string
+	MigrationSource string
+	SeedSource      string
 }
 
 // New postgres module
 func New() *Module {
 	return &Module{
-		User:        "postgres",
-		Password:    "pgpass",
-		Host:        "localhost",
-		Port:        5432,
-		DockerImage: "postgres",
-		DockerName:  "postgres",
+		User:            defaultUser,
+		Password:        defaultPassword,
+		Host:            defaultHost,
+		Port:            defaultPort,
+		DockerImage:     defaultDockerImage,
+		DockerName:      defaultDockerName,
+		MigrationSource: defaultMigrationSource,
+		SeedSource:      defaultSeedSource,
 	}
 }
 
@@ -76,6 +86,18 @@ func (m *Module) WithDockerName(dockerName string) *Module {
 // WithDockerImage to set docker image
 func (m *Module) WithDockerImage(dockerImage string) *Module {
 	m.DockerImage = dockerImage
+	return m
+}
+
+// WithMigrationSource to set migration source
+func (m *Module) WithMigrationSource(migrationSource string) *Module {
+	m.MigrationSource = migrationSource
+	return m
+}
+
+// WithSeedSource to set seed source
+func (m *Module) WithSeedSource(seedSource string) *Module {
+	m.SeedSource = seedSource
 	return m
 }
 

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -20,7 +21,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
+	repo := repository.BookRepoImpl{DB: &typpostgres.DB{db}}
 	sql := regexp.QuoteMeta(`INSERT INTO books (title,author) VALUES ($1,$2) RETURNING "id"`)
 	t.Run("sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
@@ -44,7 +45,7 @@ func TestBookRepitory_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
+	repo := repository.BookRepoImpl{DB: &typpostgres.DB{db}}
 	sql := regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)
 	t.Run("sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
@@ -67,7 +68,7 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
+	repo := repository.BookRepoImpl{DB: &typpostgres.DB{db}}
 	deleteSQL := regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)
 	t.Run("sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
@@ -90,7 +91,7 @@ func TestBookRepitory_FindOne(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
+	repo := repository.BookRepoImpl{DB: &typpostgres.DB{db}}
 	sql := regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
@@ -130,7 +131,7 @@ func TestBookRepoImpl_Find(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
+	repo := repository.BookRepoImpl{DB: &typpostgres.DB{db}}
 	sql := `SELECT id, title, author, updated_at, created_at FROM books`
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := dbkit.CtxWithTxo(context.Background())
