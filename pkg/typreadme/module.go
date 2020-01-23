@@ -55,7 +55,7 @@ func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
 				var (
 					file *os.File
 					tmpl *template.Template
-					d    = ctx.ProjectDescriptor
+					d    = ctx.Descriptor
 				)
 				if file, err = os.Create(m.Target); err != nil {
 					return
@@ -83,7 +83,7 @@ func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
 	}
 }
 
-func appCommands(d *typcore.ProjectDescriptor) (infos CommandInfos) {
+func appCommands(d *typcore.Descriptor) (infos CommandInfos) {
 	appName := strcase.ToKebab(d.Name) // TODO: use typenv instead
 	if d.App.EntryPoint() != nil {
 		infos.Append(&CommandInfo{
@@ -93,19 +93,18 @@ func appCommands(d *typcore.ProjectDescriptor) (infos CommandInfos) {
 	}
 	for _, cmd := range d.App.AppCommands(typcore.NewAppContext(nil)) {
 		addCliCommandInfo(&infos, appName, cmd)
-
 	}
 	return
 }
 
-func otherCommands(d *typcore.ProjectDescriptor) (infos CommandInfos) {
-	for _, cmd := range typbuildtool.BuildCommands(d) {
+func otherCommands(d *typcore.Descriptor) (infos CommandInfos) {
+	for _, cmd := range typbuildtool.BuildCommands(&typcore.BuildContext{Descriptor: d}) {
 		addCliCommandInfo(&infos, "./typicalw", cmd)
 	}
 	return
 }
 
-func configs(d *typcore.ProjectDescriptor) (infos ConfigInfos) {
+func configs(d *typcore.Descriptor) (infos ConfigInfos) {
 	keys, configMap := d.Configuration.ConfigMap()
 	sort.Strings(keys)
 	for _, cfg := range configMap.ValueBy(keys...) {

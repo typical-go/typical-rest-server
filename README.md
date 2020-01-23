@@ -9,9 +9,10 @@ Example of typical and scalable RESTful API Server for Go
 
 ### Usage
 
-| Bash Snippet | Usage |
+|  | Usage |
 |---|---|
 |`typical-rest-server`|Run the application|
+|`typical-rest-server route`|Print available API Routes|
 
 ### Configuration
 
@@ -57,9 +58,15 @@ Install [Go](https://golang.org/doc/install) (It is recommend to install via [Ho
 ./typicalw release # release the distribution
 ```
 
-### Other Commands
+### Commands
 | Bash Snippet | Usage |
 |---|---|
+|`./typicalw build`|Build the binary|
+|`./typicalw clean`|Clean the project from generated file during build time|
+|`./typicalw run`|Run the binary|
+|`./typicalw test`|Run the testing|
+|`./typicalw mock`|Generate mock class|
+|`./typicalw release`|Release the distribution|
 |`./typicalw docker`|Docker utility|
 |`./typicalw docker compose`|Generate docker-compose.yaml|
 |`./typicalw docker up`|Spin up docker containers according docker-compose|
