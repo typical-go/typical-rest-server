@@ -20,7 +20,7 @@ type BookRepo interface {
 	Find(context.Context) ([]*Book, error)
 	Create(context.Context, *Book) (*Book, error)
 	Delete(context.Context, int64) error
-	Update(context.Context, Book) error
+	Update(context.Context, *Book) (*Book, error)
 }
 
 // NewBookRepo return new instance of BookRepo [constructor]

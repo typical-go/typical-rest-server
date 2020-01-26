@@ -98,22 +98,21 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 // Update book
 func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	var (
-		book repository.Book
-		ctx  = ec.Request().Context()
+		book   *repository.Book
+		update repository.Book
+		ctx    = ec.Request().Context()
 	)
-	if err = ec.Bind(&book); err != nil {
+	if err = ec.Bind(&update); err != nil {
 		return err
 	}
-	if book.ID <= 0 {
+	if update.ID <= 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
-	if err = validator.New().Struct(book); err != nil {
+	if err = validator.New().Struct(update); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.BookService.Update(ctx, book); err != nil {
+	if book, err = c.BookService.Update(ctx, &update); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ec.JSON(http.StatusOK, GeneralResponse{
-		Message: fmt.Sprintf("Success update book #%d", book.ID),
-	})
+	return ec.JSON(http.StatusOK, book)
 }

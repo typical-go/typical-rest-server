@@ -65,20 +65,20 @@ func (r *BookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 }
 
 // Create book
-func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (inserted *Book, err error) {
-	inserted = &Book{
-		Title:     book.Title,
-		Author:    book.Author,
+func (r *BookRepoImpl) Create(ctx context.Context, new *Book) (book *Book, err error) {
+	book = &Book{
+		Title:     new.Title,
+		Author:    new.Author,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 	builder := sq.
 		Insert("books").
 		Columns("title", "author", "created_at", "updated_at").
-		Values(inserted.Title, inserted.Author, inserted.CreatedAt, inserted.UpdatedAt).
+		Values(book.Title, book.Author, book.CreatedAt, book.UpdatedAt).
 		Suffix("RETURNING \"id\"").
 		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
-	if err = builder.QueryRowContext(ctx).Scan(&inserted.ID); err != nil {
+	if err = builder.QueryRowContext(ctx).Scan(&book.ID); err != nil {
 		dbkit.SetErrCtx(ctx, err)
 		return
 	}
@@ -99,17 +99,22 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // Update book
-func (r *BookRepoImpl) Update(ctx context.Context, book Book) (err error) {
-	builder := sq.
-		Update("books").
+func (r *BookRepoImpl) Update(ctx context.Context, update *Book) (book *Book, err error) {
+	if book, err = r.FindOne(ctx, update.ID); err != nil {
+		return
+	}
+	book.Title = update.Title
+	book.Author = update.Author
+	book.UpdatedAt = time.Now()
+	builder := sq.Update("books").
 		Set("title", book.Title).
 		Set("author", book.Author).
-		Set("updated_at", time.Now()).
+		Set("updated_at", book.UpdatedAt).
 		Where(sq.Eq{"id": book.ID}).
 		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
 	if _, err = builder.ExecContext(ctx); err != nil {
 		dbkit.SetErrCtx(ctx, err)
-		return
+		return nil, err
 	}
 	return
 }
