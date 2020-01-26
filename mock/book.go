@@ -35,74 +35,75 @@ func (m *MockBookRepo) EXPECT() *MockBookRepoMockRecorder {
 }
 
 // FindOne mocks base method
-func (m *MockBookRepo) FindOne(ctx context.Context, id int64) (*repository.Book, error) {
+func (m *MockBookRepo) FindOne(arg0 context.Context, arg1 int64) (*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindOne", ctx, id)
+	ret := m.ctrl.Call(m, "FindOne", arg0, arg1)
 	ret0, _ := ret[0].(*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindOne indicates an expected call of FindOne
-func (mr *MockBookRepoMockRecorder) FindOne(ctx, id interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOne", reflect.TypeOf((*MockBookRepo)(nil).FindOne), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOne", reflect.TypeOf((*MockBookRepo)(nil).FindOne), arg0, arg1)
 }
 
 // Find mocks base method
-func (m *MockBookRepo) Find(ctx context.Context) ([]*repository.Book, error) {
+func (m *MockBookRepo) Find(arg0 context.Context) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", ctx)
+	ret := m.ctrl.Call(m, "Find", arg0)
 	ret0, _ := ret[0].([]*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find
-func (mr *MockBookRepoMockRecorder) Find(ctx interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepo)(nil).Find), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepo)(nil).Find), arg0)
 }
 
 // Create mocks base method
-func (m *MockBookRepo) Create(ctx context.Context, book repository.Book) (int64, error) {
+func (m *MockBookRepo) Create(arg0 context.Context, arg1 *repository.Book) (*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, book)
-	ret0, _ := ret[0].(int64)
+	ret := m.ctrl.Call(m, "Create", arg0, arg1)
+	ret0, _ := ret[0].(*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create
-func (mr *MockBookRepoMockRecorder) Create(ctx, book interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockBookRepo)(nil).Create), ctx, book)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockBookRepo)(nil).Create), arg0, arg1)
 }
 
 // Delete mocks base method
-func (m *MockBookRepo) Delete(ctx context.Context, id int64) error {
+func (m *MockBookRepo) Delete(arg0 context.Context, arg1 int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete
-func (mr *MockBookRepoMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepo)(nil).Delete), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepo)(nil).Delete), arg0, arg1)
 }
 
 // Update mocks base method
-func (m *MockBookRepo) Update(ctx context.Context, book repository.Book) error {
+func (m *MockBookRepo) Update(arg0 context.Context, arg1 *repository.Book) (*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, book)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Update", arg0, arg1)
+	ret0, _ := ret[0].(*repository.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Update indicates an expected call of Update
-func (mr *MockBookRepoMockRecorder) Update(ctx, book interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepo)(nil).Update), ctx, book)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepo)(nil).Update), arg0, arg1)
 }

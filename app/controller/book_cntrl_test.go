@@ -33,7 +33,7 @@ func TestBookController_FindOne(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rr.Code)
-		require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"}\n", rr.Body.String())
+		require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n", rr.Body.String())
 	})
 	t.Run("WHEN repository not found", func(t *testing.T) {
 		bookSvc.EXPECT().FindOne(gomock.Any(), int64(3)).Return(nil, nil)
@@ -67,7 +67,7 @@ func TestBookController_Find(t *testing.T) {
 		rr, err := echotest.DoGET(bookCntrl.Find, "/", nil)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rr.Code)
-		require.Equal(t, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\"}]\n", rr.Body.String())
+		require.Equal(t, "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n", rr.Body.String())
 	})
 	t.Run("WHEN repo error", func(t *testing.T) {
 		bookSvc.EXPECT().Find(gomock.Any()).Return(nil, fmt.Errorf("some-list-error"))
@@ -92,16 +92,20 @@ func TestBookController_Create(t *testing.T) {
 		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 	})
 	t.Run("WHEN error", func(t *testing.T) {
-		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(0), fmt.Errorf("some-insert-error"))
+		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("some-insert-error"))
 		_, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
 		require.EqualError(t, err, "code=422, message=some-insert-error")
 	})
 	t.Run("WHEN success", func(t *testing.T) {
-		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(99), nil)
+		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&repository.Book{
+			ID:     999,
+			Title:  "some-title",
+			Author: "some-author",
+		}, nil)
 		rr, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusCreated, rr.Code)
-		require.Equal(t, "{\"message\":\"Success insert new book #99\"}\n", rr.Body.String())
+		require.Equal(t, "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n", rr.Body.String())
 	})
 }
 
