@@ -31,17 +31,17 @@ func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err e
 		return
 	}
 	if rows.Next() {
-		var book0 Book
-		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
+		var e Book
+		if err = rows.Scan(&e.ID, &e.Title, &e.Author, &e.UpdatedAt, &e.CreatedAt); err != nil {
 			dbkit.SetErrCtx(ctx, err)
 			return
 		}
-		book = &book0
+		book = &e
 	}
 	return
 }
 
-// List book
+// Find book
 func (r *BookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 	var rows *sql.Rows
 	builder := sq.
@@ -65,18 +65,23 @@ func (r *BookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
 }
 
 // Create book
-func (r *BookRepoImpl) Create(ctx context.Context, book Book) (lastInsertID int64, err error) {
+func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (inserted *Book, err error) {
+	inserted = &Book{
+		Title:     book.Title,
+		Author:    book.Author,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 	builder := sq.
 		Insert("books").
-		Columns("title", "author").Values(book.Title, book.Author).
+		Columns("title", "author", "created_at", "updated_at").
+		Values(inserted.Title, inserted.Author, inserted.CreatedAt, inserted.UpdatedAt).
 		Suffix("RETURNING \"id\"").
 		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
-	if err = builder.QueryRowContext(ctx).Scan(&book.ID); err != nil {
+	if err = builder.QueryRowContext(ctx).Scan(&inserted.ID); err != nil {
 		dbkit.SetErrCtx(ctx, err)
 		return
 	}
-
-	lastInsertID = book.ID
 	return
 }
 

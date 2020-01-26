@@ -31,9 +31,9 @@ func (c *BookCntrl) Route(e *echo.Echo) {
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	var (
-		book         repository.Book
-		lastInsertID int64
-		ctx          = ec.Request().Context()
+		inserted *repository.Book
+		book     repository.Book
+		ctx      = ec.Request().Context()
 	)
 	if err = ec.Bind(&book); err != nil {
 		return err
@@ -41,12 +41,10 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	if err = validator.New().Struct(book); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if lastInsertID, err = c.BookService.Create(ctx, book); err != nil {
+	if inserted, err = c.BookService.Create(ctx, &book); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
-	return ec.JSON(http.StatusCreated, GeneralResponse{
-		Message: fmt.Sprintf("Success insert new book #%d", lastInsertID),
-	})
+	return ec.JSON(http.StatusCreated, inserted)
 }
 
 // Find books
