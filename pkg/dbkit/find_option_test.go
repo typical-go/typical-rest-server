@@ -28,6 +28,23 @@ func TestFindOption(t *testing.T) {
 			base:       sq.Select("some-column").From("some-table"),
 			expected:   "SELECT some-column FROM some-table LIMIT 100 OFFSET 0",
 		},
+		{
+			FindOption: dbkit.CreateFindOption().WithSort(dbkit.NewSort("other-column", dbkit.Desc)),
+			base:       sq.Select("some-column").From("some-table"),
+			expected:   "SELECT some-column FROM some-table ORDER BY other-column DESC",
+		},
+		{
+			FindOption:    dbkit.CreateFindOption().WithSort(dbkit.NewSort("", dbkit.Desc)),
+			base:          sq.Select("some-column").From("some-table"),
+			expectedError: "Sort column can't be empty",
+		},
+		{
+			FindOption: dbkit.CreateFindOption().
+				WithPagination(dbkit.NewPagination(0, 100)).
+				WithSort(dbkit.NewSort("other-column", dbkit.Desc)),
+			base:     sq.Select("some-column").From("some-table"),
+			expected: "SELECT some-column FROM some-table ORDER BY other-column DESC LIMIT 100 OFFSET 0",
+		},
 	}
 
 	for _, tt := range testcases {
