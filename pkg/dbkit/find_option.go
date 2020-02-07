@@ -11,8 +11,9 @@ type FindOption interface {
 
 // FindOptionImpl implementation of FindOption
 type FindOptionImpl struct {
-	Pagination *Pagination
-	sorts      []*Sort
+	// Pagination *Pagination
+	// sorts      []*Sort
+	options []FindOption
 }
 
 // CreateFindOption to create new instance of FindOption
@@ -20,30 +21,16 @@ func CreateFindOption() *FindOptionImpl {
 	return &FindOptionImpl{}
 }
 
-// WithPagination return FindOption with pagination
-func (f *FindOptionImpl) WithPagination(pagination *Pagination) *FindOptionImpl {
-	f.Pagination = pagination
-	return f
-}
-
-// WithSort return FindOption with sort
-func (f *FindOptionImpl) WithSort(sorts ...*Sort) *FindOptionImpl {
-	f.sorts = append(f.sorts, sorts...)
+func (f *FindOptionImpl) With(option ...FindOption) *FindOptionImpl {
+	f.options = append(f.options, option...)
 	return f
 }
 
 // CompileQuery new select query based on current option
 func (f *FindOptionImpl) CompileQuery(base sq.SelectBuilder) (compiled sq.SelectBuilder, err error) {
 	compiled = base
-
-	if f.Pagination != nil {
-		if compiled, err = f.Pagination.CompileQuery(compiled); err != nil {
-			return
-		}
-	}
-
-	for _, sort := range f.sorts {
-		if compiled, err = sort.CompileQuery(compiled); err != nil {
+	for _, opt := range f.options {
+		if compiled, err = opt.CompileQuery(compiled); err != nil {
 			return
 		}
 	}

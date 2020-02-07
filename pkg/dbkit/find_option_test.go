@@ -24,24 +24,24 @@ func TestFindOption(t *testing.T) {
 		expected      string
 	}{
 		{
-			FindOption: dbkit.CreateFindOption().WithPagination(dbkit.NewPagination(0, 100)),
+			FindOption: dbkit.CreateFindOption().With(dbkit.NewPagination(0, 100)),
 			base:       sq.Select("some-column").From("some-table"),
 			expected:   "SELECT some-column FROM some-table LIMIT 100 OFFSET 0",
 		},
 		{
-			FindOption: dbkit.CreateFindOption().WithSort(dbkit.NewSort("other-column", dbkit.Desc)),
+			FindOption: dbkit.CreateFindOption().With(dbkit.NewSort("other-column", dbkit.Desc)),
 			base:       sq.Select("some-column").From("some-table"),
 			expected:   "SELECT some-column FROM some-table ORDER BY other-column DESC",
 		},
 		{
-			FindOption:    dbkit.CreateFindOption().WithSort(dbkit.NewSort("", dbkit.Desc)),
+			FindOption:    dbkit.CreateFindOption().With(dbkit.NewSort("", dbkit.Desc)),
 			base:          sq.Select("some-column").From("some-table"),
 			expectedError: "Sort column can't be empty",
 		},
 		{
 			FindOption: dbkit.CreateFindOption().
-				WithPagination(dbkit.NewPagination(0, 100)).
-				WithSort(dbkit.NewSort("other-column", dbkit.Desc)),
+				With(dbkit.NewPagination(0, 100)).
+				With(dbkit.NewSort("other-column", dbkit.Desc)),
 			base:     sq.Select("some-column").From("some-table"),
 			expected: "SELECT some-column FROM some-table ORDER BY other-column DESC LIMIT 100 OFFSET 0",
 		},
@@ -55,7 +55,6 @@ func TestFindOption(t *testing.T) {
 			sql, _, _ := base.ToSql()
 			require.Equal(t, tt.expected, sql)
 		}
-
 	}
 
 }
