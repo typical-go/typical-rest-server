@@ -8,18 +8,18 @@ import (
 )
 
 type sort struct {
-	column string
-	order  Order
+	column  string
+	orderBy OrderBy
 }
 
-type Order int
+type OrderBy int
 
 const (
-	Asc Order = iota
+	Asc OrderBy = iota
 	Desc
 )
 
-func (o Order) String() string {
+func (o OrderBy) String() string {
 	switch o {
 	case Asc:
 		return "ASC"
@@ -30,10 +30,10 @@ func (o Order) String() string {
 }
 
 // Sort is find option to sort by column and order
-func Sort(column string, order Order) FindOption {
+func Sort(column string, orderBy OrderBy) FindOption {
 	return &sort{
-		column: column,
-		order:  order,
+		column:  column,
+		orderBy: orderBy,
 	}
 }
 
@@ -42,6 +42,6 @@ func (s *sort) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if s.column == "" {
 		return base, errors.New("Sort column can't be empty")
 	}
-	base = base.OrderBy(fmt.Sprintf("%s %s", s.column, s.order))
+	base = base.OrderBy(fmt.Sprintf("%s %s", s.column, s.orderBy))
 	return base, nil
 }
