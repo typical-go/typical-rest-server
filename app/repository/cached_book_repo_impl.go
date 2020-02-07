@@ -39,14 +39,14 @@ func (r *CachedBookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book,
 }
 
 // Find books
-func (r *CachedBookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
+func (r *CachedBookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
 	cacheKey := fmt.Sprintf("BOOK:LIST")
 	redisClient := r.Redis.WithContext(ctx)
 	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
 		return
 	}
-	if list, err = r.BookRepoImpl.Find(ctx); err != nil {
+	if list, err = r.BookRepoImpl.Find(ctx, opts...); err != nil {
 		return
 	}
 	if err2 := dbkit.SetCache(redisClient, cacheKey, list, 20*time.Second); err2 != nil {

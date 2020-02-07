@@ -8,6 +8,7 @@ import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
 	repository "github.com/typical-go/typical-rest-server/app/repository"
+	dbkit "github.com/typical-go/typical-rest-server/pkg/dbkit"
 	reflect "reflect"
 )
 
@@ -50,18 +51,23 @@ func (mr *MockBookServiceMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.C
 }
 
 // Find mocks base method
-func (m *MockBookService) Find(arg0 context.Context) ([]*repository.Book, error) {
+func (m *MockBookService) Find(arg0 context.Context, arg1 ...dbkit.FindOption) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", arg0)
+	varargs := []interface{}{arg0}
+	for _, a := range arg1 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Find", varargs...)
 	ret0, _ := ret[0].([]*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find
-func (mr *MockBookServiceMockRecorder) Find(arg0 interface{}) *gomock.Call {
+func (mr *MockBookServiceMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookService)(nil).Find), arg0)
+	varargs := append([]interface{}{arg0}, arg1...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookService)(nil).Find), varargs...)
 }
 
 // Create mocks base method

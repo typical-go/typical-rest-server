@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"time"
+
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 // Book represented database model
@@ -17,7 +19,7 @@ type Book struct {
 // BookRepo to get book data from database [mock]
 type BookRepo interface {
 	FindOne(context.Context, int64) (*Book, error)
-	Find(context.Context) ([]*Book, error)
+	Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
 	Create(context.Context, *Book) (*Book, error)
 	Delete(context.Context, int64) error
 	Update(context.Context, *Book) (*Book, error)

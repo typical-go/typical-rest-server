@@ -42,12 +42,17 @@ func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err e
 }
 
 // Find book
-func (r *BookRepoImpl) Find(ctx context.Context) (list []*Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
 	var rows *sql.Rows
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
 		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+	for _, opt := range opts {
+		if builder, err = opt.CompileQuery(builder); err != nil {
+			return
+		}
+	}
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		dbkit.SetErrCtx(ctx, err)
 		return
