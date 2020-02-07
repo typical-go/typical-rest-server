@@ -1,8 +1,11 @@
 package typical
 
 import (
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typbuild/stdrelease"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/typrls"
 )
 
 // Descriptor of Typical REST Server
@@ -16,7 +19,7 @@ var Descriptor = typcore.Descriptor{
 	Version:     "0.8.18",
 	Package:     "github.com/typical-go/typical-rest-server",
 
-	App: typcore.NewApp(application).
+	App: typapp.New(application).
 
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
@@ -32,7 +35,7 @@ var Descriptor = typcore.Descriptor{
 			postgres, // Ping to Postgres Database
 		),
 
-	Build: typcore.NewBuild().
+	Build: typbuild.New().
 
 		// Additional command to be register in Build-Tool
 		WithCommands(
@@ -45,16 +48,16 @@ var Descriptor = typcore.Descriptor{
 
 		// Setting to release the project
 		// By default it will create distribution for Darwin and Linux
-		WithRelease(typrls.New().
+		WithRelease(stdrelease.New().
 			WithPublisher(
 				// Create release and upload file to Github
-				typrls.GithubPublisher("typical-go", "typical-rest-server"),
+				stdrelease.GithubPublisher("typical-go", "typical-rest-server"),
 			),
 		),
 
 	// Configuration for this project
 	// Both Build-Tool and Application typically using same configuration
-	Configuration: typcore.NewConfiguration().
+	Configuration: typcfg.New().
 		WithConfigure(
 			application,
 			server,

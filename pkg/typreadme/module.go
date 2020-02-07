@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/iancoleman/strcase"
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
@@ -98,7 +97,7 @@ func appCommands(d *typcore.Descriptor) (infos CommandInfos) {
 }
 
 func otherCommands(d *typcore.Descriptor) (infos CommandInfos) {
-	for _, cmd := range typbuildtool.BuildCommands(&typcore.BuildContext{Descriptor: d}) {
+	for _, cmd := range d.Build.BuildCommands(&typcore.BuildContext{Descriptor: d}) {
 		addCliCommandInfo(&infos, "./typicalw", cmd)
 	}
 	return
