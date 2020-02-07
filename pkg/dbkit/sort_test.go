@@ -11,25 +11,25 @@ import (
 
 func TestSort(t *testing.T) {
 	testcases := []struct {
-		*dbkit.Sort
+		dbkit.FindOption
 		builder       sq.SelectBuilder
 		expectedError string
 		expected      string
 	}{
 		{
-			Sort:          &dbkit.Sort{},
+			FindOption:    dbkit.Sort("", 0),
 			builder:       sq.Select("name", "version").From("sometables"),
 			expectedError: "Sort column can't be empty",
 		},
 		{
-			Sort:     dbkit.NewSort("name", dbkit.Asc),
-			builder:  sq.Select("name", "version").From("sometables"),
-			expected: "SELECT name, version FROM sometables ORDER BY name ASC",
+			FindOption: dbkit.Sort("name", dbkit.Asc),
+			builder:    sq.Select("name", "version").From("sometables"),
+			expected:   "SELECT name, version FROM sometables ORDER BY name ASC",
 		},
 		{
-			Sort:     dbkit.NewSort("other_col", dbkit.Desc),
-			builder:  sq.Select("name", "version").From("sometables"),
-			expected: "SELECT name, version FROM sometables ORDER BY other_col DESC",
+			FindOption: dbkit.Sort("other_col", dbkit.Desc),
+			builder:    sq.Select("name", "version").From("sometables"),
+			expected:   "SELECT name, version FROM sometables ORDER BY other_col DESC",
 		},
 	}
 

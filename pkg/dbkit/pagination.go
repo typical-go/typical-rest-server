@@ -7,33 +7,32 @@ import (
 )
 
 // Pagination param
-type Pagination struct {
-	Offset uint64
-	Limit  uint64
+type pagination struct {
+	offset uint64
+	limit  uint64
 }
 
-// NewPagination return new instance of Pagination
-func NewPagination(offset, limit uint64) *Pagination {
-	return &Pagination{
-		Offset: offset,
-		Limit:  limit,
+// Pagination find option
+func Pagination(offset, limit uint64) FindOption {
+	return &pagination{
+		offset: offset,
+		limit:  limit,
 	}
-
 }
 
-// CreatePaginationWithRange to create pagination
-func CreatePaginationWithRange(start, end uint64) *Pagination {
-	return NewPagination(start, end-start+1)
+// PaginationWithRange to setup pagination with start and end index
+func PaginationWithRange(start, end uint64) FindOption {
+	return Pagination(start, end-start+1)
 }
 
 // CompileQuery to compile select query for pagination
-func (p *Pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
-	if p.Limit < 1 {
+func (p *pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
+	if p.limit < 1 {
 		return base, errors.New("Limit can't be 0 or negative")
 	}
-	base = base.Offset(p.Offset)
-	if p.Limit != 0 {
-		base = base.Limit(p.Limit)
+	base = base.Offset(p.offset)
+	if p.limit != 0 {
+		base = base.Limit(p.limit)
 	}
 	return base, nil
 }

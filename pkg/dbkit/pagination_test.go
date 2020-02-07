@@ -11,23 +11,23 @@ import (
 
 func TestPagination(t *testing.T) {
 	testcases := []struct {
-		*dbkit.Pagination
+		dbkit.FindOption
 		builder       sq.SelectBuilder
 		expectedError string
 		expected      string
 	}{
 		{
-			Pagination:    &dbkit.Pagination{},
+			FindOption:    dbkit.Pagination(0, 0),
 			builder:       sq.Select("name", "version").From("sometables"),
 			expectedError: "Limit can't be 0 or negative",
 		},
 		{
-			Pagination: dbkit.NewPagination(10, 100),
+			FindOption: dbkit.Pagination(10, 100),
 			builder:    sq.Select("name", "version").From("sometables"),
 			expected:   "SELECT name, version FROM sometables LIMIT 100 OFFSET 10",
 		},
 		{
-			Pagination: dbkit.CreatePaginationWithRange(10, 100),
+			FindOption: dbkit.PaginationWithRange(10, 100),
 			builder:    sq.Select("name", "version").From("sometables"),
 			expected:   "SELECT name, version FROM sometables LIMIT 91 OFFSET 10",
 		},
