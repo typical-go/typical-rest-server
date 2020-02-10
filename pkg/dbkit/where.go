@@ -6,6 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
+// WhereCondition is find option with WHERE condition
 type WhereCondition FindOption
 
 //
@@ -17,7 +18,7 @@ type equal struct {
 	condition string
 }
 
-// NewFilter return new instance of Filter
+// Equal where condition
 func Equal(column string, cond string) WhereCondition {
 	return &equal{
 		column:    column,

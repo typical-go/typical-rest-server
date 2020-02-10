@@ -21,6 +21,7 @@ func CreateFindOption() *FindOptionImpl {
 	return &FindOptionImpl{}
 }
 
+// With to return FindOption with additional FindOption
 func (f *FindOptionImpl) With(option ...FindOption) *FindOptionImpl {
 	f.options = append(f.options, option...)
 	return f

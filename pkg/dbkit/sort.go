@@ -12,10 +12,14 @@ type sort struct {
 	orderBy OrderBy
 }
 
+// OrderBy is type of order by
 type OrderBy int
 
 const (
+	// Asc for ascending
 	Asc OrderBy = iota
+
+	// Desc for descending
 	Desc
 )
 
