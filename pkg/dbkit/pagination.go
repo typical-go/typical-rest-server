@@ -6,6 +6,11 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
+// FindOption to compile find query
+type FindOption interface {
+	CompileQuery(sq.SelectBuilder) (sq.SelectBuilder, error)
+}
+
 // Pagination param
 type pagination struct {
 	offset uint64
