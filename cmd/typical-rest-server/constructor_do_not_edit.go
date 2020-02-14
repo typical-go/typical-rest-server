@@ -11,8 +11,6 @@ import (
 func init() {
 	typapp.AppendConstructor(
 		repository.NewBookRepo,
-		repository.NewMusicRepo,
 		service.NewBookService,
-		service.NewMusicService,
 	)
 }
