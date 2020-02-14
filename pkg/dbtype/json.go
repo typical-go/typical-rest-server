@@ -1,4 +1,4 @@
-package dbkit
+package dbtype
 
 import (
 	"database/sql/driver"
