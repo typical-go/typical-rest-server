@@ -2,122 +2,120 @@ package typreadme
 
 import (
 	"fmt"
+	"html/template"
 	"os"
 	"sort"
-	"text/template"
-
-	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typbuild"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
 
 const (
-	defaultTarget   = "README.md"
-	defaultTemplate = "README.tmpl"
+	defaultTargetFile   = "README.md"
+	defaultTemplateFile = "README.tmpl"
 )
 
 // Module of readme
 type Module struct {
-	Target   string
-	Template string
+	TargetFile   string
+	TemplateFile string
 }
 
 // New readme module
 func New() *Module {
 	return &Module{
-		Target:   defaultTarget,
-		Template: defaultTemplate,
+		TargetFile:   defaultTargetFile,
+		TemplateFile: defaultTemplateFile,
 	}
 }
 
-// WithTarget to set target
-func (m *Module) WithTarget(target string) *Module {
-	m.Target = target
+// WithTargetFile to set target file
+func (m *Module) WithTargetFile(targetFile string) *Module {
+	m.TargetFile = targetFile
 	return m
 }
 
-// WithTemplate to set template
-func (m *Module) WithTemplate(template string) *Module {
-	m.Template = template
+// WithTemplateFile to set template
+func (m *Module) WithTemplateFile(templateFile string) *Module {
+	m.TemplateFile = templateFile
 	return m
 }
 
 // BuildCommands to be shown in BuildTool
-func (m *Module) BuildCommands(ctx *typbuild.Context) []*cli.Command {
+func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "readme",
 			Usage: "Generate README Documentation",
-			Action: func(c *cli.Context) (err error) {
-				var (
-					file *os.File
-					tmpl *template.Template
-					d    = ctx.Descriptor
-				)
-				if file, err = os.Create(m.Target); err != nil {
-					return
-				}
-				defer file.Close()
-				log.Infof("Parse template '%s'", m.Template)
-				if tmpl, err = template.ParseFiles(m.Template); err != nil {
-					return
-				}
-				obj := &ReadmeObject{
-					Template:            m.Template,
-					Title:               d.Name,
-					Description:         d.Description,
-					ApplicationCommands: appCommands(d),
-					OtherBuildCommands:  otherCommands(d),
-					Configs:             configs(d),
-				}
-				log.Infof("Apply template and write to '%s'", m.Target)
-				if err = tmpl.Execute(file, obj); err != nil {
-					return
-				}
-				return
+			Action: func(cliCtx *cli.Context) (err error) {
+				return m.generate(c)
 			},
 		},
 	}
 }
 
-func appCommands(d *typcore.Descriptor) (infos CommandInfos) {
-	if app, ok := d.App.(*typapp.App); ok {
+func (m *Module) generate(c *typbuild.Context) (err error) {
+	var (
+		file *os.File
+		tmpl *template.Template
+	)
+	if file, err = os.Create(m.TargetFile); err != nil {
+		return
+	}
+	defer file.Close()
+	log.Infof("Parse template '%s'", m.TemplateFile)
+	if tmpl, err = template.ParseFiles(m.TemplateFile); err != nil {
+		return
+	}
+	log.Infof("Apply template and write to '%s'", m.TargetFile)
+	return tmpl.Execute(file, &Object{
+		TemplateFile:  m.TemplateFile,
+		Title:         c.Name,
+		Description:   c.Description,
+		Usages:        m.appCommands(c),
+		BuildCommands: m.otherCommands(c),
+		Configs:       m.configs(c),
+	})
+}
+
+func (m *Module) appCommands(c *typbuild.Context) (infos []CommandInfo) {
+	if app, ok := c.App.(*typapp.App); ok {
 		if app.EntryPoint() != nil {
-			infos.Append(&CommandInfo{
-				Snippet: d.Name,
-				Usage:   "Run the application",
+			infos = append(infos, CommandInfo{
+				Command:     c.Name,
+				Description: "Run the application",
 			})
 		}
 		for _, cmd := range app.AppCommands(&typapp.Context{}) {
-			addCliCommandInfo(&infos, d.Name, cmd)
+			infos = append(infos, commandInfos(c.Name, cmd)...)
 		}
 	}
 	return
 }
 
-func otherCommands(d *typcore.Descriptor) (infos CommandInfos) {
-	if build, ok := d.Build.(*typbuild.Build); ok {
+func (m *Module) otherCommands(c *typbuild.Context) (infos []CommandInfo) {
+	if build, ok := c.Build.(*typbuild.Build); ok {
 		for _, cmd := range build.BuildCommands(&typbuild.Context{}) {
-			addCliCommandInfo(&infos, "./typicalw", cmd)
+			infos = append(infos, commandInfos("./typicalw", cmd)...)
 		}
 	}
 	return
 }
 
-func configs(d *typcore.Descriptor) (infos ConfigInfos) {
-	keys, m := d.Configuration.ConfigMap()
+func (m *Module) configs(c *typbuild.Context) (infos []ConfigInfo) {
+	keys, cfgmap := c.Configuration.ConfigMap()
 	sort.Strings(keys)
 
-	for _, cfg := range typcore.ConfigDetailsBy(m, keys...) {
+	for _, cfg := range typcore.ConfigDetailsBy(cfgmap, keys...) {
 		var required string
 		if cfg.Required {
 			required = "Yes"
 		}
-		infos.Append(&ConfigInfo{
+		infos = append(infos, ConfigInfo{
 			Name:     cfg.Name,
 			Type:     cfg.Type,
 			Default:  cfg.Default,
@@ -127,15 +125,16 @@ func configs(d *typcore.Descriptor) (infos ConfigInfos) {
 	return
 }
 
-func addCliCommandInfo(details *CommandInfos, name string, cmd *cli.Command) {
-	details.Append(&CommandInfo{
-		Snippet: fmt.Sprintf("%s %s", name, cmd.Name),
-		Usage:   cmd.Usage,
+func commandInfos(name string, cmd *cli.Command) (details []CommandInfo) {
+	details = append(details, CommandInfo{
+		Command:     fmt.Sprintf("%s %s", name, cmd.Name),
+		Description: cmd.Usage,
 	})
 	for _, subcmd := range cmd.Subcommands {
-		details.Append(&CommandInfo{
-			Snippet: fmt.Sprintf("%s %s %s", name, cmd.Name, subcmd.Name),
-			Usage:   subcmd.Usage,
+		details = append(details, CommandInfo{
+			Command:     fmt.Sprintf("%s %s %s", name, cmd.Name, subcmd.Name),
+			Description: subcmd.Usage,
 		})
 	}
+	return
 }
