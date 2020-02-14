@@ -3,19 +3,7 @@ package typredis
 import (
 	"os"
 	"os/exec"
-
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/urfave/cli/v2"
 )
-
-func (m *Module) consoleCmd(c *typcore.BuildContext) *cli.Command {
-	return &cli.Command{
-		Name:    "console",
-		Aliases: []string{"c"},
-		Usage:   "Redis Interactive",
-		Action:  c.ActionFunc(m.console),
-	}
-}
 
 func (*Module) console(config *Config) (err error) {
 	args := []string{

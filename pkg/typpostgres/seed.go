@@ -5,17 +5,7 @@ import (
 	"io/ioutil"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/urfave/cli/v2"
 )
-
-func (m *Module) seedCmd(c *typcore.BuildContext) *cli.Command {
-	return &cli.Command{
-		Name:   "seed",
-		Usage:  "Data seeding",
-		Action: c.ActionFunc(m.seed),
-	}
-}
 
 func (m *Module) seed(cfg Config) (err error) {
 	var conn *sql.DB

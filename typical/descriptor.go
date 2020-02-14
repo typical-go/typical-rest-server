@@ -12,25 +12,31 @@ import (
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typcore.Descriptor{
 
-	// Common project information
-	// Name and Package is mandatory
-	Name:        "Typical REST Server",
+	// Name is optional with default value is same with project folder
+	// Name should be a characters with/without underscore or dash.
+	// Name: "typical-rest",
+
+	// Description of the project
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.19",
-	Package:     "github.com/typical-go/typical-rest-server",
+
+	// Version of the project
+	Version: "0.8.19",
+
+	// Package must be same with go.mod file
+	Package: "github.com/typical-go/typical-rest-server",
 
 	App: typapp.New(application).
 
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
-		WithDependency(
+		AppendDependency(
 			server,   // create and destroy http server
 			redis,    // create and destroy redis connection
 			postgres, // create and destroy postgres db connection
 		).
 
 		// Preparation before start the application
-		WithPrepare(
+		AppendPreparer(
 			redis,    // Ping to Redis Server
 			postgres, // Ping to Postgres Database
 		),
@@ -38,7 +44,7 @@ var Descriptor = typcore.Descriptor{
 	Build: typbuild.New().
 
 		// Additional command to be register in Build-Tool
-		WithCommands(
+		AppendCommander(
 			docker,
 			readme, // generate readme based on README.tmpl
 			postgres,

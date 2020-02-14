@@ -6,9 +6,11 @@ import (
 	"sort"
 	"text/template"
 
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typbuild"
+
 	log "github.com/sirupsen/logrus"
 
-	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
@@ -45,7 +47,7 @@ func (m *Module) WithTemplate(template string) *Module {
 }
 
 // BuildCommands to be shown in BuildTool
-func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
+func (m *Module) BuildCommands(ctx *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "readme",
@@ -83,30 +85,34 @@ func (m *Module) BuildCommands(ctx *typcore.BuildContext) []*cli.Command {
 }
 
 func appCommands(d *typcore.Descriptor) (infos CommandInfos) {
-	appName := strcase.ToKebab(d.Name) // TODO: use typenv instead
-	if d.App.EntryPoint() != nil {
-		infos.Append(&CommandInfo{
-			Snippet: appName,
-			Usage:   "Run the application",
-		})
-	}
-	for _, cmd := range d.App.AppCommands(typcore.NewAppContext(nil)) {
-		addCliCommandInfo(&infos, appName, cmd)
+	if app, ok := d.App.(*typapp.App); ok {
+		if app.EntryPoint() != nil {
+			infos.Append(&CommandInfo{
+				Snippet: d.Name,
+				Usage:   "Run the application",
+			})
+		}
+		for _, cmd := range app.AppCommands(&typapp.Context{}) {
+			addCliCommandInfo(&infos, d.Name, cmd)
+		}
 	}
 	return
 }
 
 func otherCommands(d *typcore.Descriptor) (infos CommandInfos) {
-	for _, cmd := range d.Build.BuildCommands(&typcore.BuildContext{Descriptor: d}) {
-		addCliCommandInfo(&infos, "./typicalw", cmd)
+	if build, ok := d.Build.(*typbuild.Build); ok {
+		for _, cmd := range build.BuildCommands(&typbuild.Context{}) {
+			addCliCommandInfo(&infos, "./typicalw", cmd)
+		}
 	}
 	return
 }
 
 func configs(d *typcore.Descriptor) (infos ConfigInfos) {
-	keys, configMap := d.Configuration.ConfigMap()
+	keys, m := d.Configuration.ConfigMap()
 	sort.Strings(keys)
-	for _, cfg := range configMap.ValueBy(keys...) {
+
+	for _, cfg := range typcore.ConfigDetailsBy(m, keys...) {
 		var required string
 		if cfg.Required {
 			required = "Yes"

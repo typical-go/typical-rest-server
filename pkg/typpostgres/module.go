@@ -4,7 +4,8 @@ import (
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
@@ -119,23 +120,51 @@ func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, lo
 }
 
 // BuildCommands of module
-func (m *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
+func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
 			Aliases: []string{"pg"},
 			Usage:   "Postgres Database Tool",
 			Before: func(ctx *cli.Context) error {
-				return common.LoadEnvFile()
+				return typcfg.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
-				m.createCmd(c),
-				m.dropCmd(c),
-				m.migrateCmd(c),
-				m.rollbackCmd(c),
-				m.seedCmd(c),
-				m.resetCmd(c),
-				m.consoleCmd(c),
+				{
+					Name:   "create",
+					Usage:  "Create New Database",
+					Action: c.ActionFunc(m.create),
+				},
+				{
+					Name:   "drop",
+					Usage:  "Drop Database",
+					Action: c.ActionFunc(m.drop),
+				},
+				{
+					Name:   "migrate",
+					Usage:  "Migrate Database",
+					Action: c.ActionFunc(m.migrate),
+				},
+				{
+					Name:   "rollback",
+					Usage:  "Rollback Database",
+					Action: c.ActionFunc(m.rollback),
+				},
+				{
+					Name:   "seed",
+					Usage:  "Data seeding",
+					Action: c.ActionFunc(m.seed),
+				},
+				{
+					Name:   "reset",
+					Usage:  "Reset Database",
+					Action: c.ActionFunc(m.reset),
+				},
+				{
+					Name:   "console",
+					Usage:  "PostgreSQL Interactive",
+					Action: c.ActionFunc(m.console),
+				},
 			},
 		},
 	}

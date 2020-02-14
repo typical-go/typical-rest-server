@@ -3,7 +3,7 @@ package typrails
 import (
 	"errors"
 
-	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,7 +14,7 @@ func (r *rails) repositoryCmd() *cli.Command {
 		Usage:     "Generate Repository from tablename",
 		ArgsUsage: "[table] [entity]",
 		Before: func(ctx *cli.Context) error {
-			return common.LoadEnvFile()
+			return typcfg.LoadEnvFile()
 		},
 		Action: r.ActionFunc(r.repository),
 	}

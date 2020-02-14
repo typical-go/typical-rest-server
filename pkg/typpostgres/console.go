@@ -4,18 +4,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/urfave/cli/v2"
 )
-
-func (m *Module) consoleCmd(c *typcore.BuildContext) *cli.Command {
-	return &cli.Command{
-		Name:   "console",
-		Usage:  "PostgreSQL Interactive",
-		Action: c.ActionFunc(m.console),
-	}
-}
 
 func (*Module) console(cfg Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)

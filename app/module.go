@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli/v2"
@@ -35,8 +36,12 @@ func (m Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loa
 }
 
 // AppCommands return comamnd
-func (m Module) AppCommands(c *typcore.AppContext) []*cli.Command {
+func (m Module) AppCommands(c *typapp.Context) []*cli.Command {
 	return []*cli.Command{
-		{Name: "route", Usage: "Print available API Routes", Action: c.ActionFunc(taskRouteList)},
+		{
+			Name:   "route",
+			Usage:  "Print available API Routes",
+			Action: c.ActionFunc(taskRouteList),
+		},
 	}
 }

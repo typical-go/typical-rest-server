@@ -5,17 +5,7 @@ import (
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/urfave/cli/v2"
 )
-
-func (m *Module) createCmd(c *typcore.BuildContext) *cli.Command {
-	return &cli.Command{
-		Name:   "create",
-		Usage:  "Create New Database",
-		Action: c.ActionFunc(m.create),
-	}
-}
 
 func (m *Module) create(cfg Config) (err error) {
 	var conn *sql.DB

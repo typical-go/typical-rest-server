@@ -1,7 +1,8 @@
 package typredis
 
 import (
-	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
@@ -57,16 +58,21 @@ func (m *Module) WithDockerName(dockerName string) *Module {
 }
 
 // BuildCommands of module
-func (m *Module) BuildCommands(c *typcore.BuildContext) []*cli.Command {
+func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
 			Usage: "Redis Tool",
 			Before: func(ctx *cli.Context) error {
-				return common.LoadEnvFile()
+				return typcfg.LoadEnvFile()
 			},
 			Subcommands: []*cli.Command{
-				m.consoleCmd(c),
+				{
+					Name:    "console",
+					Aliases: []string{"c"},
+					Usage:   "Redis Interactive",
+					Action:  c.ActionFunc(m.console),
+				},
 			},
 		},
 	}
