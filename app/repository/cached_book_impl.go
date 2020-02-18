@@ -40,7 +40,7 @@ func (r *CachedBookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book,
 
 // Find books
 func (r *CachedBookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
-	cacheKey := fmt.Sprintf("BOOK:LIST")
+	cacheKey := "BOOK:LIST"
 	redisClient := r.Redis.WithContext(ctx)
 	if err = dbkit.GetCache(redisClient, cacheKey, &list); err == nil {
 		log.Infof("Using cache %s", cacheKey)
