@@ -26,6 +26,6 @@ type BookRepo interface {
 }
 
 // NewBookRepo return new instance of BookRepo [constructor]
-func NewBookRepo(impl CachedBookRepoImpl) BookRepo {
+func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }
