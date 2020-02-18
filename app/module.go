@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/app/config"
 	"github.com/urfave/cli/v2"
 )
@@ -25,7 +25,7 @@ func (m Module) EntryPoint() interface{} {
 }
 
 // Configure application
-func (m Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m Module) Configure(loader typcfg.Loader) (prefix string, spec, loadFn interface{}) {
 	prefix = "APP"
 	spec = &config.Config{}
 	loadFn = func() (cfg config.Config, err error) {

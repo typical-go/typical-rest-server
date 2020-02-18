@@ -8,7 +8,7 @@ import (
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
 // Module of server
@@ -28,12 +28,12 @@ func (m *Module) WithDebug(debug bool) *Module {
 }
 
 // Configure server
-func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcfg.Loader) (prefix string, spec, constructor interface{}) {
 	prefix = "SERVER"
 	spec = &Config{
 		Debug: m.Debug,
 	}
-	loadFn = func() (cfg Config, err error) {
+	constructor = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

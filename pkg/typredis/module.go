@@ -3,7 +3,6 @@ package typredis
 import (
 	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typcfg"
-	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
 
@@ -79,14 +78,14 @@ func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 }
 
 // Configure Redis
-func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcfg.Loader) (prefix string, spec, constructor interface{}) {
 	prefix = "REDIS"
 	spec = &Config{
 		Host:     m.Host,
 		Port:     m.Port,
 		Password: m.Password,
 	}
-	loadFn = func() (cfg Config, err error) {
+	constructor = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

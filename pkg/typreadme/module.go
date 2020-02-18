@@ -10,7 +10,7 @@ import (
 
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typbuild"
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/urfave/cli/v2"
 )
 
@@ -150,7 +150,7 @@ func (m *Module) Usages(c *typbuild.Context) (infos []UsageInfo) {
 // BuildUsages of readme
 func (m *Module) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
 	if len(m.buildUsages) < 1 {
-		if build, ok := c.Build.(*typbuild.Build); ok {
+		if build, ok := c.BuildTool.(*typbuildtool.Build); ok {
 			for _, cmd := range build.BuildCommands(&typbuild.Context{}) {
 				infos = append(infos, usageInfos("./typicalw", cmd)...)
 			}
@@ -163,9 +163,10 @@ func (m *Module) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
 // Configs of readme
 func (m *Module) Configs(c *typbuild.Context) (infos []ConfigInfo) {
 	if len(m.configs) < 1 {
-		keys, cfgmap := c.Configuration.ConfigMap()
+		store := c.Configuration.Store()
+		keys := store.Keys()
 		sort.Strings(keys)
-		for _, cfg := range typcore.ConfigDetailsBy(cfgmap, keys...) {
+		for _, cfg := range store.Fields(keys...) {
 			var required string
 			if cfg.Required {
 				required = "Yes"

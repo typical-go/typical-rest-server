@@ -6,7 +6,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typcfg"
-	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/urfave/cli/v2"
 )
 
@@ -103,7 +102,7 @@ func (m *Module) WithSeedSource(seedSource string) *Module {
 }
 
 // Configure the module
-func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, loadFn interface{}) {
+func (m *Module) Configure(loader typcfg.Loader) (prefix string, spec, constructor interface{}) {
 	prefix = "PG"
 	spec = &Config{
 		DBName:   m.DBName,
@@ -112,7 +111,7 @@ func (m *Module) Configure(loader typcore.ConfigLoader) (prefix string, spec, lo
 		Host:     m.Host,
 		Port:     m.Port,
 	}
-	loadFn = func() (cfg Config, err error) {
+	constructor = func() (cfg Config, err error) {
 		err = loader.Load(prefix, &cfg)
 		return
 	}

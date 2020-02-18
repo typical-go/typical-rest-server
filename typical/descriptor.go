@@ -2,8 +2,8 @@ package typical
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typbuild"
-	"github.com/typical-go/typical-go/pkg/typbuild/stdrelease"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typbuildtool/stdrls"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
 )
@@ -13,7 +13,7 @@ import (
 var Descriptor = typcore.Descriptor{
 
 	// Name is optional with default value is same with project folder
-	// Name should be a characters with/without underscore or dash.
+	// It should be a characters with/without underscore or dash.
 	// Name: "typical-rest",
 
 	// Description of the project
@@ -41,7 +41,7 @@ var Descriptor = typcore.Descriptor{
 			postgres, // Ping to Postgres Database
 		),
 
-	Build: typbuild.New().
+	BuildTool: typbuildtool.New().
 
 		// Additional command to be register in Build-Tool
 		AppendCommander(
@@ -54,10 +54,10 @@ var Descriptor = typcore.Descriptor{
 
 		// Setting to release the project
 		// By default it will create distribution for Darwin and Linux
-		WithRelease(stdrelease.New().
+		WithRelease(stdrls.New().
 			WithPublisher(
 				// Create release and upload file to Github
-				stdrelease.GithubPublisher("typical-go", "typical-rest-server"),
+				stdrls.GithubPublisher("typical-go", "typical-rest-server"),
 			),
 		),
 
