@@ -80,9 +80,6 @@ func (m *Module) WithConfigs(configs []ConfigInfo) *Module {
 	return m
 }
 
-// buildUsages  []UsageInfo
-// 	configs      []ConfigInfo
-
 // BuildCommands to be shown in BuildTool
 func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
@@ -113,7 +110,7 @@ func (m *Module) generate(c *typbuild.Context) (err error) {
 	return tmpl.Execute(file, &Object{
 		TemplateFile: m.TemplateFile,
 		Title:        m.Title(c),
-		Description:  m.description,
+		Description:  m.Description(c),
 		Usages:       m.Usages(c),
 		BuildUsages:  m.BuildUsages(c),
 		Configs:      m.Configs(c),
@@ -126,6 +123,14 @@ func (m *Module) Title(c *typbuild.Context) string {
 		return c.Name
 	}
 	return m.title
+}
+
+// Description of readme
+func (m *Module) Description(c *typbuild.Context) string {
+	if m.description == "" {
+		return c.Description
+	}
+	return m.description
 }
 
 // Usages of readme
