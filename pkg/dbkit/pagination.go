@@ -2,14 +2,10 @@ package dbkit
 
 import (
 	"errors"
+	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 )
-
-// FindOption to compile find query
-type FindOption interface {
-	CompileQuery(sq.SelectBuilder) (sq.SelectBuilder, error)
-}
 
 // Pagination param
 type pagination struct {
@@ -40,4 +36,8 @@ func (p *pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, erro
 		base = base.Limit(p.limit)
 	}
 	return base, nil
+}
+
+func (p *pagination) String() string {
+	return fmt.Sprintf("pagination:%d:%d", p.offset, p.limit)
 }

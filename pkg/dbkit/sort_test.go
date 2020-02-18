@@ -56,5 +56,4 @@ func TestSortOrder(t *testing.T) {
 	for _, tt := range testcases {
 		require.Equal(t, tt.s, tt.OrderBy.String())
 	}
-
 }

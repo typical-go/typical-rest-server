@@ -42,5 +42,4 @@ func TestPagination(t *testing.T) {
 			require.Equal(t, tt.expected, query)
 		}
 	}
-
 }

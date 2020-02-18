@@ -2,6 +2,7 @@ package dbkit
 
 import (
 	"errors"
+	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 )
@@ -34,6 +35,10 @@ func (f *equal) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	return base.Where(sq.Eq{f.column: f.condition}), nil
 }
 
+func (f equal) String() string {
+	return fmt.Sprintf("equal:%s:%s", f.column, f.condition)
+}
+
 //
 // Like
 //
@@ -56,4 +61,8 @@ func (l *like) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 		return base, errors.New("Like column can't be empty")
 	}
 	return base.Where(sq.Like{l.column: l.condition}), nil
+}
+
+func (l like) String() string {
+	return fmt.Sprintf("like:%s:%s", l.column, l.condition)
 }

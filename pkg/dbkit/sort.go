@@ -49,3 +49,7 @@ func (s *sort) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	base = base.OrderBy(fmt.Sprintf("%s %s", s.column, s.orderBy))
 	return base, nil
 }
+
+func (s sort) String() string {
+	return fmt.Sprintf("sort:%s:%d", s.column, s.orderBy)
+}
