@@ -11,7 +11,7 @@ import (
 
 // Modules that required for the project
 var (
-	rest     = restserver.New().WithDebug(true)
+	server   = restserver.New().WithDebug(true)
 	readme   = typreadme.New()
 	rails    = typrails.New()
 	redis    = typredis.New()

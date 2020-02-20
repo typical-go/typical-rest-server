@@ -22,13 +22,23 @@ var Descriptor = typcore.Descriptor{
 	// Version of the project
 	Version: "0.8.19",
 
-	App: typapp.New(rest).
+	// Configuration for this project
+	// Both App and Build-Tool typically using the same configuration
+	Configuration: typcfg.New().
+		WithConfigure(
+			server,
+			redis,
+			postgres,
+		),
+
+	// Detail of this application
+	App: typapp.New(server).
 
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
 		AppendDependency(
-			redis,    // create and destroy redis connection
-			postgres, // create and destroy postgres db connection
+			redis,    // Create and destroy redis connection
+			postgres, // Create and destroy postgres db connection
 		).
 
 		// Preparation before start the application
@@ -37,32 +47,25 @@ var Descriptor = typcore.Descriptor{
 			postgres, // Ping to Postgres Database
 		),
 
+	// BuildTool responsible to basic build needs and custom dev task
 	BuildTool: typbuildtool.New().
 
 		// Additional command to be register in Build-Tool
 		AppendCommander(
-			docker,
-			readme, // generate readme based on README.tmpl
-			postgres,
-			redis,
-			rails,
+			postgres, // Postgres utilities like create, drop, migrate, seed, etc.
+			redis,    // Redis utilities
+			docker,   // Generate dockercompose and spin up docker
+			readme,   // Generate readme based on README.tmpl
+			rails,    // Experimental to generate code like RoR
 		).
 
 		// Setting to release the project
-		// By default it will create distribution for Darwin and Linux
-		WithRelease(stdrls.New().
-			WithPublisher(
-				// Create release and upload file to Github
-				stdrls.GithubPublisher("typical-go", "typical-rest-server"),
-			),
-		),
-
-	// Configuration for this project
-	// Both Build-Tool and Application typically using same configuration
-	Configuration: typcfg.New().
-		WithConfigure(
-			rest,
-			redis,
-			postgres,
+		WithRelease(
+			// By default it will create distribution for Darwin and Linux
+			stdrls.New().
+				WithPublisher(
+					// Create release and upload file to Github
+					stdrls.GithubPublisher("typical-go", "typical-rest-server"),
+				),
 		),
 }
