@@ -1,8 +1,6 @@
 package restserver
 
 import (
-	"fmt"
-
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-rest-server/restserver/config"
@@ -11,7 +9,7 @@ import (
 	"go.uber.org/dig"
 )
 
-type server struct {
+type app struct {
 	dig.In
 	*echo.Echo
 	config.Config
@@ -19,18 +17,17 @@ type server struct {
 	controller.AppCntrl
 }
 
-func (s server) Middleware() {
-	s.Use(middleware.Recover())
+func (a app) Middleware() {
+	a.Use(middleware.Recover())
 }
 
-func (s server) Route() {
-	s.AppCntrl.Route(s.Echo)
-	s.BookCntrl.Route(s.Echo)
+func (a app) Route() {
+	a.AppCntrl.Route(a.Echo)
+	a.BookCntrl.Route(a.Echo)
 }
 
-func (s server) Start() (err error) {
-	if err = s.Echo.Start(s.Config.Address); err != nil {
-		return fmt.Errorf("App: %w", err)
-	}
-	return
+func (a app) Start() (err error) {
+	a.Middleware()
+	a.Route()
+	return a.Echo.Start(a.Config.Address)
 }
