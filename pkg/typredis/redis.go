@@ -8,53 +8,53 @@ import (
 
 // Redis of Redis
 type Redis struct {
-	Host        string
-	Port        string
-	Password    string
-	DockerName  string
-	DockerImage string
+	host        string
+	port        string
+	password    string
+	dockerName  string
+	dockerImage string
 	prefix      string
 }
 
 // New Redis Redis
 func New() *Redis {
 	return &Redis{
-		Host:        "localhost",
-		Port:        "6379",
-		Password:    "redispass",
-		DockerImage: "redis:4.0.5-alpine",
-		DockerName:  "redis",
+		host:        "localhost",
+		port:        "6379",
+		password:    "redispass",
+		dockerImage: "redis:4.0.5-alpine",
+		dockerName:  "redis",
 		prefix:      "REDIS",
 	}
 }
 
-// WithHost to return module with new host
-func (m *Redis) WithHost(host string) *Redis {
-	m.Host = host
+// Withhost to return module with new host
+func (m *Redis) Withhost(host string) *Redis {
+	m.host = host
 	return m
 }
 
-// WithPort to return module with new port
-func (m *Redis) WithPort(port string) *Redis {
-	m.Port = port
+// Withport to return module with new port
+func (m *Redis) Withport(port string) *Redis {
+	m.port = port
 	return m
 }
 
-// WithPassword to return module with new password
-func (m *Redis) WithPassword(password string) *Redis {
-	m.Password = password
+// Withpassword to return module with new password
+func (m *Redis) Withpassword(password string) *Redis {
+	m.password = password
 	return m
 }
 
-// WithDockerImage to return module with new docker image
-func (m *Redis) WithDockerImage(dockerImage string) *Redis {
-	m.DockerImage = dockerImage
+// WithdockerImage to return module with new docker image
+func (m *Redis) WithdockerImage(dockerImage string) *Redis {
+	m.dockerImage = dockerImage
 	return m
 }
 
-// WithDockerName to return module with new docker name
-func (m *Redis) WithDockerName(dockerName string) *Redis {
-	m.DockerName = dockerName
+// WithdockerName to return module with new docker name
+func (m *Redis) WithdockerName(dockerName string) *Redis {
+	m.dockerName = dockerName
 	return m
 }
 
@@ -90,9 +90,9 @@ func (m *Redis) Configure(loader typcfg.Loader) *typcfg.Detail {
 	return &typcfg.Detail{
 		Prefix: m.prefix,
 		Spec: &Config{
-			Host:     m.Host,
-			Port:     m.Port,
-			Password: m.Password,
+			Host:     m.host,
+			Port:     m.port,
+			Password: m.password,
 		},
 		Constructor: func() (cfg Config, err error) {
 			err = loader.Load(m.prefix, &cfg)

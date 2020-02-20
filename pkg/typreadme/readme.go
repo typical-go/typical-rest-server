@@ -21,13 +21,15 @@ const (
 
 // Readme module
 type Readme struct {
+	// NOTE: required to be public to be access by template
 	TargetFile   string
 	TemplateFile string
-	title        string
-	description  string
-	usages       []UsageInfo
-	buildUsages  []UsageInfo
-	configs      []ConfigInfo
+
+	title       string
+	description string
+	usages      []UsageInfo
+	buildUsages []UsageInfo
+	configs     []ConfigInfo
 }
 
 // New readme module

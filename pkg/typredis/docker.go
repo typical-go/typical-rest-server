@@ -11,19 +11,19 @@ func (m *Redis) DockerCompose(version typdocker.Version) *typdocker.ComposeObjec
 	if version.IsV3() {
 		return &typdocker.ComposeObject{
 			Services: typdocker.Services{
-				m.DockerName: typdocker.Service{
-					Image:    m.DockerImage,
-					Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, m.Password),
-					Ports:    []string{fmt.Sprintf("%s:6379", m.Port)},
-					Networks: []string{m.DockerName},
-					Volumes:  []string{fmt.Sprintf("%s:/data", m.DockerName)},
+				m.dockerName: typdocker.Service{
+					Image:    m.dockerImage,
+					Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, m.password),
+					Ports:    []string{fmt.Sprintf("%s:6379", m.port)},
+					Networks: []string{m.dockerName},
+					Volumes:  []string{fmt.Sprintf("%s:/data", m.dockerName)},
 				},
 			},
 			Networks: typdocker.Networks{
-				m.DockerName: nil,
+				m.dockerName: nil,
 			},
 			Volumes: typdocker.Volumes{
-				m.DockerName: nil,
+				m.dockerName: nil,
 			},
 		}
 	}
