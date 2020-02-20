@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-func (*Module) console(config *Config) (err error) {
+func (*Redis) console(config *Config) (err error) {
 	args := []string{
 		"-h", config.Host,
 		"-p", config.Port,

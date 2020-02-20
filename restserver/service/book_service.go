@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"go.uber.org/dig"
 )

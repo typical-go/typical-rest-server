@@ -1,10 +1,10 @@
-package app
+package restserver
 
 import (
 	"fmt"
 
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/app/config"
+	"github.com/typical-go/typical-rest-server/restserver/config"
 )
 
 func taskRouteList(e *echo.Echo, cfg *config.Config) (err error) {

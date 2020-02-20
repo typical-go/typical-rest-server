@@ -22,10 +22,7 @@ var Descriptor = typcore.Descriptor{
 	// Version of the project
 	Version: "0.8.19",
 
-	// Package must be same with go.mod file
-	Package: "github.com/typical-go/typical-rest-server",
-
-	App: typapp.New(application).
+	App: typapp.New(rest).
 
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
@@ -65,7 +62,7 @@ var Descriptor = typcore.Descriptor{
 	// Both Build-Tool and Application typically using same configuration
 	Configuration: typcfg.New().
 		WithConfigure(
-			application,
+			rest,
 			server,
 			redis,
 			postgres,

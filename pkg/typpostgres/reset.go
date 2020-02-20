@@ -1,6 +1,6 @@
 package typpostgres
 
-func (m *Module) reset(cfg Config) (err error) {
+func (m *Postgres) reset(cfg Config) (err error) {
 	if err = m.drop(cfg); err != nil {
 		return
 	}

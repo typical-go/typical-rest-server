@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Module) rollback(cfg Config) (err error) {
+func (m *Postgres) rollback(cfg Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + m.MigrationSource
 	log.Infof("Migrate database from source '%s'\n", sourceURL)

@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Module) create(cfg Config) (err error) {
+func (m *Postgres) create(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)

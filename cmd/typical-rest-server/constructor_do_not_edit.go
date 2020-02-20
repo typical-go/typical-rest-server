@@ -4,8 +4,8 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/app/service"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
+	"github.com/typical-go/typical-rest-server/restserver/service"
 )
 
 func init() {

@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/app/controller"
-	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/restserver/controller"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
 	"github.com/typical-go/typical-rest-server/mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )

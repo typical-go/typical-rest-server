@@ -19,8 +19,8 @@ const (
 	defaultTemplateFile = "README.tmpl"
 )
 
-// Module of readme
-type Module struct {
+// Readme module
+type Readme struct {
 	TargetFile   string
 	TemplateFile string
 	title        string
@@ -31,57 +31,57 @@ type Module struct {
 }
 
 // New readme module
-func New() *Module {
-	return &Module{
+func New() *Readme {
+	return &Readme{
 		TargetFile:   defaultTargetFile,
 		TemplateFile: defaultTemplateFile,
 	}
 }
 
 // WithTargetFile return module with new target file
-func (m *Module) WithTargetFile(targetFile string) *Module {
+func (m *Readme) WithTargetFile(targetFile string) *Readme {
 	m.TargetFile = targetFile
 	return m
 }
 
 // WithTemplateFile return module with new template file
-func (m *Module) WithTemplateFile(templateFile string) *Module {
+func (m *Readme) WithTemplateFile(templateFile string) *Readme {
 	m.TemplateFile = templateFile
 	return m
 }
 
 // WithTitle return module with new title
-func (m *Module) WithTitle(title string) *Module {
+func (m *Readme) WithTitle(title string) *Readme {
 	m.title = title
 	return m
 }
 
 // WithDescription return module with new description
-func (m *Module) WithDescription(description string) *Module {
+func (m *Readme) WithDescription(description string) *Readme {
 	m.description = description
 	return m
 }
 
 // WithUsages return module with new usages
-func (m *Module) WithUsages(usages []UsageInfo) *Module {
+func (m *Readme) WithUsages(usages []UsageInfo) *Readme {
 	m.usages = usages
 	return m
 }
 
 // WithBuildUsages return module with new build usages
-func (m *Module) WithBuildUsages(buildUsages []UsageInfo) *Module {
+func (m *Readme) WithBuildUsages(buildUsages []UsageInfo) *Readme {
 	m.buildUsages = buildUsages
 	return m
 }
 
 // WithConfigs return odule with new configs
-func (m *Module) WithConfigs(configs []ConfigInfo) *Module {
+func (m *Readme) WithConfigs(configs []ConfigInfo) *Readme {
 	m.configs = configs
 	return m
 }
 
 // BuildCommands to be shown in BuildTool
-func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
+func (m *Readme) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "readme",
@@ -93,7 +93,7 @@ func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 	}
 }
 
-func (m *Module) generate(c *typbuild.Context) (err error) {
+func (m *Readme) generate(c *typbuild.Context) (err error) {
 	var (
 		file *os.File
 		tmpl *template.Template
@@ -118,7 +118,7 @@ func (m *Module) generate(c *typbuild.Context) (err error) {
 }
 
 // Title of readme
-func (m *Module) Title(c *typbuild.Context) string {
+func (m *Readme) Title(c *typbuild.Context) string {
 	if m.title == "" {
 		return c.Name
 	}
@@ -126,7 +126,7 @@ func (m *Module) Title(c *typbuild.Context) string {
 }
 
 // Description of readme
-func (m *Module) Description(c *typbuild.Context) string {
+func (m *Readme) Description(c *typbuild.Context) string {
 	if m.description == "" {
 		return c.Description
 	}
@@ -134,7 +134,7 @@ func (m *Module) Description(c *typbuild.Context) string {
 }
 
 // Usages of readme
-func (m *Module) Usages(c *typbuild.Context) (infos []UsageInfo) {
+func (m *Readme) Usages(c *typbuild.Context) (infos []UsageInfo) {
 	if len(m.usages) < 1 {
 		if app, ok := c.App.(*typapp.App); ok {
 			if app.EntryPoint() != nil {
@@ -153,9 +153,9 @@ func (m *Module) Usages(c *typbuild.Context) (infos []UsageInfo) {
 }
 
 // BuildUsages of readme
-func (m *Module) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
+func (m *Readme) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
 	if len(m.buildUsages) < 1 {
-		if build, ok := c.BuildTool.(*typbuildtool.Build); ok {
+		if build, ok := c.BuildTool.(*typbuildtool.BuildTool); ok {
 			for _, cmd := range build.BuildCommands(&typbuild.Context{}) {
 				infos = append(infos, usageInfos("./typicalw", cmd)...)
 			}
@@ -166,7 +166,7 @@ func (m *Module) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
 }
 
 // Configs of readme
-func (m *Module) Configs(c *typbuild.Context) (infos []ConfigInfo) {
+func (m *Readme) Configs(c *typbuild.Context) (infos []ConfigInfo) {
 	if len(m.configs) < 1 {
 		store := c.Configuration.Store()
 		keys := store.Keys()

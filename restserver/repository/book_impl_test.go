@@ -15,7 +15,7 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/app/repository"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
 )
 
 func TestBookRepoImpl_Create(t *testing.T) {

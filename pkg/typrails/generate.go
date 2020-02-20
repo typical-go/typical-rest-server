@@ -7,8 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/typical-go/typical-go/pkg/common"
-	"github.com/typical-go/typical-go/pkg/runn"
-	"github.com/typical-go/typical-go/pkg/runn/stdrun"
+	"github.com/typical-go/typical-go/pkg/common/stdrun"
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 )
 
@@ -17,7 +16,7 @@ func generateController(e *Entity) (err error) {
 	if common.IsFileExist(controllerPath) {
 		return fmt.Errorf("%s already exist", controllerPath)
 	}
-	return runn.Run(
+	return common.Run(
 		stdrun.NewWriteTemplate(controllerPath, tmpl.Controller, e),
 	)
 }
@@ -27,7 +26,7 @@ func generateService(e *Entity) (err error) {
 	if common.IsFileExist(servicePath) {
 		return fmt.Errorf("%s already exist", servicePath)
 	}
-	return runn.Run(
+	return common.Run(
 		stdrun.NewWriteTemplate(servicePath, tmpl.Service, e),
 	)
 }
@@ -45,7 +44,7 @@ func generateRepository(e *Entity) (err error) {
 	if common.IsFileExist(cachedRepoImplPath) {
 		return fmt.Errorf("%s already exist", cachedRepoImplPath)
 	}
-	return runn.Run(
+	return common.Run(
 		stdrun.NewWriteTemplate(repoPath, tmpl.Repo, e),
 		stdrun.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
 		stdrun.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
@@ -64,7 +63,7 @@ func generateTransactional() (err error) {
 	if common.IsFileExist(transactionalPath) {
 		return nil
 	}
-	return runn.Run(
+	return common.Run(
 		stdrun.NewWriteString(transactionalPath, tmpl.Transactional),
 		stdrun.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
 	)

@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Module) seed(cfg Config) (err error) {
+func (m *Postgres) seed(cfg Config) (err error) {
 	var conn *sql.DB
 	if conn, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		return

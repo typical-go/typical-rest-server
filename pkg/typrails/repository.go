@@ -32,7 +32,7 @@ func (r *rails) repository(ctx *cli.Context, f Fetcher) (err error) {
 	if entity = ctx.Args().Get(1); entity == "" {
 		return errors.New("Missing 'entity': check `./typicalw rails repository help` for more detail")
 	}
-	if e, err = f.Fetch(r.Package, table, entity); err != nil {
+	if e, err = f.Fetch(r.ModulePackage, table, entity); err != nil {
 		return
 	}
 	if err = generateTransactional(); err != nil {

@@ -17,7 +17,7 @@ func NewDB(db *sql.DB) *DB {
 	}
 }
 
-func (m *Module) connect(cfg Config) (pgDB *DB, err error) {
+func (m *Postgres) connect(cfg Config) (pgDB *DB, err error) {
 	var db *sql.DB
 	if db, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
@@ -26,26 +26,26 @@ func (m *Module) connect(cfg Config) (pgDB *DB, err error) {
 	return
 }
 
-func (*Module) disconnect(db *DB) (err error) {
+func (*Postgres) disconnect(db *DB) (err error) {
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("Postgres: Disconnect: %w", err)
 	}
 	return
 }
 
-func (m *Module) ping(db *DB) (err error) {
+func (m *Postgres) ping(db *DB) (err error) {
 	if err = db.Ping(); err != nil {
 		return fmt.Errorf("Postgres: Ping: %w", err)
 	}
 	return
 }
 
-func (*Module) dataSource(c Config) string {
+func (*Postgres) dataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (*Module) adminDataSource(c Config) string {
+func (*Postgres) adminDataSource(c Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

@@ -14,33 +14,33 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// New docker module
-func New() *Module {
-	return &Module{
-		Version: "3",
-	}
-}
-
-// Module of docker
-type Module struct {
+// Docker of docker
+type Docker struct {
 	Version   Version
 	Composers []Composer
 }
 
+// New docker module
+func New() *Docker {
+	return &Docker{
+		Version: "3",
+	}
+}
+
 // WithVersion to set the version
-func (m *Module) WithVersion(version Version) *Module {
+func (m *Docker) WithVersion(version Version) *Docker {
 	m.Version = version
 	return m
 }
 
 // WithComposers to set the composers
-func (m *Module) WithComposers(composers ...Composer) *Module {
+func (m *Docker) WithComposers(composers ...Composer) *Docker {
 	m.Composers = composers
 	return m
 }
 
 // BuildCommands is command collection to called from
-func (m *Module) BuildCommands(ctx *typbuild.Context) []*cli.Command {
+func (m *Docker) BuildCommands(ctx *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "docker",
@@ -114,4 +114,19 @@ func (m *Module) BuildCommands(ctx *typbuild.Context) []*cli.Command {
 			},
 		},
 	}
+}
+
+func (m *Docker) dockerCompose() (root *ComposeObject) {
+	root = &ComposeObject{
+		Version:  m.Version,
+		Services: make(Services),
+		Networks: make(Networks),
+		Volumes:  make(Volumes),
+	}
+	for _, composer := range m.Composers {
+		if obj := composer.DockerCompose(m.Version); obj != nil {
+			root.Append(obj)
+		}
+	}
+	return
 }

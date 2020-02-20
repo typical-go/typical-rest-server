@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (*Module) console(cfg Config) (err error) {
+func (*Postgres) console(cfg Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)

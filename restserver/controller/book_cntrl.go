@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo"
 
-	"github.com/typical-go/typical-rest-server/app/repository"
-	"github.com/typical-go/typical-rest-server/app/service"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
+	"github.com/typical-go/typical-rest-server/restserver/service"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )

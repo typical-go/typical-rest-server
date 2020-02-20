@@ -5,20 +5,20 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// Rails of rails
+type Rails struct{}
+
 // New rails module
-func New() *Module {
-	return &Module{}
+func New() *Rails {
+	return &Rails{}
 }
 
-// Module of rails
-type Module struct{}
-
-type rails struct {
+type rails struct { // TODO: remove this
 	*typbuild.Context
 }
 
 // BuildCommands is commands to exectuce from Build-Tool
-func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
+func (m *Rails) BuildCommands(c *typbuild.Context) []*cli.Command {
 	r := rails{c}
 	return []*cli.Command{
 		{

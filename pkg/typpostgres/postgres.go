@@ -20,8 +20,8 @@ const (
 	defaultSeedSource      = "scripts/db/seed"
 )
 
-// Module of postgres
-type Module struct {
+// Postgres of postgres
+type Postgres struct {
 	DBName          string
 	User            string
 	Password        string
@@ -31,11 +31,12 @@ type Module struct {
 	DockerName      string
 	MigrationSource string
 	SeedSource      string
+	prefix          string
 }
 
 // New postgres module
-func New() *Module {
-	return &Module{
+func New() *Postgres {
+	return &Postgres{
 		User:            defaultUser,
 		Password:        defaultPassword,
 		Host:            defaultHost,
@@ -44,82 +45,84 @@ func New() *Module {
 		DockerName:      defaultDockerName,
 		MigrationSource: defaultMigrationSource,
 		SeedSource:      defaultSeedSource,
+		prefix:          "PG",
 	}
 }
 
-// WithDBName to set database name
-func (m *Module) WithDBName(dbname string) *Module {
+// WithDBName to return module with new database name
+func (m *Postgres) WithDBName(dbname string) *Postgres {
 	m.DBName = dbname
 	return m
 }
 
-// WithUser to set user
-func (m *Module) WithUser(user string) *Module {
+// WithUser to return module with new user
+func (m *Postgres) WithUser(user string) *Postgres {
 	m.User = user
 	return m
 }
 
-// WithHost to set host
-func (m *Module) WithHost(host string) *Module {
+// WithHost to return module with new host
+func (m *Postgres) WithHost(host string) *Postgres {
 	m.Host = host
 	return m
 }
 
-// WithPort to set port
-func (m *Module) WithPort(port int) *Module {
+// WithPort to return module with new port
+func (m *Postgres) WithPort(port int) *Postgres {
 	m.Port = port
 	return m
 }
 
-// WithPassword to set password
-func (m *Module) WithPassword(password string) *Module {
+// WithPassword to return module with new password
+func (m *Postgres) WithPassword(password string) *Postgres {
 	m.Password = password
 	return m
 }
 
-// WithDockerName to set docker name
-func (m *Module) WithDockerName(dockerName string) *Module {
+// WithDockerName to return module with new docker name
+func (m *Postgres) WithDockerName(dockerName string) *Postgres {
 	m.DockerName = dockerName
 	return m
 }
 
-// WithDockerImage to set docker image
-func (m *Module) WithDockerImage(dockerImage string) *Module {
+// WithDockerImage to return module with new docker image
+func (m *Postgres) WithDockerImage(dockerImage string) *Postgres {
 	m.DockerImage = dockerImage
 	return m
 }
 
-// WithMigrationSource to set migration source
-func (m *Module) WithMigrationSource(migrationSource string) *Module {
+// WithMigrationSource to return module with new migration source
+func (m *Postgres) WithMigrationSource(migrationSource string) *Postgres {
 	m.MigrationSource = migrationSource
 	return m
 }
 
-// WithSeedSource to set seed source
-func (m *Module) WithSeedSource(seedSource string) *Module {
+// WithSeedSource to return module with new migration source
+func (m *Postgres) WithSeedSource(seedSource string) *Postgres {
 	m.SeedSource = seedSource
 	return m
 }
 
 // Configure the module
-func (m *Module) Configure(loader typcfg.Loader) (prefix string, spec, constructor interface{}) {
-	prefix = "PG"
-	spec = &Config{
-		DBName:   m.DBName,
-		User:     m.User,
-		Password: m.Password,
-		Host:     m.Host,
-		Port:     m.Port,
+func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Detail {
+	return &typcfg.Detail{
+		Prefix: m.prefix,
+		Spec: &Config{
+			DBName:   m.DBName,
+			User:     m.User,
+			Password: m.Password,
+			Host:     m.Host,
+			Port:     m.Port,
+		},
+		Constructor: func() (cfg Config, err error) {
+			err = loader.Load(m.prefix, &cfg)
+			return
+		},
 	}
-	constructor = func() (cfg Config, err error) {
-		err = loader.Load(prefix, &cfg)
-		return
-	}
-	return
 }
 
 // BuildCommands of module
-func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
+func (m *Postgres) BuildCommands(c *typbuild.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -170,21 +173,21 @@ func (m *Module) BuildCommands(c *typbuild.Context) []*cli.Command {
 }
 
 // Provide the dependencies
-func (m *Module) Provide() []interface{} {
+func (m *Postgres) Provide() []interface{} {
 	return []interface{}{
 		m.connect,
 	}
 }
 
 // Prepare the module
-func (m *Module) Prepare() []interface{} {
+func (m *Postgres) Prepare() []interface{} {
 	return []interface{}{
 		m.ping,
 	}
 }
 
 // Destroy dependencies
-func (m *Module) Destroy() []interface{} {
+func (m *Postgres) Destroy() []interface{} {
 	return []interface{}{
 		m.disconnect,
 	}

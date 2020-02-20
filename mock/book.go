@@ -7,7 +7,7 @@ package mock
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	repository "github.com/typical-go/typical-rest-server/app/repository"
+	repository "github.com/typical-go/typical-rest-server/restserver/repository"
 	dbkit "github.com/typical-go/typical-rest-server/pkg/dbkit"
 	reflect "reflect"
 )

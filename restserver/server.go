@@ -1,12 +1,13 @@
-package app
+package restserver
 
 import (
 	"fmt"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/typical-go/typical-rest-server/app/config"
-	"github.com/typical-go/typical-rest-server/app/controller"
+	"github.com/typical-go/typical-rest-server/restserver/config"
+	"github.com/typical-go/typical-rest-server/restserver/controller"
+
 	"go.uber.org/dig"
 )
 

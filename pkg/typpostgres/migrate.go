@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Module) migrate(cfg Config) (err error) {
+func (m *Postgres) migrate(cfg Config) (err error) {
 	var (
 		migration *migrate.Migrate
 		sourceURL = "file://" + m.MigrationSource

@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Module) drop(cfg Config) (err error) {
+func (m *Postgres) drop(cfg Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
