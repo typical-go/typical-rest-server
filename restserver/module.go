@@ -1,15 +1,9 @@
 package restserver
 
 import (
-	"context"
-	"fmt"
-	"time"
-
-	log "github.com/sirupsen/logrus"
-
-	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-rest-server/pkg/serverkit"
 	"github.com/typical-go/typical-rest-server/restserver/config"
 )
 
@@ -64,44 +58,15 @@ func (m *Module) Configure(loader typcfg.Loader) *typcfg.Detail {
 // Provide dependencies
 func (m *Module) Provide() []interface{} {
 	return []interface{}{
-		m.Create,
+		func(cfg config.Config) *echo.Echo {
+			return serverkit.Create(cfg.Debug)
+		},
 	}
 }
 
 // Destroy dependencies
 func (m *Module) Destroy() []interface{} {
 	return []interface{}{
-		m.Shutdown,
+		serverkit.Shutdown,
 	}
-}
-
-// Create new server
-// TODO: create helper
-func (m *Module) Create(cfg config.Config) *echo.Echo {
-	server := echo.New()
-	server.HideBanner = true
-	server.Debug = cfg.Debug
-	logrusMwConfig := logrusmiddleware.Config{}
-	if cfg.Debug {
-		log.SetLevel(log.DebugLevel)
-		logrusMwConfig.IncludeRequestBodies = true
-		logrusMwConfig.IncludeResponseBodies = true
-	} else {
-		log.SetLevel(log.WarnLevel)
-		log.SetFormatter(&log.JSONFormatter{})
-	}
-	server.Use(logrusmiddleware.HookWithConfig(logrusMwConfig))
-	server.Logger = logrusmiddleware.Logger{Logger: log.StandardLogger()}
-	return server
-}
-
-// Shutdown the server
-// TODO: create helper
-func (m *Module) Shutdown(server *echo.Echo) (err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err = server.Shutdown(ctx); err != nil {
-		return fmt.Errorf("Server: Shutdown: %w", err)
-	}
-	return
 }
