@@ -9,10 +9,8 @@ import (
 
 	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/restserver/config"
-	"github.com/urfave/cli/v2"
 )
 
 // Module of application
@@ -40,17 +38,6 @@ func (m *Module) EntryPoint() interface{} {
 		s.Middleware()
 		s.Route()
 		return s.Start()
-	}
-}
-
-// AppCommands return comamnd
-func (m *Module) AppCommands(c *typapp.Context) []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:   "route",
-			Usage:  "Print available API Routes",
-			Action: c.ActionFunc(taskRouteList),
-		},
 	}
 }
 
