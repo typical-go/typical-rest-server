@@ -27,7 +27,6 @@ var Descriptor = typcore.Descriptor{
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
 		AppendDependency(
-			server,   // create and destroy http server
 			redis,    // create and destroy redis connection
 			postgres, // create and destroy postgres db connection
 		).
@@ -63,7 +62,6 @@ var Descriptor = typcore.Descriptor{
 	Configuration: typcfg.New().
 		WithConfigure(
 			rest,
-			server,
 			redis,
 			postgres,
 		),
