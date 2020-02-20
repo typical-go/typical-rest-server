@@ -16,26 +16,31 @@ import (
 
 // Docker of docker
 type Docker struct {
-	Version   Version
-	Composers []Composer
+	version   Version
+	composers []Composer
+}
+
+// Composer responsible to compose docker
+type Composer interface {
+	DockerCompose(version Version) *ComposeObject
 }
 
 // New docker module
 func New() *Docker {
 	return &Docker{
-		Version: "3",
+		version: "3",
 	}
 }
 
 // WithVersion to set the version
 func (m *Docker) WithVersion(version Version) *Docker {
-	m.Version = version
+	m.version = version
 	return m
 }
 
 // WithComposers to set the composers
 func (m *Docker) WithComposers(composers ...Composer) *Docker {
-	m.Composers = composers
+	m.composers = composers
 	return m
 }
 
@@ -53,7 +58,7 @@ func (m *Docker) BuildCommands(ctx *typbuild.Context) []*cli.Command {
 					Name:  "compose",
 					Usage: "Generate docker-compose.yaml",
 					Action: func(c *cli.Context) (err error) {
-						if len(m.Composers) < 1 {
+						if len(m.composers) < 1 {
 							return errors.New("No composers is set")
 						}
 						var out []byte
@@ -118,13 +123,13 @@ func (m *Docker) BuildCommands(ctx *typbuild.Context) []*cli.Command {
 
 func (m *Docker) dockerCompose() (root *ComposeObject) {
 	root = &ComposeObject{
-		Version:  m.Version,
+		Version:  m.version,
 		Services: make(Services),
 		Networks: make(Networks),
 		Volumes:  make(Volumes),
 	}
-	for _, composer := range m.Composers {
-		if obj := composer.DockerCompose(m.Version); obj != nil {
+	for _, composer := range m.composers {
+		if obj := composer.DockerCompose(m.version); obj != nil {
 			root.Append(obj)
 		}
 	}
