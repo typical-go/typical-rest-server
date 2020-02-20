@@ -5,18 +5,6 @@ import (
 	"fmt"
 )
 
-// DB is postgres database handle
-type DB struct {
-	*sql.DB
-}
-
-// NewDB return new instance of DB
-func NewDB(db *sql.DB) *DB {
-	return &DB{
-		DB: db,
-	}
-}
-
 func (m *Postgres) connect(cfg Config) (pgDB *DB, err error) {
 	var db *sql.DB
 	if db, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
