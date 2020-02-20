@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/pkg/railskit"
+	"github.com/typical-go/typical-rest-server/pkg/serverkit"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"go.uber.org/dig"
 )
@@ -20,7 +20,7 @@ func (c *AppCntrl) Route(e *echo.Echo) {
 
 // Health end point for health check
 func (c *AppCntrl) Health(ctx echo.Context) error {
-	return railskit.NewHealthCheck().
+	return serverkit.NewHealthCheck().
 		Add("postgres", c.Postgres.Ping()).
 		Send(ctx)
 }

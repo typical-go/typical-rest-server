@@ -1,4 +1,4 @@
-package railskit
+package serverkit
 
 import (
 	"net/http"
