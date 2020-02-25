@@ -3,6 +3,7 @@ package typredis
 import (
 	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
 )
 
@@ -94,30 +95,31 @@ func (m *Redis) Configure(loader typcfg.Loader) *typcfg.Detail {
 			Port:     m.port,
 			Password: m.password,
 		},
-		Constructor: func() (cfg Config, err error) {
-			err = loader.Load(m.prefix, &cfg)
-			return
-		},
+		Constructor: typdep.NewConstructor(
+			func() (cfg Config, err error) {
+				err = loader.Load(m.prefix, &cfg)
+				return
+			}),
 	}
 }
 
 // Provide dependencies
-func (m *Redis) Provide() []interface{} {
-	return []interface{}{
-		m.connect,
+func (m *Redis) Provide() []*typdep.Constructor {
+	return []*typdep.Constructor{
+		typdep.NewConstructor(m.connect),
 	}
 }
 
 // Prepare the module
-func (m *Redis) Prepare() []interface{} {
-	return []interface{}{
-		m.ping,
+func (m *Redis) Prepare() []*typdep.Invocation {
+	return []*typdep.Invocation{
+		typdep.NewInvocation(m.ping),
 	}
 }
 
 // Destroy dependencies
-func (m *Redis) Destroy() []interface{} {
-	return []interface{}{
-		m.disconnect,
+func (m *Redis) Destroy() []*typdep.Invocation {
+	return []*typdep.Invocation{
+		typdep.NewInvocation(m.disconnect),
 	}
 }

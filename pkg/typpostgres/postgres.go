@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
 )
 
@@ -114,10 +115,11 @@ func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Detail {
 			Host:     m.host,
 			Port:     m.port,
 		},
-		Constructor: func() (cfg Config, err error) {
-			err = loader.Load(m.prefix, &cfg)
-			return
-		},
+		Constructor: typdep.NewConstructor(
+			func() (cfg Config, err error) {
+				err = loader.Load(m.prefix, &cfg)
+				return
+			}),
 	}
 }
 
@@ -173,22 +175,22 @@ func (m *Postgres) BuildCommands(c *typbuild.Context) []*cli.Command {
 }
 
 // Provide the dependencies
-func (m *Postgres) Provide() []interface{} {
-	return []interface{}{
-		m.connect,
+func (m *Postgres) Provide() []*typdep.Constructor {
+	return []*typdep.Constructor{
+		typdep.NewConstructor(m.connect),
 	}
 }
 
 // Prepare the module
-func (m *Postgres) Prepare() []interface{} {
-	return []interface{}{
-		m.ping,
+func (m *Postgres) Prepare() []*typdep.Invocation {
+	return []*typdep.Invocation{
+		typdep.NewInvocation(m.ping),
 	}
 }
 
 // Destroy dependencies
-func (m *Postgres) Destroy() []interface{} {
-	return []interface{}{
-		m.disconnect,
+func (m *Postgres) Destroy() []*typdep.Invocation {
+	return []*typdep.Invocation{
+		typdep.NewInvocation(m.disconnect),
 	}
 }

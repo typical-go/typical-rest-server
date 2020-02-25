@@ -122,6 +122,8 @@ github.com/typical-go/typical-go v0.9.32 h1:J/J2CMDFgMYirc7qkNjgPjw71aUn6oFVVCR4
 github.com/typical-go/typical-go v0.9.32/go.mod h1:RS9Ja1daRu4WzqjWByyyYjIQEsJDAjSXzdIxrwPT2jc=
 github.com/typical-go/typical-go v0.9.33 h1:NEd02PsdokbwkX37oEdu3ofPPCFEvR0UaDTsmXtkm+I=
 github.com/typical-go/typical-go v0.9.33/go.mod h1:RS9Ja1daRu4WzqjWByyyYjIQEsJDAjSXzdIxrwPT2jc=
+github.com/typical-go/typical-go v0.9.34 h1:ejYa4LIP/fxYYJqiWXCvVNcjCVuzmo3zZEj66fl29ng=
+github.com/typical-go/typical-go v0.9.34/go.mod h1:RS9Ja1daRu4WzqjWByyyYjIQEsJDAjSXzdIxrwPT2jc=
 github.com/urfave/cli/v2 v2.0.0 h1:+HU9SCbu8GnEUFtIBfuUNXN39ofWViIEJIp6SURMpCg=
 github.com/urfave/cli/v2 v2.0.0/go.mod h1:SE9GqnLQmjVa0iPEY0f1w3ygNIYcIJ0OKPMoW2caLfQ=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=

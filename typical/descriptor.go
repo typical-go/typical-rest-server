@@ -12,9 +12,9 @@ import (
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typcore.Descriptor{
 
-	// Name is optional with default value is same with project folder
+	// Name of the project
 	// It should be a characters with/without underscore or dash.
-	// Name: "typical-rest",
+	Name: "typical-rest-server",
 
 	// Description of the project
 	Description: "Example of typical and scalable RESTful API Server for Go",

@@ -4,13 +4,14 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/typical-go/typical-rest-server/restserver/repository"
 	"github.com/typical-go/typical-rest-server/restserver/service"
 )
 
 func init() {
 	typapp.AppendConstructor(
-		repository.NewBookRepo,
-		service.NewBookService,
+		typdep.NewConstructor(repository.NewBookRepo),
+		typdep.NewConstructor(service.NewBookService),
 	)
 }

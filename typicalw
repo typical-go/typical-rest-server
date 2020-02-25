@@ -2,33 +2,13 @@
 
 set -e
 
-if ! [ -s .typical-tmp/build-tool/main.go ]; then
-	mkdir -p .typical-tmp/build-tool
-	echo "package main
+TYPTMP=.typical-tmp
+TYPSRC=github.com/typical-go/typical-go/cmd/typical-go
+TYPGO=$TYPTMP/bin/typical-go
 
-import (
-	\"github.com/typical-go/typical-go/pkg/typcore\"
-	\"github.com/typical-go/typical-rest-server/typical\"
-)
-
-func main() {
-	typcore.RunBuildTool(&typical.Descriptor)
-}" >> .typical-tmp/build-tool/main.go
+if ! [ -s $TYPGO ]; then
+    go build -o $TYPGO $TYPSRC
 fi
 
-CHECKSUM_DATA=$(cksum typical/descriptor.go)
-
-if ! [ -s .typical-tmp/checksum ]; then
-	mkdir -p .typical-tmp
-	echo $CHECKSUM_DATA > .typical-tmp/checksum
-else
-	CHECKSUM_UPDATED=$([ "$CHECKSUM_DATA" == "$(cat .typical-tmp/checksum )" ] ; echo $?)
-fi
-
-if [ "$CHECKSUM_UPDATED" == "1" ] || ! [[ -f ./.typical-tmp/bin/build-tool ]] ; then 
-	echo $CHECKSUM_DATA > .typical-tmp/checksum
-	echo "Compile Typical-Build"
-	go build -o .typical-tmp/bin/build-tool .typical-tmp/build-tool/main.go
-fi
-
-./.typical-tmp/bin/build-tool $@
+$TYPGO wrap-me -tmp=$TYPTMP
+$TYPTMP/bin/build-tool $@
