@@ -7,16 +7,17 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/typical-go/typical-rest-server/mock_service"
+	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/restserver/controller"
 	"github.com/typical-go/typical-rest-server/restserver/repository"
-	"github.com/typical-go/typical-rest-server/mock"
-	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )
 
 func TestBookController_FindOne(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock.NewMockBookService(ctrl)
+	bookSvc := mock_service.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -55,7 +56,7 @@ func TestBookController_FindOne(t *testing.T) {
 func TestBookController_Find(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock.NewMockBookService(ctrl)
+	bookSvc := mock_service.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -79,7 +80,7 @@ func TestBookController_Find(t *testing.T) {
 func TestBookController_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock.NewMockBookService(ctrl)
+	bookSvc := mock_service.NewMockBookService(ctrl)
 	bookController := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -112,7 +113,7 @@ func TestBookController_Create(t *testing.T) {
 func TestBookController_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock.NewMockBookService(ctrl)
+	bookSvc := mock_service.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -143,7 +144,7 @@ func TestBookController_Delete(t *testing.T) {
 func TestBookController_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock.NewMockBookService(ctrl)
+	bookSvc := mock_service.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
