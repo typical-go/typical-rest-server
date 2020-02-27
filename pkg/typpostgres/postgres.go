@@ -4,7 +4,7 @@ import (
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
@@ -123,8 +123,8 @@ func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Detail {
 	}
 }
 
-// BuildCommands of module
-func (m *Postgres) BuildCommands(c *typbuild.Context) []*cli.Command {
+// Commands of module
+func (m *Postgres) Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",

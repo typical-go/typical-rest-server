@@ -3,9 +3,9 @@ package typical
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typbuildtool/stdrls"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typrls"
 )
 
 // Descriptor of Typical REST Server
@@ -62,10 +62,10 @@ var Descriptor = typcore.Descriptor{
 		// Setting to release the project
 		WithRelease(
 			// By default it will create distribution for Darwin and Linux
-			stdrls.New().
+			typrls.New().
 				WithPublisher(
 					// Create release and upload file to Github
-					stdrls.GithubPublisher("typical-go", "typical-rest-server"),
+					typrls.GithubPublisher("typical-go", "typical-rest-server"),
 				),
 		),
 }

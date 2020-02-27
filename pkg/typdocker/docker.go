@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/gommon/log"
-	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
@@ -44,8 +44,8 @@ func (m *Docker) WithComposers(composers ...Composer) *Docker {
 	return m
 }
 
-// BuildCommands is command collection to called from
-func (m *Docker) BuildCommands(ctx *typbuild.Context) []*cli.Command {
+// Commands of docker
+func (m *Docker) Commands(ctx *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "docker",

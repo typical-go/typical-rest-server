@@ -1,7 +1,7 @@
 package typrails
 
 import (
-	"github.com/typical-go/typical-go/pkg/typbuild"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,20 +13,15 @@ func New() *Rails {
 	return &Rails{}
 }
 
-type rails struct { // TODO: remove this
-	*typbuild.Context
-}
-
-// BuildCommands is commands to exectuce from Build-Tool
-func (m *Rails) BuildCommands(c *typbuild.Context) []*cli.Command {
-	r := rails{c}
+// Commands to exectuce from Build-Tool
+func (m *Rails) Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "rails",
 			Usage: "Rails-like generation",
 			Subcommands: []*cli.Command{
-				r.scaffoldCmd(),
-				r.repositoryCmd(),
+				scaffoldCmd(c),
+				repositoryCmd(c),
 			},
 		},
 	}

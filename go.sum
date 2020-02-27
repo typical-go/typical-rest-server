@@ -118,6 +118,8 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/typical-go/typical-go v0.9.35 h1:QAke+w2PMBhPx9UppF6aSbic9dB8ANSZqSXPUqFeWQA=
 github.com/typical-go/typical-go v0.9.35/go.mod h1:zdUHjpZ0UxecfSWlu9RPw8OsEw5IieH5qflvgA67dCI=
+github.com/typical-go/typical-go v0.9.36 h1:nKTU+GM4enr9jXYIPn0G8Jtzobts8Ufh48kGmIIZHgg=
+github.com/typical-go/typical-go v0.9.36/go.mod h1:zdUHjpZ0UxecfSWlu9RPw8OsEw5IieH5qflvgA67dCI=
 github.com/urfave/cli/v2 v2.0.0 h1:+HU9SCbu8GnEUFtIBfuUNXN39ofWViIEJIp6SURMpCg=
 github.com/urfave/cli/v2 v2.0.0/go.mod h1:SE9GqnLQmjVa0iPEY0f1w3ygNIYcIJ0OKPMoW2caLfQ=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=

@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typbuild"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/urfave/cli/v2"
 )
@@ -82,8 +81,8 @@ func (m *Readme) WithConfigs(configs []ConfigInfo) *Readme {
 	return m
 }
 
-// BuildCommands to be shown in BuildTool
-func (m *Readme) BuildCommands(c *typbuild.Context) []*cli.Command {
+// Commands of readme
+func (m *Readme) Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "readme",
@@ -95,7 +94,7 @@ func (m *Readme) BuildCommands(c *typbuild.Context) []*cli.Command {
 	}
 }
 
-func (m *Readme) generate(c *typbuild.Context) (err error) {
+func (m *Readme) generate(c *typbuildtool.Context) (err error) {
 	var (
 		file *os.File
 		tmpl *template.Template
@@ -120,7 +119,7 @@ func (m *Readme) generate(c *typbuild.Context) (err error) {
 }
 
 // Title of readme
-func (m *Readme) Title(c *typbuild.Context) string {
+func (m *Readme) Title(c *typbuildtool.Context) string {
 	if m.title == "" {
 		return c.Name
 	}
@@ -128,7 +127,7 @@ func (m *Readme) Title(c *typbuild.Context) string {
 }
 
 // Description of readme
-func (m *Readme) Description(c *typbuild.Context) string {
+func (m *Readme) Description(c *typbuildtool.Context) string {
 	if m.description == "" {
 		return c.Description
 	}
@@ -136,7 +135,7 @@ func (m *Readme) Description(c *typbuild.Context) string {
 }
 
 // Usages of readme
-func (m *Readme) Usages(c *typbuild.Context) (infos []UsageInfo) {
+func (m *Readme) Usages(c *typbuildtool.Context) (infos []UsageInfo) {
 	if len(m.usages) < 1 {
 		if app, ok := c.App.(*typapp.App); ok {
 			if app.EntryPoint() != nil {
@@ -155,10 +154,10 @@ func (m *Readme) Usages(c *typbuild.Context) (infos []UsageInfo) {
 }
 
 // BuildUsages of readme
-func (m *Readme) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
+func (m *Readme) BuildUsages(c *typbuildtool.Context) (infos []UsageInfo) {
 	if len(m.buildUsages) < 1 {
 		if build, ok := c.BuildTool.(*typbuildtool.BuildTool); ok {
-			for _, cmd := range build.BuildCommands(&typbuild.Context{}) {
+			for _, cmd := range build.Commands(&typbuildtool.Context{}) {
 				infos = append(infos, usageInfos("./typicalw", cmd)...)
 			}
 		}
@@ -168,7 +167,7 @@ func (m *Readme) BuildUsages(c *typbuild.Context) (infos []UsageInfo) {
 }
 
 // Configs of readme
-func (m *Readme) Configs(c *typbuild.Context) (infos []ConfigInfo) {
+func (m *Readme) Configs(c *typbuildtool.Context) (infos []ConfigInfo) {
 	if len(m.configs) < 1 {
 		store := c.Configuration.Store()
 		keys := store.Keys()
