@@ -1,8 +1,8 @@
 package restserver
 
 import (
-	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/restserver/config"
 	"github.com/typical-go/typical-rest-server/restserver/controller"
 
@@ -11,23 +11,16 @@ import (
 
 type app struct {
 	dig.In
-	*echo.Echo
+	*typserver.Server
 	config.Config
 	controller.BookCntrl
 	controller.AppCntrl
 }
 
-func (a app) Middleware() {
+func startServer(a app) (err error) {
+	a.SetDebug(a.Debug)
 	a.Use(middleware.Recover())
-}
-
-func (a app) Route() {
 	a.AppCntrl.Route(a.Echo)
 	a.BookCntrl.Route(a.Echo)
-}
-
-func (a app) Start() (err error) {
-	a.Middleware()
-	a.Route()
-	return a.Echo.Start(a.Config.Address)
+	return a.Start(a.Address)
 }

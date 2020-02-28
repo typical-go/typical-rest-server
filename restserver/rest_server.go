@@ -1,10 +1,9 @@
 package restserver
 
 import (
-	"github.com/labstack/echo"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typdep"
-	"github.com/typical-go/typical-rest-server/pkg/serverkit"
+	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/restserver/config"
 )
 
@@ -50,23 +49,19 @@ func (m *RestServer) Configure(loader typcfg.Loader) *typcfg.Detail {
 
 // EntryPoint of application
 func (m *RestServer) EntryPoint() *typdep.Invocation {
-	return typdep.NewInvocation(func(a app) error {
-		return a.Start()
-	})
+	return typdep.NewInvocation(startServer)
 }
 
 // Provide dependencies
 func (m *RestServer) Provide() []*typdep.Constructor {
 	return []*typdep.Constructor{
-		typdep.NewConstructor(func(cfg config.Config) *echo.Echo {
-			return serverkit.Create(cfg.Debug)
-		}),
+		typdep.NewConstructor(typserver.New),
 	}
 }
 
 // Destroy dependencies
 func (m *RestServer) Destroy() []*typdep.Invocation {
 	return []*typdep.Invocation{
-		typdep.NewInvocation(serverkit.Shutdown),
+		typdep.NewInvocation(typserver.Shutdown),
 	}
 }
