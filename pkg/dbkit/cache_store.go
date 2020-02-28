@@ -44,7 +44,7 @@ func (c *CacheStore) Retrieve(ctx context.Context, key string, target interface{
 		if err = c.WithContext(ctx).Set(key, data, c.expiration).Err(); err != nil {
 			return
 		}
-		// TODO: check reflection type
+		// FIXME: check reflection type
 		reflect.ValueOf(target).Elem().Set(reflect.ValueOf(v).Elem())
 		return
 	}

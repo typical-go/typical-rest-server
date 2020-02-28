@@ -20,7 +20,7 @@ type BookCntrl struct {
 }
 
 // Route to define API Route
-func (c *BookCntrl) Route(e *echo.Echo) {
+func (c *BookCntrl) SetRoute(e *echo.Echo) {
 	e.GET("books", c.Find)
 	e.POST("books", c.Create)
 	e.GET("books/:id", c.FindOne)
@@ -90,9 +90,7 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 	if err = c.BookService.Delete(ctx, id); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ec.JSON(http.StatusOK, GeneralResponse{
-		Message: fmt.Sprintf("Success delete book #%d", id),
-	})
+	return ec.JSON(http.StatusNoContent, nil)
 }
 
 // Update book

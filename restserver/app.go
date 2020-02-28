@@ -1,7 +1,8 @@
 package restserver
 
 import (
-	"github.com/labstack/echo/middleware"
+	"github.com/go-redis/redis"
+	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/restserver/config"
 	"github.com/typical-go/typical-rest-server/restserver/controller"
@@ -14,13 +15,23 @@ type app struct {
 	*typserver.Server
 	config.Config
 	controller.BookCntrl
-	controller.AppCntrl
+
+	Postgres *typpostgres.DB
+	Redis    *redis.Client
 }
 
 func startServer(a app) (err error) {
 	a.SetDebug(a.Debug)
-	a.Use(middleware.Recover())
-	a.AppCntrl.Route(a.Echo)
-	a.BookCntrl.Route(a.Echo)
+
+	// health check
+	a.PutHealthChecker("postgres", a.Postgres.Ping)
+	a.PutHealthChecker("redis", a.Redis.Ping().Err)
+
+	// set middleware
+	// a.Use(middleware.Recover()) // TODO: uncomment when
+
+	// register controller
+	a.Register(&a.BookCntrl)
+
 	return a.Start(a.Address)
 }
