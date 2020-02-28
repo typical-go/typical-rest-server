@@ -2,6 +2,7 @@ package restserver
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/restserver/config"
@@ -28,7 +29,7 @@ func startServer(a app) (err error) {
 	a.PutHealthChecker("redis", a.Redis.Ping().Err)
 
 	// set middleware
-	// a.Use(middleware.Recover()) // TODO: uncomment when
+	a.Use(middleware.Recover()) // TODO: uncomment when
 
 	// register controller
 	a.Register(&a.BookCntrl)

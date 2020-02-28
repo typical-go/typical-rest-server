@@ -3,8 +3,9 @@ package dbkit
 import (
 	"context"
 	"encoding/json"
-	"reflect"
 	"time"
+
+	"github.com/typical-go/typical-rest-server/pkg/copier"
 
 	"github.com/go-redis/redis"
 )
@@ -44,8 +45,8 @@ func (c *CacheStore) Retrieve(ctx context.Context, key string, target interface{
 		if err = c.WithContext(ctx).Set(key, data, c.expiration).Err(); err != nil {
 			return
 		}
-		// FIXME: check reflection type
-		reflect.ValueOf(target).Elem().Set(reflect.ValueOf(v).Elem())
+
+		copier.Copy(target, v)
 		return
 	}
 	return c.unmarshal(data, target)

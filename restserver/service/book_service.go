@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/restserver/repository"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/restserver/repository"
 	"go.uber.org/dig"
 )
 
@@ -53,7 +53,7 @@ func (r *BookServiceImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (l
 		key        = fmt.Sprintf("BOOK:FIND:%+v", opts)
 	)
 	cacheStore.Retrieve(ctx, key, &list, func() (interface{}, error) {
-		list, err = r.BookRepo.Find(ctx, opts...)
+		list, err := r.BookRepo.Find(ctx, opts...)
 		return list, err
 	})
 	return
