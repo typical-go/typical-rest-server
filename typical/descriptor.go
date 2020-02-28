@@ -3,9 +3,9 @@ package typical
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typbuildtool/typrls"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/typrls"
 )
 
 // Descriptor of Typical REST Server
@@ -20,7 +20,7 @@ var Descriptor = typcore.Descriptor{
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	// Version of the project
-	Version: "0.8.20",
+	Version: "0.8.21",
 
 	// Configuration for this project
 	// Both App and Build-Tool typically using the same configuration

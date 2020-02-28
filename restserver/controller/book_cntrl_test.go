@@ -129,8 +129,7 @@ func TestBookController_Delete(t *testing.T) {
 			"id": "1",
 		})
 		require.NoError(t, err)
-		require.Equal(t, http.StatusOK, rr.Code)
-		require.Equal(t, "{\"message\":\"Success delete book #1\"}\n", rr.Body.String())
+		require.Equal(t, http.StatusNoContent, rr.Code)
 	})
 	t.Run("WHEN error", func(t *testing.T) {
 		bookSvc.EXPECT().Delete(gomock.Any(), int64(2)).Return(fmt.Errorf("some-delete-error"))
