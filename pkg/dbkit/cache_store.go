@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/copier"
-
 	"github.com/go-redis/redis"
+	"github.com/jinzhu/copier"
 )
 
 // CacheStore responsible to cache data
