@@ -3,7 +3,6 @@ package typical
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typbuildtool/typrls"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
 )
@@ -25,7 +24,7 @@ var Descriptor = typcore.Descriptor{
 	// Configuration for this project
 	// Both App and Build-Tool typically using the same configuration
 	Configuration: typcfg.New().
-		WithConfigure(
+		AppendConfigurer(
 			server,
 			redis,
 			postgres,
@@ -60,12 +59,11 @@ var Descriptor = typcore.Descriptor{
 		).
 
 		// Setting to release the project
-		WithRelease(
-			// By default it will create distribution for Darwin and Linux
-			typrls.New().
-				WithPublisher(
-					// Create release and upload file to Github
-					typrls.GithubPublisher("typical-go", "typical-rest-server"),
-				),
+		// By default it will create distribution for Darwin and Linux
+		WithReleaser(typbuildtool.NewReleaser().
+			WithPublisher(
+				// Create release and upload file to Github
+				typbuildtool.NewGithub("typical-go", "typical-rest-server"),
+			),
 		),
 }

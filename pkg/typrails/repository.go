@@ -30,7 +30,7 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 			if entity = cliCtx.Args().Get(1); entity == "" {
 				return errors.New("Missing 'entity': check `./typicalw rails repository help` for more detail")
 			}
-			if e, err = f.Fetch(c.ModulePackage, table, entity); err != nil {
+			if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
 				return
 			}
 			if err = generateTransactional(ctx); err != nil {

@@ -32,7 +32,7 @@ type Postgres struct {
 	dockerName      string
 	migrationSource string
 	seedSource      string
-	prefix          string
+	configName      string
 }
 
 // New postgres module
@@ -46,11 +46,11 @@ func New() *Postgres {
 		dockerName:      defaultDockerName,
 		migrationSource: defaultMigrationSource,
 		seedSource:      defaultSeedSource,
-		prefix:          "PG",
+		configName:      "PG",
 	}
 }
 
-// WithDBName to return module with new database name
+// WithDBName return module with new database name
 func (m *Postgres) WithDBName(dbname string) *Postgres {
 	m.dbName = dbname
 	return m
@@ -62,19 +62,19 @@ func (m *Postgres) WithUser(user string) *Postgres {
 	return m
 }
 
-// WithHost to return module with new host
+// WithHost return module with new host
 func (m *Postgres) WithHost(host string) *Postgres {
 	m.host = host
 	return m
 }
 
-// WithPort to return module with new port
+// WithPort return module with new port
 func (m *Postgres) WithPort(port int) *Postgres {
 	m.port = port
 	return m
 }
 
-// WithPassword to return module with new password
+// WithPassword return module with new password
 func (m *Postgres) WithPassword(password string) *Postgres {
 	m.password = password
 	return m
@@ -86,28 +86,34 @@ func (m *Postgres) WithDockerName(dockerName string) *Postgres {
 	return m
 }
 
-// WithDockerImage to return module with new docker image
+// WithDockerImage return module with new docker image
 func (m *Postgres) WithDockerImage(dockerImage string) *Postgres {
 	m.dockerImage = dockerImage
 	return m
 }
 
-// WithMigrationSource to return module with new migration source
+// WithMigrationSource return module with new migration source
 func (m *Postgres) WithMigrationSource(migrationSource string) *Postgres {
 	m.migrationSource = migrationSource
 	return m
 }
 
-// WithSeedSource to return module with new migration source
+// WithSeedSource return module with new seed source
 func (m *Postgres) WithSeedSource(seedSource string) *Postgres {
 	m.seedSource = seedSource
 	return m
 }
 
+// WithConfigName return module with new configName
+func (m *Postgres) WithConfigName(configName string) *Postgres {
+	m.configName = configName
+	return m
+}
+
 // Configure the module
-func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Detail {
-	return &typcfg.Detail{
-		Prefix: m.prefix,
+func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Configuration {
+	return &typcfg.Configuration{
+		Name: m.configName,
 		Spec: &Config{
 			DBName:   m.dbName,
 			User:     m.user,
@@ -117,7 +123,7 @@ func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Detail {
 		},
 		Constructor: typdep.NewConstructor(
 			func() (cfg Config, err error) {
-				err = loader.Load(m.prefix, &cfg)
+				err = loader.Load(m.configName, &cfg)
 				return
 			}),
 	}

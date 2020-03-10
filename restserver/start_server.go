@@ -11,28 +11,27 @@ import (
 	"go.uber.org/dig"
 )
 
-type app struct {
+type server struct {
 	dig.In
 	*typserver.Server
 	config.Config
 	controller.BookCntrl
-
 	Postgres *typpostgres.DB
 	Redis    *redis.Client
 }
 
-func startServer(a app) (err error) {
-	a.SetDebug(a.Debug)
+func startServer(s server) (err error) {
+	s.SetDebug(s.Debug)
 
 	// health check
-	a.PutHealthChecker("postgres", a.Postgres.Ping)
-	a.PutHealthChecker("redis", a.Redis.Ping().Err)
+	s.PutHealthChecker("postgres", s.Postgres.Ping)
+	s.PutHealthChecker("redis", s.Redis.Ping().Err)
 
 	// set middleware
-	a.Use(middleware.Recover()) // TODO: uncomment when
+	s.Use(middleware.Recover()) // TODO: uncomment when
 
 	// register controller
-	a.Register(&a.BookCntrl)
+	s.Register(&s.BookCntrl)
 
-	return a.Start(a.Address)
+	return s.Start(s.Address)
 }

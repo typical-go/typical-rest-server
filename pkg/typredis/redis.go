@@ -87,9 +87,9 @@ func (m *Redis) Commands(c *typbuildtool.Context) []*cli.Command {
 }
 
 // Configure Redis
-func (m *Redis) Configure(loader typcfg.Loader) *typcfg.Detail {
-	return &typcfg.Detail{
-		Prefix: m.prefix,
+func (m *Redis) Configure(loader typcfg.Loader) *typcfg.Configuration {
+	return &typcfg.Configuration{
+		Name: m.prefix,
 		Spec: &Config{
 			Host:     m.host,
 			Port:     m.port,

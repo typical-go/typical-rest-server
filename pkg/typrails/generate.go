@@ -7,28 +7,27 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/typical-go/typical-go/pkg/runnerkit"
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 )
 
 func generateController(ctx context.Context, e *Entity) (err error) {
 	controllerPath := fmt.Sprintf("app/controller/%s_cntrl.go", e.Name)
-	if common.IsFileExist(controllerPath) {
+	if isFileExist(controllerPath) {
 		return fmt.Errorf("%s already exist", controllerPath)
 	}
 	return runnerkit.Run(ctx,
-		runnerkit.WriteTemplate(controllerPath, tmpl.Controller, e, 0666),
+		runnerkit.NewWriteTemplate(controllerPath, tmpl.Controller, e),
 	)
 }
 
 func generateService(ctx context.Context, e *Entity) (err error) {
 	servicePath := fmt.Sprintf("app/service/%s_service.go", e.Name)
-	if common.IsFileExist(servicePath) {
+	if isFileExist(servicePath) {
 		return fmt.Errorf("%s already exist", servicePath)
 	}
 	return runnerkit.Run(ctx,
-		runnerkit.WriteTemplate(servicePath, tmpl.Service, e, 0666),
+		runnerkit.NewWriteTemplate(servicePath, tmpl.Service, e),
 	)
 }
 
@@ -36,19 +35,19 @@ func generateRepository(ctx context.Context, e *Entity) (err error) {
 	repoPath := fmt.Sprintf("app/repository/%s.go", e.Name)
 	repoImplPath := fmt.Sprintf("app/repository/%s_repo_impl.go", e.Name)
 	cachedRepoImplPath := fmt.Sprintf("app/repository/cached_%s_repo_impl.go", e.Name)
-	if common.IsFileExist(repoPath) {
+	if isFileExist(repoPath) {
 		return fmt.Errorf("%s already exist", repoPath)
 	}
-	if common.IsFileExist(repoImplPath) {
+	if isFileExist(repoImplPath) {
 		return fmt.Errorf("%s already exist", repoImplPath)
 	}
-	if common.IsFileExist(cachedRepoImplPath) {
+	if isFileExist(cachedRepoImplPath) {
 		return fmt.Errorf("%s already exist", cachedRepoImplPath)
 	}
 	return runnerkit.Run(ctx,
-		runnerkit.WriteTemplate(repoPath, tmpl.Repo, e, 0666),
-		runnerkit.WriteTemplate(repoImplPath, tmpl.RepoImpl, e, 0666),
-		runnerkit.WriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e, 0666),
+		runnerkit.NewWriteTemplate(repoPath, tmpl.Repo, e),
+		runnerkit.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
+		runnerkit.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
 		func() error {
 			cmd := exec.Command(fmt.Sprintf("%s/bin/goimports", build.Default.GOPATH),
 				"-w", repoPath, repoImplPath)
@@ -61,11 +60,18 @@ func generateRepository(ctx context.Context, e *Entity) (err error) {
 func generateTransactional(ctx context.Context) (err error) {
 	transactionalPath := "app/repository/transactional.go"
 	transactionalTestPath := "app/repository/transactional_test.go"
-	if common.IsFileExist(transactionalPath) {
+	if isFileExist(transactionalPath) {
 		return nil
 	}
 	return runnerkit.Run(ctx,
-		runnerkit.WriteString(transactionalPath, tmpl.Transactional, 0666),
-		runnerkit.WriteString(transactionalTestPath, tmpl.TransactionalTest, 0666),
+		runnerkit.NewWriteString(transactionalPath, tmpl.Transactional),
+		runnerkit.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
 	)
+}
+
+func isFileExist(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

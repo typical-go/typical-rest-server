@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/typical-go/typical-rest-server/pkg/typrails"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -17,20 +16,23 @@ func TestFetcher(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 	testcases := []struct {
-		data *common.StringDictionary
+		data []typrails.KeyValue
 		err  error
 		*typrails.Entity
 	}{
 		{
-			data: new(common.StringDictionary).Add("column1", "type1"),
-			err:  errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
+			data: []typrails.KeyValue{
+				{"column1", "type1"},
+			},
+			err: errors.New("\"id\" with underlying data type \"int4\" is missing; \"updated_at\" with underlying data type \"timestamp\" is missing; \"created_at\" with underlying data type \"timestamp\" is missing"),
 		},
 		{
-			data: new(common.StringDictionary).
-				Add("id", "int4").
-				Add("name", "varchar").
-				Add("created_at", "timestamp").
-				Add("updated_at", "timestamp"),
+			data: []typrails.KeyValue{
+				{"id", "int4"},
+				{"name", "varchar"},
+				{"created_at", "timestamp"},
+				{"updated_at", "timestamp"},
+			},
 			Entity: &typrails.Entity{
 				Name:           "book",
 				Type:           "Book",
@@ -49,10 +51,11 @@ func TestFetcher(t *testing.T) {
 			},
 		},
 		{
-			data: new(common.StringDictionary).
-				Add("id", "int").
-				Add("created_at", "timestamp").
-				Add("updated_at", "timestamp"),
+			data: []typrails.KeyValue{
+				{"id", "int"},
+				{"created_at", "timestamp"},
+				{"updated_at", "timestamp"},
+			},
 			err: errors.New("\"id\" with underlying data type \"int4\" is missing"),
 		},
 	}
@@ -60,8 +63,8 @@ func TestFetcher(t *testing.T) {
 	query := regexp.QuoteMeta("SELECT column_name, udt_name FROM information_schema.COLUMNS WHERE table_name = $1")
 	for i, tt := range testcases {
 		rows := sqlmock.NewRows([]string{"column_name", "data_type"})
-		for _, ks := range *tt.data {
-			rows.AddRow(ks.Key, ks.Value)
+		for _, kv := range tt.data {
+			rows.AddRow(kv.Key, kv.Value)
 		}
 		mock.ExpectQuery(query).WithArgs("books").WillReturnRows(rows)
 		entity, err := fetcher.Fetch("some-package", "books", "book")

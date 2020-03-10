@@ -7,60 +7,60 @@ import (
 	"github.com/typical-go/typical-rest-server/restserver/config"
 )
 
-// RestServer of application
-type RestServer struct {
-	prefix string
-	debug  bool
+// App of rest server
+type App struct {
+	configName string
+	debug      bool
 }
 
 // New application [nowire]
-func New() *RestServer {
-	return &RestServer{
-		prefix: "APP",
+func New() *App {
+	return &App{
+		configName: "APP",
 	}
 }
 
-// WithPrefix return module with new prefix
-func (m *RestServer) WithPrefix(prefix string) *RestServer {
-	m.prefix = prefix
+// WithConfigName return module with new prefix
+func (m *App) WithConfigName(configName string) *App {
+	m.configName = configName
 	return m
 }
 
 // WithDebug to set debug
-func (m *RestServer) WithDebug(debug bool) *RestServer {
+func (m *App) WithDebug(debug bool) *App {
 	m.debug = debug
 	return m
 }
 
 // Configure server
-func (m *RestServer) Configure(loader typcfg.Loader) *typcfg.Detail {
-	return &typcfg.Detail{
-		Prefix: m.prefix,
+func (m *App) Configure(loader typcfg.Loader) *typcfg.Configuration {
+	return &typcfg.Configuration{
+		Name: m.configName,
 		Spec: &config.Config{
 			Debug: m.debug,
 		},
 		Constructor: typdep.NewConstructor(
 			func() (cfg config.Config, err error) {
-				err = loader.Load(m.prefix, &cfg)
+				err = loader.Load(m.configName, &cfg)
 				return
 			}),
 	}
 }
 
 // EntryPoint of application
-func (m *RestServer) EntryPoint() *typdep.Invocation {
+func (m *App) EntryPoint() *typdep.Invocation {
 	return typdep.NewInvocation(startServer)
 }
 
 // Provide dependencies
-func (m *RestServer) Provide() []*typdep.Constructor {
+func (m *App) Provide() []*typdep.Constructor {
 	return []*typdep.Constructor{
 		typdep.NewConstructor(typserver.New),
 	}
 }
 
 // Destroy dependencies
-func (m *RestServer) Destroy() []*typdep.Invocation {
+func (m *App) Destroy() []*typdep.Invocation {
 	return []*typdep.Invocation{
 		typdep.NewInvocation(typserver.Shutdown),
 	}
