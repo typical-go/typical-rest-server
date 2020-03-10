@@ -14,7 +14,6 @@ import (
 // Server of rest
 type Server struct {
 	*echo.Echo
-	logMiddleware       echo.MiddlewareFunc
 	healthChecker       map[string]func() error
 	healthCheckEndpoint string
 }
@@ -23,7 +22,6 @@ type Server struct {
 func New() *Server {
 	e := echo.New()
 	e.HideBanner = true
-	e.Logger = logrusmiddleware.Logger{Logger: log.StandardLogger()}
 
 	return &Server{
 		Echo:                e,
@@ -56,26 +54,27 @@ func (s *Server) Register(cntrl Controller) {
 	cntrl.SetRoute(s.Echo)
 }
 
-// SetDebug to set debug
-func (s *Server) SetDebug(debug bool) {
-	s.Debug = debug
+// SetLogger to set logger. SetLogger must be called before set route.
+func (s *Server) SetLogger(debug bool) {
+	s.Echo.Logger = logrusmiddleware.Logger{Logger: log.StandardLogger()}
+	s.Echo.Debug = debug
 	if debug {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{})
-		s.logMiddleware = logrusmiddleware.HookWithConfig(logrusmiddleware.Config{
+		s.Echo.Use(logrusmiddleware.HookWithConfig(logrusmiddleware.Config{
 			IncludeRequestBodies:  true,
 			IncludeResponseBodies: true,
-		})
+		}))
 	} else {
 		log.SetLevel(log.WarnLevel)
 		log.SetFormatter(&log.JSONFormatter{})
-		s.logMiddleware = logrusmiddleware.HookWithConfig(logrusmiddleware.Config{})
+		s.Echo.Use(logrusmiddleware.HookWithConfig(logrusmiddleware.Config{}))
 	}
 }
 
 // Start the server
 func (s *Server) Start(addr string) error {
-	s.Echo.Use(s.logMiddleware)
+	// NOTE: register the health-check endpoint
 	s.Echo.Any(s.healthCheckEndpoint, s.healthCheckHandler)
 	return s.Echo.Start(addr)
 }
