@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-go/pkg/runnerkit"
+	"github.com/typical-go/typical-go/pkg/exor"
 	"github.com/typical-go/typical-rest-server/pkg/typrails/internal/tmpl"
 )
 
@@ -16,8 +16,8 @@ func generateController(ctx context.Context, e *Entity) (err error) {
 	if isFileExist(controllerPath) {
 		return fmt.Errorf("%s already exist", controllerPath)
 	}
-	return runnerkit.Run(ctx,
-		runnerkit.NewWriteTemplate(controllerPath, tmpl.Controller, e),
+	return exor.Execute(ctx,
+		exor.NewWriteTemplate(controllerPath, tmpl.Controller, e),
 	)
 }
 
@@ -26,8 +26,8 @@ func generateService(ctx context.Context, e *Entity) (err error) {
 	if isFileExist(servicePath) {
 		return fmt.Errorf("%s already exist", servicePath)
 	}
-	return runnerkit.Run(ctx,
-		runnerkit.NewWriteTemplate(servicePath, tmpl.Service, e),
+	return exor.Execute(ctx,
+		exor.NewWriteTemplate(servicePath, tmpl.Service, e),
 	)
 }
 
@@ -44,16 +44,16 @@ func generateRepository(ctx context.Context, e *Entity) (err error) {
 	if isFileExist(cachedRepoImplPath) {
 		return fmt.Errorf("%s already exist", cachedRepoImplPath)
 	}
-	return runnerkit.Run(ctx,
-		runnerkit.NewWriteTemplate(repoPath, tmpl.Repo, e),
-		runnerkit.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
-		runnerkit.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
-		func() error {
-			cmd := exec.Command(fmt.Sprintf("%s/bin/goimports", build.Default.GOPATH),
+	return exor.Execute(ctx,
+		exor.NewWriteTemplate(repoPath, tmpl.Repo, e),
+		exor.NewWriteTemplate(repoImplPath, tmpl.RepoImpl, e),
+		exor.NewWriteTemplate(cachedRepoImplPath, tmpl.CachedRepoImpl, e),
+		exor.New(func(ctx context.Context) error {
+			cmd := exec.CommandContext(ctx, fmt.Sprintf("%s/bin/goimports", build.Default.GOPATH),
 				"-w", repoPath, repoImplPath)
 			cmd.Stderr = os.Stderr
 			return cmd.Run()
-		},
+		}),
 	)
 }
 
@@ -63,9 +63,9 @@ func generateTransactional(ctx context.Context) (err error) {
 	if isFileExist(transactionalPath) {
 		return nil
 	}
-	return runnerkit.Run(ctx,
-		runnerkit.NewWriteString(transactionalPath, tmpl.Transactional),
-		runnerkit.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
+	return exor.Execute(ctx,
+		exor.NewWriteString(transactionalPath, tmpl.Transactional),
+		exor.NewWriteString(transactionalTestPath, tmpl.TransactionalTest),
 	)
 }
 

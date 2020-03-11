@@ -21,7 +21,7 @@ type server struct {
 }
 
 func startServer(s server) (err error) {
-	s.SetDebug(s.Debug)
+	s.SetLogger(s.Debug)
 
 	// health check
 	s.PutHealthChecker("postgres", s.Postgres.Ping)
