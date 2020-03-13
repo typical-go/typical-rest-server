@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,9 +13,6 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 		Aliases:   []string{"repo"},
 		Usage:     "Generate Repository from tablename",
 		ArgsUsage: "[table] [entity]",
-		Before: func(ctx *cli.Context) error {
-			return typcfg.LoadEnvFile()
-		},
 		Action: c.ActionFunc(func(cliCtx *cli.Context, f Fetcher) (err error) {
 			var (
 				table  string

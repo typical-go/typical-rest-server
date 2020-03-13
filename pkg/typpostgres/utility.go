@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Postgres) reset(cfg Config) (err error) {
+func (m *Postgres) reset(cfg *Config) (err error) {
 	if err = m.drop(cfg); err != nil {
 		return
 	}
@@ -28,7 +28,7 @@ func (m *Postgres) reset(cfg Config) (err error) {
 	return
 }
 
-func (m *Postgres) create(cfg Config) (err error) {
+func (m *Postgres) create(cfg *Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -43,7 +43,7 @@ func (m *Postgres) create(cfg Config) (err error) {
 	return
 }
 
-func (m *Postgres) drop(cfg Config) (err error) {
+func (m *Postgres) drop(cfg *Config) (err error) {
 	var conn *sql.DB
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	log.Infof("Postgres: %s", query)
@@ -55,7 +55,7 @@ func (m *Postgres) drop(cfg Config) (err error) {
 	return
 }
 
-func (*Postgres) console(cfg Config) (err error) {
+func (*Postgres) console(cfg *Config) (err error) {
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -65,7 +65,7 @@ func (*Postgres) console(cfg Config) (err error) {
 	return cmd.Run()
 }
 
-func (m *Postgres) migrate(cfg Config) (err error) {
+func (m *Postgres) migrate(cfg *Config) (err error) {
 	var (
 		migration *migrate.Migrate
 		sourceURL = "file://" + m.migrationSource
@@ -78,7 +78,7 @@ func (m *Postgres) migrate(cfg Config) (err error) {
 	return migration.Up()
 }
 
-func (m *Postgres) rollback(cfg Config) (err error) {
+func (m *Postgres) rollback(cfg *Config) (err error) {
 	var migration *migrate.Migrate
 	sourceURL := "file://" + m.migrationSource
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
@@ -89,7 +89,7 @@ func (m *Postgres) rollback(cfg Config) (err error) {
 	return migration.Down()
 }
 
-func (m *Postgres) seed(cfg Config) (err error) {
+func (m *Postgres) seed(cfg *Config) (err error) {
 	var conn *sql.DB
 	if conn, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		return

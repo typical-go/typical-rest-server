@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (m *Postgres) connect(cfg Config) (pgDB *DB, err error) {
+func (m *Postgres) connect(cfg *Config) (pgDB *DB, err error) {
 	var db *sql.DB
 	if db, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
@@ -28,12 +28,12 @@ func (m *Postgres) ping(db *DB) (err error) {
 	return
 }
 
-func (*Postgres) dataSource(c Config) string {
+func (*Postgres) dataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func (*Postgres) adminDataSource(c Config) string {
+func (*Postgres) adminDataSource(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
 }

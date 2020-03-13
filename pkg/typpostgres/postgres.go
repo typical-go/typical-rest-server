@@ -5,7 +5,7 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
 )
@@ -111,22 +111,14 @@ func (m *Postgres) WithConfigName(configName string) *Postgres {
 }
 
 // Configure the module
-func (m *Postgres) Configure(loader typcfg.Loader) *typcfg.Configuration {
-	return &typcfg.Configuration{
-		Name: m.configName,
-		Spec: &Config{
-			DBName:   m.dbName,
-			User:     m.user,
-			Password: m.password,
-			Host:     m.host,
-			Port:     m.port,
-		},
-		Constructor: typdep.NewConstructor(
-			func() (cfg Config, err error) {
-				err = loader.Load(m.configName, &cfg)
-				return
-			}),
-	}
+func (m *Postgres) Configure() *typcore.Configuration {
+	return typcore.NewConfiguration(m.configName, &Config{
+		DBName:   m.dbName,
+		User:     m.user,
+		Password: m.password,
+		Host:     m.host,
+		Port:     m.port,
+	})
 }
 
 // Commands of module
@@ -136,9 +128,6 @@ func (m *Postgres) Commands(c *typbuildtool.Context) []*cli.Command {
 			Name:    "postgres",
 			Aliases: []string{"pg"},
 			Usage:   "Postgres Database Tool",
-			Before: func(ctx *cli.Context) error {
-				return typcfg.LoadEnvFile()
-			},
 			Subcommands: []*cli.Command{
 				{
 					Name:   "create",

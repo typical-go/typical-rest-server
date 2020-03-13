@@ -14,7 +14,7 @@ import (
 type server struct {
 	dig.In
 	*typserver.Server
-	config.Config
+	*config.Config
 	controller.BookCntrl
 	Postgres *typpostgres.DB
 	Redis    *redis.Client

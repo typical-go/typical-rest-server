@@ -23,8 +23,8 @@ var Descriptor = typcore.Descriptor{
 
 	// Configuration for this project
 	// Both App and Build-Tool typically using the same configuration
-	Configuration: typcfg.New().
-		AppendConfigurer(
+	ConfigManager: typcfg.New().
+		WithConfigurers(
 			server,
 			redis,
 			postgres,
@@ -35,35 +35,21 @@ var Descriptor = typcore.Descriptor{
 
 		// Dependency is what are provided in dig service-locator
 		// and what to be destroyed after application stop
-		AppendDependency(
+		AppendModule(
 			redis,    // Create and destroy redis connection
 			postgres, // Create and destroy postgres db connection
-		).
-
-		// Preparation before start the application
-		AppendPreparer(
-			redis,    // Ping to Redis Server
-			postgres, // Ping to Postgres Database
 		),
 
 	// BuildTool responsible to basic build needs and custom dev task
 	BuildTool: typbuildtool.New().
-
-		// Additional command to be register in Build-Tool
-		AppendCommander(
+		AppendCommanders(
 			postgres, // Postgres utilities like create, drop, migrate, seed, etc.
 			redis,    // Redis utilities
 			docker,   // Generate dockercompose and spin up docker
 			readme,   // Generate readme based on README.tmpl
 			rails,    // Experimental to generate code like RoR
 		).
-
-		// Setting to release the project
-		// By default it will create distribution for Darwin and Linux
-		WithReleaser(typbuildtool.NewReleaser().
-			WithPublisher(
-				// Create release and upload file to Github
-				typbuildtool.NewGithub("typical-go", "typical-rest-server"),
-			),
+		WithPublishers(
+			typbuildtool.NewGithub("typical-go", "typical-rest-server"), // Create release and upload file to Github
 		),
 }

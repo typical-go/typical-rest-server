@@ -2,7 +2,7 @@ package typredis
 
 import (
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
 )
@@ -71,9 +71,6 @@ func (m *Redis) Commands(c *typbuildtool.Context) []*cli.Command {
 		{
 			Name:  "redis",
 			Usage: "Redis Tool",
-			Before: func(ctx *cli.Context) error {
-				return typcfg.LoadEnvFile()
-			},
 			Subcommands: []*cli.Command{
 				{
 					Name:    "console",
@@ -87,20 +84,12 @@ func (m *Redis) Commands(c *typbuildtool.Context) []*cli.Command {
 }
 
 // Configure Redis
-func (m *Redis) Configure(loader typcfg.Loader) *typcfg.Configuration {
-	return &typcfg.Configuration{
-		Name: m.prefix,
-		Spec: &Config{
-			Host:     m.host,
-			Port:     m.port,
-			Password: m.password,
-		},
-		Constructor: typdep.NewConstructor(
-			func() (cfg Config, err error) {
-				err = loader.Load(m.prefix, &cfg)
-				return
-			}),
-	}
+func (m *Redis) Configure() *typcore.Configuration {
+	return typcore.NewConfiguration(m.prefix, &Config{
+		Host:     m.host,
+		Port:     m.port,
+		Password: m.password,
+	})
 }
 
 // Provide dependencies
