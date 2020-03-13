@@ -8,7 +8,7 @@ import (
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/restserver/repository"
+	"github.com/typical-go/typical-rest-server/server/repository"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 

@@ -1,12 +1,12 @@
-package restserver
+package server
 
 import (
 	"github.com/go-redis/redis"
 	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
-	"github.com/typical-go/typical-rest-server/restserver/config"
-	"github.com/typical-go/typical-rest-server/restserver/controller"
+	"github.com/typical-go/typical-rest-server/server/config"
+	"github.com/typical-go/typical-rest-server/server/controller"
 
 	"go.uber.org/dig"
 )

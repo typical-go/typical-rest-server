@@ -1,10 +1,10 @@
-package restserver
+package server
 
 import (
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
-	"github.com/typical-go/typical-rest-server/restserver/config"
+	"github.com/typical-go/typical-rest-server/server/config"
 )
 
 // App of rest server

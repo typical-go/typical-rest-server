@@ -21,23 +21,20 @@ var Descriptor = typcore.Descriptor{
 	// Version of the project
 	Version: "0.8.22",
 
+	// Detail of this application
+	App: typapp.New(serverApp).
+		AppendModule(
+			redis,    // Create and destroy redis connection
+			postgres, // Create and destroy postgres db connection
+		),
+
 	// Configuration for this project
 	// Both App and Build-Tool typically using the same configuration
 	ConfigManager: typcfg.New().
 		WithConfigurers(
-			server,
+			serverApp,
 			redis,
 			postgres,
-		),
-
-	// Detail of this application
-	App: typapp.New(server).
-
-		// Dependency is what are provided in dig service-locator
-		// and what to be destroyed after application stop
-		AppendModule(
-			redis,    // Create and destroy redis connection
-			postgres, // Create and destroy postgres db connection
 		),
 
 	// BuildTool responsible to basic build needs and custom dev task

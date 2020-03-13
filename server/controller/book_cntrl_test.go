@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
-	"github.com/typical-go/typical-rest-server/restserver/controller"
-	"github.com/typical-go/typical-rest-server/restserver/mock_service"
-	"github.com/typical-go/typical-rest-server/restserver/repository"
+	"github.com/typical-go/typical-rest-server/server/controller"
+	"github.com/typical-go/typical-rest-server/server/mock_service"
+	"github.com/typical-go/typical-rest-server/server/repository"
 )
 
 func TestBookController_FindOne(t *testing.T) {

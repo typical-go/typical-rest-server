@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
-	"github.com/typical-go/typical-rest-server/restserver/repository"
+	"github.com/typical-go/typical-rest-server/server/repository"
 	"go.uber.org/dig"
 )
 

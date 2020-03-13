@@ -8,9 +8,9 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
-	"github.com/typical-go/typical-rest-server/restserver/config"
-	"github.com/typical-go/typical-rest-server/restserver/repository"
-	"github.com/typical-go/typical-rest-server/restserver/service"
+	"github.com/typical-go/typical-rest-server/server/config"
+	"github.com/typical-go/typical-rest-server/server/repository"
+	"github.com/typical-go/typical-rest-server/server/service"
 )
 
 func init() {
