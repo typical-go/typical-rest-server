@@ -17,7 +17,7 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.9.41
+	github.com/typical-go/typical-go v0.9.42
 	github.com/urfave/cli/v2 v2.0.0
 	go.uber.org/dig v1.8.0
 	gopkg.in/go-playground/validator.v9 v9.30.2

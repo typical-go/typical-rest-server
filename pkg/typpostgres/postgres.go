@@ -4,7 +4,6 @@ import (
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdep"
 	"github.com/urfave/cli/v2"
@@ -122,7 +121,7 @@ func (m *Postgres) Configure() *typcore.Configuration {
 }
 
 // Commands of module
-func (m *Postgres) Commands(c *typbuildtool.Context) []*cli.Command {
+func (m *Postgres) Commands(c *typcore.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -132,37 +131,37 @@ func (m *Postgres) Commands(c *typbuildtool.Context) []*cli.Command {
 				{
 					Name:   "create",
 					Usage:  "Create New Database",
-					Action: c.ActionFunc(m.create),
+					Action: m.actionFunc(c, m.create),
 				},
 				{
 					Name:   "drop",
 					Usage:  "Drop Database",
-					Action: c.ActionFunc(m.drop),
+					Action: m.actionFunc(c, m.drop),
 				},
 				{
 					Name:   "migrate",
 					Usage:  "Migrate Database",
-					Action: c.ActionFunc(m.migrate),
+					Action: m.actionFunc(c, m.migrate),
 				},
 				{
 					Name:   "rollback",
 					Usage:  "Rollback Database",
-					Action: c.ActionFunc(m.rollback),
+					Action: m.actionFunc(c, m.rollback),
 				},
 				{
 					Name:   "seed",
 					Usage:  "Data seeding",
-					Action: c.ActionFunc(m.seed),
+					Action: m.actionFunc(c, m.seed),
 				},
 				{
 					Name:   "reset",
 					Usage:  "Reset Database",
-					Action: c.ActionFunc(m.reset),
+					Action: m.actionFunc(c, m.reset),
 				},
 				{
 					Name:   "console",
 					Usage:  "PostgreSQL Interactive",
-					Action: c.ActionFunc(m.console),
+					Action: m.actionFunc(c, m.console),
 				},
 			},
 		},
@@ -187,5 +186,15 @@ func (m *Postgres) Prepare() []*typdep.Invocation {
 func (m *Postgres) Destroy() []*typdep.Invocation {
 	return []*typdep.Invocation{
 		typdep.NewInvocation(m.disconnect),
+	}
+}
+
+func (m *Postgres) actionFunc(c *typcore.Context, fn func(ctx *Context) error) cli.ActionFunc {
+	return func(cliCtx *cli.Context) (err error) {
+		return fn(&Context{
+			Context:  c,
+			Cli:      cliCtx,
+			Postgres: m,
+		})
 	}
 }

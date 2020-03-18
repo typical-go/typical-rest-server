@@ -13,7 +13,7 @@ func scaffoldCmd(c *typbuildtool.Context) *cli.Command {
 		Aliases:   []string{"s"},
 		Usage:     "Generate CRUD API",
 		ArgsUsage: "[table] [entity]",
-		Action: c.ActionFunc(func(cliCtx *cli.Context, f Fetcher) (err error) {
+		Action: func(cliCtx *cli.Context) (err error) {
 			var (
 				table  string
 				entity string
@@ -26,9 +26,9 @@ func scaffoldCmd(c *typbuildtool.Context) *cli.Command {
 			if entity = cliCtx.Args().Get(1); entity == "" {
 				return errors.New("Missing 'entity': check `./typicalw rails scaffold help` for more detail")
 			}
-			if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
-				return
-			}
+			// if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
+			// 	return
+			// }
 			if err = generateTransactional(ctx); err != nil {
 				return
 			}
@@ -42,6 +42,6 @@ func scaffoldCmd(c *typbuildtool.Context) *cli.Command {
 				return
 			}
 			return
-		}),
+		},
 	}
 }

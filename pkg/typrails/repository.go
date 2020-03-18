@@ -13,7 +13,8 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 		Aliases:   []string{"repo"},
 		Usage:     "Generate Repository from tablename",
 		ArgsUsage: "[table] [entity]",
-		Action: c.ActionFunc(func(cliCtx *cli.Context, f Fetcher) (err error) {
+		Action: func(cliCtx *cli.Context) (err error) {
+
 			var (
 				table  string
 				entity string
@@ -26,9 +27,9 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 			if entity = cliCtx.Args().Get(1); entity == "" {
 				return errors.New("Missing 'entity': check `./typicalw rails repository help` for more detail")
 			}
-			if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
-				return
-			}
+			// if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
+			// 	return
+			// }
 			if err = generateTransactional(ctx); err != nil {
 				return
 			}
@@ -36,6 +37,6 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 				return
 			}
 			return
-		}),
+		},
 	}
 }

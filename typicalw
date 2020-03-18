@@ -10,5 +10,5 @@ if ! [ -s $TYPGO ]; then
     go build -o $TYPGO $TYPSRC
 fi
 
-$TYPGO wrap-me -tmp=$TYPTMP
+$TYPGO wrap -tmp-folder=$TYPTMP
 $TYPTMP/bin/build-tool $@

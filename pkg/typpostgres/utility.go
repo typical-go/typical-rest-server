@@ -12,26 +12,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *Postgres) reset(cfg *Config) (err error) {
-	if err = m.drop(cfg); err != nil {
+func (m *Postgres) reset(c *Context) (err error) {
+	if err = m.drop(c); err != nil {
 		return
 	}
-	if err = m.create(cfg); err != nil {
+	if err = m.create(c); err != nil {
 		return
 	}
-	if err = m.migrate(cfg); err != nil {
+	if err = m.migrate(c); err != nil {
 		return
 	}
-	if err = m.seed(cfg); err != nil {
+	if err = m.seed(c); err != nil {
 		return
 	}
 	return
 }
 
-func (m *Postgres) create(cfg *Config) (err error) {
+func (m *Postgres) create(c *Context) (err error) {
 	var conn *sql.DB
-	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
-	log.Infof("Postgres: %s", query)
+	var cfg *Config
+
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
+
 	if conn, err = sql.Open("postgres", m.adminDataSource(cfg)); err != nil {
 		return
 	}
@@ -39,23 +43,38 @@ func (m *Postgres) create(cfg *Config) (err error) {
 	if err = conn.Ping(); err != nil {
 		return
 	}
+
+	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
+	log.Infof("Postgres: %s", query)
 	_, err = conn.Exec(query)
 	return
 }
 
-func (m *Postgres) drop(cfg *Config) (err error) {
+func (m *Postgres) drop(c *Context) (err error) {
 	var conn *sql.DB
-	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
-	log.Infof("Postgres: %s", query)
+	var cfg *Config
+
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
+
 	if conn, err = sql.Open("postgres", m.adminDataSource(cfg)); err != nil {
 		return
 	}
 	defer conn.Close()
+
+	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
+	log.Infof("Postgres: %s", query)
 	_, err = conn.Exec(query)
 	return
 }
 
-func (*Postgres) console(cfg *Config) (err error) {
+func (*Postgres) console(c *Context) (err error) {
+	var cfg *Config
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
+
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
@@ -65,11 +84,17 @@ func (*Postgres) console(cfg *Config) (err error) {
 	return cmd.Run()
 }
 
-func (m *Postgres) migrate(cfg *Config) (err error) {
+func (m *Postgres) migrate(c *Context) (err error) {
 	var (
 		migration *migrate.Migrate
 		sourceURL = "file://" + m.migrationSource
+		cfg       *Config
 	)
+
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
+
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	if migration, err = migrate.New(sourceURL, m.dataSource(cfg)); err != nil {
 		return err
@@ -78,8 +103,13 @@ func (m *Postgres) migrate(cfg *Config) (err error) {
 	return migration.Up()
 }
 
-func (m *Postgres) rollback(cfg *Config) (err error) {
+func (m *Postgres) rollback(c *Context) (err error) {
 	var migration *migrate.Migrate
+	var cfg *Config
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
+
 	sourceURL := "file://" + m.migrationSource
 	log.Infof("Migrate database from source '%s'\n", sourceURL)
 	if migration, err = migrate.New(sourceURL, m.dataSource(cfg)); err != nil {
@@ -89,8 +119,12 @@ func (m *Postgres) rollback(cfg *Config) (err error) {
 	return migration.Down()
 }
 
-func (m *Postgres) seed(cfg *Config) (err error) {
+func (m *Postgres) seed(c *Context) (err error) {
 	var conn *sql.DB
+	var cfg *Config
+	if cfg, err = c.Config(); err != nil {
+		return
+	}
 	if conn, err = sql.Open("postgres", m.dataSource(cfg)); err != nil {
 		return
 	}

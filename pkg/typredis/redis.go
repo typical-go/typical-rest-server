@@ -1,10 +1,8 @@
 package typredis
 
 import (
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdep"
-	"github.com/urfave/cli/v2"
 )
 
 // Redis of Redis
@@ -63,24 +61,6 @@ func (m *Redis) WithdockerName(dockerName string) *Redis {
 func (m *Redis) WithPrefix(prefix string) *Redis {
 	m.prefix = prefix
 	return m
-}
-
-// Commands of module
-func (m *Redis) Commands(c *typbuildtool.Context) []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:  "redis",
-			Usage: "Redis Tool",
-			Subcommands: []*cli.Command{
-				{
-					Name:    "console",
-					Aliases: []string{"c"},
-					Usage:   "Redis Interactive",
-					Action:  c.ActionFunc(m.console),
-				},
-			},
-		},
-	}
 }
 
 // Configure Redis

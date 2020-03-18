@@ -23,7 +23,7 @@ var Descriptor = typcore.Descriptor{
 
 	// Detail of this application
 	App: typapp.New(serverApp).
-		AppendModule(
+		AppendModules(
 			redis,    // Create and destroy redis connection
 			postgres, // Create and destroy postgres db connection
 		),
@@ -41,10 +41,10 @@ var Descriptor = typcore.Descriptor{
 	BuildTool: typbuildtool.New().
 		AppendCommanders(
 			postgres, // Postgres utilities like create, drop, migrate, seed, etc.
-			redis,    // Redis utilities
 			docker,   // Generate dockercompose and spin up docker
 			readme,   // Generate readme based on README.tmpl
-			rails,    // Experimental to generate code like RoR
+			// redis,    // Redis utilities
+			// rails,    // Experimental to generate code like RoR
 		).
 		WithPublishers(
 			typbuildtool.NewGithub("typical-go", "typical-rest-server"), // Create release and upload file to Github
