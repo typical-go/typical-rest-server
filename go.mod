@@ -15,6 +15,7 @@ require (
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lib/pq v1.2.0
+	github.com/newrelic/go-agent v3.3.0+incompatible
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
 	github.com/typical-go/typical-go v0.9.42
