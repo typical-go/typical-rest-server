@@ -10,7 +10,7 @@ import (
 // Context of postgress
 type Context struct {
 	*typcore.Context
-	*Postgres
+	*Module
 	Cli *cli.Context
 }
 

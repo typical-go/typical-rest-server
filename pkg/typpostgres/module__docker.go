@@ -7,7 +7,7 @@ import (
 )
 
 // DockerCompose template
-func (m *Postgres) DockerCompose(version typdocker.Version) *typdocker.ComposeObject {
+func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObject {
 	if version.IsV3() {
 		return &typdocker.ComposeObject{
 			Services: typdocker.Services{
