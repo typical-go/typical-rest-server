@@ -41,10 +41,10 @@ func DoPOST(handler echo.HandlerFunc, url string, json string) (rec *httptest.Re
 }
 
 // DoPUT return echo.Context and httptest.ResponseRecorder for POST Request
-func DoPUT(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
+func DoPUT(handler echo.HandlerFunc, url string, json string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPut, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return DoRequest(handler, req, nil)
+	return DoRequest(handler, req, urlParams)
 }
 
 // DoDELETE return echo.Context and httptest.ResponseRecorder for DELETE Request
