@@ -3,13 +3,13 @@ package typpostgres
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/urfave/cli/v2"
 )
 
 // Context of postgress
 type Context struct {
-	*typcore.Context
+	*typbuildtool.Context
 	*Module
 	Cli *cli.Context
 }
