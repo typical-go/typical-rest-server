@@ -10,12 +10,12 @@ import (
 
 	"github.com/golang-migrate/migrate"
 	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/urfave/cli/v2"
 )
 
 // Commands of module
-func (m *Module) Commands(c *typcore.Context) []*cli.Command {
+func (m *Module) Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -62,7 +62,7 @@ func (m *Module) Commands(c *typcore.Context) []*cli.Command {
 	}
 }
 
-func (m *Module) actionFunc(c *typcore.Context, fn func(ctx *Context) error) cli.ActionFunc {
+func (m *Module) actionFunc(c *typbuildtool.Context, fn func(ctx *Context) error) cli.ActionFunc {
 	return func(cliCtx *cli.Context) (err error) {
 		return fn(&Context{
 			Context: c,
