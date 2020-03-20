@@ -85,16 +85,16 @@ func TestBookController_Create(t *testing.T) {
 		BookService: bookSvc,
 	}
 	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPOST(bookController.Create, "/", `{}`)
+		_, err := echotest.DoPOST(bookController.Create, "/", `{}`, nil)
 		require.EqualError(t, err, "code=400, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag")
 	})
 	t.Run("WHEN invalid json format", func(t *testing.T) {
-		_, err := echotest.DoPOST(bookController.Create, "/", `invalid}`)
+		_, err := echotest.DoPOST(bookController.Create, "/", `invalid}`, nil)
 		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 	})
 	t.Run("WHEN error", func(t *testing.T) {
 		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("some-insert-error"))
-		_, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
+		_, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`, nil)
 		require.EqualError(t, err, "code=422, message=some-insert-error")
 	})
 	t.Run("WHEN success", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestBookController_Create(t *testing.T) {
 			Title:  "some-title",
 			Author: "some-author",
 		}, nil)
-		rr, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`)
+		rr, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`, nil)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusCreated, rr.Code)
 		require.Equal(t, "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n", rr.Body.String())
@@ -148,18 +148,18 @@ func TestBookController_Update(t *testing.T) {
 		BookService: bookSvc,
 	}
 	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{}`)
+		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{}`, nil)
 		require.EqualError(t, err, "code=400, message=Invalid ID")
 	})
 	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{"id": 1}`)
+		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{"id": 1}`, nil)
 		require.EqualError(t, err, "code=400, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag")
 	})
 	t.Run("WHEN invalid json format", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `invalid}`)
+		_, err := echotest.DoPUT(bookCntrl.Update, "/", `invalid}`, nil)
 		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
 	})
-	// TODO: fix test
+	// FIXME: fix test
 	// t.Run("WHEN error", func(t *testing.T) {
 	// 	bookSvc.EXPECT().FindOne(gomock.Any(), gomock.Any()).Return(&repository.Book{ID: 1}, fmt.Errorf("some-update-error"))
 	// 	bookSvc.EXPECT().Update(gomock.Any(), gomock.Any()).Return(&repository.Book{ID: 1}, fmt.Errorf("some-update-error"))

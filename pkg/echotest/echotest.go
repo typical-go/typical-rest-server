@@ -34,10 +34,10 @@ func DoGET(handler echo.HandlerFunc, url string, urlParams map[string]string) (r
 }
 
 // DoPOST return echo.Context and httptest.ResponseRecorder for POST Request
-func DoPOST(handler echo.HandlerFunc, url string, json string) (rec *httptest.ResponseRecorder, err error) {
+func DoPOST(handler echo.HandlerFunc, url string, json string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPost, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return DoRequest(handler, req, nil)
+	return DoRequest(handler, req, urlParams)
 }
 
 // DoPUT return echo.Context and httptest.ResponseRecorder for POST Request
