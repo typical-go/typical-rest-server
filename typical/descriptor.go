@@ -32,7 +32,7 @@ var Descriptor = typcore.Descriptor{
 	Description: "Example of typical and scalable RESTful API Server for Go",
 
 	// Version of the project
-	Version: "0.8.23",
+	Version: "0.8.24",
 
 	// Detail of this application
 	App: typapp.
