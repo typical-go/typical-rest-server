@@ -63,8 +63,7 @@ var Descriptor = typcore.Descriptor{
 
 			// Generate dockercompose and spin up docker
 			typdocker.
-				Create().
-				WithComposers(
+				Create(
 					postgres,
 					redis,
 				),

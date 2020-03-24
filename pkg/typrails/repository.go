@@ -18,8 +18,8 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 			var (
 				table  string
 				entity string
-				e      *Entity
-				ctx    = cliCtx.Context
+				// e      *Entity
+				// ctx    = cliCtx.Context
 			)
 			if table = cliCtx.Args().First(); table == "" {
 				return errors.New("Missing 'table': check `./typicalw rails repository help` for more detail")
@@ -30,12 +30,9 @@ func repositoryCmd(c *typbuildtool.Context) *cli.Command {
 			// if e, err = f.Fetch(c.ProjectPackage, table, entity); err != nil {
 			// 	return
 			// }
-			if err = generateTransactional(ctx); err != nil {
-				return
-			}
-			if err = generateRepository(ctx, e); err != nil {
-				return
-			}
+			// if err = generateRepository(ctx, e); err != nil {
+			// 	return
+			// }
 			return
 		},
 	}
