@@ -2,8 +2,13 @@ package typnewrelic
 
 import (
 	newrelic "github.com/newrelic/go-agent"
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/typdep"
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typcfg"
+)
+
+const (
+	// DefaultConfigName is default value for ConfigName
+	DefaultConfigName = "NEWRELIC"
 )
 
 // Module of new-relic
@@ -14,7 +19,7 @@ type Module struct {
 // New instance of new-relic module
 func New() *Module {
 	return &Module{
-		configName: "NEWRELIC",
+		configName: DefaultConfigName,
 	}
 }
 
@@ -25,14 +30,14 @@ func (m *Module) WithConfigName(configName string) *Module {
 }
 
 // Configure the module
-func (m *Module) Configure() *typcore.Configuration {
-	return typcore.NewConfiguration(m.configName, &Config{})
+func (m *Module) Configure() *typcfg.Configuration {
+	return typcfg.NewConfiguration(m.configName, &Config{})
 }
 
 // Provide dependencies
-func (*Module) Provide() []*typdep.Constructor {
-	return []*typdep.Constructor{
-		typdep.NewConstructor(func(cfg *Config) (newrelic.Application, error) {
+func (*Module) Provide() []*typapp.Constructor {
+	return []*typapp.Constructor{
+		typapp.NewConstructor(func(cfg *Config) (newrelic.Application, error) {
 			if cfg.AppName == "" || cfg.Key == "" {
 				return nil, nil
 			}

@@ -4,8 +4,13 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/typdep"
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typcfg"
+)
+
+const (
+	// DefaultConfigName is default value for config name
+	DefaultConfigName = "REDIS"
 )
 
 // Module of Redis
@@ -15,7 +20,7 @@ type Module struct {
 	password    string
 	dockerName  string
 	dockerImage string
-	prefix      string
+	configName  string
 }
 
 // New instance of redis module
@@ -26,7 +31,7 @@ func New() *Module {
 		password:    "redispass",
 		dockerImage: "redis:4.0.5-alpine",
 		dockerName:  "redis",
-		prefix:      "REDIS",
+		configName:  DefaultConfigName,
 	}
 }
 
@@ -60,15 +65,15 @@ func (m *Module) WithdockerName(dockerName string) *Module {
 	return m
 }
 
-// WithPrefix to return module with new prefix
-func (m *Module) WithPrefix(prefix string) *Module {
-	m.prefix = prefix
+// WithConfigName to return module with new config name
+func (m *Module) WithConfigName(configName string) *Module {
+	m.configName = configName
 	return m
 }
 
 // Configure Redis
-func (m *Module) Configure() *typcore.Configuration {
-	return typcore.NewConfiguration(m.prefix, &Config{
+func (m *Module) Configure() *typcfg.Configuration {
+	return typcfg.NewConfiguration(m.configName, &Config{
 		Host:     m.host,
 		Port:     m.port,
 		Password: m.password,
@@ -76,27 +81,28 @@ func (m *Module) Configure() *typcore.Configuration {
 }
 
 // Provide dependencies
-func (m *Module) Provide() []*typdep.Constructor {
-	return []*typdep.Constructor{
-		typdep.NewConstructor(m.connect),
+func (m *Module) Provide() []*typapp.Constructor {
+	return []*typapp.Constructor{
+		typapp.NewConstructor(Connect),
 	}
 }
 
 // Prepare the module
-func (m *Module) Prepare() []*typdep.Invocation {
-	return []*typdep.Invocation{
-		typdep.NewInvocation(m.ping),
+func (m *Module) Prepare() []*typapp.Preparation {
+	return []*typapp.Preparation{
+		typapp.NewPreparation(Ping),
 	}
 }
 
 // Destroy dependencies
-func (m *Module) Destroy() []*typdep.Invocation {
-	return []*typdep.Invocation{
-		typdep.NewInvocation(m.disconnect),
+func (m *Module) Destroy() []*typapp.Destruction {
+	return []*typapp.Destruction{
+		typapp.NewDestruction(Disconnect),
 	}
 }
 
-func (*Module) connect(cfg *Config) *redis.Client {
+// Connect to redis server
+func Connect(cfg *Config) *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -111,14 +117,16 @@ func (*Module) connect(cfg *Config) *redis.Client {
 	})
 }
 
-func (*Module) ping(client *redis.Client) (err error) {
+// Ping redis server
+func Ping(client *redis.Client) (err error) {
 	if err = client.Ping().Err(); err != nil {
 		return fmt.Errorf("Redis: Ping: %w", err)
 	}
 	return
 }
 
-func (*Module) disconnect(client *redis.Client) (err error) {
+// Disconnect from service server
+func Disconnect(client *redis.Client) (err error) {
 	if err = client.Close(); err != nil {
 		return fmt.Errorf("Redis: Disconnect: %w", err)
 	}

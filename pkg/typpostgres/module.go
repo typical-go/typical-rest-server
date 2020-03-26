@@ -7,8 +7,8 @@ import (
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/typcore"
-	"github.com/typical-go/typical-go/pkg/typdep"
+	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
 const (
@@ -20,6 +20,9 @@ const (
 	defaultDockerName      = "postgres"
 	defaultMigrationSource = "scripts/db/migration"
 	defaultSeedSource      = "scripts/db/seed"
+
+	// DefaultConfigName is default value of ConfigName
+	DefaultConfigName = "PG"
 )
 
 // Module of postgres
@@ -47,7 +50,7 @@ func New() *Module {
 		dockerName:      defaultDockerName,
 		migrationSource: defaultMigrationSource,
 		seedSource:      defaultSeedSource,
-		configName:      "PG",
+		configName:      DefaultConfigName,
 	}
 }
 
@@ -112,8 +115,8 @@ func (m *Module) WithConfigName(configName string) *Module {
 }
 
 // Configure the module
-func (m *Module) Configure() *typcore.Configuration {
-	return typcore.NewConfiguration(m.configName, &Config{
+func (m *Module) Configure() *typcfg.Configuration {
+	return typcfg.NewConfiguration(m.configName, &Config{
 		DBName:   m.dbName,
 		User:     m.user,
 		Password: m.password,
@@ -123,27 +126,28 @@ func (m *Module) Configure() *typcore.Configuration {
 }
 
 // Provide the dependencies
-func (m *Module) Provide() []*typdep.Constructor {
-	return []*typdep.Constructor{
-		typdep.NewConstructor(connect),
+func (m *Module) Provide() []*typapp.Constructor {
+	return []*typapp.Constructor{
+		typapp.NewConstructor(Connect),
 	}
 }
 
 // Prepare the module
-func (m *Module) Prepare() []*typdep.Invocation {
-	return []*typdep.Invocation{
-		typdep.NewInvocation(ping),
+func (m *Module) Prepare() []*typapp.Preparation {
+	return []*typapp.Preparation{
+		typapp.NewPreparation(Ping),
 	}
 }
 
 // Destroy dependencies
-func (m *Module) Destroy() []*typdep.Invocation {
-	return []*typdep.Invocation{
-		typdep.NewInvocation(disconnect),
+func (m *Module) Destroy() []*typapp.Destruction {
+	return []*typapp.Destruction{
+		typapp.NewDestruction(Disconnect),
 	}
 }
 
-func connect(cfg *Config) (pgDB *DB, err error) {
+// Connect to postgres server
+func Connect(cfg *Config) (pgDB *DB, err error) {
 	var db *sql.DB
 	if db, err = sql.Open("postgres", dataSource(cfg)); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
@@ -152,14 +156,16 @@ func connect(cfg *Config) (pgDB *DB, err error) {
 	return
 }
 
-func disconnect(db *DB) (err error) {
+// Disconnect to postgres server
+func Disconnect(db *DB) (err error) {
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("Postgres: Disconnect: %w", err)
 	}
 	return
 }
 
-func ping(db *DB) (err error) {
+// Ping to postgres server
+func Ping(db *DB) (err error) {
 	if err = db.Ping(); err != nil {
 		return fmt.Errorf("Postgres: Ping: %w", err)
 	}

@@ -36,42 +36,41 @@ var Descriptor = typcore.Descriptor{
 
 	// Detail of this application
 	App: typapp.
-		Create(serverApp).
+		AppModule(serverApp).
 		WithModules(
 			redis,    // Create and destroy redis connection
 			postgres, // Create and destroy postgres db connection
 		),
 
-	// Configuration for this project
-	// Both App and Build-Tool typically using the same configuration
-	ConfigManager: typcfg.
-		Create(
-			serverApp,
-			redis,
-			postgres,
-		),
-
 	// BuildTool responsible to basic build needs and custom dev task
 	BuildTool: typbuildtool.
-		Create(
+		BuildSequences(
 			typbuildtool.StandardBuild(),
 			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release and upload file to Github
 		).
-		WithCommanders(
+		WithTasks(
 			// Postgres utilities like create, drop, migrate, seed, etc.
 			postgres,
 
 			// Generate dockercompose and spin up docker
-			typdocker.
-				Create(
-					postgres,
-					redis,
-				),
+			typdocker.Compose(
+				postgres,
+				redis,
+			),
 
 			// Generate readme based on README.tmpl
 			typreadme.Create(),
 
 			// redis,    // Redis utilities
 			// rails,    // Experimental to generate code like RoR
+		),
+
+	// Configuration for this project
+	// Both App and Build-Tool typically using the same configuration
+	ConfigManager: typcfg.
+		Configures(
+			serverApp,
+			redis,
+			postgres,
 		),
 }

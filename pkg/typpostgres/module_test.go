@@ -11,8 +11,8 @@ import (
 )
 
 func TestPostgres(t *testing.T) {
-	t.Run("SHOULD implement commander", func(t *testing.T) {
-		var _ typbuildtool.Commander = typpostgres.New()
+	t.Run("SHOULD implement Task", func(t *testing.T) {
+		var _ typbuildtool.Task = typpostgres.New()
 	})
 	t.Run("SHOULD implement provider", func(t *testing.T) {
 		var _ typapp.Provider = typpostgres.New()
