@@ -19,12 +19,12 @@ func (c *Context) Config() (cfg *Config, err error) {
 	var v interface{}
 	var ok bool
 
-	if v, err = c.RetrieveConfig(ConfigName); err != nil {
+	if v, err = c.RetrieveConfig(DefaultConfigName); err != nil {
 		return
 	}
 
 	if cfg, ok = v.(*Config); !ok {
-		return nil, fmt.Errorf("Postgres: Get config for '%s' but invalid type", ConfigName)
+		return nil, fmt.Errorf("Postgres: Get config for '%s' but invalid type", DefaultConfigName)
 	}
 
 	return
