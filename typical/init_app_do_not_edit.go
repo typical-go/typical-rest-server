@@ -23,19 +23,19 @@ func init() {
 			}
 			return cfg.(*config.Config), nil
 		}),
-		typapp.NewConstructor(func(cfgMngr typcore.ConfigManager) (*typredis.Config, error) {
-			cfg, err := cfgMngr.RetrieveConfig("REDIS")
-			if err != nil {
-				return nil, err
-			}
-			return cfg.(*typredis.Config), nil
-		}),
 		typapp.NewConstructor(func(cfgMngr typcore.ConfigManager) (*typpostgres.Config, error) {
 			cfg, err := cfgMngr.RetrieveConfig("PG")
 			if err != nil {
 				return nil, err
 			}
 			return cfg.(*typpostgres.Config), nil
+		}),
+		typapp.NewConstructor(func(cfgMngr typcore.ConfigManager) (*typredis.Config, error) {
+			cfg, err := cfgMngr.RetrieveConfig("REDIS")
+			if err != nil {
+				return nil, err
+			}
+			return cfg.(*typredis.Config), nil
 		}),
 	)
 }

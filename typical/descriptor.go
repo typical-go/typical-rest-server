@@ -9,15 +9,14 @@ import (
 	"github.com/typical-go/typical-go/pkg/typreadme"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
+	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/server"
 )
 
 // Modules that required for the project
 var (
-	serverApp = server.New().WithDebug(true)
-	postgres  = typpostgres.New().WithDBName("sample")
-	redis     = typredis.New()
-	// rails     = typrails.New()
+	postgres = typpostgres.New()
+	redis    = typredis.New()
 )
 
 // Descriptor of Typical REST Server
@@ -35,9 +34,9 @@ var Descriptor = typcore.Descriptor{
 	Version: "0.8.24",
 
 	// Detail of this application
-	App: typapp.
-		AppModule(serverApp).
+	App: typapp.EntryPoint(server.Main, "server").
 		WithModules(
+			typserver.Module(),
 			redis,    // Create and destroy redis connection
 			postgres, // Create and destroy postgres db connection
 		),
@@ -60,17 +59,14 @@ var Descriptor = typcore.Descriptor{
 
 			// Generate readme based on README.tmpl
 			typreadme.Create(),
-
-			// redis,    // Redis utilities
-			// rails,    // Experimental to generate code like RoR
 		),
 
 	// Configuration for this project
 	// Both App and Build-Tool typically using the same configuration
 	ConfigManager: typcfg.
 		Configures(
-			serverApp,
+			server.Configuration(),
+			typpostgres.Configuration(),
 			redis,
-			postgres,
 		),
 }

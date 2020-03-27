@@ -18,8 +18,8 @@ type Server struct {
 	healthCheckEndpoint string
 }
 
-// New server instance
-func New() *Server {
+// NewServer return new instance of server instance
+func NewServer() *Server {
 	e := echo.New()
 	e.HideBanner = true
 

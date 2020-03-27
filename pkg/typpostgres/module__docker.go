@@ -14,12 +14,12 @@ func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObje
 				m.dockerName: typdocker.Service{
 					Image: m.dockerImage,
 					Environment: map[string]string{
-						"POSTGRES":          m.user,
-						"POSTGRES_PASSWORD": m.password,
+						"POSTGRES":          DefaultUser,
+						"POSTGRES_PASSWORD": DefaultPassword,
 						"PGDATA":            "/data/postgres",
 					},
 					Volumes:  []string{"postgres:/data/postgres"},
-					Ports:    []string{fmt.Sprintf("%d:5432", m.port)},
+					Ports:    []string{fmt.Sprintf("%d:5432", DefaultPort)},
 					Networks: []string{m.dockerName},
 					Restart:  "unless-stopped",
 				},
