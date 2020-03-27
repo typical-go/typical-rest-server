@@ -67,6 +67,6 @@ var Descriptor = typcore.Descriptor{
 		Configures(
 			server.Configuration(),
 			typpostgres.Configuration(),
-			redis,
+			typredis.Configuration(),
 		),
 }

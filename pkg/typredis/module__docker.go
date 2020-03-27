@@ -13,8 +13,8 @@ func (m *Module) DockerCompose(version typdocker.Version) *typdocker.ComposeObje
 			Services: typdocker.Services{
 				m.dockerName: typdocker.Service{
 					Image:    m.dockerImage,
-					Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, m.password),
-					Ports:    []string{fmt.Sprintf("%s:6379", m.port)},
+					Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, DefaultPassword),
+					Ports:    []string{fmt.Sprintf("%s:6379", DefaultPort)},
 					Networks: []string{m.dockerName},
 					Volumes:  []string{fmt.Sprintf("%s:/data", m.dockerName)},
 				},
