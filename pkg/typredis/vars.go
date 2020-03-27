@@ -12,4 +12,10 @@ var (
 
 	// DefaultPassword is default value for redis password
 	DefaultPassword = "redispass"
+
+	// DefaultDockerName is default value for docker name
+	DefaultDockerName = "redis"
+
+	// DefaultDockerImage is default value for docker image
+	DefaultDockerImage = "redis:4.0.5-alpine"
 )

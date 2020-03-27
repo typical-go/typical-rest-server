@@ -12,8 +12,6 @@ import (
 
 // Module of postgres
 type Module struct {
-	dockerImage     string
-	dockerName      string
 	migrationSource string
 	seedSource      string
 }
@@ -21,23 +19,9 @@ type Module struct {
 // New postgres module
 func New() *Module {
 	return &Module{
-		dockerImage:     defaultDockerImage,
-		dockerName:      defaultDockerName,
 		migrationSource: defaultMigrationSource,
 		seedSource:      defaultSeedSource,
 	}
-}
-
-// WithDockerName to return module with new docker name
-func (m *Module) WithDockerName(dockerName string) *Module {
-	m.dockerName = dockerName
-	return m
-}
-
-// WithDockerImage return module with new docker image
-func (m *Module) WithDockerImage(dockerImage string) *Module {
-	m.dockerImage = dockerImage
-	return m
 }
 
 // WithMigrationSource return module with new migration source

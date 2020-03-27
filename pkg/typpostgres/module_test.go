@@ -5,7 +5,6 @@ import (
 
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 )
 
@@ -21,8 +20,5 @@ func TestPostgres(t *testing.T) {
 	})
 	t.Run("SHOULD implement preparer", func(t *testing.T) {
 		var _ typapp.Preparer = typpostgres.New()
-	})
-	t.Run("SHOULD implement composer", func(t *testing.T) {
-		var _ typdocker.Composer = typpostgres.New()
 	})
 }

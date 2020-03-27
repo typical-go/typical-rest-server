@@ -53,8 +53,8 @@ var Descriptor = typcore.Descriptor{
 
 			// Generate dockercompose and spin up docker
 			typdocker.Compose(
-				postgres,
-				redis,
+				typpostgres.DockerRecipe(),
+				typredis.DockerRecipe(),
 			),
 
 			// Generate readme based on README.tmpl
