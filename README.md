@@ -11,7 +11,6 @@ Example of typical and scalable RESTful API Server for Go
 | Usage | Description |
 |---|---|
 |`typical-rest-server`|Run the application|
-|`typical-rest-server route`|Print available API Routes|
 
 
 ### Configuration
@@ -19,22 +18,22 @@ Example of typical and scalable RESTful API Server for Go
 | Name | Type | Default | Required |
 |---|---|---|:---:|
 |APP_ADDRESS|string|:8089|Yes|
+|APP_DEBUG|bool|false||
 |PG_DBNAME|string||Yes|
-|PG_HOST|string|localhost||
-|PG_PASSWORD|string|pgpass|Yes|
-|PG_PORT|int|5432||
 |PG_USER|string|postgres|Yes|
-|REDIS_DB|int|0||
-|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
+|PG_PASSWORD|string|pgpass|Yes|
+|PG_HOST|string|localhost||
+|PG_PORT|int|5432||
 |REDIS_HOST|string|localhost|Yes|
-|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
-|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
-|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
-|REDIS_PASSWORD|string|redispass||
-|REDIS_POOL_SIZE|int|20|Yes|
 |REDIS_PORT|string|6379|Yes|
+|REDIS_PASSWORD|string|redispass||
+|REDIS_DB|int|0||
+|REDIS_POOL_SIZE|int|20|Yes|
+|REDIS_DIAL_TIMEOUT|Duration|5s|Yes|
 |REDIS_READ_WRITE_TIMEOUT|Duration|3s|Yes|
-|SERVER_DEBUG|bool|false||
+|REDIS_IDLE_TIMEOUT|Duration|5m|Yes|
+|REDIS_IDLE_CHECK_FREQUENCY|Duration|1m|Yes|
+|REDIS_MAX_CONN_AGE|Duration|30m|Yes|
 
 ----
 
@@ -82,17 +81,11 @@ TypicalGo support java-like annotation for code generation before build
 | Command | Description |
 |---|---|
 |`./typicalw build`|Build the binary|
-|`./typicalw clean`|Clean the project from generated file during build time|
-|`./typicalw run`|Run the binary|
 |`./typicalw test`|Run the testing|
-|`./typicalw mock`|Generate mock class|
+|`./typicalw run`|Run the binary|
+|`./typicalw clean`|Clean the project from generated file during build time|
 |`./typicalw release`|Release the distribution|
-|`./typicalw docker`|Docker utility|
-|`./typicalw docker compose`|Generate docker-compose.yaml|
-|`./typicalw docker up`|Spin up docker containers according docker-compose|
-|`./typicalw docker down`|Take down all docker containers according docker-compose|
-|`./typicalw docker wipe`|Kill all running docker container|
-|`./typicalw readme`|Generate README Documentation|
+|`./typicalw mock`|Generate mock class|
 |`./typicalw postgres`|Postgres Database Tool|
 |`./typicalw postgres create`|Create New Database|
 |`./typicalw postgres drop`|Drop Database|
@@ -101,8 +94,9 @@ TypicalGo support java-like annotation for code generation before build
 |`./typicalw postgres seed`|Data seeding|
 |`./typicalw postgres reset`|Reset Database|
 |`./typicalw postgres console`|PostgreSQL Interactive|
-|`./typicalw redis`|Redis Tool|
-|`./typicalw redis console`|Redis Interactive|
-|`./typicalw rails`|Rails-like generation|
-|`./typicalw rails scaffold`|Generate CRUD API|
-|`./typicalw rails repository`|Generate Repository from tablename|
+|`./typicalw docker`|Docker utility|
+|`./typicalw docker compose`|Generate docker-compose.yaml|
+|`./typicalw docker up`|Spin up docker containers according docker-compose|
+|`./typicalw docker down`|Take down all docker containers according docker-compose|
+|`./typicalw docker wipe`|Kill all running docker container|
+|`./typicalw readme`|Generate README Documentation|
