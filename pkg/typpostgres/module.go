@@ -4,56 +4,19 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/typical-go/typical-go/pkg/typapp"
+
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	_ "github.com/lib/pq"
-	"github.com/typical-go/typical-go/pkg/typapp"
 )
 
 // Module of postgres
-type Module struct {
-	migrationSource string
-	seedSource      string
-}
-
-// New postgres module
-func New() *Module {
-	return &Module{
-		migrationSource: defaultMigrationSource,
-		seedSource:      defaultSeedSource,
-	}
-}
-
-// WithMigrationSource return module with new migration source
-func (m *Module) WithMigrationSource(migrationSource string) *Module {
-	m.migrationSource = migrationSource
-	return m
-}
-
-// WithSeedSource return module with new seed source
-func (m *Module) WithSeedSource(seedSource string) *Module {
-	m.seedSource = seedSource
-	return m
-}
-
-// Provide the dependencies
-func (m *Module) Provide() []*typapp.Constructor {
-	return []*typapp.Constructor{
-		typapp.NewConstructor(Connect),
-	}
-}
-
-// Prepare the module
-func (m *Module) Prepare() []*typapp.Preparation {
-	return []*typapp.Preparation{
-		typapp.NewPreparation(Ping),
-	}
-}
-
-// Destroy dependencies
-func (m *Module) Destroy() []*typapp.Destruction {
-	return []*typapp.Destruction{
-		typapp.NewDestruction(Disconnect),
+func Module() *typapp.Module {
+	return &typapp.Module{
+		Provider:  typapp.NewConstructor(Connect),
+		Destroyer: typapp.NewDestruction(Disconnect),
+		Preparer:  typapp.NewPreparation(Ping),
 	}
 }
 

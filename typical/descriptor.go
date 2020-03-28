@@ -15,16 +15,14 @@ import (
 
 // Modules that required for the project
 var (
-	postgres = typpostgres.New()
-	redis    = typredis.New()
+	redis = typredis.New()
 )
 
 // Descriptor of Typical REST Server
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typcore.Descriptor{
 
-	// Name of the project
-	// It should be a characters with/without underscore or dash.
+	// Name of the project. It should be a characters with/without underscore or dash.
 	Name: "typical-rest-server",
 
 	// Description of the project
@@ -37,19 +35,19 @@ var Descriptor = typcore.Descriptor{
 	App: typapp.EntryPoint(server.Main, "server").
 		WithModules(
 			typserver.Module(),
-			redis,    // Create and destroy redis connection
-			postgres, // Create and destroy postgres db connection
+			redis,                // Create and destroy redis connection
+			typpostgres.Module(), // Create and destroy postgres db connection
 		),
 
 	// BuildTool responsible to basic build needs and custom dev task
 	BuildTool: typbuildtool.
 		BuildSequences(
 			typbuildtool.StandardBuild(),
-			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release and upload file to Github
+			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release to Github
 		).
 		WithTasks(
 			// Postgres utilities like create, drop, migrate, seed, etc.
-			postgres,
+			typpostgres.Utility(),
 
 			// Generate dockercompose and spin up docker
 			typdocker.Compose(
