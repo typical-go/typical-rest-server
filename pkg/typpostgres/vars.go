@@ -19,9 +19,15 @@ var (
 	// DefaultPort is default value for port
 	DefaultPort = 5432
 
+	// DefaultDockerImage is default docker image for postgres
 	DefaultDockerImage = "postgres"
-	DefaultDockerName  = "postgres"
 
-	defaultMigrationSource = "scripts/db/migration"
-	defaultSeedSource      = "scripts/db/seed"
+	// DefaultDockerName is default docker name for postgres
+	DefaultDockerName = "postgres"
+
+	// DefaultMigrationSource is default migration source for postgres
+	DefaultMigrationSource = "scripts/db/migration"
+
+	// DefaultSeedSource is default seed source for postgres
+	DefaultSeedSource = "scripts/db/seed"
 )

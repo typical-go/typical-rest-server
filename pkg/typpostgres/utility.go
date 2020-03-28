@@ -158,7 +158,7 @@ func console(c *typbuildtool.Context) (err error) {
 func migrateDB(c *typbuildtool.Context) (err error) {
 	var (
 		migration *migrate.Migrate
-		sourceURL = "file://" + defaultMigrationSource
+		sourceURL = "file://" + DefaultMigrationSource
 		cfg       *Config
 	)
 
@@ -181,7 +181,7 @@ func rollbackDB(c *typbuildtool.Context) (err error) {
 		return
 	}
 
-	sourceURL := "file://" + defaultMigrationSource
+	sourceURL := "file://" + DefaultMigrationSource
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
 	if migration, err = migrate.New(sourceURL, dataSource(cfg)); err != nil {
 		return
@@ -200,9 +200,9 @@ func seed(c *typbuildtool.Context) (err error) {
 		return
 	}
 	defer conn.Close()
-	files, _ := ioutil.ReadDir(defaultSeedSource)
+	files, _ := ioutil.ReadDir(DefaultSeedSource)
 	for _, f := range files {
-		sqlFile := defaultSeedSource + "/" + f.Name()
+		sqlFile := DefaultSeedSource + "/" + f.Name()
 		c.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
 		if b, err = ioutil.ReadFile(sqlFile); err != nil {
