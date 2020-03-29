@@ -6,8 +6,8 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// DockerRecipe return recipe for docker-compose
-func DockerRecipe() *typdocker.Recipe {
+// DockerRecipeV3 return recipe for docker-compose v3
+func DockerRecipeV3() *typdocker.Recipe {
 	return &typdocker.Recipe{
 		Version: typdocker.V3,
 		Services: typdocker.Services{

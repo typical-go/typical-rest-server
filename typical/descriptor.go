@@ -18,7 +18,7 @@ import (
 var Descriptor = typcore.Descriptor{
 	Name:        "typical-rest-server",                                       // name of the project
 	Description: "Example of typical and scalable RESTful API Server for Go", // description of the project
-	Version:     "0.8.24",                                                    // version of the project
+	Version:     "0.8.25",                                                    // version of the project
 
 	// Detail of this application
 	App: typapp.EntryPoint(server.Main, "server").
@@ -34,15 +34,15 @@ var Descriptor = typcore.Descriptor{
 			typbuildtool.StandardBuild(),
 			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release to Github
 		).
-		WithTasks(
+		WithUtilities(
 			typpostgres.Utility(), // create database, drop, migrate, seed, etc.
 			typredis.Utility(),    // redis console
-			typreadme.Create(),    // generate readme based on README.tmpl
+			typreadme.Generator(), // generate readme based on README.tmpl
 
 			// Generate dockercompose and spin up docker
 			typdocker.Compose(
-				typpostgres.DockerRecipe(),
-				typredis.DockerRecipe(),
+				typpostgres.DockerRecipeV3(),
+				typredis.DockerRecipeV3(),
 			),
 		),
 

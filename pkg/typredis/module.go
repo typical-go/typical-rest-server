@@ -9,11 +9,17 @@ import (
 
 // Module of redis
 func Module() *typapp.Module {
-	return &typapp.Module{
-		Preparer:  typapp.NewPreparation(Ping),
-		Provider:  typapp.NewConstructor(Connect),
-		Destroyer: typapp.NewDestruction(Disconnect),
-	}
+	return typapp.NewModule().
+		WithProviders(
+			typapp.NewConstructor(Connect),
+		).
+		WithDestoyers(
+			typapp.NewDestruction(Disconnect),
+		).
+		WithPrepares(
+			typapp.NewPreparation(Ping),
+		)
+
 }
 
 // Connect to redis server

@@ -13,11 +13,16 @@ import (
 
 // Module of postgres
 func Module() *typapp.Module {
-	return &typapp.Module{
-		Provider:  typapp.NewConstructor(Connect),
-		Destroyer: typapp.NewDestruction(Disconnect),
-		Preparer:  typapp.NewPreparation(Ping),
-	}
+	return typapp.NewModule().
+		WithProviders(
+			typapp.NewConstructor(Connect),
+		).
+		WithDestoyers(
+			typapp.NewDestruction(Disconnect),
+		).
+		WithPrepares(
+			typapp.NewPreparation(Ping),
+		)
 }
 
 // Connect to postgres server

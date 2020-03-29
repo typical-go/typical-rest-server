@@ -9,16 +9,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// RedisUtility is postgres utility
-type RedisUtility struct{}
-
 // Utility return new instance of PostgresUtility
-func Utility() *RedisUtility {
-	return &RedisUtility{}
+func Utility() typbuildtool.Utility {
+	return typbuildtool.NewUtility(Commands)
 }
 
 // Commands of redis utility
-func (*RedisUtility) Commands(c *typbuildtool.Context) []*cli.Command {
+func Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name: "redis",

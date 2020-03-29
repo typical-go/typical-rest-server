@@ -13,16 +13,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// PostgresUtility is postgres utility
-type PostgresUtility struct{}
-
 // Utility return new instance of PostgresUtility
-func Utility() *PostgresUtility {
-	return &PostgresUtility{}
+func Utility() typbuildtool.Utility {
+	return typbuildtool.NewUtility(Commands)
 }
 
 // Commands of module
-func (*PostgresUtility) Commands(c *typbuildtool.Context) []*cli.Command {
+func Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
