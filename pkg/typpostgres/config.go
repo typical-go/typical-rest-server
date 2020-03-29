@@ -1,9 +1,6 @@
 package typpostgres
 
 import (
-	"fmt"
-
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
@@ -25,20 +22,4 @@ func Configuration() *typcfg.Configuration {
 		Host:     DefaultHost,
 		Port:     DefaultPort,
 	})
-}
-
-// RetrieveConfig to retrieve postgres config from build-tool context
-func RetrieveConfig(c *typbuildtool.Context) (cfg *Config, err error) {
-	var v interface{}
-	var ok bool
-
-	if v, err = c.RetrieveConfig(DefaultConfigName); err != nil {
-		return
-	}
-
-	if cfg, ok = v.(*Config); !ok {
-		return nil, fmt.Errorf("Postgres: Get config for '%s' but invalid type", DefaultConfigName)
-	}
-
-	return
 }

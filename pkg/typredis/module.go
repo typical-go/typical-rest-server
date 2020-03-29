@@ -7,50 +7,12 @@ import (
 	"github.com/typical-go/typical-go/pkg/typapp"
 )
 
-// Module of Redis
-type Module struct {
-	dockerName  string
-	dockerImage string
-}
-
-// New instance of redis module
-func New() *Module {
-	return &Module{
-		dockerImage: "redis:4.0.5-alpine",
-		dockerName:  "redis",
-	}
-}
-
-// WithdockerImage to return module with new docker image
-func (m *Module) WithdockerImage(dockerImage string) *Module {
-	m.dockerImage = dockerImage
-	return m
-}
-
-// WithdockerName to return module with new docker name
-func (m *Module) WithdockerName(dockerName string) *Module {
-	m.dockerName = dockerName
-	return m
-}
-
-// Provide dependencies
-func (m *Module) Provide() []*typapp.Constructor {
-	return []*typapp.Constructor{
-		typapp.NewConstructor(Connect),
-	}
-}
-
-// Prepare the module
-func (m *Module) Prepare() []*typapp.Preparation {
-	return []*typapp.Preparation{
-		typapp.NewPreparation(Ping),
-	}
-}
-
-// Destroy dependencies
-func (m *Module) Destroy() []*typapp.Destruction {
-	return []*typapp.Destruction{
-		typapp.NewDestruction(Disconnect),
+// Module of redis
+func Module() *typapp.Module {
+	return &typapp.Module{
+		Preparer:  typapp.NewPreparation(Ping),
+		Provider:  typapp.NewConstructor(Connect),
+		Destroyer: typapp.NewDestruction(Disconnect),
 	}
 }
 

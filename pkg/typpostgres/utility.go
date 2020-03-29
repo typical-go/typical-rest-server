@@ -103,7 +103,7 @@ func create(c *typbuildtool.Context) (err error) {
 	var conn *sql.DB
 	var cfg *Config
 
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 
@@ -125,7 +125,7 @@ func drop(c *typbuildtool.Context) (err error) {
 	var conn *sql.DB
 	var cfg *Config
 
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 
@@ -142,7 +142,7 @@ func drop(c *typbuildtool.Context) (err error) {
 
 func console(c *typbuildtool.Context) (err error) {
 	var cfg *Config
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 
@@ -162,7 +162,7 @@ func migrateDB(c *typbuildtool.Context) (err error) {
 		cfg       *Config
 	)
 
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 
@@ -177,7 +177,7 @@ func migrateDB(c *typbuildtool.Context) (err error) {
 func rollbackDB(c *typbuildtool.Context) (err error) {
 	var migration *migrate.Migrate
 	var cfg *Config
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 
@@ -193,7 +193,7 @@ func rollbackDB(c *typbuildtool.Context) (err error) {
 func seed(c *typbuildtool.Context) (err error) {
 	var conn *sql.DB
 	var cfg *Config
-	if cfg, err = RetrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
 	if conn, err = sql.Open("postgres", dataSource(cfg)); err != nil {
@@ -213,5 +213,20 @@ func seed(c *typbuildtool.Context) (err error) {
 			c.Warn(err.Error())
 		}
 	}
+	return
+}
+
+func retrieveConfig(c *typbuildtool.Context) (cfg *Config, err error) {
+	var v interface{}
+	var ok bool
+
+	if v, err = c.RetrieveConfig(DefaultConfigName); err != nil {
+		return
+	}
+
+	if cfg, ok = v.(*Config); !ok {
+		return nil, fmt.Errorf("Postgres: Get config for '%s' but invalid type", DefaultConfigName)
+	}
+
 	return
 }
