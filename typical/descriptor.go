@@ -6,7 +6,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdocker"
-	"github.com/typical-go/typical-go/pkg/typreadme"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/pkg/typserver"
@@ -37,7 +36,6 @@ var Descriptor = typcore.Descriptor{
 		WithUtilities(
 			typpostgres.Utility(), // create database, drop, migrate, seed, etc.
 			typredis.Utility(),    // redis console
-			typreadme.Generator(), // generate readme based on README.tmpl
 
 			// Generate dockercompose and spin up docker
 			typdocker.Compose(
