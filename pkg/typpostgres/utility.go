@@ -30,49 +30,70 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 					Name:  "create",
 					Usage: "Create New Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return create(c)
+						return create(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "drop",
 					Usage: "Drop Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return drop(c)
+						return drop(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "migrate",
 					Usage: "Migrate Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return migrateDB(c)
+						return migrateDB(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "rollback",
 					Usage: "Rollback Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return rollbackDB(c)
+						return rollbackDB(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "seed",
 					Usage: "Data seeding",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return seed(c)
+						return seed(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "reset",
 					Usage: "Reset Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return reset(c)
+						return reset(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 				{
 					Name:  "console",
 					Usage: "PostgreSQL Interactive",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return console(c)
+						return console(&typbuildtool.BuildContext{
+							Context: c,
+							Cli:     cliCtx,
+						})
 					},
 				},
 			},
@@ -80,7 +101,7 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 	}
 }
 
-func reset(c *typbuildtool.Context) (err error) {
+func reset(c *typbuildtool.BuildContext) (err error) {
 	if err = drop(c); err != nil {
 		return
 	}
@@ -96,7 +117,7 @@ func reset(c *typbuildtool.Context) (err error) {
 	return
 }
 
-func create(c *typbuildtool.Context) (err error) {
+func create(c *typbuildtool.BuildContext) (err error) {
 	var conn *sql.DB
 	var cfg *Config
 
@@ -118,7 +139,7 @@ func create(c *typbuildtool.Context) (err error) {
 	return
 }
 
-func drop(c *typbuildtool.Context) (err error) {
+func drop(c *typbuildtool.BuildContext) (err error) {
 	var conn *sql.DB
 	var cfg *Config
 
@@ -137,7 +158,7 @@ func drop(c *typbuildtool.Context) (err error) {
 	return
 }
 
-func console(c *typbuildtool.Context) (err error) {
+func console(c *typbuildtool.BuildContext) (err error) {
 	var cfg *Config
 	if cfg, err = retrieveConfig(c); err != nil {
 		return
@@ -145,14 +166,14 @@ func console(c *typbuildtool.Context) (err error) {
 
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
-	cmd := exec.Command("psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
+	cmd := exec.CommandContext(c.Cli.Context, "psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
 	return cmd.Run()
 }
 
-func migrateDB(c *typbuildtool.Context) (err error) {
+func migrateDB(c *typbuildtool.BuildContext) (err error) {
 	var (
 		migration *migrate.Migrate
 		sourceURL = "file://" + DefaultMigrationSource
@@ -171,7 +192,7 @@ func migrateDB(c *typbuildtool.Context) (err error) {
 	return migration.Up()
 }
 
-func rollbackDB(c *typbuildtool.Context) (err error) {
+func rollbackDB(c *typbuildtool.BuildContext) (err error) {
 	var migration *migrate.Migrate
 	var cfg *Config
 	if cfg, err = retrieveConfig(c); err != nil {
@@ -187,7 +208,7 @@ func rollbackDB(c *typbuildtool.Context) (err error) {
 	return migration.Down()
 }
 
-func seed(c *typbuildtool.Context) (err error) {
+func seed(c *typbuildtool.BuildContext) (err error) {
 	var conn *sql.DB
 	var cfg *Config
 	if cfg, err = retrieveConfig(c); err != nil {
@@ -213,7 +234,7 @@ func seed(c *typbuildtool.Context) (err error) {
 	return
 }
 
-func retrieveConfig(c *typbuildtool.Context) (cfg *Config, err error) {
+func retrieveConfig(c *typbuildtool.BuildContext) (cfg *Config, err error) {
 	var v interface{}
 	var ok bool
 
