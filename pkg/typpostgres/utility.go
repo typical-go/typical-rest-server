@@ -24,7 +24,7 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 		{
 			Name:    "postgres",
 			Aliases: []string{"pg"},
-			Usage:   "Postgres Database Tool",
+			Usage:   "Postgres utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:  "create",

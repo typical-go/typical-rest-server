@@ -18,7 +18,8 @@ func Utility() typbuildtool.Utility {
 func Commands(c *typbuildtool.Context) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name: "redis",
+			Name:  "redis",
+			Usage: "Redis utility",
 			Subcommands: []*cli.Command{
 				{
 					Name: "console",
