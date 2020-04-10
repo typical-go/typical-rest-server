@@ -11,7 +11,8 @@ import (
 
 // Utility return new instance of PostgresUtility
 func Utility() typbuildtool.Utility {
-	return typbuildtool.NewUtility(Commands)
+	return typbuildtool.NewUtility(Commands).
+		Configure(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
 }
 
 // Commands of redis utility

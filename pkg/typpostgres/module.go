@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/typical-go/typical-go/pkg/typcfg"
+
 	"github.com/typical-go/typical-go/pkg/typapp"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
@@ -16,7 +18,8 @@ func Module() *typapp.Module {
 	return typapp.NewModule().
 		Provides(typapp.NewConstructor(Connect)).
 		Destroys(typapp.NewDestruction(Disconnect)).
-		Prepares(typapp.NewPreparation(Ping))
+		Prepares(typapp.NewPreparation(Ping)).
+		Configures(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
 }
 
 // Connect to postgres server

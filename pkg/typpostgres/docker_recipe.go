@@ -6,6 +6,14 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
+var (
+	// DefaultDockerImage is default docker image for postgres
+	DefaultDockerImage = "postgres"
+
+	// DefaultDockerName is default docker name for postgres
+	DefaultDockerName = "postgres"
+)
+
 // DockerRecipeV3 return recipe for docker-compose v3
 func DockerRecipeV3() *typdocker.Recipe {
 	return &typdocker.Recipe{

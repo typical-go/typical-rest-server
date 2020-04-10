@@ -14,9 +14,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	// DefaultMigrationSource is default migration source for postgres
+	DefaultMigrationSource = "scripts/db/migration"
+
+	// DefaultSeedSource is default seed source for postgres
+	DefaultSeedSource = "scripts/db/seed"
+)
+
 // Utility return new instance of PostgresUtility
 func Utility() typbuildtool.Utility {
-	return typbuildtool.NewUtility(Commands)
+	return typbuildtool.NewUtility(Commands).
+		Configure(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
 }
 
 // Commands of module

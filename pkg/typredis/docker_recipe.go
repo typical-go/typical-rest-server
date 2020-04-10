@@ -6,6 +6,14 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
+var (
+	// DefaultDockerName is default value for docker name
+	DefaultDockerName = "redis"
+
+	// DefaultDockerImage is default value for docker image
+	DefaultDockerImage = "redis:4.0.5-alpine"
+)
+
 // DockerRecipeV3 return recipe for docker-compose v3
 func DockerRecipeV3() *typdocker.Recipe {
 	return &typdocker.Recipe{

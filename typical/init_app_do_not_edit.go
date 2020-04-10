@@ -23,16 +23,16 @@ func init() {
 			}
 			return
 		}),
-		typapp.NewConstructor(func() (cfg *typpostgres.Config, err error) {
-			cfg = new(typpostgres.Config)
-			if err = typcfg.Process("PG", cfg); err != nil {
+		typapp.NewConstructor(func() (cfg *typredis.Config, err error) {
+			cfg = new(typredis.Config)
+			if err = typcfg.Process("REDIS", cfg); err != nil {
 				return nil, err
 			}
 			return
 		}),
-		typapp.NewConstructor(func() (cfg *typredis.Config, err error) {
-			cfg = new(typredis.Config)
-			if err = typcfg.Process("REDIS", cfg); err != nil {
+		typapp.NewConstructor(func() (cfg *typpostgres.Config, err error) {
+			cfg = new(typpostgres.Config)
+			if err = typcfg.Process("PG", cfg); err != nil {
 				return nil, err
 			}
 			return

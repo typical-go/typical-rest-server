@@ -22,8 +22,6 @@ var Descriptor = typcore.Descriptor{
 	App: typapp.EntryPoint(server.Main, "server").
 		Modules(
 			server.Configuration(),
-			typpostgres.Configuration(),
-			typredis.Configuration(),
 			typserver.Module(),
 			typredis.Module(),    // create and destroy redis connection
 			typpostgres.Module(), // create and destroy postgres db connection
