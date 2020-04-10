@@ -1,12 +1,8 @@
-/vendor
 /bin
 /release
 /.typical-tmp
-
-.envrc
-.env
-cover.out
-
-.idea
-.vscode
-.typical
+/vendor 
+*.envrc
+*.env
+*.test
+*.out

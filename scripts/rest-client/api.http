@@ -1,0 +1,41 @@
+### Health Check
+
+http://localhost:8089/application/health
+
+### Find Books
+
+http://localhost:8089/books
+
+
+### Find One Book
+
+http://localhost:8089/books/2
+
+
+### Insert Book
+
+POST http://localhost:8089/books
+content-type: application/json
+
+
+{
+    "title": "Harry Potter and the Philosopher's Stone",
+    "author": "J. K. Rowling"
+}
+
+
+### Update Book
+
+PUT http://localhost:8089/books
+content-type: application/json
+
+{
+    "id": 6, 
+    "title": "Harry Potter and the Philosopher's Stone (Revision)",
+    "author": "J. K. Rowling"
+}
+
+
+### Delete Book
+
+DELETE http://localhost:8089/books/6
