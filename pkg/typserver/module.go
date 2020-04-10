@@ -4,6 +4,11 @@ import (
 	"github.com/typical-go/typical-go/pkg/typapp"
 )
 
+var (
+	_ typapp.Provider  = (*ServerModule)(nil)
+	_ typapp.Destroyer = (*ServerModule)(nil)
+)
+
 // ServerModule handle dependency for server
 type ServerModule struct{}
 
@@ -12,15 +17,15 @@ func Module() *ServerModule {
 	return &ServerModule{}
 }
 
-// Provide dependency
-func (*ServerModule) Provide() []*typapp.Constructor {
+// Constructors of module
+func (*ServerModule) Constructors() []*typapp.Constructor {
 	return []*typapp.Constructor{
 		typapp.NewConstructor(NewServer),
 	}
 }
 
-// Destroy dependency
-func (*ServerModule) Destroy() []*typapp.Destruction {
+// Destructions of module
+func (*ServerModule) Destructions() []*typapp.Destruction {
 	return []*typapp.Destruction{
 		typapp.NewDestruction(Shutdown),
 	}

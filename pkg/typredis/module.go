@@ -10,15 +10,9 @@ import (
 // Module of redis
 func Module() *typapp.Module {
 	return typapp.NewModule().
-		WithProviders(
-			typapp.NewConstructor(Connect),
-		).
-		WithDestoyers(
-			typapp.NewDestruction(Disconnect),
-		).
-		WithPrepares(
-			typapp.NewPreparation(Ping),
-		)
+		Provides(typapp.NewConstructor(Connect)).
+		Destroys(typapp.NewDestruction(Disconnect)).
+		Prepares(typapp.NewPreparation(Ping))
 
 }
 

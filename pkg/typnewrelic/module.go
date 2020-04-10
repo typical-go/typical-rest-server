@@ -11,7 +11,13 @@ const (
 	DefaultConfigName = "NEWRELIC"
 )
 
+var (
+	_ typapp.Provider   = (*Module)(nil)
+	_ typcfg.Configurer = (*Module)(nil)
+)
+
 // Module of new-relic
+// TODO: use typapp.Module instead
 type Module struct {
 	configName string
 }
@@ -29,13 +35,15 @@ func (m *Module) WithConfigName(configName string) *Module {
 	return m
 }
 
-// Configure the module
-func (m *Module) Configure() *typcfg.Configuration {
-	return typcfg.NewConfiguration(m.configName, &Config{})
+// Configurations the module
+func (m *Module) Configurations() []*typcfg.Configuration {
+	return []*typcfg.Configuration{
+		typcfg.NewConfiguration(m.configName, &Config{}),
+	}
 }
 
-// Provide dependencies
-func (*Module) Provide() []*typapp.Constructor {
+// Constructors of newreslice
+func (*Module) Constructors() []*typapp.Constructor {
 	return []*typapp.Constructor{
 		typapp.NewConstructor(func(cfg *Config) (newrelic.Application, error) {
 			if cfg.AppName == "" || cfg.Key == "" {

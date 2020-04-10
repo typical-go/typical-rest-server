@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang-migrate/migrate"
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/urfave/cli/v2"
 )
 
@@ -234,17 +235,10 @@ func seed(c *typbuildtool.BuildContext) (err error) {
 	return
 }
 
-func retrieveConfig(c *typbuildtool.BuildContext) (cfg *Config, err error) {
-	var v interface{}
-	var ok bool
-
-	if v, err = c.RetrieveConfig(DefaultConfigName); err != nil {
-		return
+func retrieveConfig(c *typbuildtool.BuildContext) (*Config, error) {
+	var cfg Config
+	if err := typcfg.Process(DefaultConfigName, &cfg); err != nil {
+		return nil, err
 	}
-
-	if cfg, ok = v.(*Config); !ok {
-		return nil, fmt.Errorf("Postgres: Get config for '%s' but invalid type", DefaultConfigName)
-	}
-
-	return
+	return &cfg, nil
 }
