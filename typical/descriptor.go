@@ -7,7 +7,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
-	"github.com/typical-go/typical-rest-server/pkg/typserver"
 	"github.com/typical-go/typical-rest-server/server"
 )
 
@@ -22,7 +21,6 @@ var Descriptor = typcore.Descriptor{
 	App: typapp.EntryPoint(server.Main, "server").
 		Modules(
 			server.Configuration(),
-			typserver.Module(),
 			typredis.Module(),    // create and destroy redis connection
 			typpostgres.Module(), // create and destroy postgres db connection
 		),
