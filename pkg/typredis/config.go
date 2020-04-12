@@ -17,6 +17,7 @@ var (
 	// DefaultPassword is default value for redis password
 	DefaultPassword = "redispass"
 
+	// DefaultConfig for redis
 	DefaultConfig = &Config{
 		Host:     DefaultHost,
 		Port:     DefaultPort,

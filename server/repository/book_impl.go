@@ -25,15 +25,13 @@ func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err e
 		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(r)
 	if rows, err = builder.QueryContext(ctx); err != nil {
-		dbkit.SetErrCtx(ctx, err)
 		return
 	}
 	if rows.Next() {
 		var e Book
 		if err = rows.Scan(&e.ID, &e.Title, &e.Author, &e.UpdatedAt, &e.CreatedAt); err != nil {
-			dbkit.SetErrCtx(ctx, err)
 			return
 		}
 		book = &e
@@ -47,21 +45,19 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
-		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(r)
 	for _, opt := range opts {
 		if builder, err = opt.CompileQuery(builder); err != nil {
 			return
 		}
 	}
 	if rows, err = builder.QueryContext(ctx); err != nil {
-		dbkit.SetErrCtx(ctx, err)
 		return
 	}
 	list = make([]*Book, 0)
 	for rows.Next() {
 		var book0 Book
 		if err = rows.Scan(&book0.ID, &book0.Title, &book0.Author, &book0.UpdatedAt, &book0.CreatedAt); err != nil {
-			dbkit.SetErrCtx(ctx, err)
 			return
 		}
 		list = append(list, &book0)
@@ -82,9 +78,8 @@ func (r *BookRepoImpl) Create(ctx context.Context, new *Book) (book *Book, err e
 		Columns("title", "author", "created_at", "updated_at").
 		Values(book.Title, book.Author, book.CreatedAt, book.UpdatedAt).
 		Suffix("RETURNING \"id\"").
-		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(r)
 	if err = builder.QueryRowContext(ctx).Scan(&book.ID); err != nil {
-		dbkit.SetErrCtx(ctx, err)
 		return
 	}
 	return
@@ -95,9 +90,8 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	query := sq.
 		Delete("books").
 		Where(sq.Eq{"id": id}).
-		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).RunWith(r)
 	if _, err = query.ExecContext(ctx); err != nil {
-		dbkit.SetErrCtx(ctx, err)
 		return
 	}
 	return
@@ -116,9 +110,9 @@ func (r *BookRepoImpl) Update(ctx context.Context, update *Book) (book *Book, er
 		Set("author", book.Author).
 		Set("updated_at", book.UpdatedAt).
 		Where(sq.Eq{"id": book.ID}).
-		PlaceholderFormat(sq.Dollar).RunWith(dbkit.TxCtx(ctx, r))
+		PlaceholderFormat(sq.Dollar).
+		RunWith(r)
 	if _, err = builder.ExecContext(ctx); err != nil {
-		dbkit.SetErrCtx(ctx, err)
 		return nil, err
 	}
 	return
