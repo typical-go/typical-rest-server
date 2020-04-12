@@ -40,70 +40,49 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 					Name:  "create",
 					Usage: "Create New Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return create(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return create(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "drop",
 					Usage: "Drop Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return drop(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return drop(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "migrate",
 					Usage: "Migrate Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return migrateDB(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return migrateDB(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "rollback",
 					Usage: "Rollback Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return rollbackDB(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return rollbackDB(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "seed",
 					Usage: "Data seeding",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return seed(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return seed(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "reset",
 					Usage: "Reset Database",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return reset(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return reset(c.BuildContext(cliCtx))
 					},
 				},
 				{
 					Name:  "console",
 					Usage: "PostgreSQL Interactive",
 					Action: func(cliCtx *cli.Context) (err error) {
-						return console(&typbuildtool.BuildContext{
-							Context: c,
-							Cli:     cliCtx,
-						})
+						return console(c.BuildContext(cliCtx))
 					},
 				},
 			},

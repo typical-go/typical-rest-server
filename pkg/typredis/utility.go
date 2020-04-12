@@ -23,9 +23,10 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 			Usage: "Redis utility",
 			Subcommands: []*cli.Command{
 				{
-					Name: "console",
+					Name:    "console",
+					Aliases: []string{"c"},
 					Action: func(cliCtx *cli.Context) (err error) {
-						return console(c)
+						return console(c.BuildContext(cliCtx))
 					},
 				},
 			},
@@ -33,9 +34,9 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 	}
 }
 
-func console(c *typbuildtool.Context) (err error) {
+func console(c *typbuildtool.BuildContext) (err error) {
 	var config *Config
-	if config, err = retrieveConfig(c); err != nil {
+	if config, err = retrieveConfig(); err != nil {
 		return
 	}
 
@@ -47,14 +48,14 @@ func console(c *typbuildtool.Context) (err error) {
 		args = append(args, "-a", config.Password)
 	}
 	// TODO: using docker -it
-	cmd := exec.Command("redis-cli", args...)
+	cmd := exec.CommandContext(c.Cli.Context, "redis-cli", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
 	return cmd.Run()
 }
 
-func retrieveConfig(c *typbuildtool.Context) (*Config, error) {
+func retrieveConfig() (*Config, error) {
 	var cfg Config
 	if err := typcfg.Process(DefaultConfigName, &cfg); err != nil {
 		return nil, err
