@@ -1,5 +1,6 @@
 package repository
 
+// BookColumns contain columns of book entity
 var BookColumns = bookColumns{
 	ID:        "id",
 	Title:     "title",
