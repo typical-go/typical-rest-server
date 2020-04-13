@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
@@ -25,12 +24,11 @@ func TestBookRepoImpl_Create(t *testing.T) {
 	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
 	sql := regexp.QuoteMeta(`INSERT INTO books (title,author,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING "id"`)
 	t.Run("sql error", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectQuery(sql).WithArgs("some-title", "some-author", sqlmock.AnyArg(), sqlmock.AnyArg()).
 			WillReturnError(fmt.Errorf("some-insert-error"))
 		_, err = repo.Create(ctx, &repository.Book{Title: "some-title", Author: "some-author"})
 		require.EqualError(t, err, "some-insert-error")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "some-insert-error")
 	})
 	t.Run("sql success", func(t *testing.T) {
 		ctx := context.Background()
@@ -48,14 +46,13 @@ func TestBookRepitory_Update(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
 	t.Run("sql error", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		expectFindOneBook(mock, 888, &repository.Book{ID: 888})
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnError(fmt.Errorf("some-update-error"))
 		_, err = repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
 		require.EqualError(t, err, "some-update-error")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "some-update-error")
 	})
 	t.Run("sql success", func(t *testing.T) {
 		ctx := context.Background()
@@ -74,13 +71,12 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
 	t.Run("sql error", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)).
 			WithArgs(666).
 			WillReturnError(fmt.Errorf("some-delete-error"))
 		err := repo.Delete(ctx, 666)
 		require.EqualError(t, err, "some-delete-error")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "some-delete-error")
 	})
 	t.Run("sql success", func(t *testing.T) {
 		ctx := context.Background()
@@ -98,23 +94,21 @@ func TestBookRepitory_FindOne(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
 	t.Run("WHEN sql error", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
 			WithArgs(123).
 			WillReturnError(errors.New("some-find-error"))
 		_, err := repo.FindOne(ctx, 123)
 		require.EqualError(t, err, "some-find-error")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "some-find-error")
 	})
 	t.Run("WHEN result set", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
 			WithArgs(123).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "title", "author"}).
 				AddRow("some-id", "some-title", "some-author"))
 		_, err := repo.FindOne(ctx, 123)
 		require.EqualError(t, err, "sql: expected 3 destination arguments in Scan, not 5")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "sql: expected 3 destination arguments in Scan, not 5")
 	})
 	t.Run("WHEN okay", func(t *testing.T) {
 		ctx := context.Background()
@@ -138,22 +132,20 @@ func TestBookRepoImpl_Find(t *testing.T) {
 	defer db.Close()
 	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
 	t.Run("WHEN sql error", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectQuery(`SELECT id, title, author, updated_at, created_at FROM books`).
 			WillReturnError(fmt.Errorf("some-list-error"))
 		_, err := repo.Find(ctx)
 		require.EqualError(t, err, "some-list-error")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "some-list-error")
 	})
 	t.Run("WHEN wrong dataset", func(t *testing.T) {
-		ctx := dbkit.CtxWithTxo(context.Background())
+		ctx := context.Background()
 		mock.ExpectQuery(`SELECT id, title, author, updated_at, created_at FROM books`).
 			WillReturnRows(sqlmock.NewRows([]string{"id", "tittle"}).
 				AddRow(1, "one").
 				AddRow(2, "two"))
 		_, err := repo.Find(ctx)
 		require.EqualError(t, err, "sql: expected 2 destination arguments in Scan, not 5")
-		require.EqualError(t, dbkit.ErrCtx(ctx), "sql: expected 2 destination arguments in Scan, not 5")
 	})
 	t.Run("WHEN okay", func(t *testing.T) {
 		ctx := context.Background()
