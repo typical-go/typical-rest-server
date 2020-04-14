@@ -19,41 +19,41 @@ type BookRepoImpl struct {
 }
 
 // FindOne book
-func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (book *Book, err error) {
-	var rows *sql.Rows
+func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (*Book, error) {
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
 		Where(sq.Eq{"id": id}).
 		PlaceholderFormat(sq.Dollar).RunWith(r)
-	if rows, err = builder.QueryContext(ctx); err != nil {
-		return
+
+	e := new(Book)
+	if err := builder.QueryRowContext(ctx).Scan(&e.ID, &e.Title, &e.Author, &e.UpdatedAt, &e.CreatedAt); err != nil {
+		return nil, err
 	}
-	if rows.Next() {
-		var e Book
-		if err = rows.Scan(&e.ID, &e.Title, &e.Author, &e.UpdatedAt, &e.CreatedAt); err != nil {
-			return
-		}
-		book = &e
-	}
-	return
+
+	return e, nil
 }
 
 // Find book
 func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+	)
 	builder := sq.
 		Select("id", "title", "author", "updated_at", "created_at").
 		From("books").
 		PlaceholderFormat(sq.Dollar).RunWith(r)
+
 	for _, opt := range opts {
 		if builder, err = opt.CompileQuery(builder); err != nil {
 			return
 		}
+
 	}
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
+
 	list = make([]*Book, 0)
 	for rows.Next() {
 		var book0 Book

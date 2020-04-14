@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -69,12 +69,16 @@ func (c *BookCntrl) FindOne(ec echo.Context) (err error) {
 	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
 	}
-	if book, err = c.BookService.FindOne(ctx, id); err != nil {
+
+	book, err = c.BookService.FindOne(ctx, id)
+
+	if err == sql.ErrNoRows {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	if book == nil {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Book#%d not found", id))
-	}
+
 	return ec.JSON(http.StatusOK, book)
 }
 
