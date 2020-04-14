@@ -15,15 +15,15 @@ type WhereCondition FindOption
 //
 
 type equal struct {
-	column    string
-	condition string
+	column      string
+	expectation interface{}
 }
 
 // Equal where condition
-func Equal(column string, cond string) WhereCondition {
+func Equal(column string, expectation interface{}) WhereCondition {
 	return &equal{
-		column:    column,
-		condition: cond,
+		column:      column,
+		expectation: expectation,
 	}
 }
 
@@ -32,11 +32,11 @@ func (f *equal) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if f.column == "" {
 		return base, errors.New("Filter column can't be empty")
 	}
-	return base.Where(sq.Eq{f.column: f.condition}), nil
+	return base.Where(sq.Eq{f.column: f.expectation}), nil
 }
 
 func (f equal) String() string {
-	return fmt.Sprintf("equal:%s:%s", f.column, f.condition)
+	return fmt.Sprintf("equal:%s:%v", f.column, f.expectation)
 }
 
 //
@@ -44,15 +44,15 @@ func (f equal) String() string {
 //
 
 type like struct {
-	column    string
-	condition string
+	column      string
+	expectation interface{}
 }
 
 // Like where condition
-func Like(column, condition string) WhereCondition {
+func Like(column string, expectation interface{}) WhereCondition {
 	return &like{
-		column:    column,
-		condition: condition,
+		column:      column,
+		expectation: expectation,
 	}
 }
 
@@ -60,9 +60,9 @@ func (l *like) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if l.column == "" {
 		return base, errors.New("Like column can't be empty")
 	}
-	return base.Where(sq.Like{l.column: l.condition}), nil
+	return base.Where(sq.Like{l.column: l.expectation}), nil
 }
 
 func (l like) String() string {
-	return fmt.Sprintf("like:%s:%s", l.column, l.condition)
+	return fmt.Sprintf("like:%s:%v", l.column, l.expectation)
 }
