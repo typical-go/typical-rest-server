@@ -1,6 +1,7 @@
 package controller_test
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"testing"
@@ -36,12 +37,12 @@ func TestBookController_FindOne(t *testing.T) {
 		require.Equal(t, http.StatusOK, rr.Code)
 		require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n", rr.Body.String())
 	})
-	t.Run("WHEN repository not found", func(t *testing.T) {
-		bookSvc.EXPECT().FindOne(gomock.Any(), int64(3)).Return(nil, nil)
+	t.Run("WHEN entity not found", func(t *testing.T) {
+		bookSvc.EXPECT().FindOne(gomock.Any(), int64(3)).Return(nil, sql.ErrNoRows)
 		_, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
 			"id": "3",
 		})
-		require.EqualError(t, err, "code=404, message=Book#3 not found")
+		require.EqualError(t, err, "code=404, message=Not Found")
 	})
 	t.Run("WHEN return error", func(t *testing.T) {
 		bookSvc.EXPECT().FindOne(gomock.Any(), int64(2)).Return(nil, fmt.Errorf("some-get-error"))
