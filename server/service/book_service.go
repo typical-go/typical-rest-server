@@ -16,7 +16,7 @@ type BookService interface {
 	Find(context.Context, ...dbkit.FindOption) ([]*repository.Book, error)
 	Create(context.Context, *repository.Book) (*repository.Book, error)
 	Delete(context.Context, int64) error
-	Update(context.Context, *repository.Book) (*repository.Book, error)
+	Update(context.Context, int64, *repository.Book) (*repository.Book, error)
 }
 
 // BookServiceImpl is implementation of BookService

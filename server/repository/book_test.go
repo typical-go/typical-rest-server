@@ -51,7 +51,7 @@ func TestBookRepitory_Update(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnError(fmt.Errorf("some-update-error"))
-		_, err = repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
+		_, err = repo.Update(ctx, 888, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
 		require.EqualError(t, err, "some-update-error")
 	})
 	t.Run("sql success", func(t *testing.T) {
@@ -60,7 +60,7 @@ func TestBookRepitory_Update(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		_, err = repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
+		_, err = repo.Update(ctx, 888, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
 		require.NoError(t, err)
 	})
 }

@@ -22,11 +22,10 @@ content-type: application/json
 
 ### Update Book
 
-PUT http://localhost:8089/books
+PUT http://localhost:8089/books/6
 content-type: application/json
 
 {
-    "id": 6, 
     "title": "Harry Potter and the Philosopher's Stone (Revision)",
     "author": "J. K. Rowling"
 }

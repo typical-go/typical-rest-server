@@ -27,7 +27,7 @@ type BookRepo interface {
 	Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
 	Create(context.Context, *Book) (*Book, error)
 	Delete(context.Context, int64) error
-	Update(context.Context, *Book) (*Book, error)
+	Update(context.Context, int64, *Book) (*Book, error)
 }
 
 // BookRepoImpl is implementation book repository
@@ -162,13 +162,13 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // Update book
-func (r *BookRepoImpl) Update(ctx context.Context, form *Book) (book *Book, err error) {
-	if book, err = r.FindOne(ctx, form.ID); err != nil {
+func (r *BookRepoImpl) Update(ctx context.Context, id int64, forms *Book) (book *Book, err error) {
+	if book, err = r.FindOne(ctx, id); err != nil {
 		return
 	}
 
-	book.Title = form.Title
-	book.Author = form.Author
+	book.Title = forms.Title
+	book.Author = forms.Author
 	book.UpdatedAt = time.Now()
 
 	update := sq.Update("books").
@@ -176,7 +176,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, form *Book) (book *Book, err 
 		Set("author", book.Author).
 		Set("updated_at", book.UpdatedAt).
 		Where(
-			sq.Eq{"id": book.ID},
+			sq.Eq{"id": id},
 		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)

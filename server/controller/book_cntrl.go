@@ -19,12 +19,12 @@ type BookCntrl struct {
 	service.BookService
 }
 
-// Route to define API Route
+// SetRoute to define API Route
 func (c *BookCntrl) SetRoute(e *echo.Echo) {
 	e.GET("books", c.Find)
 	e.POST("books", c.Create)
 	e.GET("books/:id", c.FindOne)
-	e.PUT("books", c.Update)
+	e.PUT("books/:id", c.Update)
 	e.DELETE("books/:id", c.Delete)
 }
 
@@ -100,21 +100,31 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 // Update book
 func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	var (
-		book   *repository.Book
+		id     int64
 		update repository.Book
 		ctx    = ec.Request().Context()
 	)
+
+	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	}
+
 	if err = ec.Bind(&update); err != nil {
 		return err
 	}
-	if update.ID <= 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
-	}
+
 	if err = validator.New().Struct(update); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if book, err = c.BookService.Update(ctx, &update); err != nil {
+
+	book, err := c.BookService.Update(ctx, id, &update)
+	if err == sql.ErrNoRows {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	return ec.JSON(http.StatusOK, book)
 }
