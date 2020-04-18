@@ -8,19 +8,21 @@ import (
 	"go.uber.org/dig"
 )
 
-type healthcheck struct {
+type profiler struct {
 	dig.In
 	PG    *typpostgres.DB
 	Redis *redis.Client
 }
 
-func (h *healthcheck) SetRoute(e *echo.Echo) {
+func (h *profiler) SetRoute(e *echo.Echo) {
+	e.Any("application/health", h.healthCheck)
+}
+
+func (h *profiler) healthCheck(ec echo.Context) (err error) {
 	healthcheck := serverkit.NewHealthCheck()
 	healthcheck.Put("postgres", h.PG.Ping)
 	healthcheck.Put("redis", h.Redis.Ping().Err)
 
 	status, message := healthcheck.Process()
-	e.Any("application/health", func(ec echo.Context) (err error) {
-		return ec.JSON(status, message)
-	})
+	return ec.JSON(status, message)
 }

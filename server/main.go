@@ -26,7 +26,7 @@ type server struct {
 
 	controller.BookCntrl
 
-	HealthCheck healthcheck
+	Profiler profiler
 }
 
 // Main function to run server
@@ -41,7 +41,7 @@ func Main(s server) (err error) {
 	e.Use(middleware.Recover())
 
 	s.BookCntrl.SetRoute(e)
-	s.HealthCheck.SetRoute(e)
+	s.Profiler.SetRoute(e)
 
 	return e.Start(s.Address)
 }
