@@ -8,7 +8,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"go.uber.org/dig"
 )
 
@@ -33,7 +32,7 @@ type BookRepo interface {
 // BookRepoImpl is implementation book repository
 type BookRepoImpl struct {
 	dig.In
-	*typpostgres.DB
+	*sql.DB
 }
 
 // NewBookRepo return new instance of BookRepo [constructor]

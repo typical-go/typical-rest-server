@@ -9,8 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
-
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/require"
@@ -21,7 +19,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
+	repo := repository.BookRepoImpl{DB: db}
 	sql := regexp.QuoteMeta(`INSERT INTO books (title,author,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING "id"`)
 	t.Run("sql error", func(t *testing.T) {
 		ctx := context.Background()
@@ -44,7 +42,7 @@ func TestBookRepitory_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
+	repo := repository.BookRepoImpl{DB: db}
 	t.Run("sql error", func(t *testing.T) {
 		ctx := context.Background()
 		expectFindOneBook(mock, 888, &repository.Book{ID: 888})
@@ -69,7 +67,7 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
+	repo := repository.BookRepoImpl{DB: db}
 	t.Run("sql error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)).
@@ -92,7 +90,7 @@ func TestBookRepitory_FindOne(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
+	repo := repository.BookRepoImpl{DB: db}
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
@@ -130,7 +128,7 @@ func TestBookRepoImpl_Find(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
-	repo := repository.BookRepoImpl{DB: typpostgres.NewDB(db)}
+	repo := repository.BookRepoImpl{DB: db}
 	t.Run("WHEN sql error", func(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectQuery(`SELECT id, title, author, updated_at, created_at FROM books`).

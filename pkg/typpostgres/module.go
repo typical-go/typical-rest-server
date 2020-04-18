@@ -23,17 +23,15 @@ func Module() *typapp.Module {
 }
 
 // Connect to postgres server
-func Connect(cfg *Config) (pgDB *DB, err error) {
-	var db *sql.DB
+func Connect(cfg *Config) (db *sql.DB, err error) {
 	if db, err = sql.Open("postgres", dataSource(cfg)); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
 	}
-	pgDB = NewDB(db)
 	return
 }
 
 // Disconnect to postgres server
-func Disconnect(db *DB) (err error) {
+func Disconnect(db *sql.DB) (err error) {
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("Postgres: Disconnect: %w", err)
 	}
@@ -41,7 +39,7 @@ func Disconnect(db *DB) (err error) {
 }
 
 // Ping to postgres server
-func Ping(db *DB) (err error) {
+func Ping(db *sql.DB) (err error) {
 	if err = db.Ping(); err != nil {
 		return fmt.Errorf("Postgres: Ping: %w", err)
 	}

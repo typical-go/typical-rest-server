@@ -1,16 +1,17 @@
 package server
 
 import (
+	"database/sql"
+
 	"github.com/go-redis/redis"
 	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/pkg/serverkit"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"go.uber.org/dig"
 )
 
 type profiler struct {
 	dig.In
-	PG    *typpostgres.DB
+	PG    *sql.DB
 	Redis *redis.Client
 }
 
