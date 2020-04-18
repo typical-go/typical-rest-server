@@ -96,7 +96,7 @@ func TestBookController_Create(t *testing.T) {
 	t.Run("WHEN error", func(t *testing.T) {
 		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("some-insert-error"))
 		_, err := echotest.DoPOST(bookController.Create, "/", `{"author":"some-author", "title":"some-title"}`, nil)
-		require.EqualError(t, err, "code=422, message=some-insert-error")
+		require.EqualError(t, err, "code=500, message=some-insert-error")
 	})
 	t.Run("WHEN success", func(t *testing.T) {
 		bookSvc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&repository.Book{

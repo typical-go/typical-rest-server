@@ -42,7 +42,7 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if inserted, err = c.BookService.Create(ctx, &book); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return ec.JSON(http.StatusCreated, inserted)
 }
