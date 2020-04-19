@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -89,12 +90,10 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	for _, opt := range opts {
-		if builder, err = opt.CompileQuery(builder); err != nil {
-			return
-		}
-
+	if err = dbkit.CompileOpts(builder, opts...); err != nil {
+		return nil, fmt.Errorf("Compile-Opts: %w", err)
 	}
+
 	if rows, err = builder.QueryContext(ctx); err != nil {
 		return
 	}
