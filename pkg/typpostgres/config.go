@@ -1,10 +1,5 @@
 package typpostgres
 
-import (
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typcfg"
-)
-
 var (
 	// DefaultConfigName is default lookup key for postgres configuration
 	DefaultConfigName = "PG"
@@ -41,12 +36,4 @@ type Config struct {
 	Password string `required:"true" default:"pgpass"`
 	Host     string `default:"localhost"`
 	Port     int    `default:"5432"`
-}
-
-func retrieveConfig(c *typbuildtool.BuildContext) (*Config, error) {
-	var cfg Config
-	if err := typcfg.Process(DefaultConfigName, &cfg); err != nil {
-		return nil, err
-	}
-	return &cfg, nil
 }

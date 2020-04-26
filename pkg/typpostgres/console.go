@@ -11,11 +11,15 @@ import (
 
 func cmdConsole(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
-		Name:  "console",
-		Usage: "PostgreSQL Interactive",
-		Action: func(cliCtx *cli.Context) (err error) {
-			return console(c.BuildContext(cliCtx))
-		},
+		Name:   "console",
+		Usage:  "PostgreSQL Interactive",
+		Action: consoleAction(c),
+	}
+}
+
+func consoleAction(c *typbuildtool.Context) cli.ActionFunc {
+	return func(cliCtx *cli.Context) (err error) {
+		return console(c.BuildContext(cliCtx))
 	}
 }
 

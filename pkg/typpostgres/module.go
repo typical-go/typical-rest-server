@@ -4,9 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/typical-go/typical-go/pkg/typcfg"
-
 	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 
 	_ "github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -48,14 +47,4 @@ func Ping(db *sql.DB) (err error) {
 		return fmt.Errorf("Postgres: Ping: %w", err)
 	}
 	return
-}
-
-func dataSource(c *Config) string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
-		c.User, c.Password, c.Host, c.Port, c.DBName)
-}
-
-func adminDataSource(c *Config) string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
-		c.User, c.Password, c.Host, c.Port, "template1")
 }

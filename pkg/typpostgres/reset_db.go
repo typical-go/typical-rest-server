@@ -7,26 +7,27 @@ import (
 
 func cmdResetDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
-		Name:  "reset",
-		Usage: "Reset Database",
-		Action: func(cliCtx *cli.Context) (err error) {
-			return resetDB(c.BuildContext(cliCtx))
-		},
+		Name:   "reset",
+		Usage:  "Reset Database",
+		Action: resetDBAction(c),
 	}
 }
 
-func resetDB(c *typbuildtool.BuildContext) (err error) {
-	if err = dropDB(c); err != nil {
+func resetDBAction(c *typbuildtool.Context) cli.ActionFunc {
+	return func(cliCtx *cli.Context) (err error) {
+		bc := c.BuildContext(cliCtx)
+		if err = dropDB(bc); err != nil {
+			return
+		}
+		if err = createDB(bc); err != nil {
+			return
+		}
+		if err = migrateDB(bc); err != nil {
+			return
+		}
+		if err = seedDB(bc); err != nil {
+			return
+		}
 		return
 	}
-	if err = createDB(c); err != nil {
-		return
-	}
-	if err = migrateDB(c); err != nil {
-		return
-	}
-	if err = seedDB(c); err != nil {
-		return
-	}
-	return
 }

@@ -10,24 +10,33 @@ import (
 
 func cmdSeedDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
-		Name:  "seed",
-		Usage: "Data seeding",
-		Action: func(cliCtx *cli.Context) (err error) {
-			return seedDB(c.BuildContext(cliCtx))
-		},
+		Name:   "seed",
+		Usage:  "Data seeding",
+		Action: seedDBAction(c),
+	}
+}
+
+func seedDBAction(c *typbuildtool.Context) cli.ActionFunc {
+	return func(cliCtx *cli.Context) (err error) {
+		return seedDB(c.BuildContext(cliCtx))
 	}
 }
 
 func seedDB(c *typbuildtool.BuildContext) (err error) {
-	var conn *sql.DB
-	var cfg *Config
+	var (
+		db  *sql.DB
+		cfg *Config
+	)
+
 	if cfg, err = retrieveConfig(c); err != nil {
 		return
 	}
-	if conn, err = sql.Open("postgres", dataSource(cfg)); err != nil {
+
+	if db, err = sql.Open("postgres", dataSource(cfg)); err != nil {
 		return
 	}
-	defer conn.Close()
+	defer db.Close()
+
 	files, _ := ioutil.ReadDir(DefaultSeedSource)
 	for _, f := range files {
 		sqlFile := DefaultSeedSource + "/" + f.Name()
@@ -37,7 +46,7 @@ func seedDB(c *typbuildtool.BuildContext) (err error) {
 			c.Warn(err.Error())
 			continue
 		}
-		if _, err = conn.Exec(string(b)); err != nil {
+		if _, err = db.ExecContext(c.Cli.Context, string(b)); err != nil {
 			c.Warn(err.Error())
 		}
 	}

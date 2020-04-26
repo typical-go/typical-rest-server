@@ -10,17 +10,23 @@ import (
 
 func cmdDropDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
-		Name:  "drop",
-		Usage: "Drop Database",
-		Action: func(cliCtx *cli.Context) (err error) {
-			return dropDB(c.BuildContext(cliCtx))
-		},
+		Name:   "drop",
+		Usage:  "Drop Database",
+		Action: dropDBAction(c),
+	}
+}
+
+func dropDBAction(c *typbuildtool.Context) cli.ActionFunc {
+	return func(cliCtx *cli.Context) (err error) {
+		return dropDB(c.BuildContext(cliCtx))
 	}
 }
 
 func dropDB(c *typbuildtool.BuildContext) (err error) {
-	var conn *sql.DB
-	var cfg *Config
+	var (
+		conn *sql.DB
+		cfg  *Config
+	)
 
 	if cfg, err = retrieveConfig(c); err != nil {
 		return
@@ -33,6 +39,6 @@ func dropDB(c *typbuildtool.BuildContext) (err error) {
 
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	c.Infof("Postgres: %s", query)
-	_, err = conn.Exec(query)
+	_, err = conn.ExecContext(c.Cli.Context, query)
 	return
 }
