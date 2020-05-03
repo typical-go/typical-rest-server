@@ -17,9 +17,10 @@ var (
 // Utility return new instance of PostgresUtility
 func Utility() typbuildtool.Utility {
 	return typbuildtool.NewUtility(Commands).
-		Configure(
-			typcfg.NewConfiguration(DefaultConfigName, DefaultConfig),
-		)
+		Configure(&typcfg.Configuration{
+			Name: DefaultConfigName,
+			Spec: DefaultConfig,
+		})
 }
 
 // Commands of module

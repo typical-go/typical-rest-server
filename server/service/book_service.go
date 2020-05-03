@@ -9,7 +9,8 @@ import (
 	"go.uber.org/dig"
 )
 
-// BookService contain logic for Book Controller [mock]
+// BookService contain logic for Book Controller
+// @mock
 type BookService interface {
 	FindOne(context.Context, int64) (*repository.Book, error)
 	Find(context.Context, ...dbkit.FindOption) ([]*repository.Book, error)
@@ -26,7 +27,8 @@ type BookServiceImpl struct {
 	Redis *redis.Client
 }
 
-// NewBookService return new instance of BookService [constructor]
+// NewBookService return new instance of BookService
+// @constructor
 func NewBookService(impl BookServiceImpl) BookService {
 	return &impl
 }

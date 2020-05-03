@@ -48,9 +48,12 @@ func Main(s server) (err error) {
 
 // Configuration of server
 func Configuration() *typcfg.Configuration {
-	return typcfg.NewConfiguration(configName, &config.Config{
-		Debug: true,
-	})
+	return &typcfg.Configuration{
+		Name: configName,
+		Spec: &config.Config{
+			Debug: true,
+		},
+	}
 }
 
 func initLogger(e *echo.Echo, debug bool) {

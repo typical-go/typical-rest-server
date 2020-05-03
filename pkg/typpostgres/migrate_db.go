@@ -10,23 +10,17 @@ func cmdMigrateDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "migrate",
 		Usage:  "Migrate Database",
-		Action: migrateDBAction(c),
+		Action: c.ActionFunc("PG", migrateDB),
 	}
 }
 
-func migrateDBAction(c *typbuildtool.Context) cli.ActionFunc {
-	return func(cliCtx *cli.Context) (err error) {
-		return migrateDB(c.BuildContext(cliCtx))
-	}
-}
-
-func migrateDB(c *typbuildtool.BuildContext) (err error) {
+func migrateDB(c *typbuildtool.CliContext) (err error) {
 	var (
 		migration *migrate.Migrate
 		cfg       *Config
 	)
 
-	if cfg, err = retrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(); err != nil {
 		return
 	}
 

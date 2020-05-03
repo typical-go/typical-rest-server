@@ -38,19 +38,24 @@ func (m *Module) WithConfigName(configName string) *Module {
 // Configurations the module
 func (m *Module) Configurations() []*typcfg.Configuration {
 	return []*typcfg.Configuration{
-		typcfg.NewConfiguration(m.configName, &Config{}),
+		&typcfg.Configuration{
+			Name: m.configName,
+			Spec: &Config{},
+		},
 	}
 }
 
 // Constructors of newreslice
 func (*Module) Constructors() []*typapp.Constructor {
 	return []*typapp.Constructor{
-		typapp.NewConstructor(func(cfg *Config) (newrelic.Application, error) {
-			if cfg.AppName == "" || cfg.Key == "" {
-				return nil, nil
-			}
-			nrCfg := newrelic.NewConfig(cfg.AppName, cfg.Key)
-			return newrelic.NewApplication(nrCfg)
-		}),
+		typapp.NewConstructor("", createApp),
 	}
+}
+
+func createApp(cfg *Config) (newrelic.Application, error) {
+	if cfg.AppName == "" || cfg.Key == "" {
+		return nil, nil
+	}
+	nrCfg := newrelic.NewConfig(cfg.AppName, cfg.Key)
+	return newrelic.NewApplication(nrCfg)
 }

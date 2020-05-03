@@ -12,23 +12,17 @@ func cmdSeedDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "seed",
 		Usage:  "Data seeding",
-		Action: seedDBAction(c),
+		Action: c.ActionFunc("PG", seedDB),
 	}
 }
 
-func seedDBAction(c *typbuildtool.Context) cli.ActionFunc {
-	return func(cliCtx *cli.Context) (err error) {
-		return seedDB(c.BuildContext(cliCtx))
-	}
-}
-
-func seedDB(c *typbuildtool.BuildContext) (err error) {
+func seedDB(c *typbuildtool.CliContext) (err error) {
 	var (
 		db  *sql.DB
 		cfg *Config
 	)
 
-	if cfg, err = retrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(); err != nil {
 		return
 	}
 
@@ -46,7 +40,7 @@ func seedDB(c *typbuildtool.BuildContext) (err error) {
 			c.Warn(err.Error())
 			continue
 		}
-		if _, err = db.ExecContext(c.Cli.Context, string(b)); err != nil {
+		if _, err = db.ExecContext(c.Context, string(b)); err != nil {
 			c.Warn(err.Error())
 		}
 	}

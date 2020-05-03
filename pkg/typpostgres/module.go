@@ -16,13 +16,16 @@ import (
 func Module() *typapp.Module {
 	return typapp.NewModule().
 		Provide(
-			typapp.NewConstructor(Connect),
+			typapp.NewConstructor("", Connect),
 		).
 		Destroy(
 			typapp.NewDestructor(Disconnect),
 		).
 		Prepare(typapp.NewPreparation(Ping)).
-		Configure(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
+		Configure(&typcfg.Configuration{
+			Name: DefaultConfigName,
+			Spec: DefaultConfig,
+		})
 }
 
 // Connect to postgres server

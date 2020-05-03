@@ -11,10 +11,10 @@ import (
 // Module of redis
 func Module() *typapp.Module {
 	return typapp.NewModule().
-		Provide(typapp.NewConstructor(Connect)).
+		Provide(typapp.NewConstructor("", Connect)).
 		Destroy(typapp.NewDestructor(Disconnect)).
 		Prepare(typapp.NewPreparation(Ping)).
-		Configure(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
+		Configure(&typcfg.Configuration{Name: DefaultConfigName, Spec: DefaultConfig})
 }
 
 // Connect to redis server

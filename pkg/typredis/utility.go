@@ -12,7 +12,7 @@ import (
 // Utility return new instance of PostgresUtility
 func Utility() typbuildtool.Utility {
 	return typbuildtool.NewUtility(Commands).
-		Configure(typcfg.NewConfiguration(DefaultConfigName, DefaultConfig))
+		Configure(&typcfg.Configuration{Name: DefaultConfigName, Spec: DefaultConfig})
 }
 
 // Commands of redis utility
@@ -25,16 +25,14 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 				{
 					Name:    "console",
 					Aliases: []string{"c"},
-					Action: func(cliCtx *cli.Context) (err error) {
-						return console(c.BuildContext(cliCtx))
-					},
+					Action:  c.ActionFunc("REDIS", console),
 				},
 			},
 		},
 	}
 }
 
-func console(c *typbuildtool.BuildContext) (err error) {
+func console(c *typbuildtool.CliContext) (err error) {
 	var config *Config
 	if config, err = retrieveConfig(); err != nil {
 		return
@@ -48,7 +46,7 @@ func console(c *typbuildtool.BuildContext) (err error) {
 		args = append(args, "-a", config.Password)
 	}
 	// TODO: using docker -it
-	cmd := exec.CommandContext(c.Cli.Context, "redis-cli", args...)
+	cmd := exec.CommandContext(c.Context, "redis-cli", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin

@@ -21,7 +21,8 @@ type Book struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// BookRepo to get book data from database [mock]
+// BookRepo to get book data from database
+// @mock
 type BookRepo interface {
 	FindOne(context.Context, int64) (*Book, error)
 	Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
@@ -36,7 +37,8 @@ type BookRepoImpl struct {
 	*sql.DB
 }
 
-// NewBookRepo return new instance of BookRepo [constructor]
+// NewBookRepo return new instance of BookRepo
+// @constructor
 func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }

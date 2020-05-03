@@ -10,23 +10,17 @@ func cmdRollbackDB(c *typbuildtool.Context) *cli.Command {
 	return &cli.Command{
 		Name:   "rollback",
 		Usage:  "Rollback Database",
-		Action: rollbackDBAction(c),
+		Action: c.ActionFunc("PG", rollbackDB),
 	}
 }
 
-func rollbackDBAction(c *typbuildtool.Context) cli.ActionFunc {
-	return func(cliCtx *cli.Context) (err error) {
-		return rollbackDB(c.BuildContext(cliCtx))
-	}
-}
-
-func rollbackDB(c *typbuildtool.BuildContext) (err error) {
+func rollbackDB(c *typbuildtool.CliContext) (err error) {
 	var (
 		migration *migrate.Migrate
 		cfg       *Config
 	)
 
-	if cfg, err = retrieveConfig(c); err != nil {
+	if cfg, err = retrieveConfig(); err != nil {
 		return
 	}
 
