@@ -5,6 +5,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcore"
 	"github.com/typical-go/typical-go/pkg/typdocker"
+	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/server"
@@ -32,6 +33,7 @@ var Descriptor = typcore.Descriptor{
 		Utilities(
 			typpostgres.Utility(), // create db, drop, migrate, seed, console, etc.
 			typredis.Utility(),    // redis console
+			typmock.Utility(),
 
 			typdocker.Compose(
 				typpostgres.DockerRecipeV3(),
