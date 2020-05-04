@@ -2,14 +2,12 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo"
 
 	"github.com/typical-go/typical-rest-server/server/repository"
 	"github.com/typical-go/typical-rest-server/server/service"
 	"go.uber.org/dig"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 type (
@@ -33,20 +31,22 @@ func (c *BookCntrl) SetRoute(e *echo.Echo) {
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	var (
-		inserted *repository.Book
-		book     repository.Book
+		result *repository.Book
+		form   repository.Book
 	)
-	ctx := ec.Request().Context()
-	if err = ec.Bind(&book); err != nil {
+
+	if err = ec.Bind(&form); err != nil {
 		return err
 	}
-	if err = validator.New().Struct(book); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+
+	if result, err = c.BookService.Create(
+		ec.Request().Context(),
+		&form,
+	); err != nil {
+		return httpError(err)
 	}
-	if inserted, err = c.BookService.Create(ctx, &book); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	return ec.JSON(http.StatusCreated, inserted)
+
+	return ec.JSON(http.StatusCreated, result)
 }
 
 // Find books
@@ -54,25 +54,18 @@ func (c *BookCntrl) Find(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	books, err := c.BookService.Find(ctx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return httpError(err)
 	}
 	return ec.JSON(http.StatusOK, books)
 }
 
 // FindOne book
-func (c *BookCntrl) FindOne(ec echo.Context) (err error) {
-	var (
-		id   int64
-		book *repository.Book
+func (c *BookCntrl) FindOne(ec echo.Context) error {
+	book, err := c.BookService.FindOne(
+		ec.Request().Context(),
+		ec.Param("id"),
 	)
-	ctx := ec.Request().Context()
 
-	// TODO: move to service layer for validation
-	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
-	}
-
-	book, err = c.BookService.FindOne(ctx, id)
 	if err != nil {
 		return httpError(err)
 	}
@@ -82,44 +75,34 @@ func (c *BookCntrl) FindOne(ec echo.Context) (err error) {
 
 // Delete book
 func (c *BookCntrl) Delete(ec echo.Context) (err error) {
-	var (
-		id int64
-	)
-	ctx := ec.Request().Context()
-	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
+	if err = c.BookService.Delete(
+		ec.Request().Context(),
+		ec.Param("id"),
+	); err != nil {
+		return httpError(err)
 	}
-	if err = c.BookService.Delete(ctx, id); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	return ec.JSON(http.StatusNoContent, nil)
+	return ec.NoContent(http.StatusNoContent)
 }
 
 // Update book
-func (c *BookCntrl) Update(ec echo.Context) (err error) {
+func (c *BookCntrl) Update(ec echo.Context) error {
 	var (
-		id     int64
-		update repository.Book
+		form   repository.Book
+		result *repository.Book
+		err    error
 	)
 
-	ctx := ec.Request().Context()
-
-	if id, err = strconv.ParseInt(ec.Param("id"), 10, 64); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid ID")
-	}
-
-	if err = ec.Bind(&update); err != nil {
+	if err = ec.Bind(&form); err != nil {
 		return err
 	}
 
-	if err = validator.New().Struct(update); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	book, err := c.BookService.Update(ctx, id, &update)
-	if err != nil {
+	if result, err = c.BookService.Update(
+		ec.Request().Context(),
+		ec.Param("id"),
+		&form,
+	); err != nil {
 		return httpError(err)
 	}
 
-	return ec.JSON(http.StatusOK, book)
+	return ec.JSON(http.StatusOK, result)
 }

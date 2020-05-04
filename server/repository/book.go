@@ -12,32 +12,30 @@ import (
 	"go.uber.org/dig"
 )
 
-type (
-	// Book represented database model
-	Book struct {
-		ID        int64     `json:"id"`
-		Title     string    `json:"title" validate:"required"`
-		Author    string    `json:"author" validate:"required"`
-		UpdatedAt time.Time `json:"update_at"`
-		CreatedAt time.Time `json:"created_at"`
-	}
+// Book represented database model
+type Book struct {
+	ID        int64     `json:"id"`
+	Title     string    `json:"title" validate:"required"`
+	Author    string    `json:"author" validate:"required"`
+	UpdatedAt time.Time `json:"update_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
 
-	// BookRepo to get book data from database
-	// @mock
-	BookRepo interface {
-		FindOne(context.Context, int64) (*Book, error)
-		Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
-		Create(context.Context, *Book) (*Book, error)
-		Delete(context.Context, int64) error
-		Update(context.Context, int64, *Book) (*Book, error)
-	}
+// BookRepo to get book data from database
+// @mock
+type BookRepo interface {
+	FindOne(context.Context, int64) (*Book, error)
+	Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
+	Create(context.Context, *Book) (*Book, error)
+	Delete(context.Context, int64) error
+	Update(context.Context, int64, *Book) (*Book, error)
+}
 
-	// BookRepoImpl is implementation book repository
-	BookRepoImpl struct {
-		dig.In
-		*sql.DB
-	}
-)
+// BookRepoImpl is implementation book repository
+type BookRepoImpl struct {
+	dig.In
+	*sql.DB
+}
 
 // NewBookRepo return new instance of BookRepo
 // @constructor

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/typical-go/typical-rest-server/pkg/errvalid"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
@@ -18,18 +20,13 @@ import (
 func TestBookController_FindOne(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock_service.NewMockBookService(ctrl)
+	mockSvc := mock_service.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
-		BookService: bookSvc,
+		BookService: mockSvc,
 	}
-	t.Run("GIVEN invalid id", func(t *testing.T) {
-		_, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
-			"id": "invalid",
-		})
-		require.EqualError(t, err, "code=400, message=Invalid ID")
-	})
+
 	t.Run("GIVEN valid ID", func(t *testing.T) {
-		bookSvc.EXPECT().FindOne(gomock.Any(), int64(1)).Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+		mockSvc.EXPECT().FindOne(gomock.Any(), "1").Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 		rr, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
 			"id": "1",
 		})
@@ -38,14 +35,21 @@ func TestBookController_FindOne(t *testing.T) {
 		require.Equal(t, "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n", rr.Body.String())
 	})
 	t.Run("WHEN entity not found", func(t *testing.T) {
-		bookSvc.EXPECT().FindOne(gomock.Any(), int64(3)).Return(nil, sql.ErrNoRows)
+		mockSvc.EXPECT().FindOne(gomock.Any(), "3").Return(nil, sql.ErrNoRows)
 		_, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
 			"id": "3",
 		})
 		require.EqualError(t, err, "code=404, message=Not Found")
 	})
+	t.Run("WHEN return validation error", func(t *testing.T) {
+		mockSvc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, errvalid.New("some-validation"))
+		_, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
+			"id": "2",
+		})
+		require.EqualError(t, err, "code=422, message=some-validation")
+	})
 	t.Run("WHEN return error", func(t *testing.T) {
-		bookSvc.EXPECT().FindOne(gomock.Any(), int64(2)).Return(nil, fmt.Errorf("some-get-error"))
+		mockSvc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, fmt.Errorf("some-get-error"))
 		_, err := echotest.DoGET(bookCntrl.FindOne, "/", map[string]string{
 			"id": "2",
 		})
@@ -85,10 +89,7 @@ func TestBookController_Create(t *testing.T) {
 	bookController := controller.BookCntrl{
 		BookService: bookSvc,
 	}
-	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPOST(bookController.Create, "/", `{}`, nil)
-		require.EqualError(t, err, "code=400, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag")
-	})
+
 	t.Run("WHEN invalid json format", func(t *testing.T) {
 		_, err := echotest.DoPOST(bookController.Create, "/", `invalid}`, nil)
 		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
@@ -118,14 +119,9 @@ func TestBookController_Delete(t *testing.T) {
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
-	t.Run("WHEN invalid ID", func(t *testing.T) {
-		_, err := echotest.DoDELETE(bookCntrl.Delete, "/", map[string]string{
-			"id": "invalid",
-		})
-		require.EqualError(t, err, "code=400, message=Invalid ID")
-	})
+
 	t.Run("WHEN return success", func(t *testing.T) {
-		bookSvc.EXPECT().Delete(gomock.Any(), int64(1)).Return(nil)
+		bookSvc.EXPECT().Delete(gomock.Any(), "1").Return(nil)
 		rr, err := echotest.DoDELETE(bookCntrl.Delete, "/", map[string]string{
 			"id": "1",
 		})
@@ -133,11 +129,18 @@ func TestBookController_Delete(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, rr.Code)
 	})
 	t.Run("WHEN error", func(t *testing.T) {
-		bookSvc.EXPECT().Delete(gomock.Any(), int64(2)).Return(fmt.Errorf("some-delete-error"))
+		bookSvc.EXPECT().Delete(gomock.Any(), "2").Return(fmt.Errorf("some-delete-error"))
 		_, err := echotest.DoDELETE(bookCntrl.Delete, "/", map[string]string{
 			"id": "2",
 		})
 		require.EqualError(t, err, "code=500, message=some-delete-error")
+	})
+	t.Run("WHEN error", func(t *testing.T) {
+		bookSvc.EXPECT().Delete(gomock.Any(), "2").Return(errvalid.New("some-validation"))
+		_, err := echotest.DoDELETE(bookCntrl.Delete, "/", map[string]string{
+			"id": "2",
+		})
+		require.EqualError(t, err, "code=422, message=some-validation")
 	})
 }
 
@@ -149,16 +152,8 @@ func TestBookController_Update(t *testing.T) {
 		BookService: bookSvc,
 	}
 	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{}`, nil)
-		require.EqualError(t, err, "code=400, message=Invalid ID")
-	})
-	t.Run("WHEN invalid message request", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{"id": 1}`, map[string]string{"id": "1"})
-		require.EqualError(t, err, "code=400, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag")
-	})
-	t.Run("WHEN invalid json format", func(t *testing.T) {
-		_, err := echotest.DoPUT(bookCntrl.Update, "/", `invalid}`, map[string]string{"id": "1"})
-		require.EqualError(t, err, `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`)
+		_, err := echotest.DoPUT(bookCntrl.Update, "/", `{invalid-json`, nil)
+		require.EqualError(t, err, "code=400, message=Syntax error: offset=2, error=invalid character 'i' looking for beginning of object key string")
 	})
 
 	t.Run("WHEN book not found", func(t *testing.T) {

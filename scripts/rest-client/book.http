@@ -1,3 +1,7 @@
+### Page Not Found (404)
+
+http://localhost:8089/adsfqer
+
 ### Find Books
 
 http://localhost:8089/books
@@ -6,6 +10,11 @@ http://localhost:8089/books
 ### Find One Book
 
 http://localhost:8089/books/2
+
+### Find One Book (Invalid ID)
+
+http://localhost:8089/books/invalid
+
 
 
 ### Insert Book

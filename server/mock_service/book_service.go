@@ -51,7 +51,7 @@ func (mr *MockBookServiceMockRecorder) Create(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // Delete mocks base method
-func (m *MockBookService) Delete(arg0 context.Context, arg1 int64) error {
+func (m *MockBookService) Delete(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -85,7 +85,7 @@ func (mr *MockBookServiceMockRecorder) Find(arg0 interface{}, arg1 ...interface{
 }
 
 // FindOne mocks base method
-func (m *MockBookService) FindOne(arg0 context.Context, arg1 int64) (*repository.Book, error) {
+func (m *MockBookService) FindOne(arg0 context.Context, arg1 string) (*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindOne", arg0, arg1)
 	ret0, _ := ret[0].(*repository.Book)
@@ -100,7 +100,7 @@ func (mr *MockBookServiceMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.C
 }
 
 // Update mocks base method
-func (m *MockBookService) Update(arg0 context.Context, arg1 int64, arg2 *repository.Book) (*repository.Book, error) {
+func (m *MockBookService) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) (*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
 	ret0, _ := ret[0].(*repository.Book)

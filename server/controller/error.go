@@ -4,14 +4,26 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/typical-go/typical-rest-server/pkg/errvalid"
+
 	"github.com/labstack/echo"
 )
 
 func httpError(err error) *echo.HTTPError {
-	switch err {
-	case sql.ErrNoRows:
+
+	if err == sql.ErrNoRows {
 		return echo.NewHTTPError(http.StatusNotFound)
-	default:
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
+	if errvalid.Check(err) {
+		return echo.NewHTTPError(
+			http.StatusUnprocessableEntity,
+			errvalid.Message(err),
+		)
+	}
+
+	return echo.NewHTTPError(
+		http.StatusInternalServerError,
+		err.Error(),
+	)
 }
