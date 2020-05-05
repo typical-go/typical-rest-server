@@ -33,7 +33,11 @@ func Create(s *Setting) *Postgres {
 	return &Postgres{
 		Composer: recipe(s),
 
-		Utility: typbuildtool.NewUtility(Commands),
+		Utility: &utility{
+			configName:   GetConfigName(s),
+			seedSrc:      GetSeedSrc(s),
+			migrationSrc: GetMigrationSrc(s),
+		},
 
 		Module: typapp.NewModule().
 			Provide(
@@ -62,20 +66,20 @@ func (p *Postgres) Configurations() []*typcfg.Configuration {
 
 func configuration(s *Setting) *typcfg.Configuration {
 	return &typcfg.Configuration{
-		Name: ConfigName(s),
+		Name: GetConfigName(s),
 		Spec: &Config{
-			DBName:   DBName(s),
-			User:     User(s),
-			Password: Password(s),
-			Host:     Host(s),
-			Port:     Port(s),
+			DBName:   GetDBName(s),
+			User:     GetUser(s),
+			Password: GetPassword(s),
+			Host:     GetHost(s),
+			Port:     GetPort(s),
 		},
 	}
 }
 
 func recipe(s *Setting) *typdocker.Recipe {
-	name := DockerName(s)
-	image := DockerImage(s)
+	name := GetDockerName(s)
+	image := GetDockerImage(s)
 
 	return &typdocker.Recipe{
 		Version: typdocker.V3,
@@ -83,15 +87,15 @@ func recipe(s *Setting) *typdocker.Recipe {
 			name: typdocker.Service{
 				Image: image,
 				Environment: map[string]string{
-					"POSTGRES":          User(s),
-					"POSTGRES_PASSWORD": Password(s),
+					"POSTGRES":          GetUser(s),
+					"POSTGRES_PASSWORD": GetPassword(s),
 					"PGDATA":            "/data/postgres",
 				},
 				Volumes: []string{
 					"postgres:/data/postgres",
 				},
 				Ports: []string{
-					fmt.Sprintf("%d:5432", Port(s)),
+					fmt.Sprintf("%d:5432", GetPort(s)),
 				},
 				Networks: []string{
 					name,
@@ -106,26 +110,6 @@ func recipe(s *Setting) *typdocker.Recipe {
 		},
 		Volumes: typdocker.Volumes{
 			name: nil,
-		},
-	}
-}
-
-// Commands of module
-func Commands(c *typbuildtool.Context) []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:    "postgres",
-			Aliases: []string{"pg"},
-			Usage:   "Postgres utility",
-			Subcommands: []*cli.Command{
-				cmdCreateDB(c),
-				cmdDropDB(c),
-				cmdMigrateDB(c),
-				cmdRollbackDB(c),
-				cmdSeedDB(c),
-				cmdResetDB(c),
-				cmdConsole(c),
-			},
 		},
 	}
 }
