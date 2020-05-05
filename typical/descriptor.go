@@ -21,8 +21,8 @@ var Descriptor = typcore.Descriptor{
 	App: typapp.EntryPoint(server.Main, "server").
 		Imports(
 			server.Configuration(),
-			typredis.Module(),    // create/destroy redis conn + its configuration
-			typpostgres.Module(), // create/destroy pg conn  + its configuration
+			typredis.Module(),   // create/destroy redis conn + its configuration
+			typpostgres.Default, // create/destroy pg conn  + its configuration
 		),
 
 	BuildTool: typbuildtool.
@@ -31,12 +31,12 @@ var Descriptor = typcore.Descriptor{
 			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release to Github
 		).
 		Utilities(
-			typpostgres.Utility(), // create db, drop, migrate, seed, console, etc.
-			typredis.Utility(),    // redis console
+			typpostgres.Default, // create db, drop, migrate, seed, console, etc.
+			typredis.Utility(),  // redis console
 			typmock.Utility(),
 
 			typdocker.Compose(
-				typpostgres.DockerRecipeV3(),
+				typpostgres.Default,
 				typredis.DockerRecipeV3(),
 			),
 		),
