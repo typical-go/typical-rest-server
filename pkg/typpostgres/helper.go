@@ -16,9 +16,9 @@ func adminDataSource(c *Config) string {
 		c.User, c.Password, c.Host, c.Port, "template1")
 }
 
-func retrieveConfig() (*Config, error) {
+func retrieveConfig(cfgName string) (*Config, error) {
 	var cfg Config
-	if err := typcfg.Process(DefaultConfigName, &cfg); err != nil {
+	if err := typcfg.Process(cfgName, &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil

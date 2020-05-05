@@ -11,23 +11,11 @@ import (
 )
 
 var (
+	_ typcfg.Configurer = (*Postgres)(nil)
+
 	// Default instance
-	Default = Create()
-
-	// DefaultDockerImage is default docker image for postgres
-	DefaultDockerImage = "postgres"
-
-	// DefaultDockerName is default docker name for postgres
-	DefaultDockerName = "postgres"
-
-	// DefaultMigrationSource is default migration source for postgres
-	DefaultMigrationSource = "scripts/db/migration"
-
-	// DefaultSeedSource is default seed source for postgres
-	DefaultSeedSource = "scripts/db/seed"
+	Default = Create(nil)
 )
-
-var _ typcfg.Configurer = (*Postgres)(nil)
 
 // Postgres module
 type Postgres struct {
@@ -38,9 +26,12 @@ type Postgres struct {
 }
 
 // Create instance of psotgres module
-func Create() *Postgres {
+func Create(s *Setting) *Postgres {
+	if s == nil {
+		s = &Setting{}
+	}
 	return &Postgres{
-		Composer: recipe(),
+		Composer: recipe(s),
 
 		Utility: typbuildtool.NewUtility(Commands),
 
@@ -55,10 +46,7 @@ func Create() *Postgres {
 				typapp.NewPreparation(Ping),
 			),
 
-		Configuration: &typcfg.Configuration{
-			Name: DefaultConfigName,
-			Spec: DefaultConfig,
-		},
+		Configuration: configuration(s),
 	}
 }
 
@@ -72,30 +60,52 @@ func (p *Postgres) Configurations() []*typcfg.Configuration {
 	return p.Configuration.Configurations()
 }
 
-func recipe() *typdocker.Recipe {
+func configuration(s *Setting) *typcfg.Configuration {
+	return &typcfg.Configuration{
+		Name: ConfigName(s),
+		Spec: &Config{
+			DBName:   DBName(s),
+			User:     User(s),
+			Password: Password(s),
+			Host:     Host(s),
+			Port:     Port(s),
+		},
+	}
+}
+
+func recipe(s *Setting) *typdocker.Recipe {
+	name := DockerName(s)
+	image := DockerImage(s)
+
 	return &typdocker.Recipe{
 		Version: typdocker.V3,
 		Services: typdocker.Services{
-			DefaultDockerName: typdocker.Service{
-				Image: DefaultDockerImage,
+			name: typdocker.Service{
+				Image: image,
 				Environment: map[string]string{
-					"POSTGRES":          DefaultUser,
-					"POSTGRES_PASSWORD": DefaultPassword,
+					"POSTGRES":          User(s),
+					"POSTGRES_PASSWORD": Password(s),
 					"PGDATA":            "/data/postgres",
 				},
-				Volumes:  []string{"postgres:/data/postgres"},
-				Ports:    []string{fmt.Sprintf("%d:5432", DefaultPort)},
-				Networks: []string{DefaultDockerName},
-				Restart:  "unless-stopped",
+				Volumes: []string{
+					"postgres:/data/postgres",
+				},
+				Ports: []string{
+					fmt.Sprintf("%d:5432", Port(s)),
+				},
+				Networks: []string{
+					name,
+				},
+				Restart: "unless-stopped",
 			},
 		},
 		Networks: typdocker.Networks{
-			DefaultDockerName: typdocker.Network{
+			name: typdocker.Network{
 				Driver: "bridge",
 			},
 		},
 		Volumes: typdocker.Volumes{
-			DefaultDockerName: nil,
+			name: nil,
 		},
 	}
 }

@@ -22,7 +22,7 @@ func createDB(c *typbuildtool.CliContext) (err error) {
 		cfg  *Config
 	)
 
-	if cfg, err = retrieveConfig(); err != nil {
+	if cfg, err = retrieveConfig(defaultConfigName); err != nil {
 		return
 	}
 

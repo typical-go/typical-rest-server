@@ -22,7 +22,7 @@ func seedDB(c *typbuildtool.CliContext) (err error) {
 		cfg *Config
 	)
 
-	if cfg, err = retrieveConfig(); err != nil {
+	if cfg, err = retrieveConfig(defaultConfigName); err != nil {
 		return
 	}
 
@@ -31,9 +31,9 @@ func seedDB(c *typbuildtool.CliContext) (err error) {
 	}
 	defer db.Close()
 
-	files, _ := ioutil.ReadDir(DefaultSeedSource)
+	files, _ := ioutil.ReadDir(defaultSeedSrc)
 	for _, f := range files {
-		sqlFile := DefaultSeedSource + "/" + f.Name()
+		sqlFile := defaultSeedSrc + "/" + f.Name()
 		c.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
 		if b, err = ioutil.ReadFile(sqlFile); err != nil {

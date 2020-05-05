@@ -19,7 +19,7 @@ func cmdConsole(c *typbuildtool.Context) *cli.Command {
 
 func console(c *typbuildtool.CliContext) (err error) {
 	var cfg *Config
-	if cfg, err = retrieveConfig(); err != nil {
+	if cfg, err = retrieveConfig(defaultConfigName); err != nil {
 		return
 	}
 

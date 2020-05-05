@@ -20,11 +20,11 @@ func migrateDB(c *typbuildtool.CliContext) (err error) {
 		cfg       *Config
 	)
 
-	if cfg, err = retrieveConfig(); err != nil {
+	if cfg, err = retrieveConfig(defaultConfigName); err != nil {
 		return
 	}
 
-	sourceURL := "file://" + DefaultMigrationSource
+	sourceURL := "file://" + defaultMigrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
 	if migration, err = migrate.New(sourceURL, dataSource(cfg)); err != nil {
 		return err
