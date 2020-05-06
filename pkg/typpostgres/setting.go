@@ -18,6 +18,8 @@ const (
 
 // Setting for postgres
 type Setting struct {
+	CtorName string
+
 	DockerName  string
 	DockerImage string
 
@@ -73,7 +75,7 @@ func GetUser(s *Setting) string {
 	return s.User
 }
 
-// Password from setting
+// GetPassword from setting
 func GetPassword(s *Setting) string {
 	if s.Password == "" {
 		return DefaultPassword

@@ -21,7 +21,9 @@ var (
 type Postgres struct {
 	typdocker.Composer
 	typbuildtool.Utility
-	*typapp.Module
+	typapp.Provider
+	typapp.Destroyer
+	typapp.Preparer
 	*typcfg.Configuration
 }
 
@@ -39,17 +41,9 @@ func Create(s *Setting) *Postgres {
 			migrationSrc: GetMigrationSrc(s),
 		},
 
-		Module: typapp.NewModule().
-			Provide(
-				typapp.NewConstructor("", Connect),
-			).
-			Destroy(
-				typapp.NewDestructor(Disconnect),
-			).
-			Prepare(
-				typapp.NewPreparation(Ping),
-			),
-
+		Provider:      typapp.NewConstructor(s.CtorName, Connect),
+		Destroyer:     typapp.NewDestructor(Disconnect), // TODO: add constructor name
+		Preparer:      typapp.NewPreparation(Ping),      // TODO: add constructor name
 		Configuration: configuration(s),
 	}
 }
