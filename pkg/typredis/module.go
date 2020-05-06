@@ -8,13 +8,21 @@ import (
 	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
+// Redis module
+type Redis struct {
+	typapp.Provider
+	typapp.Destroyer
+	typapp.Preparer
+	typcfg.Configurer
+}
+
 // Module of redis
-func Module() *typapp.Module {
-	return typapp.NewModule().
-		Provide(typapp.NewConstructor("", Connect)).
-		Destroy(typapp.NewDestructor(Disconnect)).
-		Prepare(typapp.NewPreparation(Ping)).
-		Configure(&typcfg.Configuration{Name: DefaultConfigName, Spec: DefaultConfig})
+func Module() *Redis {
+	return &Redis{
+		Provider:  typapp.NewConstructor("", Connect),
+		Destroyer: typapp.NewDestructor(Disconnect),
+		Preparer:  typapp.NewPreparation(Ping),
+	}
 }
 
 // Connect to redis server
