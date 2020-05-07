@@ -78,7 +78,7 @@ func (u *utility) dropDB(c *typbuildtool.CliContext) (err error) {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", adminDataSource(cfg)); err != nil {
+	if conn, err = sql.Open("postgres", cfg.ConnStrForAdmin()); err != nil {
 		return
 	}
 	defer conn.Close()
@@ -99,7 +99,7 @@ func (u *utility) createDB(c *typbuildtool.CliContext) (err error) {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", adminDataSource(cfg)); err != nil {
+	if conn, err = sql.Open("postgres", cfg.ConnStrForAdmin()); err != nil {
 		return
 	}
 	defer conn.Close()
@@ -126,7 +126,7 @@ func (u *utility) migrateDB(c *typbuildtool.CliContext) (err error) {
 
 	sourceURL := "file://" + u.migrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
-	if migration, err = migrate.New(sourceURL, dataSource(cfg)); err != nil {
+	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
 		return err
 	}
 	defer migration.Close()
@@ -160,7 +160,7 @@ func (u *utility) rollbackDB(c *typbuildtool.CliContext) (err error) {
 
 	sourceURL := "file://" + u.migrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
-	if migration, err = migrate.New(sourceURL, dataSource(cfg)); err != nil {
+	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
 		return
 	}
 	defer migration.Close()
@@ -194,7 +194,7 @@ func (u *utility) seedDB(c *typbuildtool.CliContext) (err error) {
 		return
 	}
 
-	if db, err = sql.Open("postgres", dataSource(cfg)); err != nil {
+	if db, err = sql.Open("postgres", cfg.ConnStr()); err != nil {
 		return
 	}
 	defer db.Close()

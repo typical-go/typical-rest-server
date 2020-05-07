@@ -11,7 +11,7 @@ import (
 
 // Connect to postgres server
 func Connect(cfg *Config) (db *sql.DB, err error) {
-	if db, err = sql.Open("postgres", dataSource(cfg)); err != nil {
+	if db, err = sql.Open("postgres", cfg.ConnStr()); err != nil {
 		err = fmt.Errorf("Posgres: Connect: %w", err)
 	}
 	return
