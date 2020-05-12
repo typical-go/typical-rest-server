@@ -9,9 +9,12 @@ import (
 	"strconv"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
+
+	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
 )
 
 type utility struct {
@@ -20,8 +23,20 @@ type utility struct {
 	seedSrc      string
 }
 
+// Utility of postgres
+func Utility(s *Setting) typgo.Utility {
+	if s == nil {
+		s = &Setting{}
+	}
+	return &utility{
+		configName:   GetConfigName(s),
+		seedSrc:      GetSeedSrc(s),
+		migrationSrc: GetMigrationSrc(s),
+	}
+}
+
 // Commands of module
-func (u *utility) Commands(c *typbuildtool.Context) []*cli.Command {
+func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:    "postgres",
@@ -68,7 +83,7 @@ func (u *utility) Commands(c *typbuildtool.Context) []*cli.Command {
 	}
 }
 
-func (u *utility) dropDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) dropDB(c *typgo.Context) (err error) {
 	var (
 		conn *sql.DB
 		cfg  *Config
@@ -85,11 +100,11 @@ func (u *utility) dropDB(c *typbuildtool.CliContext) (err error) {
 
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	c.Infof("Postgres: %s", query)
-	_, err = conn.ExecContext(c.Context, query)
+	_, err = conn.ExecContext(c.Cli.Context, query)
 	return
 }
 
-func (u *utility) createDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) createDB(c *typgo.Context) (err error) {
 	var (
 		conn *sql.DB
 		cfg  *Config
@@ -104,17 +119,18 @@ func (u *utility) createDB(c *typbuildtool.CliContext) (err error) {
 	}
 	defer conn.Close()
 
-	if err = conn.PingContext(c.Context); err != nil {
+	ctx := c.Cli.Context
+	if err = conn.PingContext(ctx); err != nil {
 		return
 	}
 
 	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
 	c.Infof("Postgres: %s", query)
-	_, err = conn.ExecContext(c.Context, query)
+	_, err = conn.ExecContext(ctx, query)
 	return
 }
 
-func (u *utility) migrateDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) migrateDB(c *typgo.Context) (err error) {
 	var (
 		migration *migrate.Migrate
 		cfg       *Config
@@ -133,7 +149,7 @@ func (u *utility) migrateDB(c *typbuildtool.CliContext) (err error) {
 	return migration.Up()
 }
 
-func (u *utility) console(c *typbuildtool.CliContext) (err error) {
+func (u *utility) console(c *typgo.Context) (err error) {
 	var cfg *Config
 	if cfg, err = u.retrieveConfig(); err != nil {
 		return
@@ -141,14 +157,14 @@ func (u *utility) console(c *typbuildtool.CliContext) (err error) {
 
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
-	cmd := exec.CommandContext(c.Context, "psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
+	cmd := exec.CommandContext(c.Cli.Context, "psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
 	return cmd.Run()
 }
 
-func (u *utility) rollbackDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) rollbackDB(c *typgo.Context) (err error) {
 	var (
 		migration *migrate.Migrate
 		cfg       *Config
@@ -167,7 +183,7 @@ func (u *utility) rollbackDB(c *typbuildtool.CliContext) (err error) {
 	return migration.Down()
 }
 
-func (u *utility) resetDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) resetDB(c *typgo.Context) (err error) {
 
 	if err = u.dropDB(c); err != nil {
 		return
@@ -184,7 +200,7 @@ func (u *utility) resetDB(c *typbuildtool.CliContext) (err error) {
 	return
 }
 
-func (u *utility) seedDB(c *typbuildtool.CliContext) (err error) {
+func (u *utility) seedDB(c *typgo.Context) (err error) {
 	var (
 		db  *sql.DB
 		cfg *Config
@@ -200,6 +216,7 @@ func (u *utility) seedDB(c *typbuildtool.CliContext) (err error) {
 	defer db.Close()
 
 	files, _ := ioutil.ReadDir(u.seedSrc)
+	ctx := c.Cli.Context
 	for _, f := range files {
 		sqlFile := u.seedSrc + "/" + f.Name()
 		c.Infof("Execute seed '%s'", sqlFile)
@@ -208,7 +225,7 @@ func (u *utility) seedDB(c *typbuildtool.CliContext) (err error) {
 			c.Warn(err.Error())
 			continue
 		}
-		if _, err = db.ExecContext(c.Context, string(b)); err != nil {
+		if _, err = db.ExecContext(ctx, string(b)); err != nil {
 			c.Warn(err.Error())
 		}
 	}

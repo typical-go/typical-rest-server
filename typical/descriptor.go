@@ -1,10 +1,9 @@
 package typical
 
 import (
-	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
-	"github.com/typical-go/typical-go/pkg/typcore"
+	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typdocker"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
@@ -13,31 +12,34 @@ import (
 
 // Descriptor of Typical REST Server
 // Build-Tool and Application will be generated based on this descriptor
-var Descriptor = typcore.Descriptor{
+var Descriptor = typgo.Descriptor{
 	Name:        "typical-rest-server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.27",
 
-	App: typapp.EntryPoint(server.Main, "server").
-		Imports(
-			server.Configuration(),
-			typredis.Module(),   // create/destroy redis conn + its configuration
-			typpostgres.Default, // create/destroy pg conn  + its configuration
-		),
+	EntryPoint: server.Main,
 
-	BuildTool: typbuildtool.
-		BuildSequences(
-			typbuildtool.StandardBuild(),
-			typbuildtool.Github("typical-go", "typical-rest-server"), // Create release to Github
-		).
-		Utilities(
-			typpostgres.Default, // create db, drop, migrate, seed, console, etc.
-			typredis.Utility(),  // redis console
-			typmock.Utility(),
+	Layouts: []string{"server", "pkg"},
 
-			typdocker.Compose(
-				typpostgres.Default,
-				typredis.DockerRecipeV3(),
-			),
+	Config: typcfg.Configs{
+		typredis.Configuration(),
+		typpostgres.Configuration(nil),
+		server.Configuration(),
+	},
+
+	BuildSequences: []interface{}{
+		typgo.StandardBuild(),
+		&typgo.Github{Owner: "typical-go", RepoName: "typical-rest-server"}, // Create release to Github
+	},
+
+	Utility: Utilities{
+		typpostgres.Utility(nil), // create db, drop, migrate, seed, console, etc.
+		typredis.Utility(),       // redis console
+		typmock.Utility(),
+
+		typdocker.Compose(
+			typpostgres.DockerRecipeV3(nil),
+			typredis.DockerRecipeV3(),
 		),
+	},
 }

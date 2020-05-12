@@ -1,7 +1,7 @@
 package typrails
 
 import (
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,7 +14,7 @@ func New() *Rails {
 }
 
 // Commands to exectuce from Build-Tool
-func (m *Rails) Commands(c *typbuildtool.Context) []*cli.Command {
+func (m *Rails) Commands(c *typgo.Context) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "rails",

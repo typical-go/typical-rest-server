@@ -3,11 +3,11 @@ package typrails
 import (
 	"errors"
 
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 )
 
-func repositoryCmd(c *typbuildtool.Context) *cli.Command {
+func repositoryCmd(c *typgo.Context) *cli.Command {
 	return &cli.Command{
 		Name:      "repository",
 		Aliases:   []string{"repo"},

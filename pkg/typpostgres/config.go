@@ -1,6 +1,10 @@
 package typpostgres
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/typical-go/typical-go/pkg/typcfg"
+)
 
 // Config is postgres configuration
 type Config struct {
@@ -19,4 +23,21 @@ func (c *Config) ConnStr() string {
 func (c *Config) ConnStrForAdmin() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, "template1")
+}
+
+// Configuration of postgres
+func Configuration(s *Setting) *typcfg.Configuration {
+	if s == nil {
+		s = &Setting{}
+	}
+	return &typcfg.Configuration{
+		Name: GetConfigName(s),
+		Spec: &Config{
+			DBName:   GetDBName(s),
+			User:     GetUser(s),
+			Password: GetPassword(s),
+			Host:     GetHost(s),
+			Port:     GetPort(s),
+		},
+	}
 }

@@ -4,19 +4,18 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-go/pkg/typbuildtool"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 )
 
-// Utility return new instance of PostgresUtility
-func Utility() typbuildtool.Utility {
-	return typbuildtool.NewUtility(Commands).
-		Configure(&typcfg.Configuration{Name: DefaultConfigName, Spec: DefaultConfig})
+// Utility of redis
+func Utility() typgo.Utility {
+	return typgo.NewUtility(Commands)
 }
 
 // Commands of redis utility
-func Commands(c *typbuildtool.Context) []*cli.Command {
+func Commands(c *typgo.BuildTool) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -32,7 +31,7 @@ func Commands(c *typbuildtool.Context) []*cli.Command {
 	}
 }
 
-func console(c *typbuildtool.CliContext) (err error) {
+func console(c *typgo.Context) (err error) {
 	var config *Config
 	if config, err = retrieveConfig(); err != nil {
 		return
@@ -46,7 +45,8 @@ func console(c *typbuildtool.CliContext) (err error) {
 		args = append(args, "-a", config.Password)
 	}
 	// TODO: using docker -it
-	cmd := exec.CommandContext(c.Context, "redis-cli", args...)
+
+	cmd := exec.CommandContext(c.Cli.Context, "redis-cli", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin

@@ -2,27 +2,8 @@ package typredis
 
 import (
 	"time"
-)
 
-var (
-	// DefaultConfigName is default value for redis config name
-	DefaultConfigName = "REDIS"
-
-	// DefaultHost is default value for redis host
-	DefaultHost = "localhost"
-
-	// DefaultPort is default value for redis port
-	DefaultPort = "6379"
-
-	// DefaultPassword is default value for redis password
-	DefaultPassword = "redispass"
-
-	// DefaultConfig for redis
-	DefaultConfig = &Config{
-		Host:     DefaultHost,
-		Port:     DefaultPort,
-		Password: DefaultPassword,
-	}
+	"github.com/typical-go/typical-go/pkg/typcfg"
 )
 
 // Config is Redis Configuration
@@ -38,4 +19,12 @@ type Config struct {
 	IdleTimeout        time.Duration `envconfig:"IDLE_TIMEOUT" default:"5m" required:"true"`
 	IdleCheckFrequency time.Duration `envconfig:"IDLE_CHECK_FREQUENCY" default:"1m" required:"true"`
 	MaxConnAge         time.Duration `envconfig:"MAX_CONN_AGE" default:"30m" required:"true"`
+}
+
+// Configuration of redis
+func Configuration() *typcfg.Configuration {
+	return &typcfg.Configuration{
+		Name: DefaultConfigName,
+		Spec: DefaultConfig,
+	}
 }

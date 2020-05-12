@@ -2,22 +2,22 @@ package typnewrelic
 
 import (
 	newrelic "github.com/newrelic/go-agent"
-	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
-const (
+var (
 	// DefaultConfigName is default value for ConfigName
 	DefaultConfigName = "NEWRELIC"
 )
 
 var (
-	_ typapp.Provider   = (*Module)(nil)
-	_ typcfg.Configurer = (*Module)(nil)
+	_ typgo.Provider = (*Module)(nil)
+	_ typcfg.Config  = (*Module)(nil)
 )
 
 // Module of new-relic
-// TODO: use typapp.Module instead
+// TODO: use typgo.Module instead
 type Module struct {
 	configName string
 }
@@ -46,9 +46,9 @@ func (m *Module) Configurations() []*typcfg.Configuration {
 }
 
 // Constructors of newreslice
-func (*Module) Constructors() []*typapp.Constructor {
-	return []*typapp.Constructor{
-		typapp.NewConstructor("", createApp),
+func (*Module) Constructors() []*typgo.Constructor {
+	return []*typgo.Constructor{
+		&typgo.Constructor{Fn: createApp},
 	}
 }
 
