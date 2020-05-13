@@ -92,7 +92,7 @@ func (u *utility) dropDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", cfg.ConnStrForAdmin()); err != nil {
+	if conn, err = sql.Open("postgres", cfg.Admin().ConnStr()); err != nil {
 		return
 	}
 	defer conn.Close()
@@ -113,7 +113,7 @@ func (u *utility) createDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", cfg.ConnStrForAdmin()); err != nil {
+	if conn, err = sql.Open("postgres", cfg.Admin().ConnStr()); err != nil {
 		return
 	}
 	defer conn.Close()
