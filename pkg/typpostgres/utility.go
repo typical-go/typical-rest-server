@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"strconv"
 
 	"github.com/golang-migrate/migrate"
+	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 
@@ -73,9 +73,10 @@ func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
 					Action: c.ActionFunc("PG", u.resetDB),
 				},
 				{
-					Name:   "console",
-					Usage:  "PostgreSQL Interactive",
-					Action: c.ActionFunc("PG", u.console),
+					Name:    "console",
+					Aliases: []string{"c"},
+					Usage:   "PostgreSQL Interactive",
+					Action:  c.ActionFunc("PG", u.console),
 				},
 			},
 		},
@@ -156,11 +157,22 @@ func (u *utility) console(c *typgo.Context) (err error) {
 
 	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
-	cmd := exec.CommandContext(c.Cli.Context, "psql", "-h", cfg.Host, "-p", strconv.Itoa(cfg.Port), "-U", cfg.User)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
+
+	cmd := &execkit.Command{
+		Name: "psql",
+		Args: []string{
+			"-h", cfg.Host,
+			"-p", strconv.Itoa(cfg.Port),
+			"-U", cfg.User,
+		},
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Stdin:  os.Stdin,
+	}
+
+	cmd.Print(os.Stdout)
+
+	return cmd.Run(c.Cli.Context)
 }
 
 func (u *utility) rollbackDB(c *typgo.Context) (err error) {
