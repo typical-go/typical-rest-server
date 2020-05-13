@@ -2,7 +2,6 @@ package typnewrelic
 
 import (
 	newrelic "github.com/newrelic/go-agent"
-	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
@@ -12,8 +11,8 @@ var (
 )
 
 var (
-	_ typgo.Provider = (*Module)(nil)
-	_ typcfg.Config  = (*Module)(nil)
+	_ typgo.Provider   = (*Module)(nil)
+	_ typgo.Configurer = (*Module)(nil)
 )
 
 // Module of new-relic
@@ -36,9 +35,9 @@ func (m *Module) WithConfigName(configName string) *Module {
 }
 
 // Configurations the module
-func (m *Module) Configurations() []*typcfg.Configuration {
-	return []*typcfg.Configuration{
-		&typcfg.Configuration{
+func (m *Module) Configurations() []*typgo.Configuration {
+	return []*typgo.Configuration{
+		&typgo.Configuration{
 			Name: m.configName,
 			Spec: &Config{},
 		},

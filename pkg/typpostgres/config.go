@@ -3,7 +3,7 @@ package typpostgres
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
 // Config is postgres configuration
@@ -26,11 +26,11 @@ func (c *Config) ConnStrForAdmin() string {
 }
 
 // Configuration of postgres
-func Configuration(s *Setting) *typcfg.Configuration {
+func Configuration(s *Setting) *typgo.Configuration {
 	if s == nil {
 		s = &Setting{}
 	}
-	return &typcfg.Configuration{
+	return &typgo.Configuration{
 		Name: GetConfigName(s),
 		Spec: &Config{
 			DBName:   GetDBName(s),

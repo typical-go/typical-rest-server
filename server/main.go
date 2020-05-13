@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/server/config"
 	"github.com/typical-go/typical-rest-server/server/controller"
 
@@ -47,8 +47,8 @@ func Main(s server) (err error) {
 }
 
 // Configuration of server
-func Configuration() *typcfg.Configuration {
-	return &typcfg.Configuration{
+func Configuration() *typgo.Configuration {
+	return &typgo.Configuration{
 		Name: configName,
 		Spec: &config.Config{
 			Debug: true,

@@ -3,7 +3,7 @@ package typredis
 import (
 	"time"
 
-	"github.com/typical-go/typical-go/pkg/typcfg"
+	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
 // Config is Redis Configuration
@@ -22,8 +22,8 @@ type Config struct {
 }
 
 // Configuration of redis
-func Configuration() *typcfg.Configuration {
-	return &typcfg.Configuration{
+func Configuration() *typgo.Configuration {
+	return &typgo.Configuration{
 		Name: DefaultConfigName,
 		Spec: DefaultConfig,
 	}

@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 )
@@ -55,7 +54,7 @@ func console(c *typgo.Context) (err error) {
 
 func retrieveConfig() (*Config, error) {
 	var cfg Config
-	if err := typcfg.Process(DefaultConfigName, &cfg); err != nil {
+	if err := typgo.ProcessConfig(DefaultConfigName, &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil

@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/typical-go/typical-go/pkg/typcfg"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 
@@ -234,7 +233,7 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 
 func (u *utility) retrieveConfig() (*Config, error) {
 	var cfg Config
-	if err := typcfg.Process(u.configName, &cfg); err != nil {
+	if err := typgo.ProcessConfig(u.configName, &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil
