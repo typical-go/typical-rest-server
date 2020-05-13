@@ -2,8 +2,8 @@ package typredis
 
 import (
 	"os"
-	"os/exec"
 
+	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
 )
@@ -45,11 +45,17 @@ func console(c *typgo.Context) (err error) {
 	}
 	// TODO: using docker -it
 
-	cmd := exec.CommandContext(c.Cli.Context, "redis-cli", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
+	cmd := execkit.Command{
+		Name:   "redis-cli",
+		Args:   args,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Stdin:  os.Stdin,
+	}
+
+	cmd.Print(os.Stdout)
+
+	return cmd.Run(c.Cli.Context)
 }
 
 func retrieveConfig() (*Config, error) {
