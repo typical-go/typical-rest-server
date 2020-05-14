@@ -23,9 +23,9 @@ type utility struct {
 }
 
 // Utility of postgres
-func Utility(s *Setting) typgo.Utility {
+func Utility(s *Settings) typgo.Utility {
 	if s == nil {
-		s = &Setting{}
+		s = &Settings{}
 	}
 	return &utility{
 		configName:   GetConfigName(s),

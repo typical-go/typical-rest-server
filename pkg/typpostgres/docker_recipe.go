@@ -7,9 +7,9 @@ import (
 )
 
 // DockerRecipeV3 of postgres
-func DockerRecipeV3(s *Setting) *typdocker.Recipe {
+func DockerRecipeV3(s *Settings) *typdocker.Recipe {
 	if s == nil {
-		s = &Setting{}
+		s = &Settings{}
 	}
 	name := GetDockerName(s)
 	image := GetDockerImage(s)

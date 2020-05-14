@@ -1,24 +1,24 @@
 package typpostgres
 
 const (
-	DefaultDockerImage = "postgres"
-	DefaultDockerName  = "postgres"
+	defaultDockerImage = "postgres"
+	defaultDockerName  = "postgres"
 
-	DefaultConfigName = "PG"
+	defaultConfigName = "PG"
 
-	DefaultDBName   = "sample"
-	DefaultUser     = "postgres"
-	DefaultPassword = "pgpass"
-	DefaultHost     = "localhost"
-	DefaultPort     = 5432
+	defaultDBName   = "sample"
+	defaultUser     = "postgres"
+	defaultPassword = "pgpass"
+	defaultHost     = "localhost"
+	defaultPort     = 5432
 
-	DefaultMigrationSrc = "scripts/db/migration"
-	DefaultSeedSrc      = "scripts/db/seed"
+	defaultMigrationSrc = "scripts/db/migration"
+	defaultSeedSrc      = "scripts/db/seed"
 )
 
-// Setting for postgres
-type Setting struct {
-	CtorName string
+// Settings for postgres
+type Settings struct {
+	Ctor string
 
 	DockerName  string
 	DockerImage string
@@ -36,81 +36,81 @@ type Setting struct {
 }
 
 // GetDockerName from setting
-func GetDockerName(s *Setting) string {
+func GetDockerName(s *Settings) string {
 	if s.DockerName == "" {
-		return DefaultDockerName
+		return defaultDockerName
 	}
 	return s.DockerName
 }
 
 // GetDockerImage from setting
-func GetDockerImage(s *Setting) string {
+func GetDockerImage(s *Settings) string {
 	if s.DockerImage == "" {
-		return DefaultDockerImage
+		return defaultDockerImage
 	}
 	return s.DockerImage
 }
 
 // GetConfigName from setting
-func GetConfigName(s *Setting) string {
+func GetConfigName(s *Settings) string {
 	if s.ConfigName == "" {
-		return DefaultConfigName
+		return defaultConfigName
 	}
 	return s.ConfigName
 }
 
 // GetDBName from setting
-func GetDBName(s *Setting) string {
+func GetDBName(s *Settings) string {
 	if s.DBName == "" {
-		return DefaultDBName
+		return defaultDBName
 	}
 	return s.DBName
 }
 
 // GetUser from setting
-func GetUser(s *Setting) string {
+func GetUser(s *Settings) string {
 	if s.User == "" {
-		return DefaultUser
+		return defaultUser
 	}
 	return s.User
 }
 
 // GetPassword from setting
-func GetPassword(s *Setting) string {
+func GetPassword(s *Settings) string {
 	if s.Password == "" {
-		return DefaultPassword
+		return defaultPassword
 	}
 	return s.Password
 }
 
 // GetHost from setting
-func GetHost(s *Setting) string {
+func GetHost(s *Settings) string {
 	if s.Host == "" {
-		return DefaultHost
+		return defaultHost
 	}
 	return s.Host
 }
 
 // GetPort from setting
-func GetPort(s *Setting) int {
+func GetPort(s *Settings) int {
 	if s.Port == 0 {
-		return DefaultPort
+		return defaultPort
 	}
 	return s.Port
 }
 
 // GetMigrationSrc from setting if available or the default value
-func GetMigrationSrc(s *Setting) string {
+func GetMigrationSrc(s *Settings) string {
 	if s.MigrationSrc == "" {
-		return DefaultMigrationSrc
+		return defaultMigrationSrc
 	}
 	return s.MigrationSrc
 }
 
 // GetSeedSrc from setting if available or the default value
-func GetSeedSrc(s *Setting) string {
+func GetSeedSrc(s *Settings) string {
 	if s.SeedSrc == "" {
-		return DefaultSeedSrc
+		return defaultSeedSrc
 	}
 	return s.SeedSrc
 }

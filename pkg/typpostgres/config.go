@@ -33,12 +33,13 @@ func (c *Config) Admin() *Config {
 }
 
 // Configuration of postgres
-func Configuration(s *Setting) *typgo.Configuration {
+func Configuration(s *Settings) *typgo.Configuration {
 	if s == nil {
-		s = &Setting{}
+		s = &Settings{}
 	}
 	return &typgo.Configuration{
-		Name: GetConfigName(s),
+		CtorName: s.Ctor,
+		Name:     GetConfigName(s),
 		Spec: &Config{
 			DBName:   GetDBName(s),
 			User:     GetUser(s),
