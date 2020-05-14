@@ -6,21 +6,19 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/typical-go/typical-rest-server/pkg/errvalid"
-
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
+	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"github.com/typical-go/typical-rest-server/server/controller"
-	"github.com/typical-go/typical-rest-server/server/mock_service"
 	"github.com/typical-go/typical-rest-server/server/repository"
+	"github.com/typical-go/typical-rest-server/server/service_mock"
 )
 
 func TestBookController_FindOne(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockSvc := mock_service.NewMockBookService(ctrl)
+	mockSvc := service_mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: mockSvc,
 	}
@@ -61,7 +59,7 @@ func TestBookController_FindOne(t *testing.T) {
 func TestBookController_Find(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock_service.NewMockBookService(ctrl)
+	bookSvc := service_mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -85,7 +83,7 @@ func TestBookController_Find(t *testing.T) {
 func TestBookController_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock_service.NewMockBookService(ctrl)
+	bookSvc := service_mock.NewMockBookService(ctrl)
 	bookController := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -115,7 +113,7 @@ func TestBookController_Create(t *testing.T) {
 func TestBookController_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock_service.NewMockBookService(ctrl)
+	bookSvc := service_mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}
@@ -147,7 +145,7 @@ func TestBookController_Delete(t *testing.T) {
 func TestBookController_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bookSvc := mock_service.NewMockBookService(ctrl)
+	bookSvc := service_mock.NewMockBookService(ctrl)
 	bookCntrl := controller.BookCntrl{
 		BookService: bookSvc,
 	}

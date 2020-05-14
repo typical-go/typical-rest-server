@@ -38,8 +38,8 @@ func Configuration(s *Settings) *typgo.Configuration {
 		s = &Settings{}
 	}
 	return &typgo.Configuration{
-		CtorName: s.Ctor,
-		Name:     GetConfigName(s),
+		Ctor: s.Ctor,
+		Name: GetConfigName(s),
 		Spec: &Config{
 			DBName:   GetDBName(s),
 			User:     GetUser(s),
