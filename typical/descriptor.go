@@ -43,7 +43,7 @@ var Descriptor = typgo.Descriptor{
 
 	Utility: typgo.Utilities{
 		typpg.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
-		typredis.Utility(),          // redis console
+		typredis.Utility(),    // redis console
 		typmock.Utility(),
 
 		typdocker.Compose(

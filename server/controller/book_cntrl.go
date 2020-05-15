@@ -32,16 +32,16 @@ func (c *BookCntrl) SetRoute(e *echo.Echo) {
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	var (
 		result *repository.Book
-		form   repository.Book
+		book   repository.Book
 	)
 
-	if err = ec.Bind(&form); err != nil {
+	if err = ec.Bind(&book); err != nil {
 		return err
 	}
 
 	if result, err = c.BookService.Create(
 		ec.Request().Context(),
-		&form,
+		&book,
 	); err != nil {
 		return httpError(err)
 	}
@@ -51,9 +51,10 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 // Find books
 func (c *BookCntrl) Find(ec echo.Context) (err error) {
-	ctx := ec.Request().Context()
-	books, err := c.BookService.Find(ctx)
-	if err != nil {
+	var books []*repository.Book
+	if books, err = c.BookService.Find(
+		ec.Request().Context(),
+	); err != nil {
 		return httpError(err)
 	}
 	return ec.JSON(http.StatusOK, books)
