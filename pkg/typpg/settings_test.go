@@ -1,14 +1,14 @@
-package typpostgres_test
+package typpg_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
 func TestSettingFunctions(t *testing.T) {
-	s := typpostgres.Init(&typpostgres.Settings{})
+	s := typpg.Init(&typpg.Settings{})
 
 	require.Equal(t, "pg", s.UtilityCmd)
 	require.Equal(t, "postgres", s.DockerName)

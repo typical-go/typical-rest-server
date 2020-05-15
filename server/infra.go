@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"go.uber.org/dig"
 
@@ -16,7 +16,7 @@ type (
 	// InfraConfigs is config collection
 	InfraConfigs struct {
 		dig.In
-		Pg    *typpostgres.Config
+		Pg    *typpg.Config
 		Redis *typredis.Config
 	}
 
@@ -43,7 +43,7 @@ func Connect(c InfraConfigs) (infras Infras, err error) {
 		redis *redis.Client
 	)
 
-	if pg, err = typpostgres.Connect(c.Pg); err != nil {
+	if pg, err = typpg.Connect(c.Pg); err != nil {
 		return
 	}
 
@@ -60,7 +60,7 @@ func Connect(c InfraConfigs) (infras Infras, err error) {
 // Disconnect from postgres server
 // @dtor
 func Disconnect(p InfraParams) (err error) {
-	if err = typpostgres.Disconnect(p.Pg); err != nil {
+	if err = typpg.Disconnect(p.Pg); err != nil {
 		return
 	}
 	if err = typredis.Disconnect(p.Redis); err != nil {

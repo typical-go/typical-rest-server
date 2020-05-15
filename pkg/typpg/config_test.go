@@ -1,14 +1,14 @@
-package typpostgres_test
+package typpg_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
 func TestConfig(t *testing.T) {
-	cfg := &typpostgres.Config{
+	cfg := &typpg.Config{
 		DBName:   "dbname1",
 		User:     "user1",
 		Password: "password1",

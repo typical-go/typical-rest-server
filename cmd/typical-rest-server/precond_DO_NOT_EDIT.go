@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/pkg/typpostgres"
+	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 	"github.com/typical-go/typical-rest-server/server"
 	"github.com/typical-go/typical-rest-server/server/config"
@@ -29,8 +29,8 @@ func init() {
 		},
 		&typgo.Constructor{
 			Name: "",
-			Fn: func() (cfg *typpostgres.Config, err error) {
-				cfg = new(typpostgres.Config)
+			Fn: func() (cfg *typpg.Config, err error) {
+				cfg = new(typpg.Config)
 				if err = typgo.ProcessConfig("PG", cfg); err != nil {
 					return nil, err
 				}

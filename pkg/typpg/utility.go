@@ -1,4 +1,4 @@
-package typpostgres
+package typpg
 
 import (
 	"database/sql"
