@@ -16,15 +16,72 @@ import (
 	"github.com/typical-go/typical-rest-server/server/repository"
 )
 
-var (
-	findOneTestCases = []findOneTestCase{
+type (
+	bookSvcBuilder struct {
+		mockRepoFn func(mockRepo *repository_mock.MockBookRepo)
+	}
+
+	findOneTestCase struct {
+		testName string
+		bookSvcBuilder
+		paramID     string
+		expected    *repository.Book
+		expectedErr string
+	}
+
+	findTestCase struct {
+		testName string
+		bookSvcBuilder
+		opts        []dbkit.FindOption
+		expected    []*repository.Book
+		expectedErr string
+	}
+
+	createTestCase struct {
+		testName string
+		bookSvcBuilder
+		book        *repository.Book
+		expected    *repository.Book
+		expectedErr string
+	}
+
+	deleteTestCase struct {
+		testName string
+		bookSvcBuilder
+		paramID     string
+		expectedErr string
+	}
+
+	updateTestCase struct {
+		testName    string
+		builder     bookSvcBuilder
+		paramID     string
+		book        *repository.Book
+		expected    *repository.Book
+		expectedErr string
+	}
+)
+
+func (b *bookSvcBuilder) build(mock *gomock.Controller) *service.BookServiceImpl {
+	mockRepo := repository_mock.NewMockBookRepo(mock)
+	if b.mockRepoFn != nil {
+		b.mockRepoFn(mockRepo)
+	}
+
+	return &service.BookServiceImpl{
+		BookRepo: mockRepo,
+	}
+}
+
+func TestBookService_FindOne(t *testing.T) {
+	testcases := []findOneTestCase{
 		{
 			paramID:     "",
 			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
 		},
 		{
 			paramID: "1",
-			bookSvcCtrl: bookSvcCtrl{
+			bookSvcBuilder: bookSvcBuilder{
 				mockRepoFn: func(mockRepo *repository_mock.MockBookRepo) {
 					mockRepo.EXPECT().
 						FindOne(gomock.Any(), int64(1)).
@@ -35,7 +92,7 @@ var (
 		},
 		{
 			paramID: "1",
-			bookSvcCtrl: bookSvcCtrl{
+			bookSvcBuilder: bookSvcBuilder{
 				mockRepoFn: func(mockRepo *repository_mock.MockBookRepo) {
 					mockRepo.EXPECT().
 						FindOne(gomock.Any(), int64(1)).
@@ -52,91 +109,12 @@ var (
 		},
 	}
 
-	findTestCases = []findTestCase{}
-
-	createTestCases = []createTestCase{}
-
-	deleteTestCases = []deleteTestCase{
-		{
-			paramID:     "",
-			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
-		},
-	}
-
-	updateTestCases = []updateTestCase{
-		{
-			paramID:     "",
-			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
-		},
-	}
-)
-
-type (
-	bookSvcCtrl struct {
-		mockRepoFn func(mockRepo *repository_mock.MockBookRepo)
-	}
-
-	findOneTestCase struct {
-		testName string
-		bookSvcCtrl
-		paramID     string
-		expected    *repository.Book
-		expectedErr string
-	}
-
-	findTestCase struct {
-		testName string
-		bookSvcCtrl
-		opts        []dbkit.FindOption
-		expected    []*repository.Book
-		expectedErr string
-	}
-
-	createTestCase struct {
-		testName string
-		bookSvcCtrl
-		book        *repository.Book
-		expected    *repository.Book
-		expectedErr string
-	}
-
-	deleteTestCase struct {
-		testName string
-		bookSvcCtrl
-		paramID     string
-		expectedErr string
-	}
-
-	updateTestCase struct {
-		testName string
-		bookSvcCtrl
-		paramID     string
-		book        *repository.Book
-		expected    *repository.Book
-		expectedErr string
-	}
-)
-
-func createBookSvc(mock *gomock.Controller, ctrl bookSvcCtrl) *service.BookServiceImpl {
-	mockRepo := repository_mock.NewMockBookRepo(mock)
-	if ctrl.mockRepoFn != nil {
-		ctrl.mockRepoFn(mockRepo)
-	}
-
-	return &service.BookServiceImpl{
-		BookRepo: mockRepo,
-	}
-}
-
-func TestBookService_FindOne(t *testing.T) {
-	for _, tt := range findOneTestCases {
+	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			svc := createBookSvc(mock, tt.bookSvcCtrl)
-
-			book, err := svc.FindOne(context.Background(), tt.paramID)
+			book, err := tt.build(mock).FindOne(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
@@ -148,13 +126,13 @@ func TestBookService_FindOne(t *testing.T) {
 }
 
 func TestBookService_Find(t *testing.T) {
-	for _, tt := range findTestCases {
+	testcases := []findTestCase{}
+	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			svc := createBookSvc(mock, tt.bookSvcCtrl)
-			books, err := svc.Find(context.Background(), tt.opts...)
+			books, err := tt.build(mock).Find(context.Background(), tt.opts...)
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
@@ -167,33 +145,38 @@ func TestBookService_Find(t *testing.T) {
 }
 
 func TestBookService_Create(t *testing.T) {
-	for _, tt := range createTestCases {
+	testcases := []createTestCase{}
+
+	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			svc := createBookSvc(mock, tt.bookSvcCtrl)
-			book, err := svc.Create(context.Background(), tt.book)
+			book, err := tt.build(mock).Create(context.Background(), tt.book)
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
 				require.NoError(t, err)
 			}
-
 			require.Equal(t, tt.expected, book)
 		})
 	}
 }
 
 func TestBookService_Delete(t *testing.T) {
-	for _, tt := range deleteTestCases {
+	testcases := []deleteTestCase{
+		{
+			paramID:     "",
+			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
+		},
+	}
+	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			svc := createBookSvc(mock, tt.bookSvcCtrl)
-			err := svc.Delete(context.Background(), tt.paramID)
+			err := tt.build(mock).Delete(context.Background(), tt.paramID)
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
@@ -204,12 +187,18 @@ func TestBookService_Delete(t *testing.T) {
 	}
 }
 func TestBookService_Update(t *testing.T) {
-	for _, tt := range updateTestCases {
+	testcases := []updateTestCase{
+		{
+			paramID:     "",
+			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
+		},
+	}
+	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			svc := createBookSvc(mock, tt.bookSvcCtrl)
+			svc := tt.builder.build(mock)
 			book, err := svc.Update(context.Background(), tt.paramID, tt.book)
 
 			if tt.expectedErr != "" {
@@ -217,7 +206,6 @@ func TestBookService_Update(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
-
 			require.Equal(t, tt.expected, book)
 		})
 	}
