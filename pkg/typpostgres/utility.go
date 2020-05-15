@@ -17,20 +17,16 @@ import (
 )
 
 type utility struct {
-	configName   string
-	migrationSrc string
-	seedSrc      string
+	*Settings
 }
 
 // Utility of postgres
 func Utility(s *Settings) typgo.Utility {
 	if s == nil {
-		s = &Settings{}
+		panic("pg: utility missing settings")
 	}
 	return &utility{
-		configName:   GetConfigName(s),
-		seedSrc:      GetSeedSrc(s),
-		migrationSrc: GetMigrationSrc(s),
+		Settings: s,
 	}
 }
 
@@ -38,9 +34,8 @@ func Utility(s *Settings) typgo.Utility {
 func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:    "postgres",
-			Aliases: []string{"pg"},
-			Usage:   "Postgres utility",
+			Name:  u.UtilityCmd,
+			Usage: "Postgres utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:   "create",
@@ -140,7 +135,7 @@ func (u *utility) migrateDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	sourceURL := "file://" + u.migrationSrc
+	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
 	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
 		return err
@@ -185,7 +180,7 @@ func (u *utility) rollbackDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	sourceURL := "file://" + u.migrationSrc
+	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
 	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
 		return
@@ -226,10 +221,10 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 	}
 	defer db.Close()
 
-	files, _ := ioutil.ReadDir(u.seedSrc)
+	files, _ := ioutil.ReadDir(u.SeedSrc)
 	ctx := c.Cli.Context
 	for _, f := range files {
-		sqlFile := u.seedSrc + "/" + f.Name()
+		sqlFile := u.SeedSrc + "/" + f.Name()
 		c.Infof("Execute seed '%s'", sqlFile)
 		var b []byte
 		if b, err = ioutil.ReadFile(sqlFile); err != nil {
@@ -245,7 +240,7 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 
 func (u *utility) retrieveConfig() (*Config, error) {
 	var cfg Config
-	if err := typgo.ProcessConfig(u.configName, &cfg); err != nil {
+	if err := typgo.ProcessConfig(u.ConfigName, &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil

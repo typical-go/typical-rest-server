@@ -35,17 +35,17 @@ func (c *Config) Admin() *Config {
 // Configuration of postgres
 func Configuration(s *Settings) *typgo.Configuration {
 	if s == nil {
-		s = &Settings{}
+		panic("pg: configuration missing settings")
 	}
 	return &typgo.Configuration{
 		Ctor: s.Ctor,
-		Name: GetConfigName(s),
+		Name: s.ConfigName,
 		Spec: &Config{
-			DBName:   GetDBName(s),
-			User:     GetUser(s),
-			Password: GetPassword(s),
-			Host:     GetHost(s),
-			Port:     GetPort(s),
+			DBName:   s.DBName,
+			User:     s.User,
+			Password: s.Password,
+			Host:     s.Host,
+			Port:     s.Port,
 		},
 	}
 }

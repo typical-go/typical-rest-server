@@ -9,6 +9,12 @@ import (
 	"github.com/typical-go/typical-rest-server/server"
 )
 
+var (
+	mainDB = typpostgres.Init(&typpostgres.Settings{
+		DBName: "MyLibrary",
+	})
+)
+
 // Descriptor of Typical REST Server
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typgo.Descriptor{
@@ -23,7 +29,7 @@ var Descriptor = typgo.Descriptor{
 
 	Configurer: typgo.Configurers{
 		typredis.Configuration(),
-		typpostgres.Configuration(nil),
+		typpostgres.Configuration(mainDB),
 		server.Configuration(),
 	},
 
@@ -36,12 +42,12 @@ var Descriptor = typgo.Descriptor{
 	},
 
 	Utility: typgo.Utilities{
-		typpostgres.Utility(nil), // create db, drop, migrate, seed, console, etc.
-		typredis.Utility(),       // redis console
+		typpostgres.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
+		typredis.Utility(),          // redis console
 		typmock.Utility(),
 
 		typdocker.Compose(
-			typpostgres.DockerRecipeV3(nil),
+			typpostgres.DockerRecipeV3(mainDB),
 			typredis.DockerRecipeV3(),
 		),
 	},

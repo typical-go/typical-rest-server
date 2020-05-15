@@ -9,10 +9,11 @@ import (
 // DockerRecipeV3 of postgres
 func DockerRecipeV3(s *Settings) *typdocker.Recipe {
 	if s == nil {
-		s = &Settings{}
+		panic("pg: docker-recipe missing settings")
 	}
-	name := GetDockerName(s)
-	image := GetDockerImage(s)
+
+	name := s.DockerName
+	image := s.DockerImage
 
 	return &typdocker.Recipe{
 		Version: typdocker.V3,
@@ -20,15 +21,15 @@ func DockerRecipeV3(s *Settings) *typdocker.Recipe {
 			name: typdocker.Service{
 				Image: image,
 				Environment: map[string]string{
-					"POSTGRES":          GetUser(s),
-					"POSTGRES_PASSWORD": GetPassword(s),
+					"POSTGRES":          s.User,
+					"POSTGRES_PASSWORD": s.Password,
 					"PGDATA":            "/data/postgres",
 				},
 				Volumes: []string{
 					"postgres:/data/postgres",
 				},
 				Ports: []string{
-					fmt.Sprintf("%d:5432", GetPort(s)),
+					fmt.Sprintf("%d:5432", s.Port),
 				},
 				Networks: []string{
 					name,
