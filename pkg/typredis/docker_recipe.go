@@ -12,7 +12,7 @@ func DockerRecipeV3(s *Settings) *typdocker.Recipe {
 		Version: typdocker.V3,
 		Services: typdocker.Services{
 			s.DockerName: typdocker.Service{
-				Image:    s.DockerName,
+				Image:    s.DockerImage,
 				Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, s.Password),
 				Ports:    []string{fmt.Sprintf("%s:6379", s.Port)},
 				Networks: []string{s.DockerName},

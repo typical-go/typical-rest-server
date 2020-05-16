@@ -12,38 +12,35 @@ func DockerRecipeV3(s *Settings) *typdocker.Recipe {
 		panic("pg: docker-recipe missing settings")
 	}
 
-	name := s.DockerName
-	image := s.DockerImage
-
 	return &typdocker.Recipe{
 		Version: typdocker.V3,
 		Services: typdocker.Services{
-			name: typdocker.Service{
-				Image: image,
+			s.DockerName: typdocker.Service{
+				Image: s.DockerImage,
 				Environment: map[string]string{
 					"POSTGRES":          s.User,
 					"POSTGRES_PASSWORD": s.Password,
 					"PGDATA":            "/data/postgres",
 				},
 				Volumes: []string{
-					"postgres:/data/postgres",
+					fmt.Sprintf("%s:/data/postgres", s.DockerName),
 				},
 				Ports: []string{
 					fmt.Sprintf("%d:5432", s.Port),
 				},
 				Networks: []string{
-					name,
+					s.DockerName,
 				},
 				Restart: "unless-stopped",
 			},
 		},
 		Networks: typdocker.Networks{
-			name: typdocker.Network{
+			s.DockerName: typdocker.Network{
 				Driver: "bridge",
 			},
 		},
 		Volumes: typdocker.Volumes{
-			name: nil,
+			s.DockerName: nil,
 		},
 	}
 }

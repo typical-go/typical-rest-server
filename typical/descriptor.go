@@ -11,10 +11,13 @@ import (
 
 var (
 	mainDB = typpg.Init(&typpg.Settings{
-		DBName: "MyLibrary",
+		DBName:     "MyLibrary",
+		DockerName: "pg01",
 	})
 
-	redis = typredis.Init(&typredis.Settings{})
+	redis = typredis.Init(&typredis.Settings{
+		DockerName: "red01",
+	})
 )
 
 // Descriptor of Typical REST Server
@@ -23,7 +26,7 @@ var Descriptor = typgo.Descriptor{
 
 	Name:        "typical-rest-server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.29",
+	Version:     "0.8.30",
 
 	EntryPoint: server.Main,
 
