@@ -7,7 +7,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"gopkg.in/go-playground/validator.v9"
 
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/server/repository"
 	"go.uber.org/dig"
 )
@@ -17,7 +16,7 @@ type (
 	// @mock
 	BookService interface {
 		FindOne(context.Context, string) (*repository.Book, error)
-		Find(context.Context, ...dbkit.FindOption) ([]*repository.Book, error)
+		Find(context.Context) ([]*repository.Book, error)
 		Create(context.Context, *repository.Book) (*repository.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) (*repository.Book, error)
@@ -34,6 +33,11 @@ type (
 // @constructor
 func NewBookService(impl BookServiceImpl) BookService {
 	return &impl
+}
+
+// Find books
+func (b *BookServiceImpl) Find(ctx context.Context) ([]*repository.Book, error) {
+	return b.BookRepo.Find(ctx)
 }
 
 // FindOne book

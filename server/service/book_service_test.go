@@ -5,8 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/golang/mock/gomock"
@@ -32,7 +30,6 @@ type (
 	findTestCase struct {
 		testName string
 		bookSvcBuilder
-		opts        []dbkit.FindOption
 		expected    []*repository.Book
 		expectedErr string
 	}
@@ -132,7 +129,7 @@ func TestBookService_Find(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			books, err := tt.build(mock).Find(context.Background(), tt.opts...)
+			books, err := tt.build(mock).Find(context.Background())
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
