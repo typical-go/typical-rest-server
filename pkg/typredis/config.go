@@ -24,6 +24,7 @@ type Config struct {
 // Configuration of redis
 func Configuration(s *Settings) *typgo.Configuration {
 	return &typgo.Configuration{
+		Ctor: s.Ctor,
 		Name: s.ConfigName,
 		Spec: &Config{
 			Host:     s.Host,
