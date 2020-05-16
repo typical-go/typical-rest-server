@@ -13,6 +13,8 @@ var (
 	mainDB = typpg.Init(&typpg.Settings{
 		DBName: "MyLibrary",
 	})
+
+	redis = typredis.Init(&typredis.Settings{})
 )
 
 // Descriptor of Typical REST Server
@@ -28,7 +30,7 @@ var Descriptor = typgo.Descriptor{
 	Layouts: []string{"server", "pkg"},
 
 	Configurer: typgo.Configurers{
-		typredis.Configuration(),
+		typredis.Configuration(redis),
 		typpg.Configuration(mainDB),
 		server.Configuration(),
 	},
@@ -42,13 +44,13 @@ var Descriptor = typgo.Descriptor{
 	},
 
 	Utility: typgo.Utilities{
-		typpg.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
-		typredis.Utility(),    // redis console
+		typpg.Utility(mainDB),   // create db, drop, migrate, seed, console, etc.
+		typredis.Utility(redis), // redis console
 		typmock.Utility(),
 
 		typdocker.Compose(
 			typpg.DockerRecipeV3(mainDB),
-			typredis.DockerRecipeV3(),
+			typredis.DockerRecipeV3(redis),
 		),
 	},
 }

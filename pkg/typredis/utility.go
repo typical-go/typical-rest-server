@@ -8,31 +8,37 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+type utility struct {
+	*Settings
+}
+
 // Utility of redis
-func Utility() typgo.Utility {
-	return typgo.NewUtility(Commands)
+func Utility(s *Settings) typgo.Utility {
+	return &utility{
+		Settings: s,
+	}
 }
 
 // Commands of redis utility
-func Commands(c *typgo.BuildTool) []*cli.Command {
+func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:  "redis",
+			Name:  u.Cmd,
 			Usage: "Redis utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:    "console",
 					Aliases: []string{"c"},
-					Action:  c.ActionFunc("REDIS", console),
+					Action:  c.ActionFunc("REDIS", u.console),
 				},
 			},
 		},
 	}
 }
 
-func console(c *typgo.Context) (err error) {
+func (u *utility) console(c *typgo.Context) (err error) {
 	var config *Config
-	if config, err = retrieveConfig(); err != nil {
+	if config, err = u.retrieveConfig(); err != nil {
 		return
 	}
 
@@ -58,9 +64,9 @@ func console(c *typgo.Context) (err error) {
 	return cmd.Run(c.Cli.Context)
 }
 
-func retrieveConfig() (*Config, error) {
+func (u *utility) retrieveConfig() (*Config, error) {
 	var cfg Config
-	if err := typgo.ProcessConfig(DefaultConfigName, &cfg); err != nil {
+	if err := typgo.ProcessConfig(u.ConfigName, &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil

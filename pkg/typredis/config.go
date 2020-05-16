@@ -22,9 +22,13 @@ type Config struct {
 }
 
 // Configuration of redis
-func Configuration() *typgo.Configuration {
+func Configuration(s *Settings) *typgo.Configuration {
 	return &typgo.Configuration{
-		Name: DefaultConfigName,
-		Spec: DefaultConfig,
+		Name: s.ConfigName,
+		Spec: &Config{
+			Host:     s.Host,
+			Port:     s.Port,
+			Password: s.Password,
+		},
 	}
 }
