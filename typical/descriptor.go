@@ -4,9 +4,9 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
+	"github.com/typical-go/typical-rest-server/internal/server"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
-	"github.com/typical-go/typical-rest-server/server"
 )
 
 var (
@@ -30,7 +30,10 @@ var Descriptor = typgo.Descriptor{
 
 	EntryPoint: server.Main,
 
-	Layouts: []string{"server", "pkg"},
+	Layouts: []string{
+		"internal",
+		"pkg",
+	},
 
 	Configurer: typgo.Configurers{
 		typredis.Configuration(redis),

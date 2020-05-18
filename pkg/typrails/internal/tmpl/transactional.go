@@ -45,7 +45,7 @@ import (
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/pkg/typrails"
 )
 

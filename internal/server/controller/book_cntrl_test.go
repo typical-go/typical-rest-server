@@ -10,9 +10,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/errvalid"
-	"github.com/typical-go/typical-rest-server/server/controller"
-	"github.com/typical-go/typical-rest-server/server/repository"
-	"github.com/typical-go/typical-rest-server/server/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/server/controller"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/service_mock"
 )
 
 type (

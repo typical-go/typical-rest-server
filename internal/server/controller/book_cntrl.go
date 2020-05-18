@@ -5,8 +5,8 @@ import (
 
 	"github.com/labstack/echo"
 
-	"github.com/typical-go/typical-rest-server/server/repository"
-	"github.com/typical-go/typical-rest-server/server/service"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/service"
 	"go.uber.org/dig"
 )
 

@@ -4,12 +4,12 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typgo"
+	"github.com/typical-go/typical-rest-server/internal/server"
+	"github.com/typical-go/typical-rest-server/internal/server/config"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/service"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
-	"github.com/typical-go/typical-rest-server/server"
-	"github.com/typical-go/typical-rest-server/server/config"
-	"github.com/typical-go/typical-rest-server/server/repository"
-	"github.com/typical-go/typical-rest-server/server/service"
 )
 
 func init() {

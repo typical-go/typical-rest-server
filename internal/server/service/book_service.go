@@ -7,7 +7,7 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"gopkg.in/go-playground/validator.v9"
 
-	"github.com/typical-go/typical-rest-server/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"go.uber.org/dig"
 )
 

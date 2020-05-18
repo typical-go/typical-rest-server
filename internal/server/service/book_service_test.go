@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/golang/mock/gomock"
-	"github.com/typical-go/typical-rest-server/server/repository_mock"
-	"github.com/typical-go/typical-rest-server/server/service"
+	"github.com/typical-go/typical-rest-server/internal/server/repository_mock"
+	"github.com/typical-go/typical-rest-server/internal/server/service"
 
-	"github.com/typical-go/typical-rest-server/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
 )
 
 type (

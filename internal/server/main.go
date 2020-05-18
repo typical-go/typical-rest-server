@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/server/config"
-	"github.com/typical-go/typical-rest-server/server/controller"
+	"github.com/typical-go/typical-rest-server/internal/server/config"
+	"github.com/typical-go/typical-rest-server/internal/server/controller"
 
 	"go.uber.org/dig"
 )
