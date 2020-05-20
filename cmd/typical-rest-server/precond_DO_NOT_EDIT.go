@@ -4,8 +4,8 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/server"
-	"github.com/typical-go/typical-rest-server/internal/server/config"
+	"github.com/typical-go/typical-rest-server/internal/config"
+	"github.com/typical-go/typical-rest-server/internal/infra"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
@@ -14,7 +14,7 @@ import (
 
 func init() {
 	typgo.Provide(
-		&typgo.Constructor{Name: "", Fn: server.Connect},
+		&typgo.Constructor{Name: "", Fn: infra.Connect},
 		&typgo.Constructor{Name: "", Fn: repository.NewBookRepo},
 		&typgo.Constructor{Name: "", Fn: service.NewBookService},
 		&typgo.Constructor{
@@ -49,6 +49,6 @@ func init() {
 		},
 	)
 	typgo.Destroy(
-		&typgo.Destructor{Fn: server.Disconnect},
+		&typgo.Destructor{Fn: infra.Disconnect},
 	)
 }

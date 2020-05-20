@@ -10,7 +10,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/server/config"
+	"github.com/typical-go/typical-rest-server/internal/config"
+	"github.com/typical-go/typical-rest-server/internal/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server/controller"
 
 	"go.uber.org/dig"
@@ -24,9 +25,8 @@ type server struct {
 	dig.In
 	*config.Config
 
-	controller.BookCntrl
-
-	Profiler profiler
+	BookCntrl controller.BookCntrl
+	Profiler  profiler.Controller
 }
 
 // Main function to run server
