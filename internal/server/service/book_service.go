@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"strconv"
+
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 
 	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"gopkg.in/go-playground/validator.v9"
@@ -17,9 +20,9 @@ type (
 	BookService interface {
 		FindOne(context.Context, string) (*repository.Book, error)
 		Find(context.Context) ([]*repository.Book, error)
-		Create(context.Context, *repository.Book) (*repository.Book, error)
+		Create(context.Context, *repository.Book) (int64, error)
 		Delete(context.Context, string) error
-		Update(context.Context, string, *repository.Book) (*repository.Book, error)
+		Update(context.Context, string, *repository.Book) error
 	}
 
 	// BookServiceImpl is implementation of BookService
@@ -46,7 +49,17 @@ func (b *BookServiceImpl) FindOne(ctx context.Context, paramID string) (*reposit
 	if err != nil {
 		return nil, errvalid.Wrap(err)
 	}
-	return b.BookRepo.FindOne(ctx, id)
+
+	books, err := b.BookRepo.Find(ctx, dbkit.Equal("id", id))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(books) < 1 {
+		return nil, sql.ErrNoRows
+	}
+
+	return books[0], nil
 }
 
 // Delete book
@@ -59,22 +72,28 @@ func (b *BookServiceImpl) Delete(ctx context.Context, paramID string) error {
 }
 
 // Update book
-func (b *BookServiceImpl) Update(ctx context.Context, paramID string, book *repository.Book) (*repository.Book, error) {
+func (b *BookServiceImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		return nil, errvalid.Wrap(err)
+		return errvalid.Wrap(err)
 	}
+
+	book.ID = id
 	if err = validator.New().Struct(book); err != nil {
-		return nil, err
+		return err
 	}
-	return b.BookRepo.Update(ctx, id, book)
+
+	if _, err = b.BookRepo.Find(ctx, dbkit.Equal("id", id)); err != nil {
+		return err
+	}
+
+	return b.BookRepo.Update(ctx, book)
 }
 
 // Create Book
-func (b *BookServiceImpl) Create(ctx context.Context, book *repository.Book) (*repository.Book, error) {
-	err := validator.New().Struct(book)
-	if err != nil {
-		return nil, err
+func (b *BookServiceImpl) Create(ctx context.Context, book *repository.Book) (insertID int64, err error) {
+	if err = validator.New().Struct(book); err != nil {
+		return -1, err
 	}
 	return b.BookRepo.Create(ctx, book)
 }

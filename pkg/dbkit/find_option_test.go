@@ -13,10 +13,10 @@ func TestFindOption_String(t *testing.T) {
 		opt      dbkit.FindOption
 		expected string
 	}{
-		{opt: dbkit.Pagination(10, 100), expected: "pagination:10:100"},
-		{opt: dbkit.Sort("some-col", dbkit.Desc), expected: "sort:some-col:1"},
-		{opt: dbkit.Like("some-col", "some-cond"), expected: "like:some-col:some-cond"},
-		{opt: dbkit.Equal("some-col", "some-cond"), expected: "equal:some-col:some-cond"},
+		{opt: dbkit.Pagination(10, 100), expected: "pagination from 10 limit 100"},
+		{opt: dbkit.Sort("some-col", dbkit.Desc), expected: "sort some-col by 1"},
+		{opt: dbkit.Like("some-col", "some-cond"), expected: "where some-col like some-cond"},
+		{opt: dbkit.Equal("some-col", "some-cond"), expected: "where some-col=some-cond"},
 	}
 
 	for _, tt := range testcases {

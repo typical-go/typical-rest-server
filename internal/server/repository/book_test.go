@@ -2,8 +2,6 @@ package repository_test
 
 import (
 	"context"
-	"database/sql/driver"
-	"errors"
 	"fmt"
 	"regexp"
 	"testing"
@@ -31,9 +29,9 @@ func TestBookRepoImpl_Create(t *testing.T) {
 		ctx := context.Background()
 		mock.ExpectQuery(sql).WithArgs("some-title", "some-author", sqlmock.AnyArg(), sqlmock.AnyArg()).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(999))
-		book, err := repo.Create(ctx, &repository.Book{Title: "some-title", Author: "some-author"})
+		id, err := repo.Create(ctx, &repository.Book{Title: "some-title", Author: "some-author"})
 		require.NoError(t, err)
-		require.Equal(t, int64(999), book.ID)
+		require.Equal(t, int64(999), id)
 	})
 }
 
@@ -44,21 +42,21 @@ func TestBookRepitory_Update(t *testing.T) {
 	repo := repository.BookRepoImpl{DB: db}
 	t.Run("sql error", func(t *testing.T) {
 		ctx := context.Background()
-		expectFindOneBook(mock, 888, &repository.Book{ID: 888})
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnError(fmt.Errorf("some-update-error"))
-		_, err = repo.Update(ctx, 888, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
-		require.EqualError(t, err, "some-update-error")
+
+		require.EqualError(t,
+			repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"}),
+			"some-update-error",
+		)
 	})
 	t.Run("sql success", func(t *testing.T) {
 		ctx := context.Background()
-		expectFindOneBook(mock, 888, &repository.Book{ID: 888})
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		_, err = repo.Update(ctx, 888, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"})
-		require.NoError(t, err)
+		require.NoError(t, repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"}))
 	})
 }
 
@@ -82,44 +80,6 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		err := repo.Delete(ctx, 555)
 		require.NoError(t, err)
-	})
-}
-
-func TestBookRepitory_FindOne(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-	repo := repository.BookRepoImpl{DB: db}
-	t.Run("WHEN sql error", func(t *testing.T) {
-		ctx := context.Background()
-		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
-			WithArgs(123).
-			WillReturnError(errors.New("some-find-error"))
-		_, err := repo.FindOne(ctx, 123)
-		require.EqualError(t, err, "some-find-error")
-	})
-	t.Run("WHEN result set", func(t *testing.T) {
-		ctx := context.Background()
-		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
-			WithArgs(123).
-			WillReturnRows(sqlmock.NewRows([]string{"id", "title", "author"}).
-				AddRow("some-id", "some-title", "some-author"))
-		_, err := repo.FindOne(ctx, 123)
-		require.EqualError(t, err, "sql: expected 3 destination arguments in Scan, not 5")
-	})
-	t.Run("WHEN okay", func(t *testing.T) {
-		ctx := context.Background()
-		expected := &repository.Book{
-			ID:        123,
-			Title:     "some-title",
-			Author:    "some-author",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
-		}
-		expectFindOneBook(mock, 123, expected)
-		book, err := repo.FindOne(ctx, 123)
-		require.NoError(t, err)
-		require.Equal(t, expected, book)
 	})
 }
 
@@ -160,11 +120,4 @@ func TestBookRepoImpl_Find(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, expecteds, books)
 	})
-}
-
-func expectFindOneBook(mock sqlmock.Sqlmock, id driver.Value, result *repository.Book) *sqlmock.ExpectedQuery {
-	return mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, title, author, updated_at, created_at FROM books WHERE id = $1`)).
-		WithArgs(id).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "title", "author", "updated_at", "created_at"}).
-			AddRow(result.ID, result.Title, result.Author, result.UpdatedAt, result.CreatedAt))
 }

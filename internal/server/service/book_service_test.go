@@ -5,13 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/repository_mock"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
-
-	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 type (
@@ -38,7 +37,7 @@ type (
 		testName string
 		bookSvcBuilder
 		book        *repository.Book
-		expected    *repository.Book
+		expected    int64
 		expectedErr string
 	}
 
@@ -54,7 +53,6 @@ type (
 		builder     bookSvcBuilder
 		paramID     string
 		book        *repository.Book
-		expected    *repository.Book
 		expectedErr string
 	}
 )
@@ -81,7 +79,7 @@ func TestBookService_FindOne(t *testing.T) {
 			bookSvcBuilder: bookSvcBuilder{
 				mockRepoFn: func(mockRepo *repository_mock.MockBookRepo) {
 					mockRepo.EXPECT().
-						FindOne(gomock.Any(), int64(1)).
+						Find(gomock.Any(), dbkit.Equal("id", int64(1))).
 						Return(nil, errors.New("some-error"))
 				},
 			},
@@ -92,10 +90,12 @@ func TestBookService_FindOne(t *testing.T) {
 			bookSvcBuilder: bookSvcBuilder{
 				mockRepoFn: func(mockRepo *repository_mock.MockBookRepo) {
 					mockRepo.EXPECT().
-						FindOne(gomock.Any(), int64(1)).
-						Return(&repository.Book{
-							ID:    1,
-							Title: "some-title",
+						Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+						Return([]*repository.Book{
+							{
+								ID:    1,
+								Title: "some-title",
+							},
 						}, nil)
 				},
 			},
@@ -149,14 +149,14 @@ func TestBookService_Create(t *testing.T) {
 			mock := gomock.NewController(t)
 			defer mock.Finish()
 
-			book, err := tt.build(mock).Create(context.Background(), tt.book)
+			id, err := tt.build(mock).Create(context.Background(), tt.book)
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
 				require.NoError(t, err)
 			}
-			require.Equal(t, tt.expected, book)
+			require.Equal(t, tt.expected, id)
 		})
 	}
 }
@@ -196,14 +196,13 @@ func TestBookService_Update(t *testing.T) {
 			defer mock.Finish()
 
 			svc := tt.builder.build(mock)
-			book, err := svc.Update(context.Background(), tt.paramID, tt.book)
+			err := svc.Update(context.Background(), tt.paramID, tt.book)
 
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
 				require.NoError(t, err)
 			}
-			require.Equal(t, tt.expected, book)
 		})
 	}
 }

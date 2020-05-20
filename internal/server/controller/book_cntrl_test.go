@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/typical-go/typical-rest-server/pkg/echotest"
-	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"github.com/typical-go/typical-rest-server/internal/server/controller"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service_mock"
+	"github.com/typical-go/typical-rest-server/pkg/echotest"
+	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 )
 
 type (
@@ -257,7 +257,7 @@ func TestBookController_Create(t *testing.T) {
 			},
 			bookCntrlBuilder: bookCntrlBuilder{
 				bookSvcFn: func(svc *service_mock.MockBookService) {
-					svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("some-error"))
+					svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(-1), fmt.Errorf("some-error"))
 				},
 			},
 		},
@@ -270,15 +270,13 @@ func TestBookController_Create(t *testing.T) {
 					Header: echotest.HeaderForJSON(),
 				},
 				ExpectedCode: http.StatusCreated,
-				ExpectedBody: "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+				ExpectedHeader: map[string]string{
+					"Location": "/books/999",
+				},
 			},
 			bookCntrlBuilder: bookCntrlBuilder{
 				bookSvcFn: func(svc *service_mock.MockBookService) {
-					svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&repository.Book{
-						ID:     999,
-						Title:  "some-title",
-						Author: "some-author",
-					}, nil)
+					svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(999), nil)
 				},
 			},
 		},

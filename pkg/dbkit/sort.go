@@ -51,5 +51,5 @@ func (s *sort) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 }
 
 func (s sort) String() string {
-	return fmt.Sprintf("sort:%s:%d", s.column, s.orderBy)
+	return fmt.Sprintf("sort %s by %d", s.column, s.orderBy)
 }

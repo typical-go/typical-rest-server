@@ -36,7 +36,7 @@ func (f *equal) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 }
 
 func (f equal) String() string {
-	return fmt.Sprintf("equal:%s:%v", f.column, f.expectation)
+	return fmt.Sprintf("where %s=%v", f.column, f.expectation)
 }
 
 //
@@ -64,5 +64,5 @@ func (l *like) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 }
 
 func (l like) String() string {
-	return fmt.Sprintf("like:%s:%v", l.column, l.expectation)
+	return fmt.Sprintf("where %s like %v", l.column, l.expectation)
 }

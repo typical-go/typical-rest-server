@@ -25,11 +25,10 @@ type (
 	// BookRepo to get book data from database
 	// @mock
 	BookRepo interface {
-		FindOne(context.Context, int64) (*Book, error)
 		Find(context.Context, ...dbkit.FindOption) ([]*Book, error)
-		Create(context.Context, *Book) (*Book, error)
+		Create(context.Context, *Book) (int64, error)
 		Delete(context.Context, int64) error
-		Update(context.Context, int64, *Book) (*Book, error)
+		Update(context.Context, *Book) error
 	}
 
 	// BookRepoImpl is implementation book repository
@@ -45,43 +44,8 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }
 
-// FindOne book
-func (r *BookRepoImpl) FindOne(ctx context.Context, id int64) (*Book, error) {
-	row := sq.
-		Select(
-			"id",
-			"title",
-			"author",
-			"updated_at",
-			"created_at",
-		).
-		From("books").
-		Where(
-			sq.Eq{"id": id},
-		).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(r).
-		QueryRowContext(ctx)
-
-	book := new(Book)
-	if err := row.Scan(
-		&book.ID,
-		&book.Title,
-		&book.Author,
-		&book.UpdatedAt,
-		&book.CreatedAt,
-	); err != nil {
-		return nil, err
-	}
-
-	return book, nil
-}
-
 // Find book
 func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
-	var (
-		rows *sql.Rows
-	)
 	builder := sq.
 		Select(
 			"id",
@@ -94,11 +58,14 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	if err = dbkit.CompileOpts(builder, opts...); err != nil {
-		return nil, fmt.Errorf("Compile-Opts: %w", err)
+	for _, opt := range opts {
+		if builder, err = opt.CompileQuery(builder); err != nil {
+			return nil, fmt.Errorf("book-repo: %w", err)
+		}
 	}
 
-	if rows, err = builder.QueryContext(ctx); err != nil {
+	rows, err := builder.QueryContext(ctx)
+	if err != nil {
 		return
 	}
 
@@ -120,7 +87,9 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list
 }
 
 // Create book
-func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (*Book, error) {
+func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
+	var id int64
+
 	book.CreatedAt = time.Now()
 	book.UpdatedAt = time.Now()
 
@@ -143,10 +112,10 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (*Book, error) {
 		RunWith(r).
 		QueryRowContext(ctx)
 
-	if err := scanner.Scan(&book.ID); err != nil {
-		return nil, err
+	if err := scanner.Scan(&id); err != nil {
+		return -1, err
 	}
-	return book, nil
+	return id, nil
 }
 
 // Delete book
@@ -164,27 +133,17 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 }
 
 // Update book
-func (r *BookRepoImpl) Update(ctx context.Context, id int64, forms *Book) (book *Book, err error) {
-	if book, err = r.FindOne(ctx, id); err != nil {
-		return
-	}
-
-	book.Title = forms.Title
-	book.Author = forms.Author
-	book.UpdatedAt = time.Now()
-
+func (r *BookRepoImpl) Update(ctx context.Context, book *Book) (err error) {
 	update := sq.Update("books").
 		Set("title", book.Title).
 		Set("author", book.Author).
-		Set("updated_at", book.UpdatedAt).
+		Set("updated_at", time.Now()).
 		Where(
-			sq.Eq{"id": id},
+			sq.Eq{"id": book.ID},
 		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	if _, err = update.ExecContext(ctx); err != nil {
-		return nil, err
-	}
+	_, err = update.ExecContext(ctx)
 	return
 }

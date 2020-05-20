@@ -39,5 +39,5 @@ func (p *pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, erro
 }
 
 func (p *pagination) String() string {
-	return fmt.Sprintf("pagination:%d:%d", p.offset, p.limit)
+	return fmt.Sprintf("pagination from %d limit %d", p.offset, p.limit)
 }

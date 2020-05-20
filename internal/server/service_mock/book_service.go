@@ -35,10 +35,10 @@ func (m *MockBookService) EXPECT() *MockBookServiceMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockBookService) Create(arg0 context.Context, arg1 *repository.Book) (*repository.Book, error) {
+func (m *MockBookService) Create(arg0 context.Context, arg1 *repository.Book) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(*repository.Book)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -94,12 +94,11 @@ func (mr *MockBookServiceMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.C
 }
 
 // Update mocks base method
-func (m *MockBookService) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) (*repository.Book, error) {
+func (m *MockBookService) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*repository.Book)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Update indicates an expected call of Update

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -30,23 +31,20 @@ func (c *BookCntrl) SetRoute(e *echo.Echo) {
 
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
-	var (
-		result *repository.Book
-		book   repository.Book
-	)
-
+	var book repository.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
 
-	if result, err = c.BookService.Create(
-		ec.Request().Context(),
-		&book,
-	); err != nil {
+	ctx := ec.Request().Context()
+	id, err := c.BookService.Create(ctx, &book)
+
+	if err != nil {
 		return httpError(err)
 	}
 
-	return ec.JSON(http.StatusCreated, result)
+	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/books/%d", id))
+	return ec.NoContent(http.StatusCreated)
 }
 
 // Find books
@@ -86,24 +84,19 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 }
 
 // Update book
-func (c *BookCntrl) Update(ec echo.Context) error {
-	var (
-		form   repository.Book
-		result *repository.Book
-		err    error
-	)
-
-	if err = ec.Bind(&form); err != nil {
+func (c *BookCntrl) Update(ec echo.Context) (err error) {
+	var book repository.Book
+	if err = ec.Bind(&book); err != nil {
 		return err
 	}
 
-	if result, err = c.BookService.Update(
+	if err = c.BookService.Update(
 		ec.Request().Context(),
 		ec.Param("id"),
-		&form,
+		&book,
 	); err != nil {
 		return httpError(err)
 	}
 
-	return ec.JSON(http.StatusOK, result)
+	return ec.NoContent(http.StatusOK)
 }
