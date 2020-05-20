@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/internal/config"
 	"github.com/typical-go/typical-rest-server/internal/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server/controller"
@@ -17,43 +16,28 @@ import (
 	"go.uber.org/dig"
 )
 
-var (
-	configName = "APP"
-)
-
-type server struct {
+type app struct {
 	dig.In
-	*config.Config
-
+	Config    *config.Config
 	BookCntrl controller.BookCntrl
 	Profiler  profiler.Controller
 }
 
 // Main function to run server
-func Main(s server) (err error) {
+func Main(a app) (err error) {
 	e := echo.New()
 	defer shutdown(e)
 
 	e.HideBanner = true
-	initLogger(e, s.Debug)
+	initLogger(e, a.Config.Debug)
 
 	// set middleware
 	e.Use(middleware.Recover())
 
-	s.BookCntrl.SetRoute(e)
-	s.Profiler.SetRoute(e)
+	a.BookCntrl.SetRoute(e)
+	a.Profiler.SetRoute(e)
 
-	return e.Start(s.Address)
-}
-
-// Configuration of server
-func Configuration() *typgo.Configuration {
-	return &typgo.Configuration{
-		Name: configName,
-		Spec: &config.Config{
-			Debug: true,
-		},
-	}
+	return e.Start(a.Config.Address)
 }
 
 func initLogger(e *echo.Echo, debug bool) {

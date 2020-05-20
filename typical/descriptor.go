@@ -4,7 +4,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
-	"github.com/typical-go/typical-rest-server/internal/server"
+	"github.com/typical-go/typical-rest-server/internal/app"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"github.com/typical-go/typical-rest-server/pkg/typredis"
 )
@@ -28,7 +28,7 @@ var Descriptor = typgo.Descriptor{
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.30",
 
-	EntryPoint: server.Main,
+	EntryPoint: app.Main,
 
 	Layouts: []string{
 		"internal",
@@ -38,7 +38,7 @@ var Descriptor = typgo.Descriptor{
 	Configurer: typgo.Configurers{
 		typredis.Configuration(redis),
 		typpg.Configuration(mainDB),
-		server.Configuration(),
+		app.Configuration(),
 	},
 
 	Build: typgo.Builds{
