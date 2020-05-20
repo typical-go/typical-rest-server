@@ -16,7 +16,7 @@ func init() {
 	typgo.Provide(
 		&typgo.Constructor{Name: "", Fn: infra.Connect},
 		&typgo.Constructor{Name: "", Fn: repository.NewBookRepo},
-		&typgo.Constructor{Name: "", Fn: service.NewBookService},
+		&typgo.Constructor{Name: "", Fn: service.NewBookSvc},
 		&typgo.Constructor{
 			Name: "",
 			Fn: func() (cfg *typredis.Config, err error) {

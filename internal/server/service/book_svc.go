@@ -15,9 +15,9 @@ import (
 )
 
 type (
-	// BookService contain logic for Book Controller
+	// BookSvc contain logic for Book Controller
 	// @mock
-	BookService interface {
+	BookSvc interface {
 		FindOne(context.Context, string) (*repository.Book, error)
 		Find(context.Context) ([]*repository.Book, error)
 		Create(context.Context, *repository.Book) (int64, error)
@@ -25,32 +25,32 @@ type (
 		Update(context.Context, string, *repository.Book) error
 	}
 
-	// BookServiceImpl is implementation of BookService
-	BookServiceImpl struct {
+	// BookSvcImpl is implementation of BookSvc
+	BookSvcImpl struct {
 		dig.In
 		repository.BookRepo
 	}
 )
 
-// NewBookService return new instance of BookService
+// NewBookSvc return new instance of BookSvc
 // @constructor
-func NewBookService(impl BookServiceImpl) BookService {
+func NewBookSvc(impl BookSvcImpl) BookSvc {
 	return &impl
 }
 
 // Find books
-func (b *BookServiceImpl) Find(ctx context.Context) ([]*repository.Book, error) {
+func (b *BookSvcImpl) Find(ctx context.Context) ([]*repository.Book, error) {
 	return b.BookRepo.Find(ctx)
 }
 
 // FindOne book
-func (b *BookServiceImpl) FindOne(ctx context.Context, paramID string) (*repository.Book, error) {
+func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.Book, error) {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		return nil, errvalid.Wrap(err)
 	}
 
-	books, err := b.BookRepo.Find(ctx, dbkit.Equal("id", id))
+	books, err := b.BookRepo.Find(ctx, dbkit.Equal(repository.BookCols.ID, id))
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (b *BookServiceImpl) FindOne(ctx context.Context, paramID string) (*reposit
 }
 
 // Delete book
-func (b *BookServiceImpl) Delete(ctx context.Context, paramID string) error {
+func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		return errvalid.Wrap(err)
@@ -72,7 +72,7 @@ func (b *BookServiceImpl) Delete(ctx context.Context, paramID string) error {
 }
 
 // Update book
-func (b *BookServiceImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
+func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		return errvalid.Wrap(err)
@@ -83,7 +83,10 @@ func (b *BookServiceImpl) Update(ctx context.Context, paramID string, book *repo
 		return err
 	}
 
-	if _, err = b.BookRepo.Find(ctx, dbkit.Equal("id", id)); err != nil {
+	if _, err = b.BookRepo.Find(
+		ctx,
+		dbkit.Equal(repository.BookCols.ID, id),
+	); err != nil {
 		return err
 	}
 
@@ -91,7 +94,7 @@ func (b *BookServiceImpl) Update(ctx context.Context, paramID string, book *repo
 }
 
 // Create Book
-func (b *BookServiceImpl) Create(ctx context.Context, book *repository.Book) (insertID int64, err error) {
+func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (insertID int64, err error) {
 	if err = validator.New().Struct(book); err != nil {
 		return -1, err
 	}

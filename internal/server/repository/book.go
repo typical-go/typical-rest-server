@@ -12,6 +12,26 @@ import (
 	"go.uber.org/dig"
 )
 
+var (
+	// BookCols is columns for book entity
+	BookCols = struct {
+		ID        string
+		Title     string
+		Author    string
+		UpdatedAt string
+		CreatedAt string
+	}{
+		ID:        "id",
+		Title:     "title",
+		Author:    "author",
+		UpdatedAt: "updated_at",
+		CreatedAt: "created_at",
+	}
+
+	// BookTable is table name for book entity
+	BookTable = "books"
+)
+
 type (
 	// Book represented database model
 	Book struct {
@@ -48,13 +68,13 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.FindOption) (list []*Book, err error) {
 	builder := sq.
 		Select(
-			"id",
-			"title",
-			"author",
-			"updated_at",
-			"created_at",
+			BookCols.ID,
+			BookCols.Title,
+			BookCols.Author,
+			BookCols.UpdatedAt,
+			BookCols.CreatedAt,
 		).
-		From("books").
+		From(BookTable).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
@@ -94,12 +114,12 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 	book.UpdatedAt = time.Now()
 
 	scanner := sq.
-		Insert("books").
+		Insert(BookTable).
 		Columns(
-			"title",
-			"author",
-			"created_at",
-			"updated_at",
+			BookCols.Title,
+			BookCols.Author,
+			BookCols.CreatedAt,
+			BookCols.UpdatedAt,
 		).
 		Values(
 			book.Title,
@@ -107,7 +127,9 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 			book.CreatedAt,
 			book.UpdatedAt,
 		).
-		Suffix("RETURNING \"id\"").
+		Suffix(
+			fmt.Sprintf("RETURNING \"%s\"", BookCols.ID),
+		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r).
 		QueryRowContext(ctx)
@@ -121,9 +143,9 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 // Delete book
 func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 	query := sq.
-		Delete("books").
+		Delete(BookTable).
 		Where(
-			sq.Eq{"id": id},
+			sq.Eq{BookCols.ID: id},
 		).
 		PlaceholderFormat(sq.Dollar).RunWith(r)
 	if _, err = query.ExecContext(ctx); err != nil {
@@ -134,12 +156,13 @@ func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
 
 // Update book
 func (r *BookRepoImpl) Update(ctx context.Context, book *Book) (err error) {
-	update := sq.Update("books").
-		Set("title", book.Title).
-		Set("author", book.Author).
-		Set("updated_at", time.Now()).
+	update := sq.
+		Update(BookTable).
+		Set(BookCols.Title, book.Title).
+		Set(BookCols.Author, book.Author).
+		Set(BookCols.UpdatedAt, time.Now()).
 		Where(
-			sq.Eq{"id": book.ID},
+			sq.Eq{BookCols.ID: book.ID},
 		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)

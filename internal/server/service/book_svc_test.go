@@ -57,18 +57,18 @@ type (
 	}
 )
 
-func (b *bookSvcBuilder) build(mock *gomock.Controller) *service.BookServiceImpl {
+func (b *bookSvcBuilder) build(mock *gomock.Controller) *service.BookSvcImpl {
 	mockRepo := repository_mock.NewMockBookRepo(mock)
 	if b.mockRepoFn != nil {
 		b.mockRepoFn(mockRepo)
 	}
 
-	return &service.BookServiceImpl{
+	return &service.BookSvcImpl{
 		BookRepo: mockRepo,
 	}
 }
 
-func TestBookService_FindOne(t *testing.T) {
+func TestBookSvc_FindOne(t *testing.T) {
 	testcases := []findOneTestCase{
 		{
 			paramID:     "",
@@ -122,7 +122,7 @@ func TestBookService_FindOne(t *testing.T) {
 	}
 }
 
-func TestBookService_Find(t *testing.T) {
+func TestBookSvc_Find(t *testing.T) {
 	testcases := []findTestCase{}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
@@ -141,7 +141,7 @@ func TestBookService_Find(t *testing.T) {
 	}
 }
 
-func TestBookService_Create(t *testing.T) {
+func TestBookSvc_Create(t *testing.T) {
 	testcases := []createTestCase{}
 
 	for _, tt := range testcases {
@@ -161,7 +161,7 @@ func TestBookService_Create(t *testing.T) {
 	}
 }
 
-func TestBookService_Delete(t *testing.T) {
+func TestBookSvc_Delete(t *testing.T) {
 	testcases := []deleteTestCase{
 		{
 			paramID:     "",
@@ -183,7 +183,7 @@ func TestBookService_Delete(t *testing.T) {
 		})
 	}
 }
-func TestBookService_Update(t *testing.T) {
+func TestBookSvc_Update(t *testing.T) {
 	testcases := []updateTestCase{
 		{
 			paramID:     "",
