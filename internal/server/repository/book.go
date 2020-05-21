@@ -49,6 +49,7 @@ type (
 		Create(context.Context, *Book) (int64, error)
 		Delete(context.Context, dbkit.DeleteOption) error
 		Update(context.Context, *Book, dbkit.UpdateOption) error
+		Patch(context.Context, *Book, dbkit.UpdateOption) error
 	}
 
 	// BookRepoImpl is implementation book repository
@@ -110,9 +111,6 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 	var id int64
 
-	book.CreatedAt = time.Now()
-	book.UpdatedAt = time.Now()
-
 	scanner := sq.
 		Insert(BookTable).
 		Columns(
@@ -124,8 +122,8 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 		Values(
 			book.Title,
 			book.Author,
-			book.CreatedAt,
-			book.UpdatedAt,
+			time.Now(),
+			time.Now(),
 		).
 		Suffix(
 			fmt.Sprintf("RETURNING \"%s\"", BookCols.ID),
@@ -166,6 +164,31 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 		Set(BookCols.UpdatedAt, time.Now()).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
+
+	if builder, err = opt.CompileUpdate(builder); err != nil {
+		return
+	}
+
+	_, err = builder.ExecContext(ctx)
+	return
+}
+
+// Patch book to update field of book if available
+func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOption) (err error) {
+	builder := sq.
+		Update(BookTable).
+		PlaceholderFormat(sq.Dollar).
+		RunWith(r)
+
+	if book.Title != "" {
+		builder = builder.Set(BookCols.Title, book.Title)
+	}
+
+	if book.Author != "" {
+		builder = builder.Set(BookCols.Author, book.Author)
+	}
+
+	builder = builder.Set(BookCols.UpdatedAt, time.Now())
 
 	if builder, err = opt.CompileUpdate(builder); err != nil {
 		return
