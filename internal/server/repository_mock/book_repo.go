@@ -51,7 +51,7 @@ func (mr *MockBookRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Delete mocks base method
-func (m *MockBookRepo) Delete(arg0 context.Context, arg1 int64) error {
+func (m *MockBookRepo) Delete(arg0 context.Context, arg1 dbkit.DeleteOption) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -85,15 +85,15 @@ func (mr *MockBookRepoMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) 
 }
 
 // Update mocks base method
-func (m *MockBookRepo) Update(arg0 context.Context, arg1 *repository.Book) error {
+func (m *MockBookRepo) Update(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", arg0, arg1)
+	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update
-func (mr *MockBookRepoMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockBookRepoMockRecorder) Update(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepo)(nil).Update), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBookRepo)(nil).Update), arg0, arg1, arg2)
 }

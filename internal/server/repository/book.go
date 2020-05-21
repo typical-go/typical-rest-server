@@ -47,8 +47,8 @@ type (
 	BookRepo interface {
 		Find(context.Context, ...dbkit.SelectOption) ([]*Book, error)
 		Create(context.Context, *Book) (int64, error)
-		Delete(context.Context, int64) error
-		Update(context.Context, *Book) error
+		Delete(context.Context, dbkit.DeleteOption) error
+		Update(context.Context, *Book, dbkit.UpdateOption) error
 	}
 
 	// BookRepoImpl is implementation book repository
@@ -141,32 +141,36 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 }
 
 // Delete book
-func (r *BookRepoImpl) Delete(ctx context.Context, id int64) (err error) {
-	query := sq.
+func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (err error) {
+	builder := sq.
 		Delete(BookTable).
-		Where(
-			sq.Eq{BookCols.ID: id},
-		).
-		PlaceholderFormat(sq.Dollar).RunWith(r)
-	if _, err = query.ExecContext(ctx); err != nil {
+		PlaceholderFormat(sq.Dollar).
+		RunWith(r)
+
+	if builder, err = opt.CompileDelete(builder); err != nil {
+		return
+	}
+
+	if _, err = builder.ExecContext(ctx); err != nil {
 		return
 	}
 	return
 }
 
 // Update book
-func (r *BookRepoImpl) Update(ctx context.Context, book *Book) (err error) {
-	update := sq.
+func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateOption) (err error) {
+	builder := sq.
 		Update(BookTable).
 		Set(BookCols.Title, book.Title).
 		Set(BookCols.Author, book.Author).
 		Set(BookCols.UpdatedAt, time.Now()).
-		Where(
-			sq.Eq{BookCols.ID: book.ID},
-		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	_, err = update.ExecContext(ctx)
+	if builder, err = opt.CompileUpdate(builder); err != nil {
+		return
+	}
+
+	_, err = builder.ExecContext(ctx)
 	return
 }

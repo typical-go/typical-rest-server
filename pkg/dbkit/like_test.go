@@ -10,17 +10,6 @@ import (
 func TestSelectOption_Where(t *testing.T) {
 	testcases := []SelectTestCase{
 		{
-			SelectOption: dbkit.Equal("", ""),
-			Builder:      sq.Select("name", "version").From("sometables"),
-			ExpectedErr:  "Filter column can't be empty",
-		},
-		{
-			SelectOption: dbkit.Equal("name", "dummy-name"),
-			Builder:      sq.Select("name", "version").From("sometables"),
-			Expected:     "SELECT name, version FROM sometables WHERE name = ?",
-			ExpectedArgs: []interface{}{"dummy-name"},
-		},
-		{
 			SelectOption: dbkit.Like("name", "%dum%"),
 			Builder:      sq.Select("name", "version").From("sometables"),
 			Expected:     "SELECT name, version FROM sometables WHERE name LIKE ?",

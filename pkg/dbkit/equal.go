@@ -8,6 +8,8 @@ import (
 
 var (
 	_ SelectOption = (*EqualOption)(nil)
+	_ UpdateOption = (*EqualOption)(nil)
+	_ DeleteOption = (*EqualOption)(nil)
 )
 
 type (
@@ -29,7 +31,23 @@ func Equal(column string, expectation interface{}) *EqualOption {
 // CompileSelect to compile select query for filtering
 func (f *EqualOption) CompileSelect(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if f.column == "" {
-		return base, errors.New("Filter column can't be empty")
+		return base, errors.New("equal: column is missing")
+	}
+	return base.Where(sq.Eq{f.column: f.expectation}), nil
+}
+
+// CompileUpdate to compile update query for filtering
+func (f *EqualOption) CompileUpdate(base sq.UpdateBuilder) (sq.UpdateBuilder, error) {
+	if f.column == "" {
+		return base, errors.New("equal: column is missing")
+	}
+	return base.Where(sq.Eq{f.column: f.expectation}), nil
+}
+
+// CompileDelete to compile delete query for filtering
+func (f *EqualOption) CompileDelete(base sq.DeleteBuilder) (sq.DeleteBuilder, error) {
+	if f.column == "" {
+		return base, errors.New("equal: column is missing")
 	}
 	return base.Where(sq.Eq{f.column: f.expectation}), nil
 }

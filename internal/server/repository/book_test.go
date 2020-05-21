@@ -10,6 +10,7 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
 func TestBookRepoImpl_Create(t *testing.T) {
@@ -47,7 +48,11 @@ func TestBookRepitory_Update(t *testing.T) {
 			WillReturnError(fmt.Errorf("some-update-error"))
 
 		require.EqualError(t,
-			repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"}),
+			repo.Update(
+				ctx,
+				&repository.Book{ID: 888, Title: "new-title", Author: "new-author"},
+				dbkit.Equal(repository.BookCols.ID, 888),
+			),
 			"some-update-error",
 		)
 	})
@@ -56,7 +61,7 @@ func TestBookRepitory_Update(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 			WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		require.NoError(t, repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"}))
+		require.NoError(t, repo.Update(ctx, &repository.Book{ID: 888, Title: "new-title", Author: "new-author"}, dbkit.Equal(repository.BookCols.ID, 888)))
 	})
 }
 
@@ -70,7 +75,7 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)).
 			WithArgs(666).
 			WillReturnError(fmt.Errorf("some-delete-error"))
-		err := repo.Delete(ctx, 666)
+		err := repo.Delete(ctx, dbkit.Equal(repository.BookCols.ID, 666))
 		require.EqualError(t, err, "some-delete-error")
 	})
 	t.Run("sql success", func(t *testing.T) {
@@ -78,7 +83,7 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)).
 			WithArgs(555).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		err := repo.Delete(ctx, 555)
+		err := repo.Delete(ctx, dbkit.Equal(repository.BookCols.ID, 555))
 		require.NoError(t, err)
 	})
 }

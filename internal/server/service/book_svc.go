@@ -68,7 +68,10 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if err != nil {
 		return errvalid.Wrap(err)
 	}
-	return b.BookRepo.Delete(ctx, id)
+	return b.BookRepo.Delete(
+		ctx,
+		dbkit.Equal(repository.BookCols.ID, id),
+	)
 }
 
 // Update book
@@ -90,7 +93,11 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 		return err
 	}
 
-	return b.BookRepo.Update(ctx, book)
+	return b.BookRepo.Update(
+		ctx,
+		book,
+		dbkit.Equal(repository.BookCols.ID, id),
+	)
 }
 
 // Create Book
