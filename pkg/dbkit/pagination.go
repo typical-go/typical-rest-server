@@ -2,19 +2,24 @@ package dbkit
 
 import (
 	"errors"
-	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
-// Pagination param
-type pagination struct {
-	offset uint64
-	limit  uint64
-}
+var (
+	_ SelectOption = (*pagination)(nil)
+)
+
+type (
+	// Pagination param
+	pagination struct {
+		offset uint64
+		limit  uint64
+	}
+)
 
 // Pagination find option
-func Pagination(offset, limit uint64) FindOption {
+func Pagination(offset, limit uint64) SelectOption {
 	return &pagination{
 		offset: offset,
 		limit:  limit,
@@ -22,7 +27,7 @@ func Pagination(offset, limit uint64) FindOption {
 }
 
 // PaginationWithRange to setup pagination with start and end index
-func PaginationWithRange(start, end uint64) FindOption {
+func PaginationWithRange(start, end uint64) SelectOption {
 	return Pagination(start, end-start+1)
 }
 
@@ -36,8 +41,4 @@ func (p *pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, erro
 		base = base.Limit(p.limit)
 	}
 	return base, nil
-}
-
-func (p *pagination) String() string {
-	return fmt.Sprintf("pagination from %d limit %d", p.offset, p.limit)
 }

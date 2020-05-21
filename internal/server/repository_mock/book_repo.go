@@ -65,7 +65,7 @@ func (mr *MockBookRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Find mocks base method
-func (m *MockBookRepo) Find(arg0 context.Context, arg1 ...dbkit.FindOption) ([]*repository.Book, error) {
+func (m *MockBookRepo) Find(arg0 context.Context, arg1 ...dbkit.SelectOption) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0}
 	for _, a := range arg1 {

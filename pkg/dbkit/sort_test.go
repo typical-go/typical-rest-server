@@ -10,37 +10,26 @@ import (
 )
 
 func TestSort(t *testing.T) {
-	testcases := []struct {
-		dbkit.FindOption
-		builder       sq.SelectBuilder
-		expectedError string
-		expected      string
-	}{
+	testcases := []SelectTestCase{
 		{
-			FindOption:    dbkit.Sort("", 0),
-			builder:       sq.Select("name", "version").From("sometables"),
-			expectedError: "Sort column can't be empty",
+			SelectOption: dbkit.Sort("", 0),
+			Builder:      sq.Select("name", "version").From("sometables"),
+			ExpectedErr:  "Sort column can't be empty",
 		},
 		{
-			FindOption: dbkit.Sort("name", dbkit.Asc),
-			builder:    sq.Select("name", "version").From("sometables"),
-			expected:   "SELECT name, version FROM sometables ORDER BY name ASC",
+			SelectOption: dbkit.Sort("name", dbkit.Asc),
+			Builder:      sq.Select("name", "version").From("sometables"),
+			Expected:     "SELECT name, version FROM sometables ORDER BY name ASC",
 		},
 		{
-			FindOption: dbkit.Sort("other_col", dbkit.Desc),
-			builder:    sq.Select("name", "version").From("sometables"),
-			expected:   "SELECT name, version FROM sometables ORDER BY other_col DESC",
+			SelectOption: dbkit.Sort("other_col", dbkit.Desc),
+			Builder:      sq.Select("name", "version").From("sometables"),
+			Expected:     "SELECT name, version FROM sometables ORDER BY other_col DESC",
 		},
 	}
 
 	for _, tt := range testcases {
-		builder, err := tt.CompileQuery(tt.builder)
-		if err != nil {
-			require.EqualError(t, err, tt.expectedError)
-		} else {
-			query, _, _ := builder.ToSql()
-			require.Equal(t, tt.expected, query)
-		}
+		tt.Execute(t)
 	}
 }
 
