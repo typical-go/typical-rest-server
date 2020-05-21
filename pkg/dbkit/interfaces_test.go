@@ -21,7 +21,7 @@ type (
 
 func (tt *SelectTestCase) Execute(t *testing.T) {
 	t.Run(tt.TestName, func(t *testing.T) {
-		builder, err := tt.CompileQuery(tt.Builder)
+		builder, err := tt.CompileSelect(tt.Builder)
 		if tt.ExpectedErr != "" {
 			require.EqualError(t, err, tt.ExpectedErr)
 			return

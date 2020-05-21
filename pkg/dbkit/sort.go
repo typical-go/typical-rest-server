@@ -15,6 +15,10 @@ const (
 	Desc
 )
 
+var (
+	_ SelectOption = (*SortOption)(nil)
+)
+
 type (
 	// SortOption for select
 	SortOption struct {
@@ -52,8 +56,8 @@ func Sort(column string, orderBy OrderBy) *SortOption {
 	}
 }
 
-// CompileQuery to compile select query for sorting
-func (s *SortOption) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
+// CompileSelect to compile select query for sorting
+func (s *SortOption) CompileSelect(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if s.column == "" {
 		return base, errors.New("Sort column can't be empty")
 	}

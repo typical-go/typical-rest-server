@@ -7,32 +7,32 @@ import (
 )
 
 var (
-	_ SelectOption = (*pagination)(nil)
+	_ SelectOption = (*PaginationOption)(nil)
 )
 
 type (
-	// Pagination param
-	pagination struct {
+	// PaginationOption param
+	PaginationOption struct {
 		offset uint64
 		limit  uint64
 	}
 )
 
 // Pagination find option
-func Pagination(offset, limit uint64) SelectOption {
-	return &pagination{
+func Pagination(offset, limit uint64) *PaginationOption {
+	return &PaginationOption{
 		offset: offset,
 		limit:  limit,
 	}
 }
 
 // PaginationWithRange to setup pagination with start and end index
-func PaginationWithRange(start, end uint64) SelectOption {
+func PaginationWithRange(start, end uint64) *PaginationOption {
 	return Pagination(start, end-start+1)
 }
 
-// CompileQuery to compile select query for pagination
-func (p *pagination) CompileQuery(base sq.SelectBuilder) (sq.SelectBuilder, error) {
+// CompileSelect to compile select query for pagination
+func (p *PaginationOption) CompileSelect(base sq.SelectBuilder) (sq.SelectBuilder, error) {
 	if p.limit < 1 {
 		return base, errors.New("Limit can't be 0 or negative")
 	}

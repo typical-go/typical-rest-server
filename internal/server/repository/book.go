@@ -79,7 +79,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 		RunWith(r)
 
 	for _, opt := range opts {
-		if builder, err = opt.CompileQuery(builder); err != nil {
+		if builder, err = opt.CompileSelect(builder); err != nil {
 			return nil, fmt.Errorf("book-repo: %w", err)
 		}
 	}
