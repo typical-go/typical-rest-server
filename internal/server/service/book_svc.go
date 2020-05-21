@@ -64,9 +64,9 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.
 
 // Delete book
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		return errvalid.Wrap(err)
+	id, _ := strconv.ParseInt(paramID, 10, 64)
+	if id < 1 {
+		return errvalid.New("paramID is missing")
 	}
 	return b.BookRepo.Delete(
 		ctx,
@@ -75,10 +75,10 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 }
 
 // Update book
-func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		return errvalid.Wrap(err)
+func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) (err error) {
+	id, _ := strconv.ParseInt(paramID, 10, 64)
+	if id < 1 {
+		return errvalid.New("paramID is missing")
 	}
 
 	book.ID = id

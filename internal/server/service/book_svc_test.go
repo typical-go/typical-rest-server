@@ -165,7 +165,7 @@ func TestBookSvc_Delete(t *testing.T) {
 	testcases := []deleteTestCase{
 		{
 			paramID:     "",
-			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
+			expectedErr: `Validation: paramID is missing`,
 		},
 	}
 	for _, tt := range testcases {
@@ -187,7 +187,7 @@ func TestBookSvc_Update(t *testing.T) {
 	testcases := []updateTestCase{
 		{
 			paramID:     "",
-			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
+			expectedErr: `Validation: paramID is missing`,
 		},
 	}
 	for _, tt := range testcases {
