@@ -26,6 +26,7 @@ func (c *BookCntrl) SetRoute(e *echo.Echo) {
 	e.POST("books", c.Create)
 	e.GET("books/:id", c.FindOne)
 	e.PUT("books/:id", c.Update)
+	e.PATCH("books/:id", c.Patch)
 	e.DELETE("books/:id", c.Delete)
 }
 
@@ -91,6 +92,24 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	}
 
 	if err = c.BookSvc.Update(
+		ec.Request().Context(),
+		ec.Param("id"),
+		&book,
+	); err != nil {
+		return httpError(err)
+	}
+
+	return ec.NoContent(http.StatusOK)
+}
+
+// Patch book
+func (c *BookCntrl) Patch(ec echo.Context) (err error) {
+	var book repository.Book
+	if err = ec.Bind(&book); err != nil {
+		return err
+	}
+
+	if err = c.BookSvc.Patch(
 		ec.Request().Context(),
 		ec.Param("id"),
 		&book,

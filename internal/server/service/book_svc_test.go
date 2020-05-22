@@ -246,11 +246,6 @@ func TestBookSvc_Patch(t *testing.T) {
 			expectedErr: `Validation: paramID is missing`,
 		},
 		{
-			paramID:     "1",
-			book:        &repository.Book{},
-			expectedErr: "Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
-		},
-		{
 			paramID: "1",
 			book: &repository.Book{
 				Author: "some-author",

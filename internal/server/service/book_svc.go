@@ -107,10 +107,6 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repositor
 		return errvalid.New("paramID is missing")
 	}
 
-	if err = validator.New().Struct(book); err != nil {
-		return err
-	}
-
 	if _, err = b.BookRepo.Find(
 		ctx,
 		dbkit.Equal(repository.BookCols.ID, id),

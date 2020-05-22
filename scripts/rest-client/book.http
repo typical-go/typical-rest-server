@@ -7,14 +7,9 @@ http://localhost:8089/adsfqer
 http://localhost:8089/books
 
 
-### Find One Book
-
-http://localhost:8089/books/2
-
 ### Find One Book (Invalid ID)
 
 http://localhost:8089/books/invalid
-
 
 
 ### Insert Book
@@ -28,6 +23,10 @@ content-type: application/json
     "author": "J. K. Rowling"
 }
 
+### Find One Book
+
+http://localhost:8089/books/6
+
 
 ### Update Book
 
@@ -39,6 +38,15 @@ content-type: application/json
     "author": "J. K. Rowling"
 }
 
+
+### Patch Book
+
+PATCH http://localhost:8089/books/6
+content-type: application/json
+
+{
+    "title": "Harry Potter and the Philosopher's Stone (Revision2)"
+}
 
 ### Delete Book
 
