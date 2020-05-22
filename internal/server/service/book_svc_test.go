@@ -49,15 +49,16 @@ type (
 	}
 
 	updateTestCase struct {
-		testName    string
-		builder     bookSvcBuilder
+		testName string
+		bookSvcBuilder
 		paramID     string
 		book        *repository.Book
 		expectedErr string
 	}
 )
 
-func (b *bookSvcBuilder) build(mock *gomock.Controller) *service.BookSvcImpl {
+func (b *bookSvcBuilder) build(t *testing.T) (*service.BookSvcImpl, *gomock.Controller) {
+	mock := gomock.NewController(t)
 	mockRepo := repository_mock.NewMockBookRepo(mock)
 	if b.mockRepoFn != nil {
 		b.mockRepoFn(mockRepo)
@@ -65,7 +66,7 @@ func (b *bookSvcBuilder) build(mock *gomock.Controller) *service.BookSvcImpl {
 
 	return &service.BookSvcImpl{
 		BookRepo: mockRepo,
-	}
+	}, mock
 }
 
 func TestBookSvc_FindOne(t *testing.T) {
@@ -108,15 +109,16 @@ func TestBookSvc_FindOne(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			mock := gomock.NewController(t)
+			svc, mock := tt.build(t)
 			defer mock.Finish()
 
-			book, err := tt.build(mock).FindOne(context.Background(), tt.paramID)
+			book, err := svc.FindOne(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
+				return
 			}
+
+			require.NoError(t, err)
 			require.Equal(t, tt.expected, book)
 		})
 	}
@@ -126,16 +128,16 @@ func TestBookSvc_Find(t *testing.T) {
 	testcases := []findTestCase{}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			mock := gomock.NewController(t)
+			svc, mock := tt.build(t)
 			defer mock.Finish()
 
-			books, err := tt.build(mock).Find(context.Background())
-
+			books, err := svc.Find(context.Background())
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
+				return
 			}
+
+			require.NoError(t, err)
 			require.Equal(t, tt.expected, books)
 		})
 	}
@@ -146,16 +148,16 @@ func TestBookSvc_Create(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			mock := gomock.NewController(t)
+			svc, mock := tt.build(t)
 			defer mock.Finish()
 
-			id, err := tt.build(mock).Create(context.Background(), tt.book)
-
+			id, err := svc.Create(context.Background(), tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
+				return
 			}
+
+			require.NoError(t, err)
 			require.Equal(t, tt.expected, id)
 		})
 	}
@@ -170,16 +172,15 @@ func TestBookSvc_Delete(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			mock := gomock.NewController(t)
+			svc, mock := tt.build(t)
 			defer mock.Finish()
 
-			err := tt.build(mock).Delete(context.Background(), tt.paramID)
-
+			err := svc.Delete(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
@@ -192,17 +193,15 @@ func TestBookSvc_Update(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			mock := gomock.NewController(t)
+			svc, mock := tt.build(t)
 			defer mock.Finish()
 
-			svc := tt.builder.build(mock)
 			err := svc.Update(context.Background(), tt.paramID, tt.book)
-
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
