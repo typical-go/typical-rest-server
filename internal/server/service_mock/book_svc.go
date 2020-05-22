@@ -93,6 +93,20 @@ func (mr *MockBookSvcMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOne", reflect.TypeOf((*MockBookSvc)(nil).FindOne), arg0, arg1)
 }
 
+// Patch mocks base method
+func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *repository.Book) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Patch indicates an expected call of Patch
+func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockBookSvc)(nil).Patch), arg0, arg1, arg2)
+}
+
 // Update mocks base method
 func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) error {
 	m.ctrl.T.Helper()

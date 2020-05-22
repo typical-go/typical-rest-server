@@ -23,6 +23,7 @@ type (
 		Create(context.Context, *repository.Book) (int64, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) error
+		Patch(context.Context, string, *repository.Book) error
 	}
 
 	// BookSvcImpl is implementation of BookSvc
@@ -81,7 +82,6 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 		return errvalid.New("paramID is missing")
 	}
 
-	book.ID = id
 	if err = validator.New().Struct(book); err != nil {
 		return err
 	}
@@ -94,6 +94,31 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 	}
 
 	return b.BookRepo.Update(
+		ctx,
+		book,
+		dbkit.Equal(repository.BookCols.ID, id),
+	)
+}
+
+// Patch book
+func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) (err error) {
+	id, _ := strconv.ParseInt(paramID, 10, 64)
+	if id < 1 {
+		return errvalid.New("paramID is missing")
+	}
+
+	if err = validator.New().Struct(book); err != nil {
+		return err
+	}
+
+	if _, err = b.BookRepo.Find(
+		ctx,
+		dbkit.Equal(repository.BookCols.ID, id),
+	); err != nil {
+		return err
+	}
+
+	return b.BookRepo.Patch(
 		ctx,
 		book,
 		dbkit.Equal(repository.BookCols.ID, id),
