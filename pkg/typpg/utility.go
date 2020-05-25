@@ -31,47 +31,48 @@ func Utility(s *Settings) typgo.Utility {
 }
 
 // Commands of module
-func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
+func (u *utility) Commands(c *typgo.BuildCli) []*cli.Command {
+	name := u.UtilityCmd
 	return []*cli.Command{
 		{
-			Name:  u.UtilityCmd,
+			Name:  name,
 			Usage: "Postgres utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:   "create",
 					Usage:  "Create New Database",
-					Action: c.ActionFunc("PG", u.createDB),
+					Action: c.ActionFn(name, u.createDB),
 				},
 				{
 					Name:   "drop",
 					Usage:  "Drop Database",
-					Action: c.ActionFunc("PG", u.dropDB),
+					Action: c.ActionFn(name, u.dropDB),
 				},
 				{
 					Name:   "migrate",
 					Usage:  "Migrate Database",
-					Action: c.ActionFunc("PG", u.migrateDB),
+					Action: c.ActionFn(name, u.migrateDB),
 				},
 				{
 					Name:   "rollback",
 					Usage:  "Rollback Database",
-					Action: c.ActionFunc("PG", u.rollbackDB),
+					Action: c.ActionFn(name, u.rollbackDB),
 				},
 				{
 					Name:   "seed",
 					Usage:  "Data seeding",
-					Action: c.ActionFunc("PG", u.seedDB),
+					Action: c.ActionFn(name, u.seedDB),
 				},
 				{
 					Name:   "reset",
 					Usage:  "Reset Database",
-					Action: c.ActionFunc("PG", u.resetDB),
+					Action: c.ActionFn(name, u.resetDB),
 				},
 				{
 					Name:    "console",
 					Aliases: []string{"c"},
 					Usage:   "PostgreSQL Interactive",
-					Action:  c.ActionFunc("PG", u.console),
+					Action:  c.ActionFn(name, u.console),
 				},
 			},
 		},
@@ -95,7 +96,7 @@ func (u *utility) dropDB(c *typgo.Context) (err error) {
 
 	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
 	c.Infof("Postgres: %s", query)
-	_, err = conn.ExecContext(c.Cli.Context, query)
+	_, err = conn.ExecContext(c.Ctx(), query)
 	return
 }
 
@@ -114,7 +115,7 @@ func (u *utility) createDB(c *typgo.Context) (err error) {
 	}
 	defer conn.Close()
 
-	ctx := c.Cli.Context
+	ctx := c.Ctx()
 	if err = conn.PingContext(ctx); err != nil {
 		return
 	}
@@ -167,7 +168,7 @@ func (u *utility) console(c *typgo.Context) (err error) {
 
 	cmd.Print(os.Stdout)
 
-	return cmd.Run(c.Cli.Context)
+	return cmd.Run(c.Ctx())
 }
 
 func (u *utility) rollbackDB(c *typgo.Context) (err error) {
@@ -222,7 +223,7 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 	defer db.Close()
 
 	files, _ := ioutil.ReadDir(u.SeedSrc)
-	ctx := c.Cli.Context
+	ctx := c.Ctx()
 	for _, f := range files {
 		sqlFile := u.SeedSrc + "/" + f.Name()
 		c.Infof("Execute seed '%s'", sqlFile)

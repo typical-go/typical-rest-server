@@ -20,16 +20,17 @@ func Utility(s *Settings) typgo.Utility {
 }
 
 // Commands of redis utility
-func (u *utility) Commands(c *typgo.BuildTool) []*cli.Command {
+func (u *utility) Commands(c *typgo.BuildCli) []*cli.Command {
+	name := u.UtilityCmd
 	return []*cli.Command{
 		{
-			Name:  u.Cmd,
+			Name:  name,
 			Usage: "Redis utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:    "console",
 					Aliases: []string{"c"},
-					Action:  c.ActionFunc("REDIS", u.console),
+					Action:  c.ActionFn(name, u.console),
 				},
 			},
 		},
@@ -61,7 +62,7 @@ func (u *utility) console(c *typgo.Context) (err error) {
 
 	cmd.Print(os.Stdout)
 
-	return cmd.Run(c.Cli.Context)
+	return cmd.Run(c.Ctx())
 }
 
 func (u *utility) retrieveConfig() (*Config, error) {

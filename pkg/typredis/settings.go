@@ -12,8 +12,8 @@ const (
 
 // Settings of redis
 type Settings struct {
-	Ctor string
-	Cmd  string
+	Ctor       string
+	UtilityCmd string
 
 	ConfigName string
 	Host       string
@@ -26,8 +26,8 @@ type Settings struct {
 
 // Init settings
 func Init(s *Settings) *Settings {
-	if s.Cmd == "" {
-		s.Cmd = defaultCmd
+	if s.UtilityCmd == "" {
+		s.UtilityCmd = defaultCmd
 	}
 	if s.ConfigName == "" {
 		s.ConfigName = defaultConfigName

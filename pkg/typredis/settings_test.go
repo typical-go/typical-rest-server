@@ -9,7 +9,7 @@ import (
 
 func TestInit(t *testing.T) {
 	s := typredis.Init(&typredis.Settings{})
-	require.Equal(t, "redis", s.Cmd)
+	require.Equal(t, "redis", s.UtilityCmd)
 	require.Equal(t, "REDIS", s.ConfigName)
 	require.Equal(t, "localhost", s.Host)
 	require.Equal(t, "6379", s.Port)
