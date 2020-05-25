@@ -46,9 +46,9 @@ func (b *BookSvcImpl) Find(ctx context.Context) ([]*repository.Book, error) {
 
 // FindOne book
 func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.Book, error) {
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		return nil, errvalid.Wrap(err)
+	id, _ := strconv.ParseInt(paramID, 10, 64)
+	if id < 1 {
+		return nil, errvalid.New("paramID is missing")
 	}
 
 	books, err := b.BookRepo.Find(ctx, dbkit.Equal(repository.BookCols.ID, id))

@@ -9,7 +9,7 @@ http://localhost:8089/books
 
 ### Find One Book (Invalid ID)
 
-http://localhost:8089/books/invalid
+http://localhost:8089/books/0
 
 
 ### Insert Book

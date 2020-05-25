@@ -71,7 +71,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 	testcases := []findOneTestCase{
 		{
 			paramID:     "",
-			expectedErr: `Validation: strconv.ParseInt: parsing "": invalid syntax`,
+			expectedErr: "Validation: paramID is missing",
 		},
 		{
 			paramID: "1",
