@@ -21,7 +21,24 @@ type (
 		Expected     string
 		ExpectedArgs []interface{}
 	}
+	// DeleteOptionFn function
+	DeleteOptionFn func(sq.DeleteBuilder) (sq.DeleteBuilder, error)
+
+	deleteOptionImpl struct {
+		fn DeleteOptionFn
+	}
 )
+
+// NewDeleteOption return new instance of DeleteOption
+func NewDeleteOption(fn DeleteOptionFn) DeleteOption {
+	return &deleteOptionImpl{
+		fn: fn,
+	}
+}
+
+func (s *deleteOptionImpl) CompileDelete(b sq.DeleteBuilder) (sq.DeleteBuilder, error) {
+	return s.fn(b)
+}
 
 //
 // DeleteTestCase
