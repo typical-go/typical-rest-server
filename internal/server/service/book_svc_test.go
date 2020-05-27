@@ -14,48 +14,48 @@ import (
 )
 
 type (
-	bookSvcFn func(mockRepo *repository_mock.MockBookRepo)
+	onBookSvc func(mockRepo *repository_mock.MockBookRepo)
 
-	findOneTestCase struct {
+	bookFindOne struct {
 		testName    string
-		bookSvcFn   bookSvcFn
+		onBookSvc   onBookSvc
 		paramID     string
 		expected    *repository.Book
 		expectedErr string
 	}
 
-	findTestCase struct {
+	bookFind struct {
 		testName    string
-		bookSvcFn   bookSvcFn
+		onBookSvc   onBookSvc
 		expected    []*repository.Book
 		expectedErr string
 	}
 
-	createTestCase struct {
+	bookCreate struct {
 		testName    string
-		bookSvcFn   bookSvcFn
+		onBookSvc   onBookSvc
 		book        *repository.Book
 		expected    int64
 		expectedErr string
 	}
 
-	deleteTestCase struct {
+	bookDelete struct {
 		testName    string
-		bookSvcFn   bookSvcFn
+		onBookSvc   onBookSvc
 		paramID     string
 		expectedErr string
 	}
 
 	updateTestCase struct {
 		testName    string
-		bookSvcFn   bookSvcFn
+		onBookSvc   onBookSvc
 		paramID     string
 		book        *repository.Book
 		expectedErr string
 	}
 )
 
-func createBookSvc(t *testing.T, fn bookSvcFn) (*service.BookSvcImpl, *gomock.Controller) {
+func createBookSvc(t *testing.T, fn onBookSvc) (*service.BookSvcImpl, *gomock.Controller) {
 	mock := gomock.NewController(t)
 	mockRepo := repository_mock.NewMockBookRepo(mock)
 	if fn != nil {
@@ -68,14 +68,14 @@ func createBookSvc(t *testing.T, fn bookSvcFn) (*service.BookSvcImpl, *gomock.Co
 }
 
 func TestBookSvc_FindOne(t *testing.T) {
-	testcases := []findOneTestCase{
+	testcases := []bookFindOne{
 		{
 			paramID:     "",
 			expectedErr: "Validation: paramID is missing",
 		},
 		{
 			paramID: "1",
-			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return(nil, errors.New("some-error"))
@@ -84,7 +84,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return([]*repository.Book{
@@ -103,7 +103,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			book, err := svc.FindOne(context.Background(), tt.paramID)
@@ -119,10 +119,10 @@ func TestBookSvc_FindOne(t *testing.T) {
 }
 
 func TestBookSvc_Find(t *testing.T) {
-	testcases := []findTestCase{}
+	testcases := []bookFind{}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			books, err := svc.Find(context.Background())
@@ -138,11 +138,11 @@ func TestBookSvc_Find(t *testing.T) {
 }
 
 func TestBookSvc_Create(t *testing.T) {
-	testcases := []createTestCase{}
+	testcases := []bookCreate{}
 
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			id, err := svc.Create(context.Background(), tt.book)
@@ -158,7 +158,7 @@ func TestBookSvc_Create(t *testing.T) {
 }
 
 func TestBookSvc_Delete(t *testing.T) {
-	testcases := []deleteTestCase{
+	testcases := []bookDelete{
 		{
 			paramID:     "",
 			expectedErr: `Validation: paramID is missing`,
@@ -166,7 +166,7 @@ func TestBookSvc_Delete(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			err := svc.Delete(context.Background(), tt.paramID)
@@ -199,7 +199,7 @@ func TestBookSvc_Update(t *testing.T) {
 				Author: "some-author",
 				Title:  "some-title",
 			},
-			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Find(
 						gomock.Any(),
@@ -221,7 +221,7 @@ func TestBookSvc_Update(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			err := svc.Update(context.Background(), tt.paramID, tt.book)
@@ -251,7 +251,7 @@ func TestBookSvc_Patch(t *testing.T) {
 				Author: "some-author",
 				Title:  "some-title",
 			},
-			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Find(
 						gomock.Any(),
@@ -273,7 +273,7 @@ func TestBookSvc_Patch(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
 			err := svc.Patch(context.Background(), tt.paramID, tt.book)
