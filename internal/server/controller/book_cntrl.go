@@ -8,11 +8,13 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 
-type (
+var _ echokit.Router = (*BookCntrl)(nil)
 
+type (
 	// BookCntrl is controller to book entity
 	BookCntrl struct {
 		dig.In
@@ -20,14 +22,15 @@ type (
 	}
 )
 
-// SetRoute to define API Route
-func (c *BookCntrl) SetRoute(e *echo.Echo) {
+// Route to define API Route
+func (c *BookCntrl) Route(e echokit.Server) (err error) {
 	e.GET("books", c.Find)
 	e.POST("books", c.Create)
 	e.GET("books/:id", c.FindOne)
 	e.PUT("books/:id", c.Update)
 	e.PATCH("books/:id", c.Patch)
 	e.DELETE("books/:id", c.Delete)
+	return
 }
 
 // Create book

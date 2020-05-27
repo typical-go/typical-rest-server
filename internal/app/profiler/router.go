@@ -4,22 +4,26 @@ import (
 	"database/sql"
 
 	"github.com/go-redis/redis"
-	"github.com/labstack/echo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 
-type Controller struct {
+var _ echokit.Router = (*Router)(nil)
+
+// Router for profiler
+type Router struct {
 	dig.In
 	PG    *sql.DB
 	Redis *redis.Client
 }
 
-func (h *Controller) SetRoute(e *echo.Echo) {
+// Route to profiler api
+func (h *Router) Route(e echokit.Server) (err error) {
 	hc := echokit.HealthCheck{
 		"postgres": h.PG.Ping,
 		"redis":    h.Redis.Ping().Err,
 	}
 
 	e.Any("application/health", hc.JSON)
+	return
 }
