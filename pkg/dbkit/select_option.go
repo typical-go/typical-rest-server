@@ -21,7 +21,22 @@ type (
 		Expected     string
 		ExpectedArgs []interface{}
 	}
+	// CompileSelectFn function
+	CompileSelectFn func(sq.SelectBuilder) (sq.SelectBuilder, error)
+
+	selectOptionImpl struct {
+		fn CompileSelectFn
+	}
 )
+
+// NewSelectOption return new instance of SelectOption
+func NewSelectOption(fn CompileSelectFn) SelectOption {
+	return &selectOptionImpl{fn: fn}
+}
+
+func (s *selectOptionImpl) CompileSelect(b sq.SelectBuilder) (sq.SelectBuilder, error) {
+	return s.fn(b)
+}
 
 //
 // SelectTestCase
