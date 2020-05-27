@@ -21,7 +21,22 @@ type (
 		Expected     string
 		ExpectedArgs []interface{}
 	}
+	// CompileUpdateFn function
+	CompileUpdateFn func(sq.UpdateBuilder) (sq.UpdateBuilder, error)
+
+	updateOptionImpl struct {
+		fn CompileUpdateFn
+	}
 )
+
+// NewUpdateOption return new instance of UpdateOption
+func NewUpdateOption(fn CompileUpdateFn) UpdateOption {
+	return &updateOptionImpl{fn: fn}
+}
+
+func (u *updateOptionImpl) CompileUpdate(b sq.UpdateBuilder) (sq.UpdateBuilder, error) {
+	return u.fn(b)
+}
 
 //
 // UpdateTestCase
