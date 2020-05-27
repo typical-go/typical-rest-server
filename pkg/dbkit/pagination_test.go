@@ -9,7 +9,7 @@ import (
 )
 
 func TestPagination(t *testing.T) {
-	testcases := []SelectTestCase{
+	testcases := []dbkit.SelectTestCase{
 		{
 			SelectOption: dbkit.Pagination(0, 0),
 			Builder:      sq.Select("name", "version").From("sometables"),

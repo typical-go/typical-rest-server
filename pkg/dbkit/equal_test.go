@@ -8,7 +8,7 @@ import (
 )
 
 func TestEqualOption_Select(t *testing.T) {
-	testcases := []SelectTestCase{
+	testcases := []dbkit.SelectTestCase{
 		{
 			SelectOption: dbkit.Equal("", ""),
 			Builder:      sq.Select("name", "version").From("some-table"),
@@ -28,7 +28,7 @@ func TestEqualOption_Select(t *testing.T) {
 }
 
 func TestEqualOption_Update(t *testing.T) {
-	testcases := []UpdateTestCase{
+	testcases := []dbkit.UpdateTestCase{
 		{
 			UpdateOption: dbkit.Equal("", ""),
 			Builder:      sq.Update("some-table"),
@@ -49,7 +49,7 @@ func TestEqualOption_Update(t *testing.T) {
 }
 
 func TestEqualOption_Delete(t *testing.T) {
-	testcases := []DeleteTestCase{
+	testcases := []dbkit.DeleteTestCase{
 		{
 			DeleteOption: dbkit.Equal("", ""),
 			Builder:      sq.Delete("some-table"),

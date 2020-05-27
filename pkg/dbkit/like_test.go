@@ -8,7 +8,7 @@ import (
 )
 
 func TestSelectOption_Where(t *testing.T) {
-	testcases := []SelectTestCase{
+	testcases := []dbkit.SelectTestCase{
 		{
 			SelectOption: dbkit.Like("name", "%dum%"),
 			Builder:      sq.Select("name", "version").From("sometables"),

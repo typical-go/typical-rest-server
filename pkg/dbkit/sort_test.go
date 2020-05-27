@@ -10,7 +10,7 @@ import (
 )
 
 func TestSort(t *testing.T) {
-	testcases := []SelectTestCase{
+	testcases := []dbkit.SelectTestCase{
 		{
 			SelectOption: dbkit.Sort("", 0),
 			Builder:      sq.Select("name", "version").From("sometables"),
