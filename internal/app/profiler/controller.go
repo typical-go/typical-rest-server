@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/labstack/echo"
-	"github.com/typical-go/typical-rest-server/pkg/serverkit"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 
@@ -16,14 +16,10 @@ type Controller struct {
 }
 
 func (h *Controller) SetRoute(e *echo.Echo) {
-	e.Any("application/health", h.healthCheck)
-}
+	hc := echokit.HealthCheck{
+		"postgres": h.PG.Ping,
+		"redis":    h.Redis.Ping().Err,
+	}
 
-func (h *Controller) healthCheck(ec echo.Context) (err error) {
-	healthcheck := serverkit.NewHealthCheck()
-	healthcheck.Put("postgres", h.PG.Ping)
-	healthcheck.Put("redis", h.Redis.Ping().Err)
-
-	status, message := healthcheck.Process()
-	return ec.JSON(status, message)
+	e.Any("application/health", hc.JSON)
 }
