@@ -9,8 +9,8 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/typical-go/typical-rest-server/internal/config"
-	"github.com/typical-go/typical-rest-server/internal/profiler"
+	"github.com/typical-go/typical-rest-server/internal/app/config"
+	"github.com/typical-go/typical-rest-server/internal/app/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server/controller"
 
 	"go.uber.org/dig"

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/config"
+	"github.com/typical-go/typical-rest-server/internal/app/config"
 )
 
 var (
