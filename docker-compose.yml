@@ -13,19 +13,19 @@ services:
     networks:
     - pg01
     restart: unless-stopped
-  red01:
+  redis:
     image: redis:4.0.5-alpine
     command: redis-server --requirepass "redispass"
     volumes:
-    - red01:/data
+    - redis:/data
     ports:
     - 6379:6379
     networks:
-    - red01
+    - redis
 networks:
   pg01:
     driver: bridge
-  red01: null
+  redis: null
 volumes:
   pg01: null
-  red01: null
+  redis: null

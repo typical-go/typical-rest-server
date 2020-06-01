@@ -9,7 +9,6 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
-	"github.com/typical-go/typical-rest-server/pkg/typredis"
 )
 
 func init() {
@@ -19,8 +18,18 @@ func init() {
 		&typgo.Constructor{Name: "", Fn: service.NewBookSvc},
 		&typgo.Constructor{
 			Name: "",
-			Fn: func() (cfg *typredis.Config, err error) {
-				cfg = new(typredis.Config)
+			Fn: func() (cfg *config.Config, err error) {
+				cfg = new(config.Config)
+				if err = typgo.ProcessConfig("APP", cfg); err != nil {
+					return nil, err
+				}
+				return
+			},
+		},
+		&typgo.Constructor{
+			Name: "",
+			Fn: func() (cfg *config.Redis, err error) {
+				cfg = new(config.Redis)
 				if err = typgo.ProcessConfig("REDIS", cfg); err != nil {
 					return nil, err
 				}
@@ -32,16 +41,6 @@ func init() {
 			Fn: func() (cfg *typpg.Config, err error) {
 				cfg = new(typpg.Config)
 				if err = typgo.ProcessConfig("PG", cfg); err != nil {
-					return nil, err
-				}
-				return
-			},
-		},
-		&typgo.Constructor{
-			Name: "",
-			Fn: func() (cfg *config.Config, err error) {
-				cfg = new(config.Config)
-				if err = typgo.ProcessConfig("APP", cfg); err != nil {
 					return nil, err
 				}
 				return

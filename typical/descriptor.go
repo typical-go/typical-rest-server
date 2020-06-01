@@ -5,18 +5,14 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/internal/app"
+	"github.com/typical-go/typical-rest-server/internal/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
-	"github.com/typical-go/typical-rest-server/pkg/typredis"
 )
 
 var (
 	mainDB = typpg.Init(&typpg.Settings{
 		DBName:     "MyLibrary",
 		DockerName: "pg01",
-	})
-
-	redis = typredis.Init(&typredis.Settings{
-		DockerName: "red01",
 	})
 )
 
@@ -36,9 +32,9 @@ var Descriptor = typgo.Descriptor{
 	},
 
 	Configurer: typgo.Configurers{
-		typredis.Configuration(redis),
+		&typgo.Configuration{Name: "APP", Spec: &config.Config{Debug: true}},
+		&typgo.Configuration{Name: "REDIS", Spec: &config.Redis{}},
 		typpg.Configuration(mainDB),
-		app.Configuration(),
 	},
 
 	Build: typgo.Builds{
@@ -50,13 +46,13 @@ var Descriptor = typgo.Descriptor{
 	},
 
 	Utility: typgo.Utilities{
-		typpg.Utility(mainDB),   // create db, drop, migrate, seed, console, etc.
-		typredis.Utility(redis), // redis console
+		typpg.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
+		typgo.NewUtility(redisUtil),
 		typmock.Utility(),
 
 		typdocker.Compose(
 			typpg.DockerRecipeV3(mainDB),
-			typredis.DockerRecipeV3(redis),
+			redisDocker(),
 		),
 	},
 }
