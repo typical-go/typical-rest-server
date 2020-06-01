@@ -1,17 +1,17 @@
 version: "3"
 services:
-  pg01:
+  pg:
     image: postgres
     environment:
       PGDATA: /data/postgres
       POSTGRES: postgres
       POSTGRES_PASSWORD: pgpass
     volumes:
-    - pg01:/data/postgres
+    - pg:/data/postgres
     ports:
     - 5432:5432
     networks:
-    - pg01
+    - pg
     restart: unless-stopped
   redis:
     image: redis:4.0.5-alpine
@@ -23,9 +23,9 @@ services:
     networks:
     - redis
 networks:
-  pg01:
+  pg:
     driver: bridge
   redis: null
 volumes:
-  pg01: null
+  pg: null
   redis: null

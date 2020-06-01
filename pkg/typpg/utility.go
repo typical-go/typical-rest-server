@@ -172,18 +172,15 @@ func (u *utility) console(c *typgo.Context) (err error) {
 }
 
 func (u *utility) rollbackDB(c *typgo.Context) (err error) {
-	var (
-		migration *migrate.Migrate
-		cfg       *Config
-	)
-
-	if cfg, err = u.retrieveConfig(); err != nil {
+	cfg, err := u.retrieveConfig()
+	if err != nil {
 		return
 	}
 
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
-	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
+	migration, err := migrate.New(sourceURL, cfg.ConnStr())
+	if err != nil {
 		return
 	}
 	defer migration.Close()
@@ -191,7 +188,6 @@ func (u *utility) rollbackDB(c *typgo.Context) (err error) {
 }
 
 func (u *utility) resetDB(c *typgo.Context) (err error) {
-
 	if err = u.dropDB(c); err != nil {
 		return
 	}
@@ -208,16 +204,13 @@ func (u *utility) resetDB(c *typgo.Context) (err error) {
 }
 
 func (u *utility) seedDB(c *typgo.Context) (err error) {
-	var (
-		db  *sql.DB
-		cfg *Config
-	)
-
-	if cfg, err = u.retrieveConfig(); err != nil {
+	cfg, err := u.retrieveConfig()
+	if err != nil {
 		return
 	}
 
-	if db, err = sql.Open("postgres", cfg.ConnStr()); err != nil {
+	db, err := sql.Open("postgres", cfg.ConnStr())
+	if err != nil {
 		return
 	}
 	defer db.Close()

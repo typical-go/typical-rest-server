@@ -51,8 +51,8 @@ var Descriptor = typgo.Descriptor{
 		typmock.Utility(),
 
 		typdocker.Compose(
-			typpg.DockerRecipeV3(mainDB),
-			redisDocker(),
+			&pgDocker{},
+			&redisDocker{},
 		),
 	},
 }

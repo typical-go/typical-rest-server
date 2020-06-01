@@ -1,15 +1,21 @@
 package typical
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
 	"github.com/urfave/cli/v2"
 )
+
+type redisDocker struct{}
+
+//
+// util
+//
 
 func redisUtil(c *typgo.BuildCli) []*cli.Command {
 	return []*cli.Command{
@@ -53,29 +59,26 @@ func redisConsole(c *typgo.Context) (err error) {
 	return cmd.Run(c.Ctx())
 }
 
-func redisDocker() *typdocker.Recipe {
-	name := "redis"
-	image := "redis:4.0.5-alpine"
+//
+// redisDocker
+//
 
+var _ (typdocker.Composer) = (*redisDocker)(nil)
+
+func (*redisDocker) DockerCompose() *typdocker.Recipe {
 	var cfg infra.Redis
-	typgo.ProcessConfig("REDIS", &cfg)
-
-	return &typdocker.Recipe{
-		Version: typdocker.V3,
-		Services: typdocker.Services{
-			name: typdocker.Service{
-				Image:    image,
-				Command:  fmt.Sprintf(`redis-server --requirepass "%s"`, cfg.Password),
-				Ports:    []string{fmt.Sprintf("%s:6379", cfg.Port)},
-				Networks: []string{name},
-				Volumes:  []string{fmt.Sprintf("%s:/data", name)},
-			},
-		},
-		Networks: typdocker.Networks{
-			name: nil,
-		},
-		Volumes: typdocker.Volumes{
-			name: nil,
-		},
+	if err := typgo.ProcessConfig("REDIS", &cfg); err != nil {
+		panic("redis-docker: " + err.Error())
 	}
+
+	redis := dockerrx.Redis{
+		Version:  typdocker.V3,
+		Name:     "redis",
+		Image:    "redis:4.0.5-alpine",
+		Password: cfg.Password,
+		Port:     cfg.Port,
+	}
+
+	return redis.DockerCompose()
+
 }

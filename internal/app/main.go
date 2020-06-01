@@ -18,14 +18,14 @@ import (
 	"go.uber.org/dig"
 )
 
-var _ echokit.Router = (*app)(nil)
-
 type app struct {
 	dig.In
-	Config   *infra.App
+	*infra.App
 	Server   server.Router
 	Profiler profiler.Router
 }
+
+var _ echokit.Router = (*app)(nil)
 
 // Main function to run server
 func Main(a app) (err error) {
@@ -37,7 +37,7 @@ func Main(a app) (err error) {
 	a.Middleware(e)
 	a.Route(e)
 
-	return e.Start(a.Config.Address)
+	return e.Start(a.Address)
 }
 
 func (a app) Middleware(e echokit.Server) {
@@ -53,7 +53,7 @@ func (a app) Route(e echokit.Server) (err error) {
 
 func (a app) initLogger(e *echo.Echo) {
 	e.Logger = logrusmiddleware.Logger{Logger: log.StandardLogger()}
-	e.Debug = a.Config.Debug
+	e.Debug = a.Debug
 	if e.Debug {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{})
