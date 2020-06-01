@@ -8,8 +8,6 @@ import (
 	"go.uber.org/dig"
 )
 
-var _ echokit.Router = (*Router)(nil)
-
 // Router for profiler
 type Router struct {
 	dig.In
@@ -17,13 +15,15 @@ type Router struct {
 	Redis *redis.Client
 }
 
+var _ echokit.Router = (*Router)(nil)
+
 // Route to profiler api
-func (h *Router) Route(e echokit.Server) (err error) {
+func (h *Router) Route(e echokit.Server) error {
 	hc := echokit.HealthCheck{
 		"postgres": h.PG.Ping,
 		"redis":    h.Redis.Ping().Err,
 	}
 
 	e.Any("application/health", hc.JSON)
-	return
+	return nil
 }

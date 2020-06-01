@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/internal/app/config"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"go.uber.org/dig"
 
@@ -18,7 +17,7 @@ type (
 	Configs struct {
 		dig.In
 		Pg    *typpg.Config
-		Redis *config.Redis
+		Redis *Redis
 	}
 
 	// Infras is list of infra to be provide in dependency-injection
@@ -67,7 +66,7 @@ func Disconnect(p Params) (err error) {
 	return
 }
 
-func openRedis(cfg *config.Redis) (client *redis.Client, err error) {
+func openRedis(cfg *Redis) (client *redis.Client, err error) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,

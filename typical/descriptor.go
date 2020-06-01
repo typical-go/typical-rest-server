@@ -5,7 +5,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/internal/app"
-	"github.com/typical-go/typical-rest-server/internal/app/config"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
@@ -32,8 +32,8 @@ var Descriptor = typgo.Descriptor{
 	},
 
 	Configurer: typgo.Configurers{
-		&typgo.Configuration{Name: "APP", Spec: &config.Config{Debug: true}},
-		&typgo.Configuration{Name: "REDIS", Spec: &config.Redis{}},
+		&typgo.Configuration{Name: "APP", Spec: &infra.App{Debug: true}},
+		&typgo.Configuration{Name: "REDIS", Spec: &infra.Redis{}},
 		typpg.Configuration(mainDB),
 	},
 

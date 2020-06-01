@@ -12,8 +12,6 @@ import (
 	"go.uber.org/dig"
 )
 
-var _ echokit.Router = (*BookCntrl)(nil)
-
 type (
 	// BookCntrl is controller to book entity
 	BookCntrl struct {
@@ -21,6 +19,8 @@ type (
 		service.BookSvc
 	}
 )
+
+var _ echokit.Router = (*BookCntrl)(nil)
 
 // Route to define API Route
 func (c *BookCntrl) Route(e echokit.Server) (err error) {

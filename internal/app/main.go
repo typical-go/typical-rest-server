@@ -9,7 +9,8 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/typical-go/typical-rest-server/internal/app/config"
+
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/app/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
@@ -21,7 +22,7 @@ var _ echokit.Router = (*app)(nil)
 
 type app struct {
 	dig.In
-	Config   *config.Config
+	Config   *infra.App
 	Server   server.Router
 	Profiler profiler.Router
 }

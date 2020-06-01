@@ -1,9 +1,9 @@
-package config
+package infra
 
 import "time"
 
-// Config is application configuration
-type Config struct {
+// App is application configuration
+type App struct {
 	Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
 	Debug   bool   `default:"false"`
 }

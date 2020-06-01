@@ -4,7 +4,6 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/app/config"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
@@ -18,8 +17,8 @@ func init() {
 		&typgo.Constructor{Name: "", Fn: service.NewBookSvc},
 		&typgo.Constructor{
 			Name: "",
-			Fn: func() (cfg *config.Config, err error) {
-				cfg = new(config.Config)
+			Fn: func() (cfg *infra.App, err error) {
+				cfg = new(infra.App)
 				if err = typgo.ProcessConfig("APP", cfg); err != nil {
 					return nil, err
 				}
@@ -28,8 +27,8 @@ func init() {
 		},
 		&typgo.Constructor{
 			Name: "",
-			Fn: func() (cfg *config.Redis, err error) {
-				cfg = new(config.Redis)
+			Fn: func() (cfg *infra.Redis, err error) {
+				cfg = new(infra.Redis)
 				if err = typgo.ProcessConfig("REDIS", cfg); err != nil {
 					return nil, err
 				}

@@ -6,8 +6,6 @@ import (
 	"go.uber.org/dig"
 )
 
-var _ echokit.Router = (*Router)(nil)
-
 type (
 	// Router to server
 	Router struct {
@@ -15,6 +13,8 @@ type (
 		BookCntrl controller.BookCntrl
 	}
 )
+
+var _ echokit.Router = (*Router)(nil)
 
 // Route to echo server
 func (r *Router) Route(e echokit.Server) error {

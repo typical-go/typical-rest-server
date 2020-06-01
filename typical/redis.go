@@ -7,7 +7,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/app/config"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,7 +28,7 @@ func redisUtil(c *typgo.BuildCli) []*cli.Command {
 }
 
 func redisConsole(c *typgo.Context) (err error) {
-	var cfg config.Redis
+	var cfg infra.Redis
 
 	if err = typgo.ProcessConfig("REDIS", &cfg); err != nil {
 		return
@@ -57,7 +57,7 @@ func redisDocker() *typdocker.Recipe {
 	name := "redis"
 	image := "redis:4.0.5-alpine"
 
-	var cfg config.Redis
+	var cfg infra.Redis
 	typgo.ProcessConfig("REDIS", &cfg)
 
 	return &typdocker.Recipe{
