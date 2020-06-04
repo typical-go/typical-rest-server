@@ -51,11 +51,12 @@ func (mr *MockBookRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Delete mocks base method
-func (m *MockBookRepo) Delete(arg0 context.Context, arg1 dbkit.DeleteOption) error {
+func (m *MockBookRepo) Delete(arg0 context.Context, arg1 dbkit.DeleteOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete
@@ -65,11 +66,12 @@ func (mr *MockBookRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Patch mocks base method
-func (m *MockBookRepo) Patch(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) error {
+func (m *MockBookRepo) Patch(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Patch indicates an expected call of Patch
@@ -99,11 +101,12 @@ func (mr *MockBookRepoMockRecorder) Retrieve(arg0 interface{}, arg1 ...interface
 }
 
 // Update mocks base method
-func (m *MockBookRepo) Update(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) error {
+func (m *MockBookRepo) Update(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Update indicates an expected call of Update

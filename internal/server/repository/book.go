@@ -47,9 +47,9 @@ type (
 	BookRepo interface {
 		Retrieve(context.Context, ...dbkit.SelectOption) ([]*Book, error)
 		Create(context.Context, *Book) (int64, error)
-		Delete(context.Context, dbkit.DeleteOption) error
-		Update(context.Context, *Book, dbkit.UpdateOption) error
-		Patch(context.Context, *Book, dbkit.UpdateOption) error
+		Delete(context.Context, dbkit.DeleteOption) (int64, error)
+		Update(context.Context, *Book, dbkit.UpdateOption) (int64, error)
+		Patch(context.Context, *Book, dbkit.UpdateOption) (int64, error)
 	}
 
 	// BookRepoImpl is implementation book repository
@@ -65,7 +65,7 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }
 
-// Find book
+// Retrieve book
 func (r *BookRepoImpl) Retrieve(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
 	builder := sq.
 		Select(
@@ -139,24 +139,27 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 }
 
 // Delete book
-func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (err error) {
+func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int64, error) {
 	builder := sq.
 		Delete(BookTable).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	if builder, err = opt.CompileDelete(builder); err != nil {
-		return
+	builder, err := opt.CompileDelete(builder)
+	if err != nil {
+		return -1, err
 	}
 
-	if _, err = builder.ExecContext(ctx); err != nil {
-		return
+	result, err := builder.ExecContext(ctx)
+	if err != nil {
+		return -1, err
 	}
-	return
+
+	return result.RowsAffected()
 }
 
 // Update book
-func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateOption) (err error) {
+func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
 	builder := sq.
 		Update(BookTable).
 		Set(BookCols.Title, book.Title).
@@ -165,16 +168,20 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		return
+	builder, err := opt.CompileUpdate(builder)
+	if err != nil {
+		return -1, err
 	}
 
-	_, err = builder.ExecContext(ctx)
-	return
+	result, err := builder.ExecContext(ctx)
+	if err != nil {
+		return -1, err
+	}
+	return result.RowsAffected()
 }
 
 // Patch book to update field of book if available
-func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOption) (err error) {
+func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
 	builder := sq.
 		Update(BookTable).
 		PlaceholderFormat(sq.Dollar).
@@ -190,10 +197,14 @@ func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOp
 
 	builder = builder.Set(BookCols.UpdatedAt, time.Now())
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		return
+	builder, err := opt.CompileUpdate(builder)
+	if err != nil {
+		return -1, err
 	}
 
-	_, err = builder.ExecContext(ctx)
-	return
+	result, err := builder.ExecContext(ctx)
+	if err != nil {
+		return -1, err
+	}
+	return result.RowsAffected()
 }

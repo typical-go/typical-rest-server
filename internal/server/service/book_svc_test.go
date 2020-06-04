@@ -109,11 +109,10 @@ func TestBookSvc_FindOne(t *testing.T) {
 			book, err := svc.FindOne(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, book)
 			}
-
-			require.NoError(t, err)
-			require.Equal(t, tt.expected, book)
 		})
 	}
 }
@@ -128,11 +127,10 @@ func TestBookSvc_Find(t *testing.T) {
 			books, err := svc.Find(context.Background())
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, books)
 			}
-
-			require.NoError(t, err)
-			require.Equal(t, tt.expected, books)
 		})
 	}
 }
@@ -148,11 +146,10 @@ func TestBookSvc_Create(t *testing.T) {
 			id, err := svc.Create(context.Background(), tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, id)
 			}
-
-			require.NoError(t, err)
-			require.Equal(t, tt.expected, id)
 		})
 	}
 }
@@ -172,12 +169,13 @@ func TestBookSvc_Delete(t *testing.T) {
 			err := svc.Delete(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
 			}
-			require.NoError(t, err)
 		})
 	}
 }
+
 func TestBookSvc_Update(t *testing.T) {
 	testcases := []updateTestCase{
 		{
@@ -212,8 +210,32 @@ func TestBookSvc_Update(t *testing.T) {
 						Title:  "some-title",
 					},
 					dbkit.Equal(repository.BookCols.ID, int64(1)),
-				).Return(nil)
+				).Return(int64(1), nil)
 			},
+		},
+
+		{
+			paramID: "1",
+			book: &repository.Book{
+				Author: "some-author",
+				Title:  "some-title",
+			},
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().Retrieve(
+					gomock.Any(),
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return([]*repository.Book{}, nil)
+
+				mockRepo.EXPECT().Update(
+					gomock.Any(),
+					&repository.Book{
+						Author: "some-author",
+						Title:  "some-title",
+					},
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return(int64(0), nil)
+			},
+			expectedErr: "No updated row",
 		},
 	}
 	for _, tt := range testcases {
@@ -224,15 +246,14 @@ func TestBookSvc_Update(t *testing.T) {
 			err := svc.Update(context.Background(), tt.paramID, tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
 			}
-			require.NoError(t, err)
 		})
 	}
 }
 
 func TestBookSvc_Patch(t *testing.T) {
-
 	testcases := []updateTestCase{
 		{
 			paramID:     "",
@@ -260,8 +281,30 @@ func TestBookSvc_Patch(t *testing.T) {
 						Title:  "some-title",
 					},
 					dbkit.Equal(repository.BookCols.ID, int64(1)),
-				).Return(nil)
+				).Return(int64(1), nil)
 			},
+		},
+		{
+			paramID: "1",
+			book: &repository.Book{
+				Author: "some-author",
+				Title:  "some-title",
+			},
+			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().Retrieve(
+					gomock.Any(),
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return([]*repository.Book{}, nil)
+				mockRepo.EXPECT().Patch(
+					gomock.Any(),
+					&repository.Book{
+						Author: "some-author",
+						Title:  "some-title",
+					},
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return(int64(0), nil)
+			},
+			expectedErr: "No patched row",
 		},
 	}
 	for _, tt := range testcases {
@@ -272,9 +315,9 @@ func TestBookSvc_Patch(t *testing.T) {
 			err := svc.Patch(context.Background(), tt.paramID, tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
 			}
-			require.NoError(t, err)
 		})
 	}
 }

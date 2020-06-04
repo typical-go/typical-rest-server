@@ -27,26 +27,28 @@ type (
 	}
 
 	bookCreate struct {
-		testName    string
-		book        *repository.Book
-		expected    int64
-		expectedErr string
-		onBookRepo  onBookRepo
+		testName           string
+		book               *repository.Book
+		onBookRepo         onBookRepo
+		expectedInsertedID int64
+		expectedErr        string
 	}
 
 	bookUpdate struct {
-		testName    string
-		book        *repository.Book
-		opt         dbkit.UpdateOption
-		expectedErr string
-		onBookRepo  onBookRepo
+		testName            string
+		book                *repository.Book
+		onBookRepo          onBookRepo
+		opt                 dbkit.UpdateOption
+		expectedErr         string
+		expectedAffectedRow int64
 	}
 
 	bookDelete struct {
-		testName    string
-		opt         dbkit.DeleteOption
-		expectedErr string
-		onBookRepo  onBookRepo
+		testName            string
+		opt                 dbkit.DeleteOption
+		onBookRepo          onBookRepo
+		expectedErr         string
+		expectedAffectedRow int64
 	}
 )
 
@@ -77,12 +79,12 @@ func TestBookRepoImpl_Create(t *testing.T) {
 				Title:  "some-title",
 				Author: "some-author",
 			},
-			expected: 999,
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO books (title,author,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING "id"`)).
 					WithArgs("some-title", "some-author", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(999))
 			},
+			expectedInsertedID: 999,
 		},
 	}
 
@@ -97,7 +99,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.Equal(t, tt.expected, id)
+			require.Equal(t, tt.expectedInsertedID, id)
 		})
 	}
 }
@@ -109,13 +111,14 @@ func TestBookRepoImpl_Update(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt:         dbkit.Equal(repository.BookCols.ID, 888),
-			expectedErr: "some-update-error",
+			opt: dbkit.Equal(repository.BookCols.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 					WillReturnError(fmt.Errorf("some-update-error"))
 			},
+			expectedErr:         "some-update-error",
+			expectedAffectedRow: -1,
 		},
 		{
 			book: &repository.Book{
@@ -126,8 +129,9 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 		{
 			testName: "empty author",
@@ -138,8 +142,9 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 		{
 			testName: "empty title",
@@ -150,8 +155,9 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("", "new-author", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 	}
 	for _, tt := range testcases {
@@ -159,12 +165,13 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			repo, db := createBookRepo(tt.onBookRepo)
 			defer db.Close()
 
-			err := repo.Update(context.Background(), tt.book, tt.opt)
+			affectedRow, err := repo.Update(context.Background(), tt.book, tt.opt)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedAffectedRow, affectedRow)
 			}
-			require.NoError(t, err)
 		})
 	}
 }
@@ -176,13 +183,14 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt:         dbkit.Equal(repository.BookCols.ID, 888),
-			expectedErr: "some-update-error",
+			opt: dbkit.Equal(repository.BookCols.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
 					WillReturnError(fmt.Errorf("some-update-error"))
 			},
+			expectedErr:         "some-update-error",
+			expectedAffectedRow: -1,
 		},
 		{
 			book: &repository.Book{
@@ -193,8 +201,9 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 		{
 			testName: "empty author",
@@ -205,8 +214,9 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, updated_at = $2 WHERE id = $3`)).
 					WithArgs("new-title", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 		{
 			testName: "empty title",
@@ -217,8 +227,9 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET author = $1, updated_at = $2 WHERE id = $3`)).
 					WithArgs("new-author", sqlmock.AnyArg(), 888).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 	}
 	for _, tt := range testcases {
@@ -226,12 +237,13 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			repo, db := createBookRepo(tt.onBookRepo)
 			defer db.Close()
 
-			err := repo.Patch(context.Background(), tt.book, tt.opt)
+			affectedRow, err := repo.Patch(context.Background(), tt.book, tt.opt)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedAffectedRow, affectedRow)
 			}
-			require.NoError(t, err)
 		})
 	}
 }
@@ -274,10 +286,10 @@ func TestBookRepoImpl_Retrieve(t *testing.T) {
 			books, err := repo.Retrieve(context.Background(), tt.opts...)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, books)
 			}
-			require.NoError(t, err)
-			require.Equal(t, tt.expected, books)
 		})
 	}
 }
@@ -298,8 +310,9 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM books WHERE id = $1`)).
 					WithArgs(555).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
+			expectedAffectedRow: 1,
 		},
 	}
 	for _, tt := range testcases {
@@ -307,12 +320,13 @@ func TestBookRepoImpl_Delete(t *testing.T) {
 			repo, db := createBookRepo(tt.onBookRepo)
 			defer db.Close()
 
-			err := repo.Delete(context.Background(), tt.opt)
+			affectedRow, err := repo.Delete(context.Background(), tt.opt)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
-				return
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedAffectedRow, affectedRow)
 			}
-			require.NoError(t, err)
 		})
 	}
 }

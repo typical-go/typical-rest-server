@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
@@ -54,9 +55,7 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.
 	books, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookCols.ID, id))
 	if err != nil {
 		return nil, err
-	}
-
-	if len(books) < 1 {
+	} else if len(books) < 1 {
 		return nil, sql.ErrNoRows
 	}
 
@@ -69,61 +68,70 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return errvalid.New("paramID is missing")
 	}
-	return b.BookRepo.Delete(
-		ctx,
-		dbkit.Equal(repository.BookCols.ID, id),
-	)
+
+	affectedRow, err := b.BookRepo.Delete(ctx, dbkit.Equal(repository.BookCols.ID, id))
+	if err != nil {
+		return err
+	} else if affectedRow < 1 {
+		return errors.New("No deleted row")
+	}
+
+	return nil
 }
 
 // Update book
-func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) (err error) {
+func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
 		return errvalid.New("paramID is missing")
 	}
 
-	if err = validator.New().Struct(book); err != nil {
+	err := validator.New().Struct(book)
+	if err != nil {
 		return err
 	}
 
-	if _, err = b.BookRepo.Retrieve(
-		ctx,
-		dbkit.Equal(repository.BookCols.ID, id),
-	); err != nil {
+	_, err = b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookCols.ID, id))
+	if err != nil {
 		return err
 	}
 
-	return b.BookRepo.Update(
-		ctx,
-		book,
-		dbkit.Equal(repository.BookCols.ID, id),
-	)
+	affectedRow, err := b.BookRepo.Update(ctx, book, dbkit.Equal(repository.BookCols.ID, id))
+	if err != nil {
+		return err
+	} else if affectedRow < 1 {
+		return errors.New("No updated row")
+	}
+
+	return nil
 }
 
 // Patch book
-func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) (err error) {
+func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
 		return errvalid.New("paramID is missing")
 	}
 
-	if _, err = b.BookRepo.Retrieve(
-		ctx,
-		dbkit.Equal(repository.BookCols.ID, id),
-	); err != nil {
+	_, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookCols.ID, id))
+	if err != nil {
 		return err
 	}
 
-	return b.BookRepo.Patch(
-		ctx,
-		book,
-		dbkit.Equal(repository.BookCols.ID, id),
-	)
+	affectedRow, err := b.BookRepo.Patch(ctx, book, dbkit.Equal(repository.BookCols.ID, id))
+	if err != nil {
+		return err
+	} else if affectedRow < 1 {
+		return errors.New("No patched row")
+	}
+
+	return nil
 }
 
 // Create Book
-func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (insertID int64, err error) {
-	if err = validator.New().Struct(book); err != nil {
+func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (int64, error) {
+	err := validator.New().Struct(book)
+	if err != nil {
 		return -1, err
 	}
 	return b.BookRepo.Create(ctx, book)
