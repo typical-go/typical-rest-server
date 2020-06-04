@@ -64,26 +64,6 @@ func (mr *MockBookRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepo)(nil).Delete), arg0, arg1)
 }
 
-// Find mocks base method
-func (m *MockBookRepo) Find(arg0 context.Context, arg1 ...dbkit.SelectOption) ([]*repository.Book, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{arg0}
-	for _, a := range arg1 {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "Find", varargs...)
-	ret0, _ := ret[0].([]*repository.Book)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Find indicates an expected call of Find
-func (mr *MockBookRepoMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{arg0}, arg1...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookRepo)(nil).Find), varargs...)
-}
-
 // Patch mocks base method
 func (m *MockBookRepo) Patch(arg0 context.Context, arg1 *repository.Book, arg2 dbkit.UpdateOption) error {
 	m.ctrl.T.Helper()
@@ -96,6 +76,26 @@ func (m *MockBookRepo) Patch(arg0 context.Context, arg1 *repository.Book, arg2 d
 func (mr *MockBookRepoMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockBookRepo)(nil).Patch), arg0, arg1, arg2)
+}
+
+// Retrieve mocks base method
+func (m *MockBookRepo) Retrieve(arg0 context.Context, arg1 ...dbkit.SelectOption) ([]*repository.Book, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0}
+	for _, a := range arg1 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Retrieve", varargs...)
+	ret0, _ := ret[0].([]*repository.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Retrieve indicates an expected call of Retrieve
+func (mr *MockBookRepoMockRecorder) Retrieve(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0}, arg1...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Retrieve", reflect.TypeOf((*MockBookRepo)(nil).Retrieve), varargs...)
 }
 
 // Update mocks base method

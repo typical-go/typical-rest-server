@@ -236,7 +236,7 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 	}
 }
 
-func TestBookRepoImpl_Find(t *testing.T) {
+func TestBookRepoImpl_Retrieve(t *testing.T) {
 	now := time.Now()
 	testcases := []bookFind{
 		{
@@ -271,7 +271,7 @@ func TestBookRepoImpl_Find(t *testing.T) {
 			repo, db := createBookRepo(tt.onBookRepo)
 			defer db.Close()
 
-			books, err := repo.Find(context.Background(), tt.opts...)
+			books, err := repo.Retrieve(context.Background(), tt.opts...)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 				return

@@ -77,7 +77,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 			paramID: "1",
 			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return(nil, errors.New("some-error"))
 			},
 			expectedErr: "some-error",
@@ -86,7 +86,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 			paramID: "1",
 			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return([]*repository.Book{
 						{
 							ID:    1,
@@ -200,22 +200,19 @@ func TestBookSvc_Update(t *testing.T) {
 				Title:  "some-title",
 			},
 			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
-				mockRepo.EXPECT().
-					Find(
-						gomock.Any(),
-						dbkit.Equal(repository.BookCols.ID, int64(1)),
-					).
-					Return([]*repository.Book{}, nil)
-				mockRepo.EXPECT().
-					Update(
-						gomock.Any(),
-						&repository.Book{
-							Author: "some-author",
-							Title:  "some-title",
-						},
-						dbkit.Equal(repository.BookCols.ID, int64(1)),
-					).
-					Return(nil)
+				mockRepo.EXPECT().Retrieve(
+					gomock.Any(),
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return([]*repository.Book{}, nil)
+
+				mockRepo.EXPECT().Update(
+					gomock.Any(),
+					&repository.Book{
+						Author: "some-author",
+						Title:  "some-title",
+					},
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return(nil)
 			},
 		},
 	}
@@ -252,22 +249,18 @@ func TestBookSvc_Patch(t *testing.T) {
 				Title:  "some-title",
 			},
 			onBookSvc: func(mockRepo *repository_mock.MockBookRepo) {
-				mockRepo.EXPECT().
-					Find(
-						gomock.Any(),
-						dbkit.Equal(repository.BookCols.ID, int64(1)),
-					).
-					Return([]*repository.Book{}, nil)
-				mockRepo.EXPECT().
-					Patch(
-						gomock.Any(),
-						&repository.Book{
-							Author: "some-author",
-							Title:  "some-title",
-						},
-						dbkit.Equal(repository.BookCols.ID, int64(1)),
-					).
-					Return(nil)
+				mockRepo.EXPECT().Retrieve(
+					gomock.Any(),
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return([]*repository.Book{}, nil)
+				mockRepo.EXPECT().Patch(
+					gomock.Any(),
+					&repository.Book{
+						Author: "some-author",
+						Title:  "some-title",
+					},
+					dbkit.Equal(repository.BookCols.ID, int64(1)),
+				).Return(nil)
 			},
 		},
 	}

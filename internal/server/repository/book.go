@@ -45,7 +45,7 @@ type (
 	// BookRepo to get book data from database
 	// @mock
 	BookRepo interface {
-		Find(context.Context, ...dbkit.SelectOption) ([]*Book, error)
+		Retrieve(context.Context, ...dbkit.SelectOption) ([]*Book, error)
 		Create(context.Context, *Book) (int64, error)
 		Delete(context.Context, dbkit.DeleteOption) error
 		Update(context.Context, *Book, dbkit.UpdateOption) error
@@ -66,7 +66,7 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 }
 
 // Find book
-func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
+func (r *BookRepoImpl) Retrieve(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
 	builder := sq.
 		Select(
 			BookCols.ID,
