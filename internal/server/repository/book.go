@@ -60,7 +60,7 @@ type (
 )
 
 // NewBookRepo return new instance of BookRepo
-// @constructor
+// @ctor
 func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }

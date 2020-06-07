@@ -1,6 +1,8 @@
 package typical
 
 import (
+	"fmt"
+
 	"github.com/typical-go/typical-go/pkg/typgo"
 
 	"github.com/typical-go/typical-go/pkg/typdocker"
@@ -16,10 +18,10 @@ type pgDocker struct{}
 
 var _ typdocker.Composer = (*pgDocker)(nil)
 
-func (*pgDocker) DockerCompose() *typdocker.Recipe {
+func (*pgDocker) Compose() (*typdocker.Recipe, error) {
 	var cfg typpg.Config
 	if err := typgo.ProcessConfig("PG", &cfg); err != nil {
-		panic("pg-docker: " + err.Error())
+		return nil, fmt.Errorf("pg-docker: " + err.Error())
 	}
 	pg := &dockerrx.Postgres{
 		Version:  typdocker.V3,
@@ -29,5 +31,5 @@ func (*pgDocker) DockerCompose() *typdocker.Recipe {
 		Password: cfg.Password,
 		Port:     cfg.Port,
 	}
-	return pg.DockerCompose()
+	return pg.Compose()
 }

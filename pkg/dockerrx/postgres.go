@@ -18,8 +18,8 @@ type Postgres struct {
 
 var _ typdocker.Composer = (*Postgres)(nil)
 
-// DockerCompose to return the recipe
-func (p *Postgres) DockerCompose() *typdocker.Recipe {
+// Compose to return the recipe
+func (p *Postgres) Compose() (*typdocker.Recipe, error) {
 	return &typdocker.Recipe{
 		Version: p.Version,
 		Services: typdocker.Services{
@@ -50,5 +50,5 @@ func (p *Postgres) DockerCompose() *typdocker.Recipe {
 		Volumes: typdocker.Volumes{
 			p.Name: nil,
 		},
-	}
+	}, nil
 }

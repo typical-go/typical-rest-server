@@ -151,24 +151,22 @@ func (u *utility) console(c *typgo.Context) (err error) {
 		return
 	}
 
-	os.Setenv("PGPASSWORD", cfg.Password)
 	// TODO: using `docker -it` for psql
 
-	cmd := &execkit.Command{
+	return c.Execute(&execkit.Command{
 		Name: "psql",
 		Args: []string{
 			"-h", cfg.Host,
 			"-p", strconv.Itoa(cfg.Port),
 			"-U", cfg.User,
 		},
+		Env: []string{
+			fmt.Sprintf("PGPASSWORD=%s", cfg.Password),
+		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 		Stdin:  os.Stdin,
-	}
-
-	cmd.Print(os.Stdout)
-
-	return cmd.Run(c.Ctx())
+	})
 }
 
 func (u *utility) rollbackDB(c *typgo.Context) (err error) {

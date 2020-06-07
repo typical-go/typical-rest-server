@@ -35,7 +35,7 @@ type (
 )
 
 // NewBookSvc return new instance of BookSvc
-// @constructor
+// @ctor
 func NewBookSvc(impl BookSvcImpl) BookSvc {
 	return &impl
 }

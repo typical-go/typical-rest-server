@@ -15,8 +15,10 @@ type Redis struct {
 	Port     string
 }
 
-// DockerCompose to return redis recipe
-func (r *Redis) DockerCompose() *typdocker.Recipe {
+var _ typdocker.Composer = (*Redis)(nil)
+
+// Compose to return redis recipe
+func (r *Redis) Compose() (*typdocker.Recipe, error) {
 	return &typdocker.Recipe{
 		Version: r.Version,
 		Services: typdocker.Services{
@@ -34,5 +36,5 @@ func (r *Redis) DockerCompose() *typdocker.Recipe {
 		Volumes: typdocker.Volumes{
 			r.Name: nil,
 		},
-	}
+	}, nil
 }

@@ -19,40 +19,39 @@ var (
 // Descriptor of Typical REST Server
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typgo.Descriptor{
-
 	Name:        "typical-rest-server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
 	Version:     "0.8.31",
 
 	EntryPoint: app.Main,
+	Layouts:    []string{"internal", "pkg"},
 
-	Layouts: []string{
-		"internal",
-		"pkg",
-	},
-
-	Configurer: typgo.Configurers{
-		&typgo.Configuration{Name: "APP", Spec: &infra.App{Debug: true}},
-		&typgo.Configuration{Name: "REDIS", Spec: &infra.Redis{}},
-		typpg.Configuration(mainDB),
-	},
-
-	Build: typgo.Builds{
-		&typgo.StdBuild{},
-		&typgo.Github{
-			Owner:    "typical-go",
-			RepoName: "typical-rest-server",
+	Prebuild: typgo.Prebuilds{
+		&typgo.DependencyInjection{},
+		&typgo.ConfigManager{
+			Configs: []*typgo.Configuration{
+				{Name: "APP", Spec: &infra.App{Debug: true}},
+				{Name: "REDIS", Spec: &infra.Redis{}},
+				typpg.Configuration(mainDB),
+			},
 		},
 	},
+
+	Compile: &typgo.StdCompile{},
+	Run:     &typgo.StdRun{},
+	Test:    &typgo.StdTest{},
+	Clean:   &typgo.StdClean{},
+	Release: &typgo.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
 
 	Utility: typgo.Utilities{
 		typpg.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
 		typgo.NewUtility(redisUtil),
-		typmock.Utility(),
-
-		typdocker.Compose(
-			&pgDocker{},
-			&redisDocker{},
-		),
+		&typmock.Utility{},
+		&typdocker.Utility{
+			Composers: []typdocker.Composer{
+				&pgDocker{},
+				&redisDocker{},
+			},
+		},
 	},
 }

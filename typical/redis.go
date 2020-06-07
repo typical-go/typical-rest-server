@@ -35,14 +35,13 @@ func redisUtil(c *typgo.BuildCli) []*cli.Command {
 
 func redisConsole(c *typgo.Context) (err error) {
 	var cfg infra.Redis
-
 	if err = typgo.ProcessConfig("REDIS", &cfg); err != nil {
 		return
 	}
 
 	// TODO: using docker -it
 
-	cmd := execkit.Command{
+	return c.Execute(&execkit.Command{
 		Name: "redis-cli",
 		Args: []string{
 			"-h", cfg.Host,
@@ -52,11 +51,7 @@ func redisConsole(c *typgo.Context) (err error) {
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 		Stdin:  os.Stdin,
-	}
-
-	cmd.Print(os.Stdout)
-
-	return cmd.Run(c.Ctx())
+	})
 }
 
 //
@@ -65,7 +60,7 @@ func redisConsole(c *typgo.Context) (err error) {
 
 var _ (typdocker.Composer) = (*redisDocker)(nil)
 
-func (*redisDocker) DockerCompose() *typdocker.Recipe {
+func (*redisDocker) Compose() (*typdocker.Recipe, error) {
 	var cfg infra.Redis
 	if err := typgo.ProcessConfig("REDIS", &cfg); err != nil {
 		panic("redis-docker: " + err.Error())
@@ -79,6 +74,6 @@ func (*redisDocker) DockerCompose() *typdocker.Recipe {
 		Port:     cfg.Port,
 	}
 
-	return redis.DockerCompose()
+	return redis.Compose()
 
 }
