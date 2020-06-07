@@ -24,9 +24,9 @@ var _ echokit.Router = (*BookCntrl)(nil)
 
 // Route to define API Route
 func (c *BookCntrl) Route(e echokit.Server) (err error) {
-	e.GET("books", c.Find)
+	e.GET("books", c.Retrieve)
+	e.GET("books/:id", c.RetrieveOne)
 	e.POST("books", c.Create)
-	e.GET("books/:id", c.FindOne)
 	e.PUT("books/:id", c.Update)
 	e.PATCH("books/:id", c.Patch)
 	e.DELETE("books/:id", c.Delete)
@@ -42,7 +42,6 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 	ctx := ec.Request().Context()
 	id, err := c.BookSvc.Create(ctx, &book)
-
 	if err != nil {
 		return httpError(err)
 	}
@@ -51,10 +50,10 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	return ec.NoContent(http.StatusCreated)
 }
 
-// Find books
-func (c *BookCntrl) Find(ec echo.Context) (err error) {
+// Retrieve books
+func (c *BookCntrl) Retrieve(ec echo.Context) (err error) {
 	var books []*repository.Book
-	if books, err = c.BookSvc.Find(
+	if books, err = c.BookSvc.Retrieve(
 		ec.Request().Context(),
 	); err != nil {
 		return httpError(err)
@@ -62,9 +61,9 @@ func (c *BookCntrl) Find(ec echo.Context) (err error) {
 	return ec.JSON(http.StatusOK, books)
 }
 
-// FindOne book
-func (c *BookCntrl) FindOne(ec echo.Context) error {
-	book, err := c.BookSvc.FindOne(
+// RetrieveOne book
+func (c *BookCntrl) RetrieveOne(ec echo.Context) error {
+	book, err := c.BookSvc.RetrieveOne(
 		ec.Request().Context(),
 		ec.Param("id"),
 	)

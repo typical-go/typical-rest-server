@@ -106,7 +106,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
-			book, err := svc.FindOne(context.Background(), tt.paramID)
+			book, err := svc.RetrieveOne(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
@@ -124,7 +124,7 @@ func TestBookSvc_Find(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.onBookSvc)
 			defer mock.Finish()
 
-			books, err := svc.Find(context.Background())
+			books, err := svc.Retrieve(context.Background())
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {

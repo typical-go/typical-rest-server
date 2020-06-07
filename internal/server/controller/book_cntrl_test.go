@@ -50,7 +50,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedBody: "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "1").Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+				svc.EXPECT().RetrieveOne(gomock.Any(), "1").Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 			},
 		},
 		{
@@ -64,7 +64,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedErr: "code=404, message=Not Found",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "3").Return(nil, sql.ErrNoRows)
+				svc.EXPECT().RetrieveOne(gomock.Any(), "3").Return(nil, sql.ErrNoRows)
 			},
 		},
 		{
@@ -78,7 +78,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedErr: "code=422, message=some-validation",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, errvalid.New("some-validation"))
+				svc.EXPECT().RetrieveOne(gomock.Any(), "2").Return(nil, errvalid.New("some-validation"))
 			},
 		},
 		{
@@ -92,7 +92,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedErr: "code=500, message=some-error",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, errors.New("some-error"))
+				svc.EXPECT().RetrieveOne(gomock.Any(), "2").Return(nil, errors.New("some-error"))
 			},
 		},
 	}
@@ -101,7 +101,7 @@ func TestBookController_FindOne(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookCntrl(t, tt.bookCntrlFn)
 			defer mock.Finish()
-			tt.Execute(t, svc.FindOne)
+			tt.Execute(t, svc.RetrieveOne)
 		})
 	}
 }
@@ -118,7 +118,7 @@ func TestBookController_Find(t *testing.T) {
 				ExpectedBody: "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return([]*repository.Book{
+				svc.EXPECT().Retrieve(gomock.Any()).Return([]*repository.Book{
 					&repository.Book{ID: 1, Title: "title1", Author: "author1"},
 					&repository.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
@@ -133,7 +133,7 @@ func TestBookController_Find(t *testing.T) {
 				ExpectedErr: "code=500, message=some-error",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().Retrieve(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}
@@ -142,7 +142,7 @@ func TestBookController_Find(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookCntrl(t, tt.bookCntrlFn)
 			defer mock.Finish()
-			tt.Execute(t, svc.Find)
+			tt.Execute(t, svc.Retrieve)
 		})
 	}
 }

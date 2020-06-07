@@ -19,8 +19,8 @@ type (
 	// BookSvc contain logic for Book Controller
 	// @mock
 	BookSvc interface {
-		FindOne(context.Context, string) (*repository.Book, error)
-		Find(context.Context) ([]*repository.Book, error)
+		RetrieveOne(context.Context, string) (*repository.Book, error)
+		Retrieve(context.Context) ([]*repository.Book, error)
 		Create(context.Context, *repository.Book) (int64, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) error
@@ -40,13 +40,13 @@ func NewBookSvc(impl BookSvcImpl) BookSvc {
 	return &impl
 }
 
-// Find books
-func (b *BookSvcImpl) Find(ctx context.Context) ([]*repository.Book, error) {
+// Retrieve books
+func (b *BookSvcImpl) Retrieve(ctx context.Context) ([]*repository.Book, error) {
 	return b.BookRepo.Retrieve(ctx)
 }
 
-// FindOne book
-func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.Book, error) {
+// RetrieveOne book
+func (b *BookSvcImpl) RetrieveOne(ctx context.Context, paramID string) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
 		return nil, errvalid.New("paramID is missing")
