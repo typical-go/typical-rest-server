@@ -15,21 +15,16 @@ type Config struct {
 	Port     int    `default:"5432"`
 }
 
-// ConnStr return connection string
-func (c *Config) ConnStr() string {
+// Conn return connection string
+func Conn(c *Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-// Admin configuration
-func (c *Config) Admin() *Config {
-	return &Config{
-		DBName:   "template1",
-		User:     c.User,
-		Password: c.Password,
-		Host:     c.Host,
-		Port:     c.Port,
-	}
+// AdminConn return connection string for admin
+func AdminConn(c *Config) string {
+	c.DBName = "template1"
+	return Conn(c)
 }
 
 // Configuration of postgres

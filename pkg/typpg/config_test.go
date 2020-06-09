@@ -16,12 +16,6 @@ func TestConfig(t *testing.T) {
 		Port:     9999,
 	}
 
-	require.Equal(t,
-		"postgres://user1:password1@host1:9999/dbname1?sslmode=disable",
-		cfg.ConnStr(),
-	)
-	require.Equal(t,
-		"postgres://user1:password1@host1:9999/template1?sslmode=disable",
-		cfg.Admin().ConnStr(),
-	)
+	require.Equal(t, "postgres://user1:password1@host1:9999/dbname1?sslmode=disable", typpg.Conn(cfg))
+	require.Equal(t, "postgres://user1:password1@host1:9999/template1?sslmode=disable", typpg.AdminConn(cfg))
 }

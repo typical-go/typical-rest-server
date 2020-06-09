@@ -80,37 +80,30 @@ func (u *utility) Commands(c *typgo.BuildCli) []*cli.Command {
 }
 
 func (u *utility) dropDB(c *typgo.Context) (err error) {
-	var (
-		conn *sql.DB
-		cfg  *Config
-	)
-
-	if cfg, err = u.retrieveConfig(); err != nil {
+	cfg, err := u.retrieveConfig()
+	if err != nil {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", cfg.Admin().ConnStr()); err != nil {
+	conn, err := sql.Open("postgres", AdminConn(cfg))
+	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	query := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName)
-	c.Infof("Postgres: %s", query)
-	_, err = conn.ExecContext(c.Ctx(), query)
+	c.Infof("Drop database %s", cfg.DBName)
+	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName))
 	return
 }
 
 func (u *utility) createDB(c *typgo.Context) (err error) {
-	var (
-		conn *sql.DB
-		cfg  *Config
-	)
-
-	if cfg, err = u.retrieveConfig(); err != nil {
+	cfg, err := u.retrieveConfig()
+	if err != nil {
 		return
 	}
 
-	if conn, err = sql.Open("postgres", cfg.Admin().ConnStr()); err != nil {
+	conn, err := sql.Open("postgres", AdminConn(cfg))
+	if err != nil {
 		return
 	}
 	defer conn.Close()
@@ -120,25 +113,21 @@ func (u *utility) createDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	query := fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName)
-	c.Infof("Postgres: %s", query)
-	_, err = conn.ExecContext(ctx, query)
+	c.Infof("Create database  %s", cfg.DBName)
+	_, err = conn.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName))
 	return
 }
 
 func (u *utility) migrateDB(c *typgo.Context) (err error) {
-	var (
-		migration *migrate.Migrate
-		cfg       *Config
-	)
-
-	if cfg, err = u.retrieveConfig(); err != nil {
+	cfg, err := u.retrieveConfig()
+	if err != nil {
 		return
 	}
 
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
-	if migration, err = migrate.New(sourceURL, cfg.ConnStr()); err != nil {
+	migration, err := migrate.New(sourceURL, Conn(cfg))
+	if err != nil {
 		return err
 	}
 	defer migration.Close()
@@ -151,6 +140,8 @@ func (u *utility) console(c *typgo.Context) (err error) {
 		return
 	}
 
+	os.Setenv("PGPASSWORD", cfg.Password)
+
 	// TODO: using `docker -it` for psql
 
 	return c.Execute(&execkit.Command{
@@ -159,9 +150,6 @@ func (u *utility) console(c *typgo.Context) (err error) {
 			"-h", cfg.Host,
 			"-p", strconv.Itoa(cfg.Port),
 			"-U", cfg.User,
-		},
-		Env: []string{
-			fmt.Sprintf("PGPASSWORD=%s", cfg.Password),
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -177,7 +165,7 @@ func (u *utility) rollbackDB(c *typgo.Context) (err error) {
 
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
-	migration, err := migrate.New(sourceURL, cfg.ConnStr())
+	migration, err := migrate.New(sourceURL, Conn(cfg))
 	if err != nil {
 		return
 	}
@@ -207,7 +195,7 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 		return
 	}
 
-	db, err := sql.Open("postgres", cfg.ConnStr())
+	db, err := sql.Open("postgres", Conn(cfg))
 	if err != nil {
 		return
 	}
