@@ -23,8 +23,8 @@ func Conn(c *Config) string {
 
 // AdminConn return connection string for admin
 func AdminConn(c *Config) string {
-	c.DBName = "template1"
-	return Conn(c)
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/template1?sslmode=disable",
+		c.User, c.Password, c.Host, c.Port)
 }
 
 // Configuration of postgres

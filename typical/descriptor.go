@@ -32,7 +32,7 @@ var Descriptor = typgo.Descriptor{
 			Configs: []*typgo.Configuration{
 				{Name: "APP", Spec: &infra.App{Debug: true}},
 				{Name: "REDIS", Spec: &infra.Redis{}},
-				typpg.Configuration(mainDB),
+				{Name: "PG", Spec: &typpg.Config{DBName: "MyLibrary"}},
 			},
 		},
 	},
@@ -44,7 +44,12 @@ var Descriptor = typgo.Descriptor{
 	Release: &typgo.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
 
 	Utility: typgo.Utilities{
-		typpg.Utility(mainDB), // create db, drop, migrate, seed, console, etc.
+		&typpg.Utility{
+			Name:         "pg",
+			MigrationSrc: "scripts/db/migration",
+			SeedSrc:      "scripts/db/seed",
+			ConfigName:   "PG",
+		},
 		typgo.NewUtility(redisUtil),
 		&typmock.Utility{},
 		&typdocker.Utility{

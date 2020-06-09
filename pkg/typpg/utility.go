@@ -16,88 +16,43 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
-type utility struct {
-	*Settings
-}
-
-// Utility of postgres
-func Utility(s *Settings) typgo.Utility {
-	if s == nil {
-		panic("pg: utility missing settings")
-	}
-	return &utility{
-		Settings: s,
-	}
+// Utility for PG
+type Utility struct {
+	Name         string
+	MigrationSrc string
+	SeedSrc      string
+	ConfigName   string
 }
 
 // Commands of module
-func (u *utility) Commands(c *typgo.BuildCli) []*cli.Command {
-	name := u.UtilityCmd
+func (u *Utility) Commands(c *typgo.BuildCli) []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:  name,
+			Name:  u.Name,
 			Usage: "Postgres utility",
 			Subcommands: []*cli.Command{
-				{
-					Name:   "create",
-					Usage:  "Create New Database",
-					Action: c.ActionFn(name, u.createDB),
-				},
-				{
-					Name:   "drop",
-					Usage:  "Drop Database",
-					Action: c.ActionFn(name, u.dropDB),
-				},
-				{
-					Name:   "migrate",
-					Usage:  "Migrate Database",
-					Action: c.ActionFn(name, u.migrateDB),
-				},
-				{
-					Name:   "rollback",
-					Usage:  "Rollback Database",
-					Action: c.ActionFn(name, u.rollbackDB),
-				},
-				{
-					Name:   "seed",
-					Usage:  "Data seeding",
-					Action: c.ActionFn(name, u.seedDB),
-				},
-				{
-					Name:   "reset",
-					Usage:  "Reset Database",
-					Action: c.ActionFn(name, u.resetDB),
-				},
-				{
-					Name:    "console",
-					Aliases: []string{"c"},
-					Usage:   "PostgreSQL Interactive",
-					Action:  c.ActionFn(name, u.console),
-				},
+				u.cmdCreate(c),
+				u.cmdDrop(c),
+				u.cmdMigrate(c),
+				u.cmdRollback(c),
+				u.cmdSeed(c),
+				u.cmdReset(c),
+				u.cmdConsole(c),
 			},
 		},
 	}
 }
 
-func (u *utility) dropDB(c *typgo.Context) (err error) {
-	cfg, err := u.retrieveConfig()
-	if err != nil {
-		return
+func (u *Utility) cmdCreate(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "create",
+		Usage:  "Create New Database",
+		Action: c.ActionFn(u.Name, u.create),
 	}
-
-	conn, err := sql.Open("postgres", AdminConn(cfg))
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	c.Infof("Drop database %s", cfg.DBName)
-	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName))
-	return
 }
 
-func (u *utility) createDB(c *typgo.Context) (err error) {
-	cfg, err := u.retrieveConfig()
+func (u *Utility) create(c *typgo.Context) (err error) {
+	cfg, err := u.config()
 	if err != nil {
 		return
 	}
@@ -118,8 +73,41 @@ func (u *utility) createDB(c *typgo.Context) (err error) {
 	return
 }
 
-func (u *utility) migrateDB(c *typgo.Context) (err error) {
-	cfg, err := u.retrieveConfig()
+func (u *Utility) cmdDrop(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "drop",
+		Usage:  "Drop Database",
+		Action: c.ActionFn(u.Name, u.drop),
+	}
+}
+
+func (u *Utility) drop(c *typgo.Context) (err error) {
+	cfg, err := u.config()
+	if err != nil {
+		return
+	}
+
+	conn, err := sql.Open("postgres", AdminConn(cfg))
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+
+	c.Infof("Drop database %s", cfg.DBName)
+	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName))
+	return
+}
+
+func (u *Utility) cmdMigrate(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "migrate",
+		Usage:  "Migrate Database",
+		Action: c.ActionFn(u.Name, u.migrate),
+	}
+}
+
+func (u *Utility) migrate(c *typgo.Context) (err error) {
+	cfg, err := u.config()
 	if err != nil {
 		return
 	}
@@ -134,9 +122,18 @@ func (u *utility) migrateDB(c *typgo.Context) (err error) {
 	return migration.Up()
 }
 
-func (u *utility) console(c *typgo.Context) (err error) {
-	var cfg *Config
-	if cfg, err = u.retrieveConfig(); err != nil {
+func (u *Utility) cmdConsole(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:    "console",
+		Aliases: []string{"c"},
+		Usage:   "PostgreSQL Interactive",
+		Action:  c.ActionFn(u.Name, u.console),
+	}
+}
+
+func (u *Utility) console(c *typgo.Context) (err error) {
+	cfg, err := u.config()
+	if err != nil {
 		return
 	}
 
@@ -157,8 +154,16 @@ func (u *utility) console(c *typgo.Context) (err error) {
 	})
 }
 
-func (u *utility) rollbackDB(c *typgo.Context) (err error) {
-	cfg, err := u.retrieveConfig()
+func (u *Utility) cmdRollback(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "rollback",
+		Usage:  "Rollback Database",
+		Action: c.ActionFn(u.Name, u.rollback),
+	}
+}
+
+func (u *Utility) rollback(c *typgo.Context) (err error) {
+	cfg, err := u.config()
 	if err != nil {
 		return
 	}
@@ -173,24 +178,40 @@ func (u *utility) rollbackDB(c *typgo.Context) (err error) {
 	return migration.Down()
 }
 
-func (u *utility) resetDB(c *typgo.Context) (err error) {
-	if err = u.dropDB(c); err != nil {
+func (u *Utility) cmdReset(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "reset",
+		Usage:  "Reset Database",
+		Action: c.ActionFn(u.Name, u.reset),
+	}
+}
+
+func (u *Utility) reset(c *typgo.Context) (err error) {
+	if err = u.drop(c); err != nil {
 		return
 	}
-	if err = u.createDB(c); err != nil {
+	if err = u.create(c); err != nil {
 		return
 	}
-	if err = u.migrateDB(c); err != nil {
+	if err = u.migrate(c); err != nil {
 		return
 	}
-	if err = u.seedDB(c); err != nil {
+	if err = u.seed(c); err != nil {
 		return
 	}
 	return
 }
 
-func (u *utility) seedDB(c *typgo.Context) (err error) {
-	cfg, err := u.retrieveConfig()
+func (u *Utility) cmdSeed(c *typgo.BuildCli) *cli.Command {
+	return &cli.Command{
+		Name:   "seed",
+		Usage:  "Data seeding",
+		Action: c.ActionFn(u.Name, u.seed),
+	}
+}
+
+func (u *Utility) seed(c *typgo.Context) (err error) {
+	cfg, err := u.config()
 	if err != nil {
 		return
 	}
@@ -218,7 +239,7 @@ func (u *utility) seedDB(c *typgo.Context) (err error) {
 	return
 }
 
-func (u *utility) retrieveConfig() (*Config, error) {
+func (u *Utility) config() (*Config, error) {
 	var cfg Config
 	if err := typgo.ProcessConfig(u.ConfigName, &cfg); err != nil {
 		return nil, err
