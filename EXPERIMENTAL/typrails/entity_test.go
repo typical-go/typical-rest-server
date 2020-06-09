@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typrails"
 )
 
 func TestCreateEntity(t *testing.T) {

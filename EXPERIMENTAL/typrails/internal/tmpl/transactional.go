@@ -7,7 +7,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typrails"
 	"go.uber.org/dig"
 )
 
@@ -46,7 +46,7 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typrails"
 )
 
 func TestTransactional(t *testing.T) {

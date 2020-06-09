@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/typical-go/typical-rest-server/pkg/typrails"
+	"github.com/typical-go/typical-rest-server/EXPERIMENTAL/typrails"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
