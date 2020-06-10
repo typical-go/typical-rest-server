@@ -9,13 +9,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
-var (
-	mainDB = typpg.Init(&typpg.Settings{
-		DBName:     "MyLibrary",
-		DockerName: "pg01",
-	})
-)
-
 // Descriptor of Typical REST Server
 // Build-Tool and Application will be generated based on this descriptor
 var Descriptor = typgo.Descriptor{
@@ -44,17 +37,13 @@ var Descriptor = typgo.Descriptor{
 	Release: &typgo.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
 
 	Utility: typgo.Utilities{
-		&typpg.Utility{
-			Name:         "pg",
-			MigrationSrc: "scripts/db/migration",
-			SeedSrc:      "scripts/db/seed",
-			ConfigName:   "PG",
-		},
-		typgo.NewUtility(redisUtil),
+		&pgUtility{},
+		&redisUtility{},
 		&typmock.Utility{},
+
 		&typdocker.Utility{
 			Composers: []typdocker.Composer{
-				&pgDocker{},
+				&pgDocker{name: "pg01"},
 				&redisDocker{},
 			},
 		},

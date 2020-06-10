@@ -11,13 +11,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-type redisDocker struct{}
+type (
+	redisDocker  struct{}
+	redisUtility struct{}
+)
 
 //
 // util
 //
 
-func redisUtil(c *typgo.BuildCli) []*cli.Command {
+var _ typgo.Utility = (*redisUtility)(nil)
+
+func (*redisUtility) Commands(c *typgo.BuildCli) []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "redis",
