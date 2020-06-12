@@ -22,7 +22,7 @@ type (
 
 var _ typgo.Utility = (*redisUtility)(nil)
 
-func (*redisUtility) Commands(c *typgo.BuildCli) []*cli.Command {
+func (*redisUtility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 	return []*cli.Command{
 		{
 			Name:  "redis",
@@ -35,13 +35,13 @@ func (*redisUtility) Commands(c *typgo.BuildCli) []*cli.Command {
 				},
 			},
 		},
-	}
+	}, nil
 }
 
-func redisConsole(c *typgo.Context) (err error) {
+func redisConsole(c *typgo.Context) error {
 	var cfg infra.Redis
-	if err = typgo.ProcessConfig("REDIS", &cfg); err != nil {
-		return
+	if err := typgo.ProcessConfig("REDIS", &cfg); err != nil {
+		return err
 	}
 
 	// TODO: using docker -it
@@ -68,7 +68,7 @@ var _ (typdocker.Composer) = (*redisDocker)(nil)
 func (*redisDocker) Compose() (*typdocker.Recipe, error) {
 	var cfg infra.Redis
 	if err := typgo.ProcessConfig("REDIS", &cfg); err != nil {
-		panic("redis-docker: " + err.Error())
+		return nil, err
 	}
 
 	redis := dockerrx.Redis{
@@ -78,7 +78,5 @@ func (*redisDocker) Compose() (*typdocker.Recipe, error) {
 		Password: cfg.Password,
 		Port:     cfg.Port,
 	}
-
 	return redis.Compose()
-
 }

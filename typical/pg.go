@@ -24,12 +24,17 @@ type (
 
 var _ typgo.Utility = (*pgUtility)(nil)
 
-func (*pgUtility) Commands(c *typgo.BuildCli) []*cli.Command {
+func (*pgUtility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
+	var cfg typpg.Config
+	if err := typgo.ProcessConfig("PG", &cfg); err != nil {
+		return nil, err
+	}
+
 	util := &typpg.Utility{
 		Name:         "pg",
 		MigrationSrc: "scripts/db/migration",
 		SeedSrc:      "scripts/db/seed",
-		ConfigName:   "PG",
+		Config:       &cfg,
 	}
 	return util.Commands(c)
 }

@@ -21,11 +21,13 @@ type Utility struct {
 	Name         string
 	MigrationSrc string
 	SeedSrc      string
-	ConfigName   string
+	Config       *Config
 }
 
+var _ (typgo.Utility) = (*Utility)(nil)
+
 // Commands of module
-func (u *Utility) Commands(c *typgo.BuildCli) []*cli.Command {
+func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 	return []*cli.Command{
 		{
 			Name:  u.Name,
@@ -40,7 +42,7 @@ func (u *Utility) Commands(c *typgo.BuildCli) []*cli.Command {
 				u.cmdConsole(c),
 			},
 		},
-	}
+	}, nil
 }
 
 func (u *Utility) cmdCreate(c *typgo.BuildCli) *cli.Command {
@@ -52,12 +54,7 @@ func (u *Utility) cmdCreate(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) create(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
-
-	conn, err := sql.Open("postgres", AdminConn(cfg))
+	conn, err := sql.Open("postgres", AdminConn(u.Config))
 	if err != nil {
 		return
 	}
@@ -68,8 +65,8 @@ func (u *Utility) create(c *typgo.Context) (err error) {
 		return
 	}
 
-	c.Infof("Create database  %s", cfg.DBName)
-	_, err = conn.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, cfg.DBName))
+	c.Infof("Create database  %s", u.Config.DBName)
+	_, err = conn.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, u.Config.DBName))
 	return
 }
 
@@ -82,19 +79,15 @@ func (u *Utility) cmdDrop(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) drop(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
 
-	conn, err := sql.Open("postgres", AdminConn(cfg))
+	conn, err := sql.Open("postgres", AdminConn(u.Config))
 	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	c.Infof("Drop database %s", cfg.DBName)
-	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, cfg.DBName))
+	c.Infof("Drop database %s", u.Config.DBName)
+	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, u.Config.DBName))
 	return
 }
 
@@ -107,14 +100,10 @@ func (u *Utility) cmdMigrate(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) migrate(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
 
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
-	migration, err := migrate.New(sourceURL, Conn(cfg))
+	migration, err := migrate.New(sourceURL, Conn(u.Config))
 	if err != nil {
 		return err
 	}
@@ -132,21 +121,16 @@ func (u *Utility) cmdConsole(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) console(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
-
-	os.Setenv("PGPASSWORD", cfg.Password)
+	os.Setenv("PGPASSWORD", u.Config.Password)
 
 	// TODO: using `docker -it` for psql
 
 	return c.Execute(&execkit.Command{
 		Name: "psql",
 		Args: []string{
-			"-h", cfg.Host,
-			"-p", strconv.Itoa(cfg.Port),
-			"-U", cfg.User,
+			"-h", u.Config.Host,
+			"-p", strconv.Itoa(u.Config.Port),
+			"-U", u.Config.User,
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -163,14 +147,9 @@ func (u *Utility) cmdRollback(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) rollback(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
-
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
-	migration, err := migrate.New(sourceURL, Conn(cfg))
+	migration, err := migrate.New(sourceURL, Conn(u.Config))
 	if err != nil {
 		return
 	}
@@ -211,12 +190,7 @@ func (u *Utility) cmdSeed(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) seed(c *typgo.Context) (err error) {
-	cfg, err := u.config()
-	if err != nil {
-		return
-	}
-
-	db, err := sql.Open("postgres", Conn(cfg))
+	db, err := sql.Open("postgres", Conn(u.Config))
 	if err != nil {
 		return
 	}
@@ -237,12 +211,4 @@ func (u *Utility) seed(c *typgo.Context) (err error) {
 		}
 	}
 	return
-}
-
-func (u *Utility) config() (*Config, error) {
-	var cfg Config
-	if err := typgo.ProcessConfig(u.ConfigName, &cfg); err != nil {
-		return nil, err
-	}
-	return &cfg, nil
 }
