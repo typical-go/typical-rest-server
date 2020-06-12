@@ -1,4 +1,4 @@
-package typpg
+package pgutil
 
 import (
 	"database/sql"

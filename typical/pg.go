@@ -9,7 +9,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
-	"github.com/typical-go/typical-rest-server/pkg/typpg"
+	"github.com/typical-go/typical-rest-server/pkg/pgutil"
 )
 
 type (
@@ -31,7 +31,7 @@ func (*pgUtility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 		return nil, err
 	}
 
-	util := &typpg.Utility{
+	util := &pgutil.Utility{
 		Name:         "pg",
 		MigrationSrc: "scripts/db/migration",
 		SeedSrc:      "scripts/db/seed",

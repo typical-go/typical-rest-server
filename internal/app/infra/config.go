@@ -3,7 +3,7 @@ package infra
 import (
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/typpg"
+	"github.com/typical-go/typical-rest-server/pkg/pgutil"
 )
 
 type (
@@ -40,7 +40,7 @@ type (
 // Pg
 //
 
-var _ typpg.Config = (*Pg)(nil)
+var _ pgutil.Config = (*Pg)(nil)
 
 // GetDBName to get database name
 func (c *Pg) GetDBName() string { return c.DBName }
