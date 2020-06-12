@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/pkg/typpg"
 	"go.uber.org/dig"
 
 	// postgres driver
@@ -16,7 +15,7 @@ type (
 	// Configs of infra
 	Configs struct {
 		dig.In
-		Pg    *typpg.Config
+		Pg    *Pg
 		Redis *Redis
 	}
 
@@ -38,12 +37,12 @@ type (
 // Connect to infra
 // @ctor
 func Connect(c Configs) (infras Infras, err error) {
-	pg, err := typpg.Connect(c.Pg)
+	pg, err := connectPg(c.Pg)
 	if err != nil {
 		return
 	}
 
-	redis, err := openRedis(c.Redis)
+	redis, err := connectRedis(c.Redis)
 	if err != nil {
 		return
 	}
@@ -56,17 +55,17 @@ func Connect(c Configs) (infras Infras, err error) {
 
 // Disconnect from postgres server
 // @dtor
-func Disconnect(p Params) (err error) {
-	if err = typpg.Disconnect(p.Pg); err != nil {
-		return
+func Disconnect(p Params) error {
+	if err := p.Pg.Close(); err != nil {
+		return err
 	}
-	if err = p.Redis.Close(); err != nil {
-		return
+	if err := p.Redis.Close(); err != nil {
+		return err
 	}
-	return
+	return nil
 }
 
-func openRedis(cfg *Redis) (client *redis.Client, err error) {
+func connectRedis(cfg *Redis) (client *redis.Client, err error) {
 	client = redis.NewClient(&redis.Options{
 		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:           cfg.Password,
@@ -85,4 +84,18 @@ func openRedis(cfg *Redis) (client *redis.Client, err error) {
 	}
 
 	return client, nil
+}
+
+func connectPg(cfg *Pg) (*sql.DB, error) {
+	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
+	db, err := sql.Open("postgres", conn)
+	if err != nil {
+		err = fmt.Errorf("postgres: %w", err)
+	}
+
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("postgres: %w", err)
+	}
+	return db, nil
 }

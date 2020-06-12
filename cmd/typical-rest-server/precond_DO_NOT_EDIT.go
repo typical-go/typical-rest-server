@@ -7,7 +7,6 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
-	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
 func init() {
@@ -37,8 +36,8 @@ func init() {
 		},
 		&typgo.Constructor{
 			Name: "",
-			Fn: func() (cfg *typpg.Config, err error) {
-				cfg = new(typpg.Config)
+			Fn: func() (cfg *infra.Pg, err error) {
+				cfg = new(infra.Pg)
 				if err = typgo.ProcessConfig("PG", cfg); err != nil {
 					return nil, err
 				}

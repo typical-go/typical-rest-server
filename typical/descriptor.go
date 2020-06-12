@@ -6,7 +6,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/internal/app"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
-	"github.com/typical-go/typical-rest-server/pkg/typpg"
 )
 
 // Descriptor of Typical REST Server
@@ -25,7 +24,7 @@ var Descriptor = typgo.Descriptor{
 			Configs: []*typgo.Configuration{
 				{Name: "APP", Spec: &infra.App{Debug: true}},
 				{Name: "REDIS", Spec: &infra.Redis{}},
-				{Name: "PG", Spec: &typpg.Config{DBName: "MyLibrary"}},
+				{Name: "PG", Spec: &infra.Pg{DBName: "MyLibrary"}},
 			},
 		},
 	},

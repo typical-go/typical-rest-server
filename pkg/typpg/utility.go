@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/typical-go/typical-go/pkg/execkit"
@@ -16,13 +15,23 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
-// Utility for PG
-type Utility struct {
-	Name         string
-	MigrationSrc string
-	SeedSrc      string
-	Config       *Config
-}
+type (
+	// Utility for PG
+	Utility struct {
+		Name         string
+		MigrationSrc string
+		SeedSrc      string
+		Config       Config
+	}
+	// Config of utility
+	Config interface {
+		GetDBName() string
+		GetUser() string
+		GetPassword() string
+		GetHost() string
+		GetPort() string
+	}
+)
 
 var _ (typgo.Utility) = (*Utility)(nil)
 
@@ -54,7 +63,7 @@ func (u *Utility) cmdCreate(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) create(c *typgo.Context) (err error) {
-	conn, err := sql.Open("postgres", AdminConn(u.Config))
+	conn, err := sql.Open("postgres", adminConn(u.Config))
 	if err != nil {
 		return
 	}
@@ -65,8 +74,8 @@ func (u *Utility) create(c *typgo.Context) (err error) {
 		return
 	}
 
-	c.Infof("Create database  %s", u.Config.DBName)
-	_, err = conn.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, u.Config.DBName))
+	c.Infof("Create database  %s", u.Config.GetDBName())
+	_, err = conn.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, u.Config.GetDBName()))
 	return
 }
 
@@ -80,14 +89,14 @@ func (u *Utility) cmdDrop(c *typgo.BuildCli) *cli.Command {
 
 func (u *Utility) drop(c *typgo.Context) (err error) {
 
-	conn, err := sql.Open("postgres", AdminConn(u.Config))
+	conn, err := sql.Open("postgres", adminConn(u.Config))
 	if err != nil {
 		return
 	}
 	defer conn.Close()
 
-	c.Infof("Drop database %s", u.Config.DBName)
-	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, u.Config.DBName))
+	c.Infof("Drop database %s", u.Config.GetDBName())
+	_, err = conn.ExecContext(c.Ctx(), fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, u.Config.GetDBName()))
 	return
 }
 
@@ -100,10 +109,9 @@ func (u *Utility) cmdMigrate(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) migrate(c *typgo.Context) (err error) {
-
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'", sourceURL)
-	migration, err := migrate.New(sourceURL, Conn(u.Config))
+	migration, err := migrate.New(sourceURL, conn(u.Config))
 	if err != nil {
 		return err
 	}
@@ -121,16 +129,16 @@ func (u *Utility) cmdConsole(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) console(c *typgo.Context) (err error) {
-	os.Setenv("PGPASSWORD", u.Config.Password)
+	os.Setenv("PGPASSWORD", u.Config.GetPassword())
 
 	// TODO: using `docker -it` for psql
 
 	return c.Execute(&execkit.Command{
 		Name: "psql",
 		Args: []string{
-			"-h", u.Config.Host,
-			"-p", strconv.Itoa(u.Config.Port),
-			"-U", u.Config.User,
+			"-h", u.Config.GetHost(),
+			"-p", u.Config.GetPort(),
+			"-U", u.Config.GetUser(),
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -149,7 +157,7 @@ func (u *Utility) cmdRollback(c *typgo.BuildCli) *cli.Command {
 func (u *Utility) rollback(c *typgo.Context) (err error) {
 	sourceURL := "file://" + u.MigrationSrc
 	c.Infof("Migrate database from source '%s'\n", sourceURL)
-	migration, err := migrate.New(sourceURL, Conn(u.Config))
+	migration, err := migrate.New(sourceURL, conn(u.Config))
 	if err != nil {
 		return
 	}
@@ -190,7 +198,7 @@ func (u *Utility) cmdSeed(c *typgo.BuildCli) *cli.Command {
 }
 
 func (u *Utility) seed(c *typgo.Context) (err error) {
-	db, err := sql.Open("postgres", Conn(u.Config))
+	db, err := sql.Open("postgres", conn(u.Config))
 	if err != nil {
 		return
 	}
@@ -211,4 +219,14 @@ func (u *Utility) seed(c *typgo.Context) (err error) {
 		}
 	}
 	return
+}
+
+func conn(c Config) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		c.GetUser(), c.GetPassword(), c.GetHost(), c.GetPort(), c.GetDBName())
+}
+
+func adminConn(c Config) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/template1?sslmode=disable",
+		c.GetUser(), c.GetPassword(), c.GetHost(), c.GetPort())
 }

@@ -1,8 +1,6 @@
 package dockerrx
 
 import (
-	"fmt"
-
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
@@ -13,7 +11,7 @@ type Postgres struct {
 	Image    string
 	User     string
 	Password string
-	Port     int
+	Port     string
 }
 
 var _ typdocker.Composer = (*Postgres)(nil)
@@ -39,10 +37,10 @@ func (p *Postgres) Compose() (*typdocker.Recipe, error) {
 					"PGDATA":            "/data/postgres",
 				},
 				Volumes: []string{
-					fmt.Sprintf("%s:/data/postgres", p.Name),
+					p.Name + ":/data/postgres",
 				},
 				Ports: []string{
-					fmt.Sprintf("%d:5432", p.Port),
+					p.Port + ":5432",
 				},
 				Networks: []string{
 					p.Name,
