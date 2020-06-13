@@ -43,7 +43,7 @@ var Descriptor = typgo.Descriptor{
 		&typdocker.Utility{
 			Composers: []typdocker.Composer{
 				&pgDocker{name: "pg01"},
-				&redisDocker{},
+				&redisDocker{name: "redis01"},
 			},
 		},
 	},

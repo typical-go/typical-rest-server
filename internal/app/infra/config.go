@@ -2,8 +2,6 @@ package infra
 
 import (
 	"time"
-
-	"github.com/typical-go/typical-rest-server/pkg/pgutil"
 )
 
 type (
@@ -35,24 +33,3 @@ type (
 		Port     string `default:"5432"`
 	}
 )
-
-//
-// Pg
-//
-
-var _ pgutil.Config = (*Pg)(nil)
-
-// GetDBName to get database name
-func (c *Pg) GetDBName() string { return c.DBName }
-
-// GetUser to get user
-func (c *Pg) GetUser() string { return c.User }
-
-// GetPassword to get password
-func (c *Pg) GetPassword() string { return c.Password }
-
-// GetHost to get host
-func (c *Pg) GetHost() string { return c.Host }
-
-// GetPort to get port
-func (c *Pg) GetPort() string { return c.Port }
