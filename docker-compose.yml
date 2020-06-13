@@ -1,31 +1,31 @@
 version: "3"
 services:
-  pg:
+  pg01:
     image: postgres
     environment:
       PGDATA: /data/postgres
       POSTGRES: postgres
       POSTGRES_PASSWORD: pgpass
     volumes:
-    - pg:/data/postgres
+    - pg01:/data/postgres
     ports:
     - 5432:5432
     networks:
-    - pg
+    - pg01
     restart: unless-stopped
-  redis:
+  redis01:
     image: redis:4.0.5-alpine
     command: redis-server --requirepass "redispass"
     volumes:
-    - redis:/data
+    - redis01:/data
     ports:
     - 6379:6379
     networks:
-    - redis
+    - redis01
 networks:
-  pg:
+  pg01:
     driver: bridge
-  redis: null
+  redis01: null
 volumes:
-  pg: null
-  redis: null
+  pg01: null
+  redis01: null

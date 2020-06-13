@@ -41,6 +41,7 @@ var Descriptor = typgo.Descriptor{
 		&typmock.Utility{},
 
 		&typdocker.Utility{
+			Version: typdocker.V3,
 			Composers: []typdocker.Composer{
 				&pgDocker{name: "pg01"},
 				&redisDocker{name: "redis01"},
