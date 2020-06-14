@@ -8,7 +8,7 @@ type (
 	// App is application configuration
 	App struct {
 		Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
-		Debug   bool   `default:"false"`
+		Debug   bool   `default:"true"`
 	}
 	// Redis Configuration
 	Redis struct {
@@ -26,7 +26,7 @@ type (
 	}
 	// Pg is postgres configuration
 	Pg struct {
-		DBName   string `required:"true"`
+		DBName   string `required:"true" default:"MyLibrary"`
 		User     string `required:"true" default:"postgres"`
 		Password string `required:"true" default:"pgpass"`
 		Host     string `default:"localhost"`

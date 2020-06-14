@@ -22,9 +22,9 @@ var Descriptor = typgo.Descriptor{
 		&typgo.DependencyInjection{},
 		&typgo.ConfigManager{
 			Configs: []*typgo.Configuration{
-				{Name: "APP", Spec: &infra.App{Debug: true}},
+				{Name: "APP", Spec: &infra.App{}},
 				{Name: "REDIS", Spec: &infra.Redis{}},
-				{Name: "PG", Spec: &infra.Pg{DBName: "MyLibrary"}},
+				{Name: "PG", Spec: &infra.Pg{}},
 			},
 		},
 	},
