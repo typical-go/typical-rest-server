@@ -16,6 +16,8 @@ Example of typical and scalable RESTful API Server for Go
   - Create/Drop Database
   - Migrate/Rollback Database
   - Seed Database
+  - Console
+- Table-Driven Test
 
 ## Prerequisite
 
@@ -40,16 +42,4 @@ The project using [typical-go](https://github.com/typical-go/typical-go) as its 
 
 # run the application
 ./typicalw run 
-
-# release the distribution
-./typicalw release 
 ```
-
-## TODO
-
-TypicalGo support java-like annotation for code generation before build
-- [x] `[constructor]` to add constructor in service-locator 
-- [x] `[mock]` is target to be mock for `./typicalw mock`
-- [ ] `[api(method=<METHOD>, path=<PATH>)]` to generate route function (TODO)
-- [ ] `[cacheable]` to generate cached function (TODO)
-
