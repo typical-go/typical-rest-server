@@ -13,8 +13,10 @@ import (
 )
 
 var (
-	// BookCols is columns for book entity
-	BookCols = struct {
+	// BookTableName is table name for book entity
+	BookTableName = "books"
+	// BookTable is columns for book entity
+	BookTable = struct {
 		ID        string
 		Title     string
 		Author    string
@@ -27,9 +29,6 @@ var (
 		UpdatedAt: "updated_at",
 		CreatedAt: "created_at",
 	}
-
-	// BookTable is table name for book entity
-	BookTable = "books"
 )
 
 type (
@@ -69,13 +68,13 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 func (r *BookRepoImpl) Retrieve(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
 	builder := sq.
 		Select(
-			BookCols.ID,
-			BookCols.Title,
-			BookCols.Author,
-			BookCols.UpdatedAt,
-			BookCols.CreatedAt,
+			BookTable.ID,
+			BookTable.Title,
+			BookTable.Author,
+			BookTable.UpdatedAt,
+			BookTable.CreatedAt,
 		).
-		From(BookTable).
+		From(BookTableName).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
@@ -112,12 +111,12 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 	var id int64
 
 	scanner := sq.
-		Insert(BookTable).
+		Insert(BookTableName).
 		Columns(
-			BookCols.Title,
-			BookCols.Author,
-			BookCols.CreatedAt,
-			BookCols.UpdatedAt,
+			BookTable.Title,
+			BookTable.Author,
+			BookTable.CreatedAt,
+			BookTable.UpdatedAt,
 		).
 		Values(
 			book.Title,
@@ -126,7 +125,7 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 			time.Now(),
 		).
 		Suffix(
-			fmt.Sprintf("RETURNING \"%s\"", BookCols.ID),
+			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
 		).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r).
@@ -141,7 +140,7 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 // Delete book
 func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int64, error) {
 	builder := sq.
-		Delete(BookTable).
+		Delete(BookTableName).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
@@ -161,10 +160,10 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 // Update book
 func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
 	builder := sq.
-		Update(BookTable).
-		Set(BookCols.Title, book.Title).
-		Set(BookCols.Author, book.Author).
-		Set(BookCols.UpdatedAt, time.Now()).
+		Update(BookTableName).
+		Set(BookTable.Title, book.Title).
+		Set(BookTable.Author, book.Author).
+		Set(BookTable.UpdatedAt, time.Now()).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
@@ -183,19 +182,19 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 // Patch book to update field of book if available
 func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
 	builder := sq.
-		Update(BookTable).
+		Update(BookTableName).
 		PlaceholderFormat(sq.Dollar).
 		RunWith(r)
 
 	if book.Title != "" {
-		builder = builder.Set(BookCols.Title, book.Title)
+		builder = builder.Set(BookTable.Title, book.Title)
 	}
 
 	if book.Author != "" {
-		builder = builder.Set(BookCols.Author, book.Author)
+		builder = builder.Set(BookTable.Author, book.Author)
 	}
 
-	builder = builder.Set(BookCols.UpdatedAt, time.Now())
+	builder = builder.Set(BookTable.UpdatedAt, time.Now())
 
 	builder, err := opt.CompileUpdate(builder)
 	if err != nil {

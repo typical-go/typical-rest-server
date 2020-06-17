@@ -111,7 +111,7 @@ func TestBookRepoImpl_Update(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
@@ -125,7 +125,7 @@ func TestBookRepoImpl_Update(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
@@ -138,7 +138,7 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			book: &repository.Book{
 				Title: "new-title",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "", sqlmock.AnyArg(), 888).
@@ -151,7 +151,7 @@ func TestBookRepoImpl_Update(t *testing.T) {
 			book: &repository.Book{
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("", "new-author", sqlmock.AnyArg(), 888).
@@ -183,7 +183,7 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
@@ -197,7 +197,7 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 				Title:  "new-title",
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
 					WithArgs("new-title", "new-author", sqlmock.AnyArg(), 888).
@@ -210,7 +210,7 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			book: &repository.Book{
 				Title: "new-title",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, updated_at = $2 WHERE id = $3`)).
 					WithArgs("new-title", sqlmock.AnyArg(), 888).
@@ -223,7 +223,7 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 			book: &repository.Book{
 				Author: "new-author",
 			},
-			opt: dbkit.Equal(repository.BookCols.ID, 888),
+			opt: dbkit.Equal(repository.BookTable.ID, 888),
 			onBookRepo: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET author = $1, updated_at = $2 WHERE id = $3`)).
 					WithArgs("new-author", sqlmock.AnyArg(), 888).
