@@ -22,8 +22,7 @@ type (
 		ExpectedArgs []interface{}
 	}
 	// CompileSelectFn function
-	CompileSelectFn func(sq.SelectBuilder) (sq.SelectBuilder, error)
-
+	CompileSelectFn  func(sq.SelectBuilder) (sq.SelectBuilder, error)
 	selectOptionImpl struct {
 		fn CompileSelectFn
 	}

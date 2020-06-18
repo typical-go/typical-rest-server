@@ -22,8 +22,7 @@ type (
 		ExpectedArgs []interface{}
 	}
 	// CompileUpdateFn function
-	CompileUpdateFn func(sq.UpdateBuilder) (sq.UpdateBuilder, error)
-
+	CompileUpdateFn  func(sq.UpdateBuilder) (sq.UpdateBuilder, error)
 	updateOptionImpl struct {
 		fn CompileUpdateFn
 	}

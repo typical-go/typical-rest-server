@@ -6,20 +6,13 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-var (
-	_ SelectOption = (*LikeOption)(nil)
-)
+// LikeOption for where condition
+type LikeOption struct {
+	column      string
+	expectation interface{}
+}
 
-type (
-
-	// LikeOption for where condition
-	LikeOption struct {
-		column      string
-		expectation interface{}
-	}
-)
-
-//
+var _ SelectOption = (*LikeOption)(nil)
 
 // Like where condition
 func Like(column string, expectation interface{}) *LikeOption {

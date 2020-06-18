@@ -10,7 +10,6 @@ import (
 )
 
 func httpError(err error) *echo.HTTPError {
-
 	if err == sql.ErrNoRows {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}

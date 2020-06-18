@@ -6,17 +6,13 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-var (
-	_ SelectOption = (*PaginationOption)(nil)
-)
+// PaginationOption param
+type PaginationOption struct {
+	offset uint64
+	limit  uint64
+}
 
-type (
-	// PaginationOption param
-	PaginationOption struct {
-		offset uint64
-		limit  uint64
-	}
-)
+var _ SelectOption = (*PaginationOption)(nil)
 
 // Pagination find option
 func Pagination(offset, limit uint64) *PaginationOption {

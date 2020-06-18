@@ -15,38 +15,21 @@ const (
 	Desc
 )
 
-var (
-	_ SelectOption = (*SortOption)(nil)
-)
-
 type (
 	// SortOption for select
 	SortOption struct {
 		column  string
 		orderBy OrderBy
 	}
-
 	// OrderBy is type of order by
 	OrderBy int
 )
 
 //
-// OrderBy
-//
-
-func (o OrderBy) String() string {
-	switch o {
-	case Asc:
-		return "ASC"
-	case Desc:
-		return "DESC"
-	}
-	return "ASC"
-}
-
-//
 // Sort
 //
+
+var _ SelectOption = (*SortOption)(nil)
 
 // Sort is find option to sort by column and order
 func Sort(column string, orderBy OrderBy) *SortOption {
@@ -63,4 +46,18 @@ func (s *SortOption) CompileSelect(base sq.SelectBuilder) (sq.SelectBuilder, err
 	}
 	base = base.OrderBy(fmt.Sprintf("%s %s", s.column, s.orderBy))
 	return base, nil
+}
+
+//
+// OrderBy
+//
+
+func (o OrderBy) String() string {
+	switch o {
+	case Asc:
+		return "ASC"
+	case Desc:
+		return "DESC"
+	}
+	return "ASC"
 }

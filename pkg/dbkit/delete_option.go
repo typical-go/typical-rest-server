@@ -22,8 +22,7 @@ type (
 		ExpectedArgs []interface{}
 	}
 	// CompileDeleteFn function
-	CompileDeleteFn func(sq.DeleteBuilder) (sq.DeleteBuilder, error)
-
+	CompileDeleteFn  func(sq.DeleteBuilder) (sq.DeleteBuilder, error)
 	deleteOptionImpl struct {
 		fn CompileDeleteFn
 	}

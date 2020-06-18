@@ -6,19 +6,15 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-var (
-	_ SelectOption = (*EqualOption)(nil)
-	_ UpdateOption = (*EqualOption)(nil)
-	_ DeleteOption = (*EqualOption)(nil)
-)
+// EqualOption for where condition
+type EqualOption struct {
+	column      string
+	expectation interface{}
+}
 
-type (
-	// EqualOption for where condition
-	EqualOption struct {
-		column      string
-		expectation interface{}
-	}
-)
+var _ SelectOption = (*EqualOption)(nil)
+var _ UpdateOption = (*EqualOption)(nil)
+var _ DeleteOption = (*EqualOption)(nil)
 
 // Equal where condition
 func Equal(column string, expectation interface{}) *EqualOption {
