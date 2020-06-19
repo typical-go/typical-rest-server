@@ -2,13 +2,9 @@ package infra
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/go-redis/redis"
 	"go.uber.org/dig"
-
-	// postgres driver
-	_ "github.com/lib/pq"
 )
 
 type (
@@ -37,12 +33,12 @@ type (
 // Connect to infra
 // @ctor
 func Connect(c Configs) (infras Infras, err error) {
-	pg, err := connectPg(c.Pg)
+	pg, err := c.Pg.connect()
 	if err != nil {
 		return
 	}
 
-	redis, err := connectRedis(c.Redis)
+	redis, err := c.Redis.connect()
 	if err != nil {
 		return
 	}
@@ -63,39 +59,4 @@ func Disconnect(p Params) error {
 		return err
 	}
 	return nil
-}
-
-func connectRedis(cfg *Redis) (client *redis.Client, err error) {
-	client = redis.NewClient(&redis.Options{
-		Addr:               fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-		Password:           cfg.Password,
-		DB:                 cfg.DB,
-		PoolSize:           cfg.PoolSize,
-		DialTimeout:        cfg.DialTimeout,
-		ReadTimeout:        cfg.ReadWriteTimeout,
-		WriteTimeout:       cfg.ReadWriteTimeout,
-		IdleTimeout:        cfg.IdleTimeout,
-		IdleCheckFrequency: cfg.IdleCheckFrequency,
-		MaxConnAge:         cfg.MaxConnAge,
-	})
-
-	if err = client.Ping().Err(); err != nil {
-		return nil, fmt.Errorf("redis: %w", err)
-	}
-
-	return client, nil
-}
-
-func connectPg(cfg *Pg) (*sql.DB, error) {
-	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
-	db, err := sql.Open("postgres", conn)
-	if err != nil {
-		err = fmt.Errorf("postgres: %w", err)
-	}
-
-	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("postgres: %w", err)
-	}
-	return db, nil
 }
