@@ -110,7 +110,7 @@ func (u *pgUtility) execute(c *typgo.Context, action string) error {
 		User:         os.Getenv("PG_USER"),
 		Password:     os.Getenv("PG_PASSWORD"),
 		DBName:       os.Getenv("PG_DBNAME"),
-		MigrationSrc: "scripts/db/migration",
-		SeedSrc:      "scripts/db/seed",
+		MigrationSrc: "databases/pg/migration",
+		SeedSrc:      "databases/pg/seed",
 	})
 }
