@@ -18,10 +18,12 @@ var _ typdocker.Composer = (*Postgres)(nil)
 
 // Compose to return the recipe
 func (p *Postgres) Compose() (*typdocker.Recipe, error) {
+	if p.Version == "" {
+		p.Version = typdocker.V3
+	}
 	if p.Name == "" {
 		p.Name = "pg"
 	}
-
 	if p.Image == "" {
 		p.Image = "postgres"
 	}

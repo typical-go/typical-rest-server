@@ -19,6 +19,16 @@ var _ typdocker.Composer = (*Redis)(nil)
 
 // Compose to return redis recipe
 func (r *Redis) Compose() (*typdocker.Recipe, error) {
+	if r.Version == "" {
+		r.Version = typdocker.V3
+	}
+	if r.Image == "" {
+		r.Image = "redis:4.0.5-alpine"
+	}
+	if r.Name == "" {
+		r.Name = "redis"
+	}
+
 	return &typdocker.Recipe{
 		Version: r.Version,
 		Services: typdocker.Services{

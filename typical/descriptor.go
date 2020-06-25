@@ -6,6 +6,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/internal/app"
 	"github.com/typical-go/typical-rest-server/internal/infra"
+	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
 	"github.com/typical-go/typical-rest-server/pkg/pgcmd"
 )
 
@@ -48,12 +49,20 @@ var Descriptor = typgo.Descriptor{
 		},
 		&redisUtility{},
 		&typmock.Utility{},
-
 		&typdocker.Utility{
 			Version: typdocker.V3,
 			Composers: []typdocker.Composer{
-				&pgDocker{name: "pg01"},
-				&redisDocker{name: "redis01"},
+				&dockerrx.PostgresWithEnv{
+					Name:        "pg01",
+					UserEnv:     "PG_USER",
+					PasswordEnv: "PG_PASSWORD",
+					PortEnv:     "PG_PORT",
+				},
+				&dockerrx.RedisWithEnv{
+					Name:        "redis01",
+					PasswordEnv: "REDIS_PASSWORD",
+					PortEnv:     "REDIS_PORT",
+				},
 			},
 		},
 	},
