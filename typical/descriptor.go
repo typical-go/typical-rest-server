@@ -6,6 +6,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-rest-server/internal/app"
 	"github.com/typical-go/typical-rest-server/internal/infra"
+	"github.com/typical-go/typical-rest-server/pkg/pgcmd"
 )
 
 // Descriptor of Typical REST Server
@@ -36,7 +37,15 @@ var Descriptor = typgo.Descriptor{
 	Release: &typgo.Github{Owner: "typical-go", RepoName: "typical-rest-server"},
 
 	Utility: typgo.Utilities{
-		&pgUtility{},
+		&pgcmd.Utility{
+			HostEnv:      "PG_HOST",
+			PortEnv:      "PG_PORT",
+			UserEnv:      "PG_USER",
+			PasswordEnv:  "PG_PASSWORD",
+			DBNameEnv:    "PG_DBNAME",
+			MigrationSrc: "databases/pg/migration",
+			SeedSrc:      "databases/pg/seed",
+		},
 		&redisUtility{},
 		&typmock.Utility{},
 
