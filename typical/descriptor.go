@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/infra"
 	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
 	"github.com/typical-go/typical-rest-server/pkg/pgcmd"
+	"github.com/typical-go/typical-rest-server/pkg/rediscmd"
 )
 
 // Descriptor of Typical REST Server
@@ -47,7 +48,11 @@ var Descriptor = typgo.Descriptor{
 			MigrationSrc: "databases/pg/migration",
 			SeedSrc:      "databases/pg/seed",
 		},
-		&redisUtility{},
+		&rediscmd.Utility{
+			HostEnv:     "REDIS_HOST",
+			PortEnv:     "REDIS_PORT",
+			PasswordEnv: "REDIS_PASSWORD",
+		},
 		&typmock.Utility{},
 		&typdocker.Utility{
 			Version: typdocker.V3,

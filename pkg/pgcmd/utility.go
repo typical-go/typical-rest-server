@@ -1,11 +1,18 @@
 package pgcmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/typical-go/typical-go/pkg/buildkit"
+	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
+)
+
+const (
+	bin = ".typical-tmp/bin/pg-tool"
+	src = "github.com/typical-go/typical-rest-server/tools/pg-tool"
 )
 
 // Utility for postgres
@@ -21,8 +28,34 @@ type Utility struct {
 
 var _ typgo.Utility = (*Utility)(nil)
 
+func (u *Utility) validate() string {
+	if u.HostEnv == "" {
+		return "missing HostEnv"
+	}
+	if u.PortEnv == "" {
+		return "missing PortEnv"
+	}
+	if u.PasswordEnv == "" {
+		return "missing PasswordEnv"
+	}
+	if u.DBNameEnv == "" {
+		return "missing DBNameEnv"
+	}
+	if u.MigrationSrc == "" {
+		return "missing MigrationSrc"
+	}
+	if u.SeedSrc == "" {
+		return "missing SeedSrc"
+	}
+	return ""
+}
+
 // Commands list
 func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
+	if errMsg := u.validate(); errMsg != "" {
+		return nil, fmt.Errorf("pg-cmd: %s", errMsg)
+	}
+
 	return []*cli.Command{
 		{
 			Name:  "pg",
@@ -86,12 +119,7 @@ func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 					Name:  "console",
 					Usage: "Postgres console",
 					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return c.Execute(Console(&Param{
-							Host:     os.Getenv(u.HostEnv),
-							Port:     os.Getenv(u.PortEnv),
-							User:     os.Getenv(u.UserEnv),
-							Password: os.Getenv(u.PasswordEnv),
-						}))
+						return u.console(c)
 					}),
 				},
 			},
@@ -100,25 +128,51 @@ func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 }
 
 func (u *Utility) execute(c *typgo.Context, action string) error {
-	bin := ".typical-tmp/bin/pgutil"
 	if _, err := os.Stat(bin); os.IsNotExist(err) {
 		if err := c.Execute(&buildkit.GoBuild{
 			Out:    bin,
-			Source: "github.com/typical-go/typical-rest-server/tools/pg-tool",
+			Source: src,
 		}); err != nil {
 			return err
 		}
 	}
+	return u.pgTool(c, action)
+}
 
-	return c.Execute(PgTool(&Param{
-		Name:         bin,
-		Action:       action,
-		Host:         os.Getenv(u.HostEnv),
-		Port:         os.Getenv(u.PortEnv),
-		User:         os.Getenv(u.UserEnv),
-		Password:     os.Getenv(u.PasswordEnv),
-		DBName:       os.Getenv(u.DBNameEnv),
-		MigrationSrc: u.MigrationSrc,
-		SeedSrc:      u.SeedSrc,
-	}))
+func (u *Utility) pgTool(c *typgo.Context, action string) error {
+	return c.Execute(&execkit.Command{
+		Name: bin,
+		Args: []string{
+			action,
+			"-host=" + os.Getenv(u.HostEnv),
+			"-port=" + os.Getenv(u.PortEnv),
+			"-user=" + os.Getenv(u.UserEnv),
+			"-password=" + os.Getenv(u.PasswordEnv),
+			"-db-name=" + os.Getenv(u.DBNameEnv),
+			"-migration-src=" + u.MigrationSrc,
+			"-seed-src=" + u.SeedSrc,
+		},
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Stdin:  os.Stdin,
+	})
+}
+
+// Console postgrs
+func (u *Utility) console(c *typgo.Context) error {
+	os.Setenv("PGPASSWORD", os.Getenv(u.PasswordEnv))
+
+	// TODO: using `docker -it` for psql
+
+	return c.Execute(&execkit.Command{
+		Name: "psql",
+		Args: []string{
+			"-h", os.Getenv(u.HostEnv),
+			"-p", os.Getenv(u.PortEnv),
+			"-U", os.Getenv(u.UserEnv),
+		},
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Stdin:  os.Stdin,
+	})
 }
