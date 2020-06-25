@@ -82,7 +82,7 @@ Simple CLI to prepare the database [learn more](tools/pg-tool/README.md)
 
 ## Concepts
 
-- [Dependency inversion principle](https://en.wikipedia.org/wiki/SOLID)
+- [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) ([dig](https://github.com/uber-go/dig))
 - [Table-Driven Test](https://github.com/golang/go/wiki/TableDrivenTests)
 - [Mock Object](https://en.wikipedia.org/wiki/Mock_object) ([gomock](https://github.com/golang/mock))
