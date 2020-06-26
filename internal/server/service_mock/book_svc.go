@@ -108,11 +108,12 @@ func (mr *MockBookSvcMockRecorder) RetrieveOne(arg0, arg1 interface{}) *gomock.C
 }
 
 // Update mocks base method
-func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) error {
+func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *repository.Book) (*repository.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*repository.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Update indicates an expected call of Update

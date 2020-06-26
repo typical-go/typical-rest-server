@@ -23,7 +23,7 @@ type (
 		Retrieve(context.Context) ([]*repository.Book, error)
 		Create(context.Context, *repository.Book) (*repository.Book, error)
 		Delete(context.Context, string) error
-		Update(context.Context, string, *repository.Book) error
+		Update(context.Context, string, *repository.Book) (*repository.Book, error)
 		Patch(context.Context, string, *repository.Book) error
 	}
 
@@ -98,30 +98,27 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 }
 
 // Update book
-func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) error {
+func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return errvalid.New("paramID is missing")
+		return nil, errvalid.New("paramID is missing")
 	}
 
 	err := validator.New().Struct(book)
 	if err != nil {
-		return err
-	}
-
-	_, err = b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
-	if err != nil {
-		return err
+		return nil, errvalid.Wrap(err)
 	}
 
 	affectedRow, err := b.BookRepo.Update(ctx, book, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
-		return err
-	} else if affectedRow < 1 {
-		return errors.New("No updated row")
+		return nil, err
 	}
 
-	return nil
+	if affectedRow < 1 {
+		return nil, sql.ErrNoRows
+	}
+
+	return b.retrieveOne(ctx, id)
 }
 
 // Patch book
