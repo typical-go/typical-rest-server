@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strconv"
 
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
@@ -24,7 +23,7 @@ type (
 		Create(context.Context, *repository.Book) (*repository.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) (*repository.Book, error)
-		Patch(context.Context, string, *repository.Book) error
+		Patch(context.Context, string, *repository.Book) (*repository.Book, error)
 	}
 
 	// BookSvcImpl is implementation of BookSvc
@@ -113,7 +112,6 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 	if err != nil {
 		return nil, err
 	}
-
 	if affectedRow < 1 {
 		return nil, sql.ErrNoRows
 	}
@@ -122,23 +120,19 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 }
 
 // Patch book
-func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) error {
+func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return errvalid.New("paramID is missing")
-	}
-
-	_, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
-	if err != nil {
-		return err
+		return nil, errvalid.New("paramID is missing")
 	}
 
 	affectedRow, err := b.BookRepo.Patch(ctx, book, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
-		return err
-	} else if affectedRow < 1 {
-		return errors.New("No patched row")
+		return nil, err
+	}
+	if affectedRow < 1 {
+		return nil, sql.ErrNoRows
 	}
 
-	return nil
+	return b.retrieveOne(ctx, id)
 }

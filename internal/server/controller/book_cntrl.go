@@ -110,13 +110,12 @@ func (c *BookCntrl) Patch(ec echo.Context) (err error) {
 		return err
 	}
 
-	if err = c.BookSvc.Patch(
-		ec.Request().Context(),
-		ec.Param("id"),
-		&book,
-	); err != nil {
+	ctx := ec.Request().Context()
+	paramID := ec.Param("id")
+	patchedBook, err := c.BookSvc.Patch(ctx, paramID, &book)
+	if err != nil {
 		return httpError(err)
 	}
 
-	return ec.NoContent(http.StatusOK)
+	return ec.JSON(http.StatusOK, patchedBook)
 }

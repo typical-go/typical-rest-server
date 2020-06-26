@@ -218,7 +218,7 @@ func TestBookController_Patch(t *testing.T) {
 							Author: "some-author",
 						},
 					).
-					Return(errors.New("some-error"))
+					Return(nil, errors.New("some-error"))
 			},
 		},
 		{
@@ -231,18 +231,12 @@ func TestBookController_Patch(t *testing.T) {
 					Body:      `{"title":"some-title", "author": "some-author"}`,
 				},
 				ExpectedCode: http.StatusOK,
+				ExpectedBody: "{\"id\":1,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Patch(
-						gomock.Any(),
-						"1",
-						&repository.Book{
-							Title:  "some-title",
-							Author: "some-author",
-						},
-					).
-					Return(nil)
+					Patch(gomock.Any(), "1", &repository.Book{Title: "some-title", Author: "some-author"}).
+					Return(&repository.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
 			},
 		},
 	}

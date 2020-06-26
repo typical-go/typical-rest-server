@@ -260,7 +260,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "update error",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(-1), errors.New("update error"))
 			},
 		},
@@ -271,7 +271,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "sql: no rows in result set",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(0), nil)
 			},
 		},
@@ -282,7 +282,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "retrieve-error",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
@@ -296,7 +296,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "retrieve-error",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Update(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
@@ -326,53 +326,67 @@ func TestBookSvc_Patch(t *testing.T) {
 		bookSvcFn   bookSvcFn
 		paramID     string
 		book        *repository.Book
+		expected    *repository.Book
 		expectedErr string
 	}{
 		{
+			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: `Validation: paramID is missing`,
+			expectedErr: "Validation: paramID is missing",
 		},
 		{
+			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: `Validation: paramID is missing`,
+			expectedErr: "Validation: paramID is missing",
 		},
 		{
-			paramID: "1",
-			book: &repository.Book{
-				Author: "some-author",
-				Title:  "some-title",
-			},
+			testName:    "patch error",
+			paramID:     "1",
+			book:        &repository.Book{Author: "some-author", Title: "some-title"},
+			expectedErr: "patch-error",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
-				mockRepo.EXPECT().Retrieve(
-					gomock.Any(),
-					dbkit.Equal(repository.BookTable.ID, int64(1)),
-				).Return([]*repository.Book{}, nil)
 				mockRepo.EXPECT().
-					Patch(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal(repository.BookTable.ID, int64(1))).
-					Return(int64(1), nil)
+					Patch(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Return(int64(-1), errors.New("patch-error"))
 			},
 		},
 		{
-			paramID: "1",
-			book: &repository.Book{
-				Author: "some-author",
-				Title:  "some-title",
-			},
+			testName:    "patch error",
+			paramID:     "1",
+			book:        &repository.Book{Author: "some-author", Title: "some-title"},
+			expectedErr: "sql: no rows in result set",
 			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
-				mockRepo.EXPECT().Retrieve(
-					gomock.Any(),
-					dbkit.Equal(repository.BookTable.ID, int64(1)),
-				).Return([]*repository.Book{}, nil)
-				mockRepo.EXPECT().Patch(
-					gomock.Any(),
-					&repository.Book{
-						Author: "some-author",
-						Title:  "some-title",
-					},
-					dbkit.Equal(repository.BookTable.ID, int64(1)),
-				).Return(int64(0), nil)
+				mockRepo.EXPECT().
+					Patch(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Return(int64(0), nil)
 			},
-			expectedErr: "No patched row",
+		},
+		{
+			testName:    "retrieve error",
+			paramID:     "1",
+			book:        &repository.Book{Author: "some-author", Title: "some-title"},
+			expectedErr: "retrieve-error",
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Patch(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Return(int64(1), nil)
+				mockRepo.EXPECT().
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Return(nil, errors.New("retrieve-error"))
+			},
+		},
+		{
+			paramID:  "1",
+			book:     &repository.Book{Author: "some-author", Title: "some-title"},
+			expected: &repository.Book{Author: "some-author", Title: "some-title"},
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Patch(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Return(int64(1), nil)
+				mockRepo.EXPECT().
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Return([]*repository.Book{{Author: "some-author", Title: "some-title"}}, nil)
+			},
 		},
 	}
 	for _, tt := range testcases {
@@ -380,11 +394,12 @@ func TestBookSvc_Patch(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.bookSvcFn)
 			defer mock.Finish()
 
-			err := svc.Patch(context.Background(), tt.paramID, tt.book)
+			book, err := svc.Patch(context.Background(), tt.paramID, tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
 				require.NoError(t, err)
+				require.Equal(t, tt.expected, book)
 			}
 		})
 	}
