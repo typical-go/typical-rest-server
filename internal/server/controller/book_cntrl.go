@@ -41,13 +41,13 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	}
 
 	ctx := ec.Request().Context()
-	id, err := c.BookSvc.Create(ctx, &book)
+	newBook, err := c.BookSvc.Create(ctx, &book)
 	if err != nil {
 		return httpError(err)
 	}
 
-	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/books/%d", id))
-	return ec.NoContent(http.StatusCreated)
+	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/books/%d", newBook.ID))
+	return ec.JSON(http.StatusCreated, newBook)
 }
 
 // Retrieve books

@@ -21,7 +21,7 @@ type (
 	BookSvc interface {
 		RetrieveOne(context.Context, string) (*repository.Book, error)
 		Retrieve(context.Context) ([]*repository.Book, error)
-		Create(context.Context, *repository.Book) (int64, error)
+		Create(context.Context, *repository.Book) (*repository.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) error
 		Patch(context.Context, string, *repository.Book) error
@@ -38,6 +38,19 @@ type (
 // @ctor
 func NewBookSvc(impl BookSvcImpl) BookSvc {
 	return &impl
+}
+
+// Create Book
+func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (*repository.Book, error) {
+	if err := validator.New().Struct(book); err != nil {
+		return nil, errvalid.Wrap(err)
+	}
+	id, err := b.BookRepo.Create(ctx, book)
+	if err != nil {
+		return nil, err
+	}
+
+	return b.retrieveOne(ctx, id)
 }
 
 // Retrieve books
@@ -131,13 +144,4 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repositor
 	}
 
 	return nil
-}
-
-// Create Book
-func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (int64, error) {
-	err := validator.New().Struct(book)
-	if err != nil {
-		return -1, err
-	}
-	return b.BookRepo.Create(ctx, book)
 }

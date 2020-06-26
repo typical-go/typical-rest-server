@@ -27,7 +27,76 @@ func createBookSvc(t *testing.T, fn bookSvcFn) (*service.BookSvcImpl, *gomock.Co
 	}, mock
 }
 
-func TestBookSvc_FindOne(t *testing.T) {
+func TestBookSvc_Create(t *testing.T) {
+	testcases := []struct {
+		testName    string
+		bookSvcFn   bookSvcFn
+		book        *repository.Book
+		expected    *repository.Book
+		expectedErr string
+	}{
+		{
+			testName:    "validation error",
+			book:        &repository.Book{},
+			expectedErr: "Validation: Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+		},
+		{
+			testName:    "create error",
+			book:        &repository.Book{Author: "some-author", Title: "some-title"},
+			expectedErr: "create-error",
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Create(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}).
+					Return(int64(-1), errors.New("create-error"))
+			},
+		},
+		{
+			testName:    "retrieve error",
+			book:        &repository.Book{Author: "some-author", Title: "some-title"},
+			expectedErr: "retrieve-error",
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Create(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}).
+					Return(int64(1), nil)
+				mockRepo.EXPECT().
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Return(nil, errors.New("retrieve-error"))
+			},
+		},
+		{
+			book: &repository.Book{
+				Author: "some-author",
+				Title:  "some-title",
+			},
+			expected: &repository.Book{Author: "some-author", Title: "some-title"},
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Create(gomock.Any(), &repository.Book{Author: "some-author", Title: "some-title"}).
+					Return(int64(1), nil)
+				mockRepo.EXPECT().
+					Retrieve(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Return([]*repository.Book{{Author: "some-author", Title: "some-title"}}, nil)
+			},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.testName, func(t *testing.T) {
+			svc, mock := createBookSvc(t, tt.bookSvcFn)
+			defer mock.Finish()
+
+			id, err := svc.Create(context.Background(), tt.book)
+			if tt.expectedErr != "" {
+				require.EqualError(t, err, tt.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, id)
+			}
+		})
+	}
+}
+
+func TestBookSvc_RetrieveOne(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
@@ -83,7 +152,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 	}
 }
 
-func TestBookSvc_Find(t *testing.T) {
+func TestBookSvc_Retrieve(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
@@ -101,31 +170,6 @@ func TestBookSvc_Find(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				require.Equal(t, tt.expected, books)
-			}
-		})
-	}
-}
-
-func TestBookSvc_Create(t *testing.T) {
-	testcases := []struct {
-		testName    string
-		bookSvcFn   bookSvcFn
-		book        *repository.Book
-		expected    int64
-		expectedErr string
-	}{}
-
-	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			svc, mock := createBookSvc(t, tt.bookSvcFn)
-			defer mock.Finish()
-
-			id, err := svc.Create(context.Background(), tt.book)
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tt.expected, id)
 			}
 		})
 	}

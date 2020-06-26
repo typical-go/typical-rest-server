@@ -36,7 +36,7 @@ func createBookCntrl(t *testing.T, fn bookCntrlFn) (*controller.BookCntrl, *gomo
 	}, mock
 }
 
-func TestBookController_FindOne(t *testing.T) {
+func TestBookController_RetrieveOne(t *testing.T) {
 	testcases := []testCase{
 		{
 			testName: "valid ID",
@@ -106,7 +106,7 @@ func TestBookController_FindOne(t *testing.T) {
 	}
 }
 
-func TestBookController_Find(t *testing.T) {
+func TestBookController_Retrieve(t *testing.T) {
 	testcases := []testCase{
 		{
 			TestCase: echotest.TestCase{
@@ -345,7 +345,7 @@ func TestBookController_Create(t *testing.T) {
 				ExpectedErr: "code=500, message=some-error",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(-1), fmt.Errorf("some-error"))
+				svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 		{
@@ -356,13 +356,20 @@ func TestBookController_Create(t *testing.T) {
 					Body:   `{"author":"some-author", "title":"some-title"}`,
 					Header: echotest.HeaderForJSON(),
 				},
+				ExpectedBody: "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
 				ExpectedCode: http.StatusCreated,
 				ExpectedHeader: map[string]string{
 					"Location": "/books/999",
 				},
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Create(gomock.Any(), gomock.Any()).Return(int64(999), nil)
+				svc.EXPECT().
+					Create(gomock.Any(), gomock.Any()).
+					Return(&repository.Book{
+						ID:     999,
+						Author: "some-author",
+						Title:  "some-title",
+					}, nil)
 			},
 		},
 	}

@@ -2,11 +2,6 @@
 
 http://localhost:8089/application/health
 
-
-### Page Not Found (404)
-
-http://localhost:8089/adsfqer
-
 ### Find Books
 
 http://localhost:8089/books
