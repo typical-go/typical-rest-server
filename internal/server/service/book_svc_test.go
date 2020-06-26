@@ -142,6 +142,32 @@ func TestBookSvc_Delete(t *testing.T) {
 			paramID:     "",
 			expectedErr: `Validation: paramID is missing`,
 		},
+		{
+			paramID:     "1",
+			expectedErr: `some-error`,
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Delete(gomock.Any(), dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Return(int64(0), errors.New("some-error"))
+			},
+		},
+		{
+			paramID: "1",
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Delete(gomock.Any(), dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Return(int64(1), nil)
+			},
+		},
+		{
+			testName: "success even if no affected row (idempotent)",
+			paramID:  "1",
+			bookSvcFn: func(mockRepo *repository_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Delete(gomock.Any(), dbkit.Equal(repository.BookTable.ID, int64(1))).
+					Return(int64(0), nil)
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {

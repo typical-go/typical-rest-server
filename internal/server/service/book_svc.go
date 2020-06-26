@@ -62,6 +62,17 @@ func (b *BookSvcImpl) RetrieveOne(ctx context.Context, paramID string) (*reposit
 	return books[0], nil
 }
 
+func (b *BookSvcImpl) retrieveOne(ctx context.Context, id int64) (*repository.Book, error) {
+	books, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
+	if err != nil {
+		return nil, err
+	} else if len(books) < 1 {
+		return nil, sql.ErrNoRows
+	}
+
+	return books[0], nil
+}
+
 // Delete book
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
@@ -69,14 +80,8 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 		return errvalid.New("paramID is missing")
 	}
 
-	affectedRow, err := b.BookRepo.Delete(ctx, dbkit.Equal(repository.BookTable.ID, id))
-	if err != nil {
-		return err
-	} else if affectedRow < 1 {
-		return errors.New("No deleted row")
-	}
-
-	return nil
+	_, err := b.BookRepo.Delete(ctx, dbkit.Equal(repository.BookTable.ID, id))
+	return err
 }
 
 // Update book
