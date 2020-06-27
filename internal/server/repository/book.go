@@ -7,8 +7,8 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"go.uber.org/dig"
 )
 
@@ -108,7 +108,10 @@ func (r *BookRepoImpl) Retrieve(ctx context.Context, opts ...dbkit.SelectOption)
 
 // Create book
 func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
-	var id int64
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
 
 	scanner := sq.
 		Insert(BookTableName).
@@ -128,10 +131,12 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
 		).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(r).
+		RunWith(txn.DB()).
 		QueryRowContext(ctx)
 
+	var id int64
 	if err := scanner.Scan(&id); err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 	return id, nil
@@ -139,18 +144,24 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 
 // Delete book
 func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
 	builder := sq.
 		Delete(BookTableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(r)
+		RunWith(txn.DB())
 
-	builder, err := opt.CompileDelete(builder)
-	if err != nil {
+	if builder, err = opt.CompileDelete(builder); err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 
 	result, err := builder.ExecContext(ctx)
 	if err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 
@@ -159,21 +170,27 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 
 // Update book
 func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
 	builder := sq.
 		Update(BookTableName).
 		Set(BookTable.Title, book.Title).
 		Set(BookTable.Author, book.Author).
 		Set(BookTable.UpdatedAt, time.Now()).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(r)
+		RunWith(txn.DB())
 
-	builder, err := opt.CompileUpdate(builder)
-	if err != nil {
+	if builder, err = opt.CompileUpdate(builder); err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 
 	result, err := builder.ExecContext(ctx)
 	if err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 	return result.RowsAffected()
@@ -181,28 +198,32 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 
 // Patch book to update field of book if available
 func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
 	builder := sq.
 		Update(BookTableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(r)
+		RunWith(txn.DB())
 
 	if book.Title != "" {
 		builder = builder.Set(BookTable.Title, book.Title)
 	}
-
 	if book.Author != "" {
 		builder = builder.Set(BookTable.Author, book.Author)
 	}
-
 	builder = builder.Set(BookTable.UpdatedAt, time.Now())
 
-	builder, err := opt.CompileUpdate(builder)
-	if err != nil {
+	if builder, err = opt.CompileUpdate(builder); err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 
 	result, err := builder.ExecContext(ctx)
 	if err != nil {
+		txn.SetError(err)
 		return -1, err
 	}
 	return result.RowsAffected()
