@@ -3,6 +3,7 @@ package dbtxn
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
@@ -15,16 +16,21 @@ type (
 	key int
 	// Context of transaction
 	Context struct {
-		tx  *sql.Tx
-		err error
+		Tx  Tx
+		Err error
 	}
 	// CommitFn is commit function to close the transaction
 	CommitFn func() error
 	// Handler responsible to handle transaction
 	Handler struct {
-		db  sq.BaseRunner
-		txn bool
-		*Context
+		DB      sq.BaseRunner
+		Context *Context
+	}
+	// Tx is interface for database transaction
+	Tx interface {
+		sq.BaseRunner
+		Rollback() error
+		Commit() error
 	}
 )
 
@@ -32,37 +38,32 @@ type (
 func Begin(parent *context.Context) CommitFn {
 	c := &Context{}
 	*parent = context.WithValue(*parent, ContextKey, c)
-
-	return func() error {
-		if c.tx == nil {
-			return nil
-		}
-		if c.err != nil {
-			return c.tx.Rollback()
-		}
-		return c.tx.Commit()
-	}
+	return c.Commit
 }
 
 // Use transaction if possible
 func Use(ctx context.Context, db *sql.DB) (*Handler, error) {
 	c := Retrieve(ctx)
 
+	if ctx == nil {
+		return nil, errors.New("dbtxn: missing context.Context")
+	}
+
 	// NOTE: not transactional
 	if c == nil {
-		return &Handler{db: db, txn: false}, nil
+		return &Handler{DB: db}, nil
 	}
 
-	if c.tx == nil {
+	if c.Tx == nil {
 		tx, err := db.BeginTx(ctx, nil)
 		if err != nil {
-			c.err = fmt.Errorf("dbtxn: %w", err)
-			return nil, c.err
+			c.Err = fmt.Errorf("dbtxn: %w", err)
+			return nil, c.Err
 		}
-		c.tx = tx
+		c.Tx = tx
 	}
 
-	return &Handler{db: c.tx, txn: true, Context: c}, nil
+	return &Handler{DB: c.Tx, Context: c}, nil
 }
 
 // Retrieve transaction context
@@ -78,9 +79,24 @@ func Retrieve(ctx context.Context) *Context {
 // Error of transaction
 func Error(ctx context.Context) error {
 	if c := Retrieve(ctx); c != nil {
-		return c.err
+		return c.Err
 	}
 	return nil
+}
+
+//
+// Context
+//
+
+// Commit if no error
+func (c *Context) Commit() error {
+	if c.Tx == nil {
+		return nil
+	}
+	if c.Err != nil {
+		return c.Tx.Rollback()
+	}
+	return c.Tx.Commit()
 }
 
 //
@@ -89,19 +105,10 @@ func Error(ctx context.Context) error {
 
 // SetError to set error to txn context
 func (t *Handler) SetError(err error) bool {
-	if t.Context != nil {
-		t.Context.err = err
-		return true
+	if t.Context == nil {
+		return false
 	}
-	return false
-}
 
-// DB return base runner to run the query
-func (t *Handler) DB() sq.BaseRunner {
-	return t.db
-}
-
-// Txn return true when using transaction
-func (t *Handler) Txn() bool {
-	return t.txn
+	t.Context.Err = err
+	return true
 }

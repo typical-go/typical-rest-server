@@ -131,7 +131,7 @@ func (r *BookRepoImpl) Create(ctx context.Context, book *Book) (int64, error) {
 			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
 		).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB()).
+		RunWith(txn.DB).
 		QueryRowContext(ctx)
 
 	var id int64
@@ -152,7 +152,7 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 	builder := sq.
 		Delete(BookTableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB())
+		RunWith(txn.DB)
 
 	if builder, err = opt.CompileDelete(builder); err != nil {
 		txn.SetError(err)
@@ -181,7 +181,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 		Set(BookTable.Author, book.Author).
 		Set(BookTable.UpdatedAt, time.Now()).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB())
+		RunWith(txn.DB)
 
 	if builder, err = opt.CompileUpdate(builder); err != nil {
 		txn.SetError(err)
@@ -206,7 +206,7 @@ func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOp
 	builder := sq.
 		Update(BookTableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB())
+		RunWith(txn.DB)
 
 	if book.Title != "" {
 		builder = builder.Set(BookTable.Title, book.Title)

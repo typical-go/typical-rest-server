@@ -2,6 +2,7 @@ package dbtxn_test
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -40,31 +41,83 @@ func TestRetrieve(t *testing.T) {
 	}
 }
 
-func TestUse_When_Error(t *testing.T) {
-	t.Run("Rollback when error", func(t *testing.T) {
-		ctx := context.Background()
-		defer dbtxn.Begin(&ctx)()
+func TestUse(t *testing.T) {
+	testcases := []struct {
+		testName    string
+		ctx         context.Context
+		db          *sql.DB
+		expected    *dbtxn.Handler
+		expectedErr string
+	}{
+		{
+			ctx:         nil,
+			expectedErr: "dbtxn: missing context.Context",
+		},
+		{
+			testName: "non transactional",
+			db:       &sql.DB{},
+			ctx:      context.Background(),
+			expected: &dbtxn.Handler{DB: &sql.DB{}},
+		},
+		{
+			testName: "begin error",
+			db: func() *sql.DB {
+				db, mock, _ := sqlmock.New()
+				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
+				return db
+			}(),
+			ctx:         context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{}),
+			expectedErr: "dbtxn: begin-error",
+		},
+	}
 
+	for _, tt := range testcases {
+		t.Run(tt.testName, func(t *testing.T) {
+			handler, err := dbtxn.Use(tt.ctx, tt.db)
+			if tt.expectedErr != "" {
+				require.EqualError(t, err, tt.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, handler)
+			}
+		})
+	}
+}
+
+func TestUse_success(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	mock.ExpectBegin()
+
+	ctx := context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{})
+	handler, err := dbtxn.Use(ctx, db)
+
+	require.NoError(t, err)
+	require.Equal(t, handler.DB, handler.Context.Tx)
+}
+
+func TestContext_Commit(t *testing.T) {
+
+	t.Run("expect rollback when error", func(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 		mock.ExpectBegin()
 		mock.ExpectRollback()
 
-		txn, err := dbtxn.Use(ctx, db)
-		require.NoError(t, err)
-		require.True(t, txn.Txn())
-		txn.SetError(errors.New("some-message"))
+		tx, _ := db.Begin()
+		c := &dbtxn.Context{Tx: tx}
+		c.Err = errors.New("some-error")
+
+		require.NoError(t, c.Commit())
 	})
 
-	t.Run("Commit when no error", func(t *testing.T) {
-		ctx := context.Background()
-		defer dbtxn.Begin(&ctx)()
-
+	t.Run("expect commit when no error", func(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 		mock.ExpectBegin()
 		mock.ExpectCommit()
 
-		txn, err := dbtxn.Use(ctx, db)
-		require.NoError(t, err)
-		require.True(t, txn.Txn())
+		tx, _ := db.Begin()
+		c := &dbtxn.Context{Tx: tx}
+
+		require.NoError(t, c.Commit())
 	})
+
 }
