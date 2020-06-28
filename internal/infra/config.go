@@ -60,7 +60,7 @@ func (r *Redis) connect() (*redis.Client, error) {
 	})
 
 	if err := client.Ping().Err(); err != nil {
-		return nil, fmt.Errorf("redis: %w", err)
+		return nil, fmt.Errorf("infra: %w", err)
 	}
 
 	return client, nil
@@ -75,11 +75,11 @@ func (p *Pg) connect() (*sql.DB, error) {
 		p.User, p.Password, p.Host, p.Port, p.DBName)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
-		err = fmt.Errorf("postgres: %w", err)
+		return nil, fmt.Errorf("infra: %w", err)
 	}
 
 	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("postgres: %w", err)
+		return nil, fmt.Errorf("infra: %w", err)
 	}
 	return db, nil
 }

@@ -18,7 +18,7 @@ type Fetcher struct {
 	*sql.DB
 }
 
-// InfoSchema is infomation schema from database
+// InfoSchema is information schema from database
 type InfoSchema struct {
 	ColumnName string
 	DataType   string

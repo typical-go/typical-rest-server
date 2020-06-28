@@ -80,7 +80,7 @@ func createDB(c *cli.Context) error {
 	fmt.Println(q)
 
 	_, err = conn.ExecContext(c.Context, q)
-	return nil
+	return err
 }
 
 func dropDB(c *cli.Context) error {
@@ -95,7 +95,7 @@ func dropDB(c *cli.Context) error {
 	fmt.Println(q)
 
 	_, err = conn.ExecContext(c.Context, q)
-	return nil
+	return err
 }
 
 func migrateDB(c *cli.Context) error {
