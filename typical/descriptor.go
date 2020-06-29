@@ -40,6 +40,7 @@ var Descriptor = typgo.Descriptor{
 
 	Utility: typgo.Utilities{
 		&pgcmd.Utility{
+			Name:         "pg",
 			HostEnv:      "PG_HOST",
 			PortEnv:      "PG_PORT",
 			UserEnv:      "PG_USER",
@@ -49,6 +50,7 @@ var Descriptor = typgo.Descriptor{
 			SeedSrc:      "databases/pg/seed",
 		},
 		&rediscmd.Utility{
+			Name:        "redis",
 			HostEnv:     "REDIS_HOST",
 			PortEnv:     "REDIS_PORT",
 			PasswordEnv: "REDIS_PASSWORD",
