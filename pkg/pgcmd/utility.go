@@ -17,6 +17,7 @@ const (
 
 // Utility for postgres
 type Utility struct {
+	Name         string
 	HostEnv      string
 	PortEnv      string
 	UserEnv      string
@@ -29,6 +30,9 @@ type Utility struct {
 var _ typgo.Utility = (*Utility)(nil)
 
 func (u *Utility) validate() string {
+	if u.Name == "" {
+		return "missing name"
+	}
 	if u.HostEnv == "" {
 		return "missing HostEnv"
 	}
@@ -58,8 +62,8 @@ func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 
 	return []*cli.Command{
 		{
-			Name:  "pg",
-			Usage: "postgres utility",
+			Name:  u.Name,
+			Usage: "Postgres utility",
 			Subcommands: []*cli.Command{
 				{
 					Name:  "create",

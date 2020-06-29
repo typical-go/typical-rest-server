@@ -11,6 +11,7 @@ import (
 
 // Utility for redis
 type Utility struct {
+	Name        string
 	HostEnv     string
 	PortEnv     string
 	PasswordEnv string
@@ -19,6 +20,9 @@ type Utility struct {
 var _ typgo.Utility = (*Utility)(nil)
 
 func (u *Utility) validate() string {
+	if u.Name == "" {
+		return "missing Name"
+	}
 	if u.HostEnv == "" {
 		return "missing HostEnv"
 	}
@@ -39,7 +43,7 @@ func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
 
 	return []*cli.Command{
 		{
-			Name:  "redis",
+			Name:  u.Name,
 			Usage: "Redis utility",
 			Subcommands: []*cli.Command{
 				{
