@@ -4,15 +4,14 @@ import (
 	"context"
 	"time"
 
-	logrusmiddleware "github.com/bakatz/echo-logrusmiddleware"
-	log "github.com/sirupsen/logrus"
-
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/typical-go/typical-rest-server/internal/infra"
 	"github.com/typical-go/typical-rest-server/internal/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server"
+	servermiddleware "github.com/typical-go/typical-rest-server/internal/server/middleware"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 
 	"go.uber.org/dig"
@@ -52,19 +51,19 @@ func (a app) Route(e echokit.Server) (err error) {
 }
 
 func (a app) initLogger(e *echo.Echo) {
-	e.Logger = logrusmiddleware.Logger{Logger: log.StandardLogger()}
+	e.Logger = servermiddleware.Logger{Logger: log.StandardLogger()}
 	e.Debug = a.Debug
 	if e.Debug {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{})
-		e.Use(logrusmiddleware.HookWithConfig(logrusmiddleware.Config{
+		e.Use(servermiddleware.HookWithConfig(servermiddleware.Config{
 			IncludeRequestBodies:  true,
 			IncludeResponseBodies: true,
 		}))
 	} else {
 		log.SetLevel(log.WarnLevel)
 		log.SetFormatter(&log.JSONFormatter{})
-		e.Use(logrusmiddleware.HookWithConfig(logrusmiddleware.Config{}))
+		e.Use(servermiddleware.HookWithConfig(servermiddleware.Config{}))
 	}
 }
 
