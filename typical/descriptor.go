@@ -16,7 +16,7 @@ import (
 var Descriptor = typgo.Descriptor{
 	Name:        "typical-rest-server",
 	Description: "Example of typical and scalable RESTful API Server for Go",
-	Version:     "0.8.33",
+	Version:     "0.8.34",
 
 	EntryPoint: app.Main,
 	Layouts:    []string{"internal", "pkg"},
