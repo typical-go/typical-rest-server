@@ -11,8 +11,9 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/infra"
 	"github.com/typical-go/typical-rest-server/internal/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server"
-	servermiddleware "github.com/typical-go/typical-rest-server/internal/server/middleware"
+
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/echologrus"
 
 	"go.uber.org/dig"
 )
@@ -51,19 +52,19 @@ func (a app) Route(e echokit.Server) (err error) {
 }
 
 func (a app) initLogger(e *echo.Echo) {
-	e.Logger = servermiddleware.Logger{Logger: log.StandardLogger()}
+	e.Logger = echologrus.Logger{Logger: log.StandardLogger()}
 	e.Debug = a.Debug
 	if e.Debug {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{})
-		e.Use(servermiddleware.HookWithConfig(servermiddleware.Config{
+		e.Use(echologrus.HookWithConfig(echologrus.Config{
 			IncludeRequestBodies:  true,
 			IncludeResponseBodies: true,
 		}))
 	} else {
 		log.SetLevel(log.WarnLevel)
 		log.SetFormatter(&log.JSONFormatter{})
-		e.Use(servermiddleware.HookWithConfig(servermiddleware.Config{}))
+		e.Use(echologrus.HookWithConfig(echologrus.Config{}))
 	}
 }
 

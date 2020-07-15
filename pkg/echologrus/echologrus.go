@@ -1,4 +1,6 @@
-package middleware
+package echologrus
+
+// OG: https://github.com/bakatz/echo-logrusmiddleware
 
 import (
 	"bufio"
