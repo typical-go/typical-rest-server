@@ -6,9 +6,9 @@ In `Repository` layer
 ```go
 func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
     // Use dbtxn for potential transaction usecase
-	txn, err := dbtxn.Use(ctx, r.DB)
-	if err != nil {
-		return -1, err
+    txn, err := dbtxn.Use(ctx, r.DB)
+    if err != nil {
+        return -1, err
     }
     
     // Get the transaction object 
@@ -16,13 +16,13 @@ func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
 
     // result, err := ...
 
-	if err != nil {
+    if err != nil {
         // Set the error when failed
-		txn.SetError(err)
-		return -1, err
-	}
+        txn.SetError(err)
+        return -1, err
+    }
 
-	return result.RowsAffected()
+    return result.RowsAffected()
 }
 ```
 
