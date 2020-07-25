@@ -7,20 +7,22 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// MySQLWithEnv same with MySQL but with env parameter
-type MySQLWithEnv struct {
-	Version     string
-	Name        string
-	Image       string
-	UserEnv     string
-	PasswordEnv string
-	PortEnv     string
-}
+type (
+	// MySQLWithEnv same with MySQL but with env parameter
+	MySQLWithEnv struct {
+		Version     string
+		Name        string
+		Image       string
+		UserEnv     string
+		PasswordEnv string
+		PortEnv     string
+	}
+)
 
 var _ (typdocker.Composer) = (*MySQLWithEnv)(nil)
 
-// Compose for docker-compose
-func (m *MySQLWithEnv) Compose() (*typdocker.Recipe, error) {
+// ComposeV3 for docker-compose
+func (m *MySQLWithEnv) ComposeV3() (*typdocker.Recipe, error) {
 	if m.PasswordEnv == "" {
 		return nil, errors.New("mysql-with-env: missing PasswordEnv")
 	}
@@ -38,5 +40,5 @@ func (m *MySQLWithEnv) Compose() (*typdocker.Recipe, error) {
 		Password: os.Getenv(m.PasswordEnv),
 		Port:     os.Getenv(m.PortEnv),
 	}
-	return mysql.Compose()
+	return mysql.ComposeV3()
 }

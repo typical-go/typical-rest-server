@@ -17,7 +17,7 @@ type Utility struct {
 	PasswordEnv string
 }
 
-var _ typgo.Utility = (*Utility)(nil)
+var _ typgo.Cmd = (*Utility)(nil)
 
 func (u *Utility) validate() string {
 	if u.Name == "" {
@@ -35,30 +35,27 @@ func (u *Utility) validate() string {
 	return ""
 }
 
-// Commands for utility
-func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
-	if errMsg := u.validate(); errMsg != "" {
-		return nil, fmt.Errorf("redis-cmd: %s", errMsg)
-	}
-
-	return []*cli.Command{
-		{
-			Name:  u.Name,
-			Usage: "Redis utility",
-			Subcommands: []*cli.Command{
-				{
-					Name:    "console",
-					Aliases: []string{"c"},
-					Action: c.ActionFn("REDIS", func(c *typgo.Context) error {
-						return u.console(c)
-					}),
-				},
+// Command for utility
+func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
+	return &cli.Command{
+		Name:  u.Name,
+		Usage: "Redis utility",
+		Subcommands: []*cli.Command{
+			{
+				Name:    "console",
+				Aliases: []string{"c"},
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.console(c)
+				}),
 			},
 		},
-	}, nil
+	}
 }
 
 func (u *Utility) console(c *typgo.Context) error {
+	if errMsg := u.validate(); errMsg != "" {
+		return fmt.Errorf("redis-cmd: %s", errMsg)
+	}
 	return c.Execute(&execkit.Command{
 		Name: "redis-cli",
 		Args: []string{

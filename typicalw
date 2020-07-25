@@ -6,11 +6,12 @@ TYPTMP=.typical-tmp
 TYPGO=$TYPTMP/bin/typical-go
 
 if ! [ -s $TYPGO ]; then
-    go build -o $TYPGO github.com/typical-go/typical-go/cmd/typical-go
+	echo "Build typical-go"
+	go build -o $TYPGO github.com/typical-go/typical-go
 fi
 
-$TYPGO wrap \
-    -typical-tmp=$TYPTMP \
-    -project-pkg=github.com/typical-go/typical-rest-server \
-
-$TYPTMP/bin/build-tool $@
+$TYPGO run \
+	-src="tools/typical-build" \
+	-project-pkg="github.com/typical-go/typical-rest-server" \
+	-typical-tmp=$TYPTMP \
+	$@

@@ -6,22 +6,21 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// Redis docker recipe
-type Redis struct {
-	Version  string
-	Name     string
-	Image    string
-	Password string
-	Port     string
-}
+type (
+	// Redis docker recipe
+	Redis struct {
+		Version  string
+		Name     string
+		Image    string
+		Password string
+		Port     string
+	}
+)
 
 var _ typdocker.Composer = (*Redis)(nil)
 
-// Compose to return redis recipe
-func (r *Redis) Compose() (*typdocker.Recipe, error) {
-	if r.Version == "" {
-		r.Version = typdocker.V3
-	}
+// ComposeV3 to return redis recipe
+func (r *Redis) ComposeV3() (*typdocker.Recipe, error) {
 	if r.Image == "" {
 		r.Image = "redis:4.0.5-alpine"
 	}

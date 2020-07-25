@@ -7,19 +7,21 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// RedisWithEnv same with redis with env parameter
-type RedisWithEnv struct {
-	Version     string
-	Name        string
-	Image       string
-	PasswordEnv string
-	PortEnv     string
-}
+type (
+	// RedisWithEnv same with redis with env parameter
+	RedisWithEnv struct {
+		Version     string
+		Name        string
+		Image       string
+		PasswordEnv string
+		PortEnv     string
+	}
+)
 
 var _ (typdocker.Composer) = (*RedisWithEnv)(nil)
 
-// Compose for docker-compose
-func (r *RedisWithEnv) Compose() (*typdocker.Recipe, error) {
+// ComposeV3 for docker-compose
+func (r *RedisWithEnv) ComposeV3() (*typdocker.Recipe, error) {
 	if r.PasswordEnv == "" {
 		return nil, errors.New("redis-with-env: missing PasswordEnv")
 	}
@@ -33,5 +35,5 @@ func (r *RedisWithEnv) Compose() (*typdocker.Recipe, error) {
 		Password: os.Getenv(r.PasswordEnv),
 		Port:     os.Getenv(r.PortEnv),
 	}
-	return redis.Compose()
+	return redis.ComposeV3()
 }

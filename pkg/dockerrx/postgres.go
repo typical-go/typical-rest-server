@@ -4,23 +4,22 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// Postgres docker recipe
-type Postgres struct {
-	Version  string
-	Name     string
-	Image    string
-	User     string
-	Password string
-	Port     string
-}
+type (
+	// Postgres docker recipe
+	Postgres struct {
+		Version  string
+		Name     string
+		Image    string
+		User     string
+		Password string
+		Port     string
+	}
+)
 
 var _ typdocker.Composer = (*Postgres)(nil)
 
-// Compose to return the recipe
-func (p *Postgres) Compose() (*typdocker.Recipe, error) {
-	if p.Version == "" {
-		p.Version = typdocker.V3
-	}
+// ComposeV3 to return the recipe
+func (p *Postgres) ComposeV3() (*typdocker.Recipe, error) {
 	if p.Name == "" {
 		p.Name = "pg"
 	}

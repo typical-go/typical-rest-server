@@ -7,20 +7,22 @@ import (
 	"github.com/typical-go/typical-go/pkg/typdocker"
 )
 
-// PostgresWithEnv same with postgres with env parameter
-type PostgresWithEnv struct {
-	Version     string
-	Name        string
-	Image       string
-	UserEnv     string
-	PasswordEnv string
-	PortEnv     string
-}
+type (
+	// PostgresWithEnv same with postgres with env parameter
+	PostgresWithEnv struct {
+		Version     string
+		Name        string
+		Image       string
+		UserEnv     string
+		PasswordEnv string
+		PortEnv     string
+	}
+)
 
 var _ (typdocker.Composer) = (*PostgresWithEnv)(nil)
 
-// Compose for docker-compose
-func (p *PostgresWithEnv) Compose() (*typdocker.Recipe, error) {
+// ComposeV3 for docker-compose
+func (p *PostgresWithEnv) ComposeV3() (*typdocker.Recipe, error) {
 	if p.PasswordEnv == "" {
 		return nil, errors.New("pg-with-env: missing PasswordEnv")
 	}
@@ -38,5 +40,5 @@ func (p *PostgresWithEnv) Compose() (*typdocker.Recipe, error) {
 		Password: os.Getenv(p.PasswordEnv),
 		Port:     os.Getenv(p.PortEnv),
 	}
-	return pg.Compose()
+	return pg.ComposeV3()
 }

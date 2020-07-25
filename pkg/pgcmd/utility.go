@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/typical-go/typical-go/pkg/buildkit"
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/urfave/cli/v2"
@@ -27,7 +26,78 @@ type Utility struct {
 	SeedSrc      string
 }
 
-var _ typgo.Utility = (*Utility)(nil)
+var _ typgo.Cmd = (*Utility)(nil)
+
+// Command list
+func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
+	return &cli.Command{
+		Name:  u.Name,
+		Usage: "Postgres utility",
+		Subcommands: []*cli.Command{
+			{
+				Name:  "create",
+				Usage: "Create database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.execute(c, "create")
+				}),
+			},
+			{
+				Name:  "drop",
+				Usage: "Drop database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.execute(c, "drop")
+				}),
+			},
+			{
+				Name:  "migrate",
+				Usage: "Migrate database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.execute(c, "migrate")
+				}),
+			},
+			{
+				Name:  "rollback",
+				Usage: "Rollback database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.execute(c, "rollback")
+				}),
+			},
+			{
+				Name:  "seed",
+				Usage: "Seed database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.execute(c, "rollback")
+				}),
+			},
+			{
+				Name:  "reset",
+				Usage: "Reset database",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					if err := u.execute(c, "drop"); err != nil {
+						return err
+					}
+					if err := u.execute(c, "create"); err != nil {
+						return err
+					}
+					if err := u.execute(c, "migrate"); err != nil {
+						return err
+					}
+					if err := u.execute(c, "seed"); err != nil {
+						return err
+					}
+					return nil
+				}),
+			},
+			{
+				Name:  "console",
+				Usage: "Postgres console",
+				Action: sys.ActionFn(func(c *typgo.Context) error {
+					return u.console(c)
+				}),
+			},
+		},
+	}
+}
 
 func (u *Utility) validate() string {
 	if u.Name == "" {
@@ -54,88 +124,14 @@ func (u *Utility) validate() string {
 	return ""
 }
 
-// Commands list
-func (u *Utility) Commands(c *typgo.BuildCli) ([]*cli.Command, error) {
-	if errMsg := u.validate(); errMsg != "" {
-		return nil, fmt.Errorf("pg-cmd: %s", errMsg)
-	}
-
-	return []*cli.Command{
-		{
-			Name:  u.Name,
-			Usage: "Postgres utility",
-			Subcommands: []*cli.Command{
-				{
-					Name:  "create",
-					Usage: "Create database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.execute(c, "create")
-					}),
-				},
-				{
-					Name:  "drop",
-					Usage: "Drop database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.execute(c, "drop")
-					}),
-				},
-				{
-					Name:  "migrate",
-					Usage: "Migrate database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.execute(c, "migrate")
-					}),
-				},
-				{
-					Name:  "rollback",
-					Usage: "Rollback database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.execute(c, "rollback")
-					}),
-				},
-				{
-					Name:  "seed",
-					Usage: "Seed database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.execute(c, "rollback")
-					}),
-				},
-				{
-					Name:  "reset",
-					Usage: "Reset database",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						if err := u.execute(c, "drop"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "create"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "migrate"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "seed"); err != nil {
-							return err
-						}
-						return nil
-					}),
-				},
-				{
-					Name:  "console",
-					Usage: "Postgres console",
-					Action: c.ActionFn("PG", func(c *typgo.Context) error {
-						return u.console(c)
-					}),
-				},
-			},
-		},
-	}, nil
-}
-
 func (u *Utility) execute(c *typgo.Context, action string) error {
+	if errMsg := u.validate(); errMsg != "" {
+		return fmt.Errorf("pgcmd: %s", errMsg)
+	}
 	if _, err := os.Stat(bin); os.IsNotExist(err) {
-		if err := c.Execute(&buildkit.GoBuild{
-			Out:    bin,
-			Source: src,
+		if err := c.Execute(&execkit.GoBuild{
+			Output:      bin,
+			MainPackage: src,
 		}); err != nil {
 			return err
 		}

@@ -2,23 +2,22 @@ package dockerrx
 
 import "github.com/typical-go/typical-go/pkg/typdocker"
 
-// MySQL docker recipe
-type MySQL struct {
-	Version  string
-	Name     string
-	Image    string
-	User     string
-	Password string
-	Port     string
-}
+type (
+	// MySQL docker recipe
+	MySQL struct {
+		Version  string
+		Name     string
+		Image    string
+		User     string
+		Password string
+		Port     string
+	}
+)
 
 var _ typdocker.Composer = (*MySQL)(nil)
 
-// Compose to return the recipe
-func (m *MySQL) Compose() (*typdocker.Recipe, error) {
-	if m.Version == "" {
-		m.Version = typdocker.V3
-	}
+// ComposeV3 to return the recipe
+func (m *MySQL) ComposeV3() (*typdocker.Recipe, error) {
 	if m.Name == "" {
 		m.Name = "mysql"
 	}
