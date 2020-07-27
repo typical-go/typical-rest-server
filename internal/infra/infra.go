@@ -11,17 +11,15 @@ type (
 	// Configs of infra
 	Configs struct {
 		dig.In
-		Pg    *Pg
-		Redis *Redis
+		Pg    *PostgresCfg
+		Redis *RedisCfg
 	}
-
 	// Infras is list of infra to be provide in dependency-injection
 	Infras struct {
 		dig.Out
 		Pg    *sql.DB
 		Redis *redis.Client
 	}
-
 	// Params of infra
 	Params struct {
 		dig.In
@@ -37,16 +35,11 @@ func Connect(c Configs) (infras Infras, err error) {
 	if err != nil {
 		return
 	}
-
 	redis, err := c.Redis.connect()
 	if err != nil {
 		return
 	}
-
-	return Infras{
-		Pg:    pg,
-		Redis: redis,
-	}, nil
+	return Infras{Pg: pg, Redis: redis}, nil
 }
 
 // Disconnect from postgres server

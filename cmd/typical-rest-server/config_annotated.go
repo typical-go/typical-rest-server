@@ -12,8 +12,8 @@ func init() {
 	typapp.AppendCtor(
 		&typapp.Constructor{
 			Name: "",
-			Fn: func() (*infra.App, error) {
-				var cfg infra.App
+			Fn: func() (*infra.AppCfg, error) {
+				var cfg infra.AppCfg
 				if err := envconfig.Process("APP", &cfg); err != nil {
 					return nil, err
 				}
@@ -22,8 +22,8 @@ func init() {
 		},
 		&typapp.Constructor{
 			Name: "",
-			Fn: func() (*infra.Redis, error) {
-				var cfg infra.Redis
+			Fn: func() (*infra.RedisCfg, error) {
+				var cfg infra.RedisCfg
 				if err := envconfig.Process("REDIS", &cfg); err != nil {
 					return nil, err
 				}
@@ -32,8 +32,8 @@ func init() {
 		},
 		&typapp.Constructor{
 			Name: "",
-			Fn: func() (*infra.Pg, error) {
-				var cfg infra.Pg
+			Fn: func() (*infra.PostgresCfg, error) {
+				var cfg infra.PostgresCfg
 				if err := envconfig.Process("PG", &cfg); err != nil {
 					return nil, err
 				}

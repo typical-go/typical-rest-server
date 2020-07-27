@@ -11,22 +11,22 @@ import (
 )
 
 type (
-	// App is application configuration
+	// AppCfg is application configuration
 	// @cfg (prefix:"APP")
-	App struct {
+	AppCfg struct {
 		Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
 		Debug   bool   `default:"true"`
 	}
-	// Redis Configuration
+	// RedisCfg Configuration
 	// @cfg (prefix:"REDIS")
-	Redis struct {
+	RedisCfg struct {
 		Host     string `required:"true" default:"localhost"`
 		Port     string `required:"true" default:"6379"`
 		Password string `default:"redispass"`
 	}
-	// Pg is postgres configuration
+	// PostgresCfg is postgres configuration
 	// @cfg (prefix:"PG")
-	Pg struct {
+	PostgresCfg struct {
 		DBName   string `required:"true" default:"MyLibrary"`
 		User     string `required:"true" default:"postgres"`
 		Password string `required:"true" default:"pgpass"`
@@ -36,10 +36,10 @@ type (
 )
 
 //
-// Redis
+// RedisCfg
 //
 
-func (r *Redis) connect() (*redis.Client, error) {
+func (r *RedisCfg) connect() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,
@@ -53,10 +53,10 @@ func (r *Redis) connect() (*redis.Client, error) {
 }
 
 //
-// Pg
+// PostgresCfg
 //
 
-func (p *Pg) connect() (*sql.DB, error) {
+func (p *PostgresCfg) connect() (*sql.DB, error) {
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		p.User, p.Password, p.Host, p.Port, p.DBName)
 	db, err := sql.Open("postgres", conn)

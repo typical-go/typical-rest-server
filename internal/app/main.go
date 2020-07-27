@@ -20,7 +20,7 @@ import (
 
 type app struct {
 	dig.In
-	*infra.App
+	*infra.AppCfg
 	Server   server.Router
 	Profiler profiler.Router
 }
