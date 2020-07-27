@@ -44,9 +44,7 @@ func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
 			{
 				Name:    "console",
 				Aliases: []string{"c"},
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.console(c)
-				}),
+				Action:  sys.ActionFn(typgo.NewAction(u.console)),
 			},
 		},
 	}

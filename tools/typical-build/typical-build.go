@@ -13,7 +13,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	Name:    "typical-rest-server",
-	Version: "0.8.34",
+	Version: "0.8.35",
 	Layouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
@@ -23,19 +23,17 @@ var descriptor = typgo.Descriptor{
 		},
 
 		&typgo.CompileCmd{
-			Action: typgo.Actions{
-				&typannot.Annotators{
-					&typapp.CtorAnnotation{},
-					&typapp.DtorAnnotation{},
-					&typapp.CfgAnnotation{EnvFile: true},
-				},
-				&typgo.StdCompile{},
+			Before: &typannot.Annotators{
+				&typapp.CtorAnnotation{},
+				&typapp.DtorAnnotation{},
+				&typapp.CfgAnnotation{DotEnv: true},
 			},
+			Action: &typgo.StdCompile{},
 		},
 
 		&typgo.RunCmd{
-			Precmds: []string{"compile"},
-			Action:  &typgo.StdRun{},
+			Before: typgo.BuildSysRuns{"compile"},
+			Action: &typgo.StdRun{},
 		},
 
 		&typgo.CleanCmd{
@@ -72,7 +70,7 @@ var descriptor = typgo.Descriptor{
 		},
 
 		&typrls.ReleaseCmd{
-			Precmds:    []string{"test", "compile"},
+			Before:     typgo.BuildSysRuns{"test", "compile"},
 			Validation: typrls.DefaultValidation,
 			Summary:    typrls.DefaultSummary,
 			Releaser:   &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},

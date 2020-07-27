@@ -35,65 +35,59 @@ func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
 		Usage: "Postgres utility",
 		Subcommands: []*cli.Command{
 			{
-				Name:  "create",
-				Usage: "Create database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.execute(c, "create")
-				}),
+				Name:   "create",
+				Usage:  "Create database",
+				Action: u.createAction(sys, "create"),
 			},
 			{
-				Name:  "drop",
-				Usage: "Drop database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.execute(c, "drop")
-				}),
+				Name:   "drop",
+				Usage:  "Drop database",
+				Action: u.createAction(sys, "drop"),
 			},
 			{
-				Name:  "migrate",
-				Usage: "Migrate database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.execute(c, "migrate")
-				}),
+				Name:   "migrate",
+				Usage:  "Migrate database",
+				Action: u.createAction(sys, "migrate"),
 			},
 			{
-				Name:  "rollback",
-				Usage: "Rollback database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.execute(c, "rollback")
-				}),
+				Name:   "rollback",
+				Usage:  "Rollback database",
+				Action: u.createAction(sys, "rollback"),
 			},
 			{
-				Name:  "seed",
-				Usage: "Seed database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.execute(c, "rollback")
-				}),
+				Name:   "seed",
+				Usage:  "Seed database",
+				Action: u.createAction(sys, "seed"),
 			},
 			{
 				Name:  "reset",
 				Usage: "Reset database",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					if err := u.execute(c, "drop"); err != nil {
-						return err
-					}
-					if err := u.execute(c, "create"); err != nil {
-						return err
-					}
-					if err := u.execute(c, "migrate"); err != nil {
-						return err
-					}
-					if err := u.execute(c, "seed"); err != nil {
-						return err
-					}
-					return nil
-				}),
+				Action: sys.ActionFn(typgo.NewAction(
+					func(c *typgo.Context) error {
+						if err := u.execute(c, "drop"); err != nil {
+							return err
+						}
+						if err := u.execute(c, "create"); err != nil {
+							return err
+						}
+						if err := u.execute(c, "migrate"); err != nil {
+							return err
+						}
+						if err := u.execute(c, "seed"); err != nil {
+							return err
+						}
+						return nil
+					},
+				)),
 			},
 			{
 				Name:  "console",
 				Usage: "Postgres console",
-				Action: sys.ActionFn(func(c *typgo.Context) error {
-					return u.console(c)
-				}),
+				Action: sys.ActionFn(typgo.NewAction(
+					func(c *typgo.Context) error {
+						return u.console(c)
+					},
+				)),
 			},
 		},
 	}
@@ -122,6 +116,13 @@ func (u *Utility) validate() string {
 		return "missing SeedSrc"
 	}
 	return ""
+}
+
+func (u *Utility) createAction(sys *typgo.BuildSys, op string) cli.ActionFunc {
+	action := typgo.NewAction(func(c *typgo.Context) error {
+		return u.execute(c, op)
+	})
+	return sys.ActionFn(action)
 }
 
 func (u *Utility) execute(c *typgo.Context, action string) error {
