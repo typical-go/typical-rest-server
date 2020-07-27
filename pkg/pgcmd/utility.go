@@ -28,71 +28,6 @@ type Utility struct {
 
 var _ typgo.Cmd = (*Utility)(nil)
 
-// Command list
-func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
-	return &cli.Command{
-		Name:  u.Name,
-		Usage: "Postgres utility",
-		Subcommands: []*cli.Command{
-			{
-				Name:   "create",
-				Usage:  "Create database",
-				Action: u.createAction(sys, "create"),
-			},
-			{
-				Name:   "drop",
-				Usage:  "Drop database",
-				Action: u.createAction(sys, "drop"),
-			},
-			{
-				Name:   "migrate",
-				Usage:  "Migrate database",
-				Action: u.createAction(sys, "migrate"),
-			},
-			{
-				Name:   "rollback",
-				Usage:  "Rollback database",
-				Action: u.createAction(sys, "rollback"),
-			},
-			{
-				Name:   "seed",
-				Usage:  "Seed database",
-				Action: u.createAction(sys, "seed"),
-			},
-			{
-				Name:  "reset",
-				Usage: "Reset database",
-				Action: sys.ActionFn(typgo.NewAction(
-					func(c *typgo.Context) error {
-						if err := u.execute(c, "drop"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "create"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "migrate"); err != nil {
-							return err
-						}
-						if err := u.execute(c, "seed"); err != nil {
-							return err
-						}
-						return nil
-					},
-				)),
-			},
-			{
-				Name:  "console",
-				Usage: "Postgres console",
-				Action: sys.ActionFn(typgo.NewAction(
-					func(c *typgo.Context) error {
-						return u.console(c)
-					},
-				)),
-			},
-		},
-	}
-}
-
 func (u *Utility) validate() string {
 	if u.Name == "" {
 		return "missing name"
@@ -118,44 +53,86 @@ func (u *Utility) validate() string {
 	return ""
 }
 
-func (u *Utility) createAction(sys *typgo.BuildSys, op string) cli.ActionFunc {
-	action := typgo.NewAction(func(c *typgo.Context) error {
-		return u.execute(c, op)
-	})
-	return sys.ActionFn(action)
-}
-
-func (u *Utility) execute(c *typgo.Context, action string) error {
-	if errMsg := u.validate(); errMsg != "" {
-		return fmt.Errorf("pgcmd: %s", errMsg)
-	}
-	if _, err := os.Stat(bin); os.IsNotExist(err) {
-		if err := c.Execute(&execkit.GoBuild{
-			Output:      bin,
-			MainPackage: src,
-		}); err != nil {
-			return err
-		}
-	}
-	return u.pgTool(c, action)
-}
-
-func (u *Utility) pgTool(c *typgo.Context, action string) error {
-	return c.Execute(&execkit.Command{
-		Name: bin,
-		Args: []string{
-			action,
-			"-host=" + os.Getenv(u.HostEnv),
-			"-port=" + os.Getenv(u.PortEnv),
-			"-user=" + os.Getenv(u.UserEnv),
-			"-password=" + os.Getenv(u.PasswordEnv),
-			"-db-name=" + os.Getenv(u.DBNameEnv),
-			"-migration-src=" + u.MigrationSrc,
-			"-seed-src=" + u.SeedSrc,
+// Command postgres
+func (u *Utility) Command(sys *typgo.BuildSys) *cli.Command {
+	return &cli.Command{
+		Name:  u.Name,
+		Usage: "Postgres utility",
+		Subcommands: []*cli.Command{
+			{
+				Name:   "create",
+				Usage:  "Create database",
+				Action: sys.ActionFn(u.createAction("create")),
+			},
+			{
+				Name:   "drop",
+				Usage:  "Drop database",
+				Action: sys.ActionFn(u.createAction("drop")),
+			},
+			{
+				Name:   "migrate",
+				Usage:  "Migrate database",
+				Action: sys.ActionFn(u.createAction("migrate")),
+			},
+			{
+				Name:   "rollback",
+				Usage:  "Rollback database",
+				Action: sys.ActionFn(u.createAction("rollback")),
+			},
+			{
+				Name:   "seed",
+				Usage:  "Seed database",
+				Action: sys.ActionFn(u.createAction("seed")),
+			},
+			{
+				Name:  "reset",
+				Usage: "Reset database",
+				Action: sys.ActionFn(typgo.Actions{
+					u.createAction("drop"),
+					u.createAction("create"),
+					u.createAction("migrate"),
+					u.createAction("seed"),
+				}),
+			},
+			{
+				Name:   "console",
+				Usage:  "Postgres console",
+				Action: sys.ActionFn(typgo.NewAction(u.console)),
+			},
 		},
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-		Stdin:  os.Stdin,
+	}
+}
+
+func (u *Utility) createAction(op string) typgo.Action {
+	return typgo.NewAction(func(c *typgo.Context) error {
+		if errMsg := u.validate(); errMsg != "" {
+			return fmt.Errorf("pg-cmd: %s", errMsg)
+		}
+
+		if _, err := os.Stat(bin); os.IsNotExist(err) {
+			if err := c.Execute(&execkit.GoBuild{
+				Output:      bin,
+				MainPackage: src,
+			}); err != nil {
+				return err
+			}
+		}
+		return c.Execute(&execkit.Command{
+			Name: bin,
+			Args: []string{
+				op,
+				"-host=" + os.Getenv(u.HostEnv),
+				"-port=" + os.Getenv(u.PortEnv),
+				"-user=" + os.Getenv(u.UserEnv),
+				"-password=" + os.Getenv(u.PasswordEnv),
+				"-db-name=" + os.Getenv(u.DBNameEnv),
+				"-migration-src=" + u.MigrationSrc,
+				"-seed-src=" + u.SeedSrc,
+			},
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			Stdin:  os.Stdin,
+		})
 	})
 }
 
