@@ -8,21 +8,9 @@ import (
 )
 
 type (
-	// Configs of infra
-	Configs struct {
-		dig.In
-		Pg    *PostgresCfg
-		Redis *RedisCfg
-	}
 	// Infras is list of infra to be provide in dependency-injection
 	Infras struct {
 		dig.Out
-		Pg    *sql.DB
-		Redis *redis.Client
-	}
-	// Params of infra
-	Params struct {
-		dig.In
 		Pg    *sql.DB
 		Redis *redis.Client
 	}
@@ -30,12 +18,12 @@ type (
 
 // Connect to infra
 // @ctor
-func Connect(c Configs) (infras Infras, err error) {
-	pg, err := c.Pg.connect()
+func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infras, err error) {
+	pg, err := pgCfg.connect()
 	if err != nil {
 		return
 	}
-	redis, err := c.Redis.connect()
+	redis, err := redisCfg.connect()
 	if err != nil {
 		return
 	}
@@ -44,11 +32,11 @@ func Connect(c Configs) (infras Infras, err error) {
 
 // Disconnect from postgres server
 // @dtor
-func Disconnect(p Params) error {
-	if err := p.Pg.Close(); err != nil {
+func Disconnect(pg *sql.DB, redis *redis.Client) error {
+	if err := pg.Close(); err != nil {
 		return err
 	}
-	if err := p.Redis.Close(); err != nil {
+	if err := redis.Close(); err != nil {
 		return err
 	}
 	return nil
