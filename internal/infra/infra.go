@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// Infras is list of infra to be provide in dependency-injection
-	Infras struct {
+	// Infra infrastructure for the project
+	Infra struct {
 		dig.Out
 		Pg    *sql.DB
 		Redis *redis.Client
@@ -18,7 +18,7 @@ type (
 
 // Connect to infra
 // @ctor
-func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infras, err error) {
+func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infra, err error) {
 	pg, err := pgCfg.connect()
 	if err != nil {
 		return
@@ -27,7 +27,7 @@ func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infras, err error) 
 	if err != nil {
 		return
 	}
-	return Infras{Pg: pg, Redis: redis}, nil
+	return Infra{Pg: pg, Redis: redis}, nil
 }
 
 // Disconnect from postgres server
