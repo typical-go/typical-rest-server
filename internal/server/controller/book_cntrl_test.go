@@ -17,8 +17,7 @@ import (
 
 type (
 	bookCntrlFn func(*service_mock.MockBookSvc)
-
-	testCase struct {
+	testCase    struct {
 		testName string
 		echotest.TestCase
 		bookCntrlFn bookCntrlFn
@@ -162,7 +161,7 @@ func TestBookController_Update(t *testing.T) {
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &repository.Book{Title: "some-title", Author: "some-author"}).
+					Update(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -180,7 +179,7 @@ func TestBookController_Update(t *testing.T) {
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &repository.Book{Title: "some-title", Author: "some-author"}).
+					Update(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(&repository.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
 			},
 		},
@@ -210,14 +209,7 @@ func TestBookController_Patch(t *testing.T) {
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Patch(
-						gomock.Any(),
-						"1",
-						&repository.Book{
-							Title:  "some-title",
-							Author: "some-author",
-						},
-					).
+					Patch(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -235,7 +227,7 @@ func TestBookController_Patch(t *testing.T) {
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Patch(gomock.Any(), "1", &repository.Book{Title: "some-title", Author: "some-author"}).
+					Patch(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(&repository.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
 			},
 		},
@@ -312,7 +304,7 @@ func TestBookController_Create(t *testing.T) {
 					Body:   `invalid}`,
 					Header: echotest.HeaderForJSON(),
 				},
-				ExpectedErr: `code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value`,
+				ExpectedErr: "code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value, internal=invalid character 'i' looking for beginning of value",
 			},
 		},
 		{
@@ -337,20 +329,14 @@ func TestBookController_Create(t *testing.T) {
 					Body:   `{"author":"some-author", "title":"some-title"}`,
 					Header: echotest.HeaderForJSON(),
 				},
-				ExpectedBody: "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
-				ExpectedCode: http.StatusCreated,
-				ExpectedHeader: map[string]string{
-					"Location": "/books/999",
-				},
+				ExpectedBody:   "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+				ExpectedCode:   http.StatusCreated,
+				ExpectedHeader: map[string]string{"Location": "/books/999"},
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
 					Create(gomock.Any(), gomock.Any()).
-					Return(&repository.Book{
-						ID:     999,
-						Author: "some-author",
-						Title:  "some-title",
-					}, nil)
+					Return(&repository.Book{ID: 999, Author: "some-author", Title: "some-title"}, nil)
 			},
 		},
 	}
