@@ -6,10 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var (
-	// HealthStatusOK is health status ok
-	HealthStatusOK = "OK"
-)
+// HealthStatusOK is health status ok
+var HealthStatusOK = "OK"
 
 type (
 	// HealthCheck to handle health-check
