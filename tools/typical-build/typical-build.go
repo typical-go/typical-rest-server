@@ -8,7 +8,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
-	"github.com/typical-go/typical-rest-server/pkg/pgcmd"
+	pg "github.com/typical-go/typical-rest-server/tools/pg-tool/pkg/util"
 )
 
 var descriptor = typgo.Descriptor{
@@ -18,10 +18,12 @@ var descriptor = typgo.Descriptor{
 
 	Cmds: []typgo.Cmd{
 
+		// test
 		&typgo.TestCmd{
 			Action: &typgo.StdTest{},
 		},
 
+		// compile
 		&typgo.CompileCmd{
 			Before: &typannot.Annotators{
 				&typapp.CtorAnnotation{},
@@ -31,17 +33,21 @@ var descriptor = typgo.Descriptor{
 			Action: &typgo.StdCompile{},
 		},
 
+		// run
 		&typgo.RunCmd{
 			Before: typgo.BuildSysRuns{"compile"},
 			Action: &typgo.StdRun{},
 		},
 
+		// clean
 		&typgo.CleanCmd{
 			Action: &typgo.StdClean{},
 		},
 
+		// mock
 		&typmock.MockCmd{},
 
+		// docker
 		&typdocker.DockerCmd{
 			Composers: []typdocker.Composer{
 				&dockerrx.PostgresWithEnv{
@@ -58,7 +64,8 @@ var descriptor = typgo.Descriptor{
 			},
 		},
 
-		&pgcmd.Utility{
+		// pg
+		&pg.PSQLCmd{
 			Name:         "pg",
 			HostEnv:      "PG_HOST",
 			PortEnv:      "PG_PORT",
@@ -69,6 +76,7 @@ var descriptor = typgo.Descriptor{
 			SeedSrc:      "databases/pg/seed",
 		},
 
+		// release
 		&typrls.ReleaseCmd{
 			Before:     typgo.BuildSysRuns{"test", "compile"},
 			Validation: typrls.DefaultValidation,
