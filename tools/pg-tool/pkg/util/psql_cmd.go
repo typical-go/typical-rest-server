@@ -11,7 +11,7 @@ import (
 
 const (
 	bin = ".typical-tmp/bin/pg-tool"
-	src = "github.com/tiket/TIX-HOTSTONE-SEO-BE/tools/pg-tool"
+	src = "github.com/typical-go/typical-rest-server/tools/pg-tool"
 )
 
 // PSQLCmd for postgres
