@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 
-	"github.com/typical-go/typical-rest-server/pkg/errvalid"
 	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
@@ -42,7 +42,7 @@ func NewBookSvc(impl BookSvcImpl) BookSvc {
 // Create Book
 func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (*repository.Book, error) {
 	if err := validator.New().Struct(book); err != nil {
-		return nil, errvalid.Wrap(err)
+		return nil, typrest.NewValidErr(err.Error())
 	}
 	id, err := b.BookRepo.Create(ctx, book)
 	if err != nil {
@@ -61,7 +61,7 @@ func (b *BookSvcImpl) Retrieve(ctx context.Context) ([]*repository.Book, error) 
 func (b *BookSvcImpl) RetrieveOne(ctx context.Context, paramID string) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return nil, errvalid.New("paramID is missing")
+		return nil, typrest.NewValidErr("paramID is missing")
 	}
 
 	books, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
@@ -89,7 +89,7 @@ func (b *BookSvcImpl) retrieveOne(ctx context.Context, id int64) (*repository.Bo
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return errvalid.New("paramID is missing")
+		return typrest.NewValidErr("paramID is missing")
 	}
 
 	_, err := b.BookRepo.Delete(ctx, dbkit.Equal(repository.BookTable.ID, id))
@@ -100,12 +100,12 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *repository.Book) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return nil, errvalid.New("paramID is missing")
+		return nil, typrest.NewValidErr("paramID is missing")
 	}
 
 	err := validator.New().Struct(book)
 	if err != nil {
-		return nil, errvalid.Wrap(err)
+		return nil, typrest.NewValidErr(err.Error())
 	}
 
 	affectedRow, err := b.BookRepo.Update(ctx, book, dbkit.Equal(repository.BookTable.ID, id))
@@ -123,7 +123,7 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repository.Book) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
-		return nil, errvalid.New("paramID is missing")
+		return nil, typrest.NewValidErr("paramID is missing")
 	}
 
 	affectedRow, err := b.BookRepo.Patch(ctx, book, dbkit.Equal(repository.BookTable.ID, id))

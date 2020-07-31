@@ -38,7 +38,7 @@ func TestBookSvc_Create(t *testing.T) {
 		{
 			testName:    "validation error",
 			book:        &repository.Book{},
-			expectedErr: "Validation: Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
 		},
 		{
 			testName:    "create error",
@@ -106,7 +106,7 @@ func TestBookSvc_RetrieveOne(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: "Validation: paramID is missing",
+			expectedErr: "paramID is missing",
 		},
 		{
 			paramID: "1",
@@ -184,7 +184,7 @@ func TestBookSvc_Delete(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: `Validation: paramID is missing`,
+			expectedErr: `paramID is missing`,
 		},
 		{
 			paramID:     "1",
@@ -240,18 +240,18 @@ func TestBookSvc_Update(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: `Validation: paramID is missing`,
+			expectedErr: `paramID is missing`,
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: `Validation: paramID is missing`,
+			expectedErr: `paramID is missing`,
 		},
 		{
 			testName:    "bad request",
 			paramID:     "1",
 			book:        &repository.Book{},
-			expectedErr: "Validation: Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
 		},
 		{
 			testName:    "update error",
@@ -332,12 +332,12 @@ func TestBookSvc_Patch(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: "Validation: paramID is missing",
+			expectedErr: "paramID is missing",
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: "Validation: paramID is missing",
+			expectedErr: "paramID is missing",
 		},
 		{
 			testName:    "patch error",

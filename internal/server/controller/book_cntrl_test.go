@@ -12,7 +12,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
-	"github.com/typical-go/typical-rest-server/pkg/errvalid"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
 type (
@@ -77,7 +77,7 @@ func TestBookController_RetrieveOne(t *testing.T) {
 				ExpectedErr: "code=422, message=some-validation",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().RetrieveOne(gomock.Any(), "2").Return(nil, errvalid.New("some-validation"))
+				svc.EXPECT().RetrieveOne(gomock.Any(), "2").Return(nil, typrest.NewValidErr("some-validation"))
 			},
 		},
 		{
@@ -280,7 +280,7 @@ func TestBookController_Delete(t *testing.T) {
 				ExpectedErr: "code=422, message=some-validation",
 			},
 			bookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Delete(gomock.Any(), "1").Return(errvalid.New("some-validation"))
+				svc.EXPECT().Delete(gomock.Any(), "1").Return(typrest.NewValidErr("some-validation"))
 			},
 		},
 	}
