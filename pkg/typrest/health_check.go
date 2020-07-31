@@ -2,8 +2,6 @@ package typrest
 
 import (
 	"net/http"
-
-	"github.com/labstack/echo/v4"
 )
 
 // HealthStatusOK is health status ok
@@ -28,10 +26,4 @@ func (h HealthCheck) Result() (status int, message map[string]string) {
 		}
 	}
 	return
-}
-
-// JSON is echo handler to generate health check result
-func (h HealthCheck) JSON(ec echo.Context) error {
-	status, message := h.Result()
-	return ec.JSON(status, message)
 }
