@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
 // Main function to run server
@@ -16,10 +16,10 @@ func Main(a app) (err error) {
 	e.HideBanner = true
 	e.Debug = a.Debug
 
-	logger := logrus.StandardLogger()
+	logger := logrus.StandardLogger() // NOTE: always use standard logrus logger
 	setLogLevel(logger, a.Debug)
-	e.Logger = echokit.WrapLogrus(logger) // NOTE: setup echo logger
-	log.SetOutput(logger.Writer())        // NOTE: setup golang std log
+	e.Logger = typrest.WrapLogrus(logger) // NOTE: setup echo logger
+	log.SetOutput(logger.Writer())        // NOTE: std golang log use same output writer with logrus
 
 	setMiddleware(e)
 

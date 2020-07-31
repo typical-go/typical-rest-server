@@ -1,4 +1,4 @@
-package echokit_test
+package typrest_test
 
 import (
 	"strings"
@@ -9,20 +9,22 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
 func TestEchoLogrus(t *testing.T) {
-	monkey.Patch(time.Now, func() time.Time {
+	patch := monkey.Patch(time.Now, func() time.Time {
 		t, _ := time.Parse(time.RFC3339, "2014-11-12T11:45:26Z")
 		return t
 	})
+	defer patch.Unpatch()
+
 	var out strings.Builder
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	logger.SetOutput(&out)
 
-	log := echokit.WrapLogrus(logger)
+	log := typrest.WrapLogrus(logger)
 
 	log.Printj(map[string]interface{}{"Printj": "1"})
 	log.Debugj(map[string]interface{}{"Debugj": "1"})
@@ -58,13 +60,13 @@ func TestEchoLogrus_SetLevel(t *testing.T) {
 		{lvl: log.INFO, expected: logrus.InfoLevel},
 		{lvl: log.WARN, expected: logrus.WarnLevel},
 		{lvl: log.ERROR, expected: logrus.ErrorLevel},
-		{lvl: log.INFO, expected: logrus.InfoLevel},
+		{lvl: log.DEBUG, expected: logrus.DebugLevel},
 		{lvl: 11, expected: logrus.WarnLevel},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.TestName, func(t *testing.T) {
 			logger := logrus.New()
-			log := echokit.WrapLogrus(logger)
+			log := typrest.WrapLogrus(logger)
 			log.SetLevel(tt.lvl)
 			require.Equal(t, tt.expected, logger.GetLevel())
 		})
@@ -87,7 +89,7 @@ func TestEchoLogrus_Level(t *testing.T) {
 		t.Run(tt.TestName, func(t *testing.T) {
 			logger := logrus.New()
 			logger.SetLevel(tt.lvl)
-			log := echokit.WrapLogrus(logger)
+			log := typrest.WrapLogrus(logger)
 			require.Equal(t, tt.expected, log.Level())
 		})
 	}

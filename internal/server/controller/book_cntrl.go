@@ -9,8 +9,8 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/server/repository"
 	"github.com/typical-go/typical-rest-server/internal/server/service"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/errvalid"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
 
@@ -22,10 +22,10 @@ type (
 	}
 )
 
-var _ echokit.Router = (*BookCntrl)(nil)
+var _ typrest.Router = (*BookCntrl)(nil)
 
-// Route to define API Route
-func (c *BookCntrl) Route(e echokit.Server) (err error) {
+// SetRoute to define API Route
+func (c *BookCntrl) SetRoute(e typrest.Server) (err error) {
 	e.GET("books", c.Retrieve)
 	e.GET("books/:id", c.RetrieveOne)
 	e.POST("books", c.Create)
@@ -41,13 +41,11 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
-
 	ctx := ec.Request().Context()
 	newBook, err := c.BookSvc.Create(ctx, &book)
 	if err != nil {
 		return c.HandleError(err)
 	}
-
 	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/books/%d", newBook.ID))
 	return ec.JSON(http.StatusCreated, newBook)
 }
@@ -69,11 +67,9 @@ func (c *BookCntrl) RetrieveOne(ec echo.Context) error {
 		ec.Request().Context(),
 		ec.Param("id"),
 	)
-
 	if err != nil {
 		return c.HandleError(err)
 	}
-
 	return ec.JSON(http.StatusOK, book)
 }
 
@@ -94,14 +90,12 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
-
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
 	updatedBook, err := c.BookSvc.Update(ctx, paramID, &book)
 	if err != nil {
 		return c.HandleError(err)
 	}
-
 	return ec.JSON(http.StatusOK, updatedBook)
 }
 
@@ -111,14 +105,12 @@ func (c *BookCntrl) Patch(ec echo.Context) (err error) {
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
-
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
 	patchedBook, err := c.BookSvc.Patch(ctx, paramID, &book)
 	if err != nil {
 		return c.HandleError(err)
 	}
-
 	return ec.JSON(http.StatusOK, patchedBook)
 }
 
@@ -127,16 +119,11 @@ func (c *BookCntrl) HandleError(err error) *echo.HTTPError {
 	if err == sql.ErrNoRows {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
-
 	if errvalid.Check(err) {
 		return echo.NewHTTPError(
 			http.StatusUnprocessableEntity,
 			errvalid.Message(err),
 		)
 	}
-
-	return echo.NewHTTPError(
-		http.StatusInternalServerError,
-		err.Error(),
-	)
+	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 }

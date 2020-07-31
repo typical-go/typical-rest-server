@@ -9,16 +9,18 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/infra"
 	"github.com/typical-go/typical-rest-server/internal/profiler"
 	"github.com/typical-go/typical-rest-server/internal/server"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
 
-type app struct {
-	dig.In
-	*infra.AppCfg
-	Server   server.Router
-	Profiler profiler.Router
-}
+type (
+	app struct {
+		dig.In
+		*infra.AppCfg
+		Server   server.Router
+		Profiler profiler.Router
+	}
+)
 
 func setMiddleware(e *echo.Echo) {
 	e.Use(middleware.Recover())
@@ -28,10 +30,11 @@ func setMiddleware(e *echo.Echo) {
 }
 
 func setRoute(e *echo.Echo, a *app) error {
-	return echokit.SetRoute(e,
+	routers := typrest.Routers{
 		&a.Server,
 		&a.Profiler,
-	)
+	}
+	return routers.SetRoute(e)
 }
 
 func shutdown(e *echo.Echo) {

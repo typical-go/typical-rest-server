@@ -1,19 +1,10 @@
-package echokit
+package typrest
 
 import (
 	"github.com/labstack/echo/v4"
 )
 
-var (
-	_ Server = (*echo.Echo)(nil)
-	_ Server = (*echo.Group)(nil)
-)
-
 type (
-	// Router responsible to route
-	Router interface {
-		Route(Server) error
-	}
 	// Server interface for echo.Echo and echo.Group
 	Server interface {
 		CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
@@ -31,14 +22,54 @@ type (
 		Group(prefix string, m ...echo.MiddlewareFunc) *echo.Group
 		Use(m ...echo.MiddlewareFunc)
 	}
+	// Router responsible to route
+	Router interface {
+		SetRoute(Server) error
+	}
+	// SetRouteFn function SetRoute
+	SetRouteFn func(Server) error
+	routerImpl struct {
+		fn SetRouteFn
+	}
+	// Routers is slice of router
+	Routers []Router
 )
 
+//
+// Server
+//
+
+var _ Server = (*echo.Echo)(nil)
+var _ Server = (*echo.Group)(nil)
+
+//
+// routerImpl
+//
+
+// NewRouter return new instance of Router
+func NewRouter(fn SetRouteFn) Router {
+	return &routerImpl{
+		fn: fn,
+	}
+}
+
+// SetRoute set route
+func (r *routerImpl) SetRoute(server Server) error {
+	return r.fn(server)
+}
+
+//
+// Routers
+//
+
+var _ Router = (Routers)(nil)
+
 // SetRoute to server
-func SetRoute(server Server, routers ...Router) (err error) {
-	for _, router := range routers {
-		if err = router.Route(server); err != nil {
-			return
+func (r Routers) SetRoute(server Server) error {
+	for _, router := range r {
+		if err := router.SetRoute(server); err != nil {
+			return err
 		}
 	}
-	return
+	return nil
 }

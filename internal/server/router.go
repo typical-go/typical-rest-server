@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/typical-go/typical-rest-server/internal/server/controller"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
 
@@ -14,11 +14,12 @@ type (
 	}
 )
 
-var _ echokit.Router = (*Router)(nil)
+var _ typrest.Router = (*Router)(nil)
 
-// Route to echo server
-func (r *Router) Route(e echokit.Server) error {
-	return echokit.SetRoute(e,
+// SetRoute to echo server
+func (r *Router) SetRoute(e typrest.Server) error {
+	routers := typrest.Routers{
 		&r.BookCntrl,
-	)
+	}
+	return routers.SetRoute(e)
 }

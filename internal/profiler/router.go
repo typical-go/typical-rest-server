@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -16,10 +15,10 @@ type Router struct {
 	Redis *redis.Client
 }
 
-var _ echokit.Router = (*Router)(nil)
+var _ typrest.Router = (*Router)(nil)
 
-// Route to profiler api
-func (h *Router) Route(e echokit.Server) error {
+// SetRoute to profiler api
+func (h *Router) SetRoute(e typrest.Server) error {
 	hc := typrest.HealthCheck{
 		"postgres": h.PG.Ping,
 		"redis":    h.Redis.Ping().Err,
