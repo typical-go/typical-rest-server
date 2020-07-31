@@ -1,4 +1,4 @@
-package echokit
+package typrest
 
 import (
 	"net/http"

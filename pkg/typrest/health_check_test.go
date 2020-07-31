@@ -1,17 +1,17 @@
-package echokit_test
+package typrest_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
 type (
 	healtCheck struct {
 		testName        string
-		healthCheck     echokit.HealthCheck
+		healthCheck     typrest.HealthCheck
 		expectedStatus  int
 		expectedMessage map[string]string
 	}
@@ -20,7 +20,7 @@ type (
 func TestHealthCheck(t *testing.T) {
 	testcases := []healtCheck{
 		{
-			healthCheck: echokit.HealthCheck{
+			healthCheck: typrest.HealthCheck{
 				"postgres": func() error { return nil },
 				"redis":    func() error { return nil },
 			},
@@ -31,7 +31,7 @@ func TestHealthCheck(t *testing.T) {
 			},
 		},
 		{
-			healthCheck: echokit.HealthCheck{
+			healthCheck: typrest.HealthCheck{
 				"postgres": func() error { return errors.New("postgres-error") },
 				"redis":    func() error { return errors.New("redis-error") },
 			},
