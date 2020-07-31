@@ -8,12 +8,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Modification from https://github.com/plutov/echo-logrus/blob/master/middleware.go
-
 type (
-	// EchoLogrus : implement Logger
+	// EchoLogrus is implementation of echo Logger
 	EchoLogrus struct {
 		*logrus.Logger
+		prefix string
 	}
 )
 
@@ -21,35 +20,22 @@ var _ (echo.Logger) = (*EchoLogrus)(nil)
 
 // WrapLogrus logrus logger in echo log interface
 func WrapLogrus(logger *logrus.Logger) *EchoLogrus {
-	return &EchoLogrus{logger}
-}
-
-// Level returns logger level
-func (l *EchoLogrus) Level() log.Lvl {
-	switch l.Logger.Level {
-	case logrus.DebugLevel:
-		return log.DEBUG
-	case logrus.WarnLevel:
-		return log.WARN
-	case logrus.ErrorLevel:
-		return log.ERROR
-	case logrus.InfoLevel:
-		return log.INFO
+	return &EchoLogrus{
+		Logger: logger,
 	}
-
-	return log.INFO
 }
 
-// SetHeader is a stub to satisfy interface
-// It's controlled by Logger
-func (l *EchoLogrus) SetHeader(_ string) {}
+// SetHeader to set header (NOT SUPPORTED)
+func (l *EchoLogrus) SetHeader(string) {}
 
-// SetPrefix It's controlled by Logger
-func (l *EchoLogrus) SetPrefix(s string) {}
+// SetPrefix to set prefix
+func (l *EchoLogrus) SetPrefix(prefix string) {
+	l.prefix = prefix
+}
 
-// Prefix It's controlled by Logger
+// Prefix of echo logrus
 func (l *EchoLogrus) Prefix() string {
-	return ""
+	return l.prefix
 }
 
 // SetLevel set level to logger from given log.Lvl
@@ -64,18 +50,29 @@ func (l *EchoLogrus) SetLevel(lvl log.Lvl) {
 	case log.INFO:
 		l.Logger.SetLevel(logrus.InfoLevel)
 	default:
-		l.Panic("Invalid level")
+		logrus.Warnf("Unknown level: %v", lvl)
+		l.Logger.SetLevel(logrus.WarnLevel)
 	}
+}
+
+// Level returns logger level
+func (l *EchoLogrus) Level() log.Lvl {
+	switch l.Logger.Level {
+	case logrus.DebugLevel:
+		return log.DEBUG
+	case logrus.WarnLevel:
+		return log.WARN
+	case logrus.ErrorLevel:
+		return log.ERROR
+	case logrus.InfoLevel:
+		return log.INFO
+	}
+	return log.WARN
 }
 
 // Output logger output func
 func (l *EchoLogrus) Output() io.Writer {
 	return l.Out
-}
-
-// SetOutput change output, default os.Stdout
-func (l *EchoLogrus) SetOutput(w io.Writer) {
-	l.Logger.SetOutput(w)
 }
 
 // Printj print json log
@@ -111,39 +108,4 @@ func (l *EchoLogrus) Fatalj(j log.JSON) {
 // Panicj panic json log
 func (l *EchoLogrus) Panicj(j log.JSON) {
 	l.Logger.WithFields(logrus.Fields(j)).Panic()
-}
-
-// Print string log
-func (l *EchoLogrus) Print(i ...interface{}) {
-	l.Logger.Print(i[0].(string))
-}
-
-// Debug string log
-func (l *EchoLogrus) Debug(i ...interface{}) {
-	l.Logger.Debug(i[0].(string))
-}
-
-// Info string log
-func (l *EchoLogrus) Info(i ...interface{}) {
-	l.Logger.Info(i[0].(string))
-}
-
-// Warn string log
-func (l *EchoLogrus) Warn(i ...interface{}) {
-	l.Logger.Warn(i[0].(string))
-}
-
-// Error string log
-func (l *EchoLogrus) Error(i ...interface{}) {
-	l.Logger.Error(i[0].(string))
-}
-
-// Fatal string log
-func (l *EchoLogrus) Fatal(i ...interface{}) {
-	l.Logger.Fatal(i[0].(string))
-}
-
-// Panic string log
-func (l *EchoLogrus) Panic(i ...interface{}) {
-	l.Logger.Panic(i[0].(string))
 }

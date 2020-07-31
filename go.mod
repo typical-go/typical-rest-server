@@ -3,6 +3,7 @@ module github.com/typical-go/typical-rest-server
 go 1.14
 
 require (
+	bou.ke/monkey v1.0.2
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Masterminds/squirrel v1.3.0
 	github.com/Microsoft/go-winio v0.4.14 // indirect

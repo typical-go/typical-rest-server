@@ -14,16 +14,26 @@ type (
 		Pg    *sql.DB
 		Redis *redis.Client
 	}
+	connect struct {
+		dig.In
+		PgCfg    *PostgresCfg
+		RedisCfg *RedisCfg
+	}
+	disconnect struct {
+		dig.In
+		Pg    *sql.DB
+		Redis *redis.Client
+	}
 )
 
 // Connect to infra
 // @ctor
-func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infra, err error) {
-	pg, err := pgCfg.connect()
+func Connect(c connect) (infras Infra, err error) {
+	pg, err := c.PgCfg.connect()
 	if err != nil {
 		return
 	}
-	redis, err := redisCfg.connect()
+	redis, err := c.RedisCfg.connect()
 	if err != nil {
 		return
 	}
@@ -32,11 +42,11 @@ func Connect(pgCfg *PostgresCfg, redisCfg *RedisCfg) (infras Infra, err error) {
 
 // Disconnect from postgres server
 // @dtor
-func Disconnect(pg *sql.DB, redis *redis.Client) error {
-	if err := pg.Close(); err != nil {
+func Disconnect(d disconnect) error {
+	if err := d.Pg.Close(); err != nil {
 		return err
 	}
-	if err := redis.Close(); err != nil {
+	if err := d.Redis.Close(); err != nil {
 		return err
 	}
 	return nil

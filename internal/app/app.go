@@ -22,7 +22,9 @@ type app struct {
 
 func setMiddleware(e *echo.Echo) {
 	e.Use(middleware.Recover())
-	initLogger(e)
+	if e.Debug {
+		e.Use(loggerMiddleware())
+	}
 }
 
 func setRoute(e *echo.Echo, a *app) error {

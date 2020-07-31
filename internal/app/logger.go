@@ -7,26 +7,20 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
-func initLogger(e *echo.Echo) {
-	echoLog := echokit.WrapLogrus(logrus.StandardLogger())
-	e.Logger = echoLog
-
-	if e.Debug {
-		e.Use(Logger(echoLog))
-		logrus.SetLevel(log.DebugLevel)
-		logrus.SetFormatter(&log.TextFormatter{})
+func setLogLevel(logger *logrus.Logger, debug bool) {
+	if debug {
+		logger.SetLevel(logrus.DebugLevel)
+		logger.SetFormatter(&logrus.TextFormatter{})
 	} else {
-		logrus.SetLevel(log.WarnLevel)
-		logrus.SetFormatter(&log.JSONFormatter{})
+		logger.SetLevel(logrus.WarnLevel)
+		logger.SetFormatter(&logrus.JSONFormatter{})
 	}
 }
 
-// Logger to log every request
-func Logger(l *echokit.EchoLogrus) echo.MiddlewareFunc {
+// loggerMiddleware log every request
+func loggerMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
@@ -39,7 +33,7 @@ func Logger(l *echokit.EchoLogrus) echo.MiddlewareFunc {
 
 			bytesIn := req.Header.Get(echo.HeaderContentLength)
 
-			l.Logger.WithFields(map[string]interface{}{
+			logrus.WithFields(map[string]interface{}{
 				"status":    res.Status,
 				"latency":   stop.Sub(start).String(),
 				"bytes_in":  bytesIn,
