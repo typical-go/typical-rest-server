@@ -1,6 +1,6 @@
 package dockerrx
 
-import "github.com/typical-go/typical-go/pkg/typdocker"
+import "github.com/typical-go/typical-rest-server/pkg/typdocker"
 
 type (
 	// MySQL docker recipe

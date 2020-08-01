@@ -3,7 +3,7 @@ package dockerrx
 import (
 	"fmt"
 
-	"github.com/typical-go/typical-go/pkg/typdocker"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 )
 
 type (
