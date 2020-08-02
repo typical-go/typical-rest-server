@@ -6,7 +6,7 @@
 
 # typical-rest-server
 
-Simple, straight-forward and opinionated Rest-Server implementation example in Go.
+Opinionated, simple and straight forward Restful server implementation for Golang.
 
 ## How to Use 
 
@@ -82,7 +82,6 @@ func CloseConn(db *sql.DB){
 }
 ```
 
-
 ## Application Config
 
 Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@app-cfg`). 
@@ -111,6 +110,10 @@ type(
   }
 )
 ```
+
+## ORM Hate
+
+Typical-Rest do not encourage Objection-Relation-Mapping/ORM ([ORM Hate](https://martinfowler.com/bliki/OrmHate.html))
 
 ## Shared Library
 
