@@ -11,27 +11,27 @@ import (
 )
 
 type (
-	// AppCfg is application configuration
+	// AppCfg application configuration
 	// @app-cfg (prefix:"APP")
 	AppCfg struct {
 		Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
-		Debug   bool   `default:"true"`
+		Debug   bool   `envconfig:"DEBUG" default:"true"`
 	}
-	// RedisCfg Configuration
+	// RedisCfg redis onfiguration
 	// @app-cfg (prefix:"REDIS")
 	RedisCfg struct {
-		Host     string `required:"true" default:"localhost"`
-		Port     string `required:"true" default:"6379"`
-		Password string `default:"redispass"`
+		Host     string `envconfig:"HOST" required:"true" default:"localhost"`
+		Port     string `envconfig:"PORT" required:"true" default:"6379"`
+		Password string `envconfig:"PASSWORD" default:"redispass"`
 	}
-	// PostgresCfg is postgres configuration
+	// PostgresCfg postgres configuration
 	// @app-cfg (prefix:"PG")
 	PostgresCfg struct {
-		DBName   string `required:"true" default:"MyLibrary"`
-		User     string `required:"true" default:"postgres"`
-		Password string `required:"true" default:"pgpass"`
-		Host     string `default:"localhost"`
-		Port     string `default:"5432"`
+		DBName   string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
+		User     string `envconfig:"USER" required:"true" default:"postgres"`
+		Password string `envconfig:"PASSWORD" default:"pgpass"`
+		Host     string `envconfig:"HOST" required:"true" default:"localhost"`
+		Port     string `envconfig:"PORT" required:"true" default:"5432"`
 	}
 )
 
