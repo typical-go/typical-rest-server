@@ -3,18 +3,19 @@ package main
 import (
 	"github.com/typical-go/typical-go/pkg/typannot"
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	pg "github.com/typical-go/typical-rest-server/tools/pg-tool/pkg/util"
 )
 
 var descriptor = typgo.Descriptor{
-	Name:    "typical-rest-server",
-	Version: "0.8.35",
-	Layouts: []string{"internal", "pkg"},
+	ProjectName:    "typical-rest-server",
+	ProjectVersion: "0.8.35",
+	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
 
@@ -23,19 +24,22 @@ var descriptor = typgo.Descriptor{
 			Action: &typgo.StdTest{},
 		},
 
-		// compile
-		&typgo.CompileCmd{
-			Before: &typannot.Annotators{
+		&typannot.AnnotateCmd{
+			Annotators: []typannot.Annotator{
 				&typapp.CtorAnnotation{},
 				&typapp.DtorAnnotation{},
-				&typapp.CfgAnnotation{DotEnv: true},
+				&typrest.AppCfgAnnotation{DotEnv: true},
 			},
+		},
+
+		// compile
+		&typgo.CompileCmd{
 			Action: &typgo.StdCompile{},
 		},
 
 		// run
 		&typgo.RunCmd{
-			Before: typgo.BuildSysRuns{"compile"},
+			Before: typgo.BuildSysRuns{"annotate", "compile"},
 			Action: &typgo.StdRun{},
 		},
 

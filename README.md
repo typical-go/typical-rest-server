@@ -65,16 +65,52 @@ Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Mult
   - DAO (Data Access Object) Model
   - Database Entity or Business Entity
 
-## Annotations
+## Dependency Injection
 
-The project utilize Typical-Go annotation for code generation
-- `@ctor` functions will be provided in [dig](https://github.com/uber-go/dig) service-locator
-- `@dtor` functions will be execute when program end
-- `@mock` interfaces is target for mock generation
+Typical-Rest encourage dependency-injection using [dig](https://github.com/uber-go/dig) and annotations (`@ctor` for constructor and `@dtor` for destructor).
 
-## Configurations
+```go
+// OpenConn open new database connection
+// @ctor
+func OpenConn() *sql.DB{
+}
+```
 
-Config in environment as [12factor](https://12factor.net/config) recommentation. The build-tool (typical-go) will load values in `.env` file and generated it if not available.
+```go
+// CloseConn close the database connection
+// @dtor
+func CloseConn(db *sql.DB){
+}
+```
+
+
+## Application Config
+
+Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@app-cfg`). 
+
+```go
+type (
+   // ServerCfg configuration
+   // @cfg (prefix:"SERVER")
+   ServerCfg struct {
+      Address string `envconfig:"ADDRESS" default:":8080" required:"true"`
+   }
+)
+```
+
+## Mocking
+
+Typical-Rest encourage mocking using [gomock](https://github.com/golang/mock) and annotation(`@mock`). 
+
+```go
+type(
+   // Reader responsible to read
+   // @mock
+   Reader interface{
+      Read() error
+   }
+)
+```
 
 ## Tools
 
