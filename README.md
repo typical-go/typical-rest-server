@@ -160,7 +160,7 @@ Go idiomatically, the project [use go modules](https://blog.golang.org/using-go-
 
 ## Project Status
 
-The project status is `WIP` (Work in progress) which means the author plan to continously evaluate and improve the project.
+The project status is `WIP` (Work in progress) which means the author continously evaluate and improve the project.
 
 ## License
 
