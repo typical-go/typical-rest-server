@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	typapp.Start(app.Main)
+	typapp.Start(app.Start)
 }
