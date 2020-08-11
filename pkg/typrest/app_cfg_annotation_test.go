@@ -27,7 +27,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		ASTStore: &typannot.ASTStore{
+		Summary: &typannot.Summary{
 			Annots: []*typannot.Annot{
 				{
 					TagName: "@app-cfg",
@@ -93,7 +93,7 @@ func TestCfgAnnotation_Annotate_DotEnvTRUE(t *testing.T) {
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		ASTStore: &typannot.ASTStore{Annots: []*typannot.Annot{
+		Summary: &typannot.Summary{Annots: []*typannot.Annot{
 			{
 				TagName:  "@app-cfg",
 				TagParam: `ctor_name:"ctor1" prefix:"SS"`,
@@ -140,7 +140,7 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		ASTStore: &typannot.ASTStore{
+		Summary: &typannot.Summary{
 			Annots: []*typannot.Annot{
 				{
 					TagName: "@some-tag",
@@ -167,8 +167,8 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 	defer os.Remove(target)
 	ioutil.WriteFile(target, []byte("some-content"), 0777)
 	c := &typannot.Context{
-		Context:  &typgo.Context{},
-		ASTStore: &typannot.ASTStore{},
+		Context: &typgo.Context{},
+		Summary: &typannot.Summary{},
 	}
 
 	AppCfgAnnotation := &typrest.AppCfgAnnotation{Target: target}

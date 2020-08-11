@@ -15,7 +15,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
-	github.com/golang/mock v1.4.3
+	github.com/golang/mock v1.4.4
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/labstack/gommon v0.3.0
@@ -27,9 +27,9 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.10.3
+	github.com/typical-go/typical-go v0.10.4
 	github.com/urfave/cli/v2 v2.2.0
-	go.uber.org/dig v1.9.0
+	go.uber.org/dig v1.10.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/yaml.v2 v2.2.8

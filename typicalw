@@ -11,7 +11,7 @@ if ! [ -s $TYPGO ]; then
 fi
 
 $TYPGO run \
-	-src="tools/typical-build" \
 	-project-pkg="github.com/typical-go/typical-rest-server" \
+	-typical-build="tools/typical-build" \
 	-typical-tmp=$TYPTMP \
 	$@

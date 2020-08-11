@@ -3,6 +3,7 @@ package typrest
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -78,7 +79,7 @@ func (m *AppCfgAnnotation) Annotate(c *typannot.Context) error {
 		return nil
 	}
 	data := &AppCfgTmplData{
-		Package: "main",
+		Package: filepath.Base(c.Destination),
 		Imports: c.CreateImports(typgo.ProjectPkg, "github.com/kelseyhightower/envconfig"),
 		Configs: configs,
 	}
@@ -163,7 +164,7 @@ func (m *AppCfgAnnotation) getTemplate() string {
 
 func (m *AppCfgAnnotation) getTarget(c *typannot.Context) string {
 	if m.Target == "" {
-		m.Target = fmt.Sprintf("cmd/%s/app_cfg_annotated.go", c.BuildSys.ProjectName)
+		m.Target = fmt.Sprintf("%s/app_cfg_annotated.go", c.Destination)
 	}
 	return m.Target
 }
