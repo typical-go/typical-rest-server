@@ -14,7 +14,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.8.36",
+	ProjectVersion: "0.8.37",
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
@@ -85,6 +85,7 @@ var descriptor = typgo.Descriptor{
 			Before:     typgo.BuildSysRuns{"test", "compile"},
 			Validation: typrls.DefaultValidation,
 			Summary:    typrls.DefaultSummary,
+			Tag:        typrls.DefaultTag,
 			Releaser:   &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
 		},
 	},
