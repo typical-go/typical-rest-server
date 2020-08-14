@@ -6,7 +6,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
-	"github.com/typical-go/typical-rest-server/pkg/dockerrx"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	pg "github.com/typical-go/typical-rest-server/tools/pg-tool/pkg/util"
@@ -18,12 +17,13 @@ var descriptor = typgo.Descriptor{
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
-
 		// test
-		&typgo.TestCmd{
-			Action: &typgo.StdTest{},
-		},
-
+		&typgo.TestCmd{Action: &typgo.StdTest{}},
+		// compile
+		&typgo.CompileCmd{Action: &typgo.StdCompile{}},
+		// clean
+		&typgo.CleanCmd{Action: &typgo.StdClean{}},
+		// annotate
 		&typannot.AnnotateCmd{
 			Annotators: []typannot.Annotator{
 				&typapp.CtorAnnotation{},
@@ -31,43 +31,15 @@ var descriptor = typgo.Descriptor{
 				&typrest.AppCfgAnnotation{DotEnv: true},
 			},
 		},
-
-		// compile
-		&typgo.CompileCmd{
-			Action: &typgo.StdCompile{},
-		},
-
 		// run
 		&typgo.RunCmd{
 			Before: typgo.BuildSysRuns{"annotate", "compile"},
 			Action: &typgo.StdRun{},
 		},
-
-		// clean
-		&typgo.CleanCmd{
-			Action: &typgo.StdClean{},
-		},
-
 		// mock
 		&typmock.MockCmd{},
-
 		// docker
-		&typdocker.DockerCmd{
-			Composers: []typdocker.Composer{
-				&dockerrx.PostgresWithEnv{
-					Name:        "pg01",
-					UserEnv:     "PG_USER",
-					PasswordEnv: "PG_PASSWORD",
-					PortEnv:     "PG_PORT",
-				},
-				&dockerrx.RedisWithEnv{
-					Name:        "redis01",
-					PasswordEnv: "REDIS_PASSWORD",
-					PortEnv:     "REDIS_PORT",
-				},
-			},
-		},
-
+		&typdocker.DockerCmd{},
 		// pg
 		&pg.PSQLCmd{
 			Name:         "pg",
@@ -79,7 +51,6 @@ var descriptor = typgo.Descriptor{
 			MigrationSrc: "databases/pg/migration",
 			SeedSrc:      "databases/pg/seed",
 		},
-
 		// release
 		&typrls.ReleaseCmd{
 			Before:     typgo.BuildSysRuns{"test", "compile"},

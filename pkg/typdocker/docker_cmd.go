@@ -1,15 +1,12 @@
 package typdocker
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"gopkg.in/yaml.v2"
 
 	"github.com/urfave/cli/v2"
 )
@@ -23,9 +20,7 @@ var (
 
 type (
 	// DockerCmd for docker
-	DockerCmd struct {
-		Composers []Composer
-	}
+	DockerCmd struct{}
 )
 
 //
@@ -33,7 +28,6 @@ type (
 //
 
 var _ typgo.Cmd = (*DockerCmd)(nil)
-var _ typgo.Action = (*DockerCmd)(nil)
 
 // Command of docker
 func (m *DockerCmd) Command(sys *typgo.BuildSys) *cli.Command {
@@ -41,67 +35,11 @@ func (m *DockerCmd) Command(sys *typgo.BuildSys) *cli.Command {
 		Name:  "docker",
 		Usage: "Docker utility",
 		Subcommands: []*cli.Command{
-			m.CmdCompose(sys),
 			m.CmdUp(sys),
 			m.CmdDown(sys),
 			m.CmdWipe(sys),
 		},
 	}
-}
-
-// CmdCompose command compose
-func (m *DockerCmd) CmdCompose(c *typgo.BuildSys) *cli.Command {
-	return &cli.Command{
-		Name:   "compose",
-		Usage:  "Generate docker-compose.yaml",
-		Action: c.ActionFn(m),
-	}
-}
-
-// Execute docker command
-func (m *DockerCmd) Execute(c *typgo.Context) error {
-	if len(m.Composers) < 1 {
-		return errors.New("Nothing to compose")
-	}
-
-	root, err := compile(Version, m.Composers)
-	if err != nil {
-		return fmt.Errorf("compile: %w", err)
-	}
-
-	out, err := yaml.Marshal(root)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("Generate docker-compose.yml")
-	return ioutil.WriteFile(DockerComposeYml, out, 0777)
-}
-
-// Compile recipes to yaml
-func compile(version string, composers []Composer) (*Recipe, error) {
-	root := &Recipe{
-		Version:  version,
-		Services: make(Services),
-		Networks: make(Networks),
-		Volumes:  make(Volumes),
-	}
-	for _, composer := range composers {
-		obj, err := composer.ComposeV3()
-		if err != nil {
-			return nil, err
-		}
-		for k, service := range obj.Services {
-			root.Services[k] = service
-		}
-		for k, network := range obj.Networks {
-			root.Networks[k] = network
-		}
-		for k, volume := range obj.Volumes {
-			root.Volumes[k] = volume
-		}
-	}
-	return root, nil
 }
 
 // CmdWipe command wipe

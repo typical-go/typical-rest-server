@@ -2,67 +2,14 @@ package typdocker_test
 
 import (
 	"flag"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/execkit"
-	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-go/pkg/typgo"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/urfave/cli/v2"
 )
-
-var (
-	redisV2 = &typdocker.Recipe{
-		Services: typdocker.Services{
-			"redis":  "redis-service",
-			"webdis": "webdis-service",
-		},
-		Networks: typdocker.Networks{
-			"webdis": "webdis-network",
-		},
-		Volumes: typdocker.Volumes{
-			"redis": "redis-volume",
-		},
-	}
-	pgV2 = &typdocker.Recipe{
-		Services: typdocker.Services{
-			"pg": "pg-service",
-		},
-		Networks: typdocker.Networks{
-			"pg": "pg-network",
-		},
-		Volumes: typdocker.Volumes{
-			"pg": "pg-volume",
-		},
-	}
-)
-
-func TestComposeRecipe(t *testing.T) {
-	os.Remove("docker-compose.yml")
-	defer os.Remove("docker-compose.yml")
-
-	cmd := &typdocker.DockerCmd{Composers: []typdocker.Composer{redisV2, pgV2}}
-
-	command := cmd.CmdCompose(&typgo.BuildSys{})
-	require.NoError(t, command.Action(&cli.Context{}))
-
-	b, _ := ioutil.ReadFile("docker-compose.yml")
-	require.Equal(t, `version: "3"
-services:
-  pg: pg-service
-  redis: redis-service
-  webdis: webdis-service
-networks:
-  pg: pg-network
-  webdis: webdis-network
-volumes:
-  pg: pg-volume
-  redis: redis-volume
-`, string(b))
-
-}
 
 func TestCmdUp(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
