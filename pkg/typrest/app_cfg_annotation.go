@@ -32,6 +32,7 @@ type (
 		CtorName string
 		Prefix   string
 		SpecType string
+		Name     string
 		Fields   []*Field
 	}
 	// Field model
@@ -51,18 +52,19 @@ import ({{range $import := .Imports}}
 
 func init() { {{if .Configs}}
 	typapp.AppendCtor({{range $c := .Configs}}
-		&typapp.Constructor{
-			Name: "{{$c.CtorName}}",
-			Fn: func() (*{{$c.SpecType}}, error) {
-				var cfg {{$c.SpecType}}
-				if err := envconfig.Process("{{$c.Prefix}}", &cfg); err != nil {
-					return nil, err
-				}
-				return &cfg, nil
-			},
-		},{{end}}
+		&typapp.Constructor{Name: "{{$c.CtorName}}",Fn: Load{{$c.Name}}},{{end}}
 	){{end}}
-}`
+}
+{{range $c := .Configs}}
+// Load{{$c.Name}} load env to new instance of {{$c.Name}}
+func Load{{$c.Name}}() (*{{$c.SpecType}}, error) {
+	var cfg {{$c.SpecType}}
+	if err := envconfig.Process("{{$c.Prefix}}", &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
+}{{end}}
+`
 
 //
 // AppCfgAnnotation
@@ -140,6 +142,7 @@ func (m *AppCfgAnnotation) CreateConfigs(c *typannot.Context) []*AppCfg {
 
 		configs = append(configs, &AppCfg{
 			CtorName: getCtorName(annot),
+			Name:     annot.Name,
 			Prefix:   prefix,
 			SpecType: fmt.Sprintf("%s.%s", annot.Package, annot.Name),
 			Fields:   fields,

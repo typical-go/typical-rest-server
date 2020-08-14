@@ -60,18 +60,19 @@ import (
 
 func init() { 
 	typapp.AppendCtor(
-		&typapp.Constructor{
-			Name: "",
-			Fn: func() (*mypkg.SomeSample, error) {
-				var cfg mypkg.SomeSample
-				if err := envconfig.Process("SOMESAMPLE", &cfg); err != nil {
-					return nil, err
-				}
-				return &cfg, nil
-			},
-		},
+		&typapp.Constructor{Name: "",Fn: LoadSomeSample},
 	)
-}`, string(b))
+}
+
+// LoadSomeSample load env to new instance of SomeSample
+func LoadSomeSample() (*mypkg.SomeSample, error) {
+	var cfg mypkg.SomeSample
+	if err := envconfig.Process("SOMESAMPLE", &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
+}
+`, string(b))
 
 }
 
