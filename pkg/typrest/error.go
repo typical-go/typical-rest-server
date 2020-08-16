@@ -42,14 +42,19 @@ func NewValidErr(message string) *ValidErr {
 	return &ValidErr{Message: message}
 }
 
-//
-// RestError
-//
-
 // NewError return error
 func NewError(code int, message string) Error {
 	return &errorImpl{code: code, message: message}
 }
+
+// NotImplementedErr return not implemented error
+func NotImplementedErr() Error {
+	return NewError(http.StatusNotImplemented, "not implemented")
+}
+
+//
+// errImpl
+//
 
 // HTTPError return echo HTTP Error
 func (v *errorImpl) HTTPError() *echo.HTTPError {

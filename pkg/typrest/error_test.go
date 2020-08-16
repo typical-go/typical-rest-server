@@ -28,6 +28,11 @@ func TestError(t *testing.T) {
 			expectedErr:     "some-message",
 			expectedHTTPErr: echo.NewHTTPError(http.StatusUnprocessableEntity, "some-message"),
 		},
+		{
+			Error:           typrest.NotImplementedErr(),
+			expectedErr:     "not implemented",
+			expectedHTTPErr: echo.NewHTTPError(http.StatusNotImplemented, "not implemented"),
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.TestName, func(t *testing.T) {
