@@ -8,7 +8,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
-	pg "github.com/typical-go/typical-rest-server/tools/pg-tool/pkg/util"
+	"github.com/typical-go/typical-rest-server/tools/typical-build/pg"
 )
 
 var descriptor = typgo.Descriptor{
@@ -41,16 +41,8 @@ var descriptor = typgo.Descriptor{
 		// docker
 		&typdocker.DockerCmd{},
 		// pg
-		&pg.PSQLCmd{
-			Name:         "pg",
-			HostEnv:      "PG_HOST",
-			PortEnv:      "PG_PORT",
-			UserEnv:      "PG_USER",
-			PasswordEnv:  "PG_PASSWORD",
-			DBNameEnv:    "PG_DBNAME",
-			MigrationSrc: "databases/pg/migration",
-			SeedSrc:      "databases/pg/seed",
-		},
+		&pg.Cmd{},
+
 		// release
 		&typrls.ReleaseCmd{
 			Before:     typgo.BuildSysRuns{"test", "compile"},

@@ -27,11 +27,11 @@ type (
 	// PostgresCfg postgres configuration
 	// @app-cfg (prefix:"PG")
 	PostgresCfg struct {
-		DBName   string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
-		User     string `envconfig:"USER" required:"true" default:"postgres"`
-		Password string `envconfig:"PASSWORD" default:"pgpass"`
-		Host     string `envconfig:"HOST" required:"true" default:"localhost"`
-		Port     string `envconfig:"PORT" required:"true" default:"5432"`
+		DBName string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
+		User   string `envconfig:"USER" required:"true" default:"pguser"`
+		Pass   string `envconfig:"PASS" default:"pgpass"`
+		Host   string `envconfig:"HOST" required:"true" default:"localhost"`
+		Port   string `envconfig:"PORT" required:"true" default:"5432"`
 	}
 )
 
@@ -39,7 +39,7 @@ type (
 // RedisCfg
 //
 
-func (r *RedisCfg) connect() (*redis.Client, error) {
+func (r *RedisCfg) createClient() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,
@@ -56,9 +56,11 @@ func (r *RedisCfg) connect() (*redis.Client, error) {
 // PostgresCfg
 //
 
-func (p *PostgresCfg) connect() (*sql.DB, error) {
-	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		p.User, p.Password, p.Host, p.Port, p.DBName)
+func (p *PostgresCfg) createConn() (*sql.DB, error) {
+	conn := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		p.User, p.Pass, p.Host, p.Port, p.DBName,
+	)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
 		return nil, fmt.Errorf("infra: %w", err)

@@ -29,11 +29,11 @@ type (
 // Connect to infra
 // @ctor
 func Connect(c connect) (infras Infra, err error) {
-	pg, err := c.PgCfg.connect()
+	pg, err := c.PgCfg.createConn()
 	if err != nil {
 		return
 	}
-	redis, err := c.RedisCfg.connect()
+	redis, err := c.RedisCfg.createClient()
 	if err != nil {
 		return
 	}

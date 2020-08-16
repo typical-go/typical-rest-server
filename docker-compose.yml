@@ -4,7 +4,7 @@ services:
     image: postgres
     environment:
       PGDATA: /data/postgres
-      POSTGRES: postgres
+      POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pgpass
     volumes:
     - pg01:/data/postgres
