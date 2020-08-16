@@ -115,12 +115,12 @@ func (t *Tool) createMigration() (*migrate.Migrate, error) {
 func (t *Tool) createConn() (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		t.DBUser, t.DBPass, t.Host, t.Port, t.DBName,
+		t.User, t.Pass, t.Host, t.Port, t.DBName,
 	))
 }
 
 func (t *Tool) createAdminConn() (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/template1?sslmode=disable",
-		t.DBUser, t.DBPass, t.Host, t.Port))
+		t.User, t.Pass, t.Host, t.Port))
 }

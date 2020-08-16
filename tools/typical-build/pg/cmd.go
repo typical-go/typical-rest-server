@@ -80,7 +80,7 @@ func (*Cmd) Command(sys *typgo.BuildSys) *cli.Command {
 				Usage: "Postgres console",
 				Action: sys.ActionFn(typgo.NewAction(
 					func(c *typgo.Context) error {
-						os.Setenv("PGPASSWORD", tool.DBPass)
+						os.Setenv("PGPASSWORD", tool.Pass)
 
 						return c.Execute(&execkit.Command{
 							Name: "docker",
@@ -89,7 +89,7 @@ func (*Cmd) Command(sys *typgo.BuildSys) *cli.Command {
 								"psql",
 								"-h", tool.Host,
 								"-p", tool.Port,
-								"-U", tool.DBUser,
+								"-U", tool.User,
 							},
 							Stdout: os.Stdout,
 							Stderr: os.Stderr,
