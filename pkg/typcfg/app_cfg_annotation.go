@@ -1,7 +1,8 @@
-package typrest
+package typcfg
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -41,6 +42,9 @@ type (
 		Default string
 	}
 )
+
+// Stdout standard output
+var Stdout io.Writer = os.Stdout
 
 const defaultCfgTemplate = `package {{.Package}}
 

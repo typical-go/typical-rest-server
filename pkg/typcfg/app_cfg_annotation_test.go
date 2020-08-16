@@ -1,4 +1,4 @@
-package typrest_test
+package typcfg_test
 
 import (
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typannot"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 )
 
 func TestCfgAnnotation_Annotate(t *testing.T) {
@@ -20,7 +20,11 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	unpatch := execkit.Patch([]*execkit.RunExpectation{})
 	defer unpatch(t)
 
-	AppCfgAnnotation := &typrest.AppCfgAnnotation{}
+	var out strings.Builder
+	typcfg.Stdout = &out
+	defer func() { typcfg.Stdout = os.Stdout }()
+
+	AppCfgAnnotation := &typcfg.AppCfgAnnotation{}
 	c := &typannot.Context{
 		Destination: "somepkg1",
 		Context: &typgo.Context{
@@ -74,17 +78,23 @@ func LoadSomeSample() (*mypkg.SomeSample, error) {
 }
 `, string(b))
 
+	require.Equal(t, "Generate @app-cfg to somepkg1/app_cfg_annotated.go\n", out.String())
+
 }
 
 func TestCfgAnnotation_Annotate_DotEnvTRUE(t *testing.T) {
-
 	unpatch := execkit.Patch([]*execkit.RunExpectation{})
 	defer unpatch(t)
+
+	var out strings.Builder
+	typcfg.Stdout = &out
+	defer func() { typcfg.Stdout = os.Stdout }()
+
 	defer os.Clearenv()
 	defer os.Remove("some-target")
 	defer os.Remove(".env")
 
-	AppCfgAnnotation := &typrest.AppCfgAnnotation{
+	AppCfgAnnotation := &typcfg.AppCfgAnnotation{
 		Target:   "some-target",
 		Template: "some-template",
 		DotEnv:   true,
@@ -122,6 +132,8 @@ func TestCfgAnnotation_Annotate_DotEnvTRUE(t *testing.T) {
 	require.Equal(t, "SS_SOMEFIELD1=some-text\nSS_SOMEFIELD2=9876\n", string(b))
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
+
+	require.Equal(t, "Generate @app-cfg to some-target\nUPDATE_ENV: +SS_SOMEFIELD1 +SS_SOMEFIELD2\n", out.String())
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
@@ -131,7 +143,7 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 	defer unpatch(t)
 	defer os.RemoveAll(target)
 
-	appCfgAnnotation := &typrest.AppCfgAnnotation{
+	appCfgAnnotation := &typcfg.AppCfgAnnotation{
 		TagName:  "@some-tag",
 		Template: "some-template",
 		Target:   target,
@@ -173,7 +185,7 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 		Summary: &typannot.Summary{},
 	}
 
-	AppCfgAnnotation := &typrest.AppCfgAnnotation{Target: target}
+	AppCfgAnnotation := &typcfg.AppCfgAnnotation{Target: target}
 	require.NoError(t, AppCfgAnnotation.Annotate(c))
 	_, err := os.Stat(target)
 	require.True(t, os.IsNotExist(err))
@@ -183,13 +195,13 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	target := "some-env"
 	ioutil.WriteFile(target, []byte("key1=val111\nkey2=val222"), 0777)
 	var out strings.Builder
-	typrest.Stdout = &out
+	typcfg.Stdout = &out
 	defer os.Remove(target)
-	defer func() { typrest.Stdout = os.Stdout }()
+	defer func() { typcfg.Stdout = os.Stdout }()
 
-	typrest.CreateAndLoadDotEnv(target, []*typrest.AppCfg{
+	typcfg.CreateAndLoadDotEnv(target, []*typcfg.AppCfg{
 		{
-			Fields: []*typrest.Field{
+			Fields: []*typcfg.Field{
 				{Key: "key1", Default: "val1"},
 				{Key: "key2", Default: "val2"},
 				{Key: "key3", Default: "val3"},
