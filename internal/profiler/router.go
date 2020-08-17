@@ -27,7 +27,7 @@ var _ typrest.Router = (*Router)(nil)
 // SetRoute for profiler
 func (r *Router) SetRoute(server typrest.Server) error {
 	r.HealthCheck.SetRoute(server)
-	server.GET("/debug/vars", echo.WrapHandler(http.DefaultServeMux))
-	server.GET("/debug/pprof/*", echo.WrapHandler(http.DefaultServeMux))
+	server.Any("/debug/*", echo.WrapHandler(http.DefaultServeMux))
+	server.Any("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 	return nil
 }

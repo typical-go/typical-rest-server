@@ -4,9 +4,13 @@ http://localhost:8089/application/health
 
 ### Pprof
 
+http://localhost:8089/debug/pprof
+
+### Goroutine
+
 http://localhost:8089/debug/pprof/goroutine
 
-### Pprof
+### Vars
 
 http://localhost:8089/debug/vars
 
