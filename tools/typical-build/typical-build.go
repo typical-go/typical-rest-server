@@ -17,12 +17,12 @@ var descriptor = typgo.Descriptor{
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
-		// test
-		&typgo.TestCmd{Action: &typgo.StdTest{}},
-		// compile
-		&typgo.CompileCmd{Action: &typgo.StdCompile{}},
 		// clean
-		&typgo.CleanCmd{Action: &typgo.StdClean{}},
+		&typgo.CleanProject{},
+		// test
+		&typgo.TestProject{},
+		// compile
+		&typgo.CompileProject{},
 		// annotate
 		&typannot.AnnotateCmd{
 			Annotators: []typannot.Annotator{
@@ -35,23 +35,33 @@ var descriptor = typgo.Descriptor{
 		},
 		// run
 		&typgo.RunCmd{
-			Before: typgo.BuildSysRuns{"annotate", "compile"},
-			Action: &typgo.StdRun{},
+			Before: typgo.BuildCmdRuns{"annotate", "compile"},
+			Action: &typgo.RunProject{},
 		},
 		// mock
 		&typmock.MockCmd{},
 		// docker
 		&typdocker.DockerCmd{},
 		// pg
-		&pg.Cmd{},
-
+		&pg.Utility{},
+		// reset
+		&typgo.Command{
+			Name:  "reset",
+			Usage: "reset the project locally (postgres/etc)",
+			Action: typgo.BuildCmdRuns{
+				"pg.drop",
+				"pg.create",
+				"pg.migrate",
+				"pg.seed",
+			},
+		},
 		// release
 		&typrls.ReleaseCmd{
-			Before:     typgo.BuildSysRuns{"test", "compile"},
-			Validation: typrls.DefaultValidation,
-			Summary:    typrls.DefaultSummary,
-			Tag:        typrls.DefaultTag,
-			Releaser:   &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
+			Before: typgo.BuildCmdRuns{"test", "compile"},
+			Action: &typrls.ReleaseProject{
+				Validator: typrls.DefaultValidator,
+				Releaser:  &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
+			},
 		},
 	},
 }

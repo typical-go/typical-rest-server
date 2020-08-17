@@ -47,7 +47,7 @@ func (m *DockerCmd) CmdWipe(c *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:   "wipe",
 		Usage:  "Kill all running docker container",
-		Action: c.ActionFn(typgo.NewAction(m.dockerWipe)),
+		Action: c.ExecuteFn(m.dockerWipe),
 	}
 }
 
@@ -73,7 +73,7 @@ func (m *DockerCmd) CmdUp(c *typgo.BuildSys) *cli.Command {
 			&cli.BoolFlag{Name: "wipe"},
 		},
 		Usage:  "Spin up docker containers according docker-compose",
-		Action: c.ActionFn(typgo.NewAction(m.dockerUp)),
+		Action: c.ExecuteFn(m.dockerUp),
 	}
 }
 
@@ -97,7 +97,7 @@ func (m *DockerCmd) CmdDown(c *typgo.BuildSys) *cli.Command {
 		Name:    "down",
 		Aliases: []string{"stop"},
 		Usage:   "Take down all docker containers according docker-compose",
-		Action:  c.ActionFn(typgo.NewAction(dockerDown)),
+		Action:  c.ExecuteFn(dockerDown),
 	}
 }
 

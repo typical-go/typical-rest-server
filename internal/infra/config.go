@@ -28,8 +28,8 @@ type (
 	// @app-cfg (prefix:"PG")
 	PostgresCfg struct {
 		DBName string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
-		User   string `envconfig:"USER" required:"true" default:"pguser"`
-		Pass   string `envconfig:"PASS" default:"pgpass"`
+		DBUser string `envconfig:"DBUSER" required:"true" default:"pguser"`
+		DBPass string `envconfig:"DBPASS" default:"pgpass"`
 		Host   string `envconfig:"HOST" required:"true" default:"localhost"`
 		Port   string `envconfig:"PORT" required:"true" default:"5432"`
 	}
@@ -59,7 +59,7 @@ func (r *RedisCfg) createClient() (*redis.Client, error) {
 func (p *PostgresCfg) createConn() (*sql.DB, error) {
 	conn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		p.User, p.Pass, p.Host, p.Port, p.DBName,
+		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName,
 	)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
