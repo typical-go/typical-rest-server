@@ -5,9 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
-	"github.com/fatih/color"
 	"github.com/typical-go/typical-go/pkg/common"
 	"github.com/typical-go/typical-go/pkg/typannot"
 	"github.com/typical-go/typical-go/pkg/typgo"
@@ -20,26 +18,14 @@ type (
 		TagName  string // By default is `@app-cfg`
 		Template string // By default defined in defaultCfgTemplate variable
 		Target   string // By default is `cmd/PROJECT_NAME/cfg_annotated.go`
-		DotEnv   bool   // If true then create and load ``.env`
+		DotEnv   string // Dotenv path. It will be generated if not empty
+		UsageDoc string // Usage documentation path. It will be if not emtpy
 	}
 	// AppCfgTmplData template
 	AppCfgTmplData struct {
 		Package string
 		Imports []string
 		Configs []*AppCfg
-	}
-	// AppCfg model
-	AppCfg struct {
-		CtorName string
-		Prefix   string
-		SpecType string
-		Name     string
-		Fields   []*Field
-	}
-	// Field model
-	Field struct {
-		Key     string
-		Default string
 	}
 )
 
@@ -78,24 +64,20 @@ var _ typannot.Annotator = (*AppCfgAnnotation)(nil)
 
 // Annotate AppCfg to prepare dependency-injection and env-file
 func (m *AppCfgAnnotation) Annotate(c *typannot.Context) error {
-	configs := m.CreateConfigs(c)
-	target := m.getTarget(c)
-	if len(configs) < 1 {
-		os.Remove(target)
-		return nil
-	}
-	data := &AppCfgTmplData{
-		Package: filepath.Base(c.Destination),
-		Imports: c.CreateImports(typgo.ProjectPkg, "github.com/kelseyhightower/envconfig"),
-		Configs: configs,
-	}
-	fmt.Fprintf(Stdout, "Generate @app-cfg to %s\n", target)
-	if err := common.ExecuteTmplToFile(target, m.getTemplate(), data); err != nil {
+	context := CreateContext(c, m.getTagName())
+
+	if err := m.generate(context); err != nil {
 		return err
 	}
-	typgo.GoImports(target)
-	if m.DotEnv {
-		if err := CreateAndLoadDotEnv(".env", configs); err != nil {
+
+	if m.DotEnv != "" {
+		if err := GenerateAndLoadDotEnv(m.DotEnv, context); err != nil {
+			return err
+		}
+	}
+
+	if m.UsageDoc != "" {
+		if err := GenerateUsage(m.UsageDoc, context); err != nil {
 			return err
 		}
 	}
@@ -103,56 +85,23 @@ func (m *AppCfgAnnotation) Annotate(c *typannot.Context) error {
 	return nil
 }
 
-// CreateAndLoadDotEnv to create and load envfile
-func CreateAndLoadDotEnv(envfile string, configs []*AppCfg) error {
-	envmap, err := common.CreateEnvMapFromFile(envfile)
-	if err != nil {
-		envmap = make(common.EnvMap)
+func (m *AppCfgAnnotation) generate(c *Context) error {
+	target := m.getTarget(c)
+	if len(c.Configs) < 1 {
+		os.Remove(target)
+		return nil
 	}
 
-	var updatedKeys []string
-	for _, AppCfg := range configs {
-		for _, field := range AppCfg.Fields {
-			if _, ok := envmap[field.Key]; !ok {
-				updatedKeys = append(updatedKeys, "+"+field.Key)
-				envmap[field.Key] = field.Default
-			}
-		}
-	}
-	if len(updatedKeys) > 0 {
-		color.New(color.FgGreen).Fprint(Stdout, "UPDATE_ENV")
-		fmt.Fprintln(Stdout, ": "+strings.Join(updatedKeys, " "))
-	}
-
-	if err := envmap.SaveToFile(envfile); err != nil {
+	fmt.Fprintf(Stdout, "Generate @app-cfg to %s\n", target)
+	if err := common.ExecuteTmplToFile(target, m.getTemplate(), &AppCfgTmplData{
+		Package: filepath.Base(c.Destination),
+		Imports: c.CreateImports(typgo.ProjectPkg, "github.com/kelseyhightower/envconfig"),
+		Configs: c.Configs,
+	}); err != nil {
 		return err
 	}
-
-	return common.Setenv(envmap)
-}
-
-// CreateConfigs create configs
-func (m *AppCfgAnnotation) CreateConfigs(c *typannot.Context) []*AppCfg {
-	var configs []*AppCfg
-	for _, annot := range c.FindAnnotByStruct(m.getTagName()) {
-		prefix := getPrefix(annot)
-		var fields []*Field
-		for _, field := range annot.Type.(*typannot.StructType).Fields {
-			fields = append(fields, &Field{
-				Key:     fmt.Sprintf("%s_%s", prefix, getFieldName(field)),
-				Default: field.Get("default"),
-			})
-		}
-
-		configs = append(configs, &AppCfg{
-			CtorName: getCtorName(annot),
-			Name:     annot.Name,
-			Prefix:   prefix,
-			SpecType: fmt.Sprintf("%s.%s", annot.Package, annot.Name),
-			Fields:   fields,
-		})
-	}
-	return configs
+	typgo.GoImports(target)
+	return nil
 }
 
 func (m *AppCfgAnnotation) getTagName() string {
@@ -169,29 +118,9 @@ func (m *AppCfgAnnotation) getTemplate() string {
 	return m.Template
 }
 
-func (m *AppCfgAnnotation) getTarget(c *typannot.Context) string {
+func (m *AppCfgAnnotation) getTarget(c *Context) string {
 	if m.Target == "" {
 		m.Target = fmt.Sprintf("%s/app_cfg_annotated.go", c.Destination)
 	}
 	return m.Target
-}
-
-func getCtorName(annot *typannot.Annot) string {
-	return annot.TagParam.Get("ctor_name")
-}
-
-func getPrefix(annot *typannot.Annot) string {
-	prefix := annot.TagParam.Get("prefix")
-	if prefix == "" {
-		prefix = strings.ToUpper(annot.Name)
-	}
-	return prefix
-}
-
-func getFieldName(field *typannot.Field) string {
-	name := field.Get("envconfig")
-	if name == "" {
-		name = strings.ToUpper(field.Name)
-	}
-	return name
 }

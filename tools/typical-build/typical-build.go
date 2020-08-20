@@ -29,7 +29,8 @@ var descriptor = typgo.Descriptor{
 				&typapp.CtorAnnotation{},
 				&typapp.DtorAnnotation{},
 				&typcfg.AppCfgAnnotation{
-					DotEnv: true, // generate .env file reflected to config
+					DotEnv:   ".env",     // generate .env file reflected to config
+					UsageDoc: "USAGE.md", // generate USAGE.md
 				},
 			},
 		},
