@@ -12,20 +12,20 @@ import (
 
 type (
 	// AppCfg application configuration
-	// @app-cfg (prefix:"APP")
+	// @envconfig (prefix:"APP")
 	AppCfg struct {
 		Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
 		Debug   bool   `envconfig:"DEBUG" default:"true"`
 	}
 	// RedisCfg redis onfiguration
-	// @app-cfg (prefix:"REDIS")
+	// @envconfig (prefix:"REDIS")
 	RedisCfg struct {
 		Host     string `envconfig:"HOST" required:"true" default:"localhost"`
 		Port     string `envconfig:"PORT" required:"true" default:"6379"`
 		Password string `envconfig:"PASSWORD" default:"redispass"`
 	}
 	// PostgresCfg postgres configuration
-	// @app-cfg (prefix:"PG")
+	// @envconfig (prefix:"PG")
 	PostgresCfg struct {
 		DBName string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
 		DBUser string `envconfig:"DBUSER" required:"true" default:"pguser"`

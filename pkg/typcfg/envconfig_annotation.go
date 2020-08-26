@@ -13,29 +13,29 @@ import (
 )
 
 type (
-	// AppCfgAnnotation handle @app-cfg annotation
-	// e.g. `@app-cfg (prefix: "PREFIX" ctor_name:"CTOR")`
-	AppCfgAnnotation struct {
-		TagName  string // By default is `@app-cfg`
+	// EnvconfigAnnotation handle @envconfig annotation
+	// e.g. `@envconfig (prefix: "PREFIX" ctor_name:"CTOR")`
+	EnvconfigAnnotation struct {
+		TagName  string // By default is `@envconfig`
 		Template string // By default defined in defaultCfgTemplate variable
-		Target   string // By default is `cmd/PROJECT_NAME/cfg_annotated.go`
+		Target   string // By default is `cmd/PROJECT_NAME/envconfig_annotated.go`
 		DotEnv   string // Dotenv path. It will be generated if not empty
 		UsageDoc string // Usage documentation path. It will be if not emtpy
 	}
-	// AppCfgTmplData template
-	AppCfgTmplData struct {
+	// EnvconfigTmplData template
+	EnvconfigTmplData struct {
 		typast.Signature
 		Package string
 		Imports []string
-		Configs []*AppCfg
+		Configs []*Envconfig
 	}
 	// Context of config
 	Context struct {
 		*typast.Context
-		Configs []*AppCfg
+		Configs []*Envconfig
 	}
-	// AppCfg model
-	AppCfg struct {
+	// Envconfig model
+	Envconfig struct {
 		CtorName string
 		Prefix   string
 		SpecType string
@@ -78,13 +78,13 @@ func Load{{$c.Name}}() (*{{$c.SpecType}}, error) {
 `
 
 //
-// AppCfgAnnotation
+// EnvconfigAnnotation
 //
 
-var _ typast.Annotator = (*AppCfgAnnotation)(nil)
+var _ typast.Annotator = (*EnvconfigAnnotation)(nil)
 
-// Annotate AppCfg to prepare dependency-injection and env-file
-func (m *AppCfgAnnotation) Annotate(c *typast.Context) error {
+// Annotate Envconfig to prepare dependency-injection and env-file
+func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 	context := m.Context(c)
 
 	if err := m.generate(context); err != nil {
@@ -107,28 +107,28 @@ func (m *AppCfgAnnotation) Annotate(c *typast.Context) error {
 }
 
 // Context create context instance
-func (m *AppCfgAnnotation) Context(c *typast.Context) *Context {
-	var configs []*AppCfg
-	for _, annot := range c.FindAnnot(m.isAppCfg) {
-		configs = append(configs, createAppCfg(annot))
+func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
+	var configs []*Envconfig
+	for _, annot := range c.FindAnnot(m.isEnvconfig) {
+		configs = append(configs, createEnvconfig(annot))
 	}
 	return &Context{Context: c, Configs: configs}
 }
 
-func (m *AppCfgAnnotation) isAppCfg(a *typast.Annot) bool {
+func (m *EnvconfigAnnotation) isEnvconfig(a *typast.Annot) bool {
 	_, ok := a.Type.(*typast.StructDecl)
 	return strings.EqualFold(a.TagName, m.getTagName()) && ok
 }
 
-func (m *AppCfgAnnotation) generate(c *Context) error {
+func (m *EnvconfigAnnotation) generate(c *Context) error {
 	target := m.getTarget(c)
 	if len(c.Configs) < 1 {
 		os.Remove(target)
 		return nil
 	}
 
-	fmt.Fprintf(Stdout, "Generate @app-cfg to %s\n", target)
-	if err := tmplkit.WriteFile(target, m.getTemplate(), &AppCfgTmplData{
+	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
+	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
 		Signature: typast.Signature{
 			TagName: m.getTagName(),
 			Help:    "https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg",
@@ -143,33 +143,33 @@ func (m *AppCfgAnnotation) generate(c *Context) error {
 	return nil
 }
 
-func (m *AppCfgAnnotation) getTagName() string {
+func (m *EnvconfigAnnotation) getTagName() string {
 	if m.TagName == "" {
-		m.TagName = "@app-cfg"
+		m.TagName = "@envconfig"
 	}
 	return m.TagName
 }
 
-func (m *AppCfgAnnotation) getTemplate() string {
+func (m *EnvconfigAnnotation) getTemplate() string {
 	if m.Template == "" {
 		m.Template = defaultCfgTemplate
 	}
 	return m.Template
 }
 
-func (m *AppCfgAnnotation) getTarget(c *Context) string {
+func (m *EnvconfigAnnotation) getTarget(c *Context) string {
 	if m.Target == "" {
-		m.Target = fmt.Sprintf("%s/app_cfg_annotated.go", c.Destination)
+		m.Target = fmt.Sprintf("%s/envconfig_annotated.go", c.Destination)
 	}
 	return m.Target
 }
 
-func createAppCfg(annot *typast.Annot) *AppCfg {
+func createEnvconfig(annot *typast.Annot) *Envconfig {
 	prefix := getPrefix(annot)
 	structDecl := annot.Type.(*typast.StructDecl)
 
 	name := annot.GetName()
-	return &AppCfg{
+	return &Envconfig{
 		CtorName: getCtorName(annot),
 		Name:     name,
 		Prefix:   prefix,

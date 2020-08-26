@@ -19,7 +19,7 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	defer func() { typcfg.Stdout = os.Stdout }()
 
 	c := &typcfg.Context{
-		Configs: []*typcfg.AppCfg{
+		Configs: []*typcfg.Envconfig{
 			{
 				Fields: []*typcfg.Field{
 					{Key: "key1", Default: "val1"},

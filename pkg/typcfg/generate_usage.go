@@ -22,7 +22,7 @@ Command to generate:
 	./typicalw annotate
 
 Annotation Tag:
-	@app-cfg
+	@envconfig
 
 Annotation Help:
 	https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg

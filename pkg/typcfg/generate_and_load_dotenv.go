@@ -15,8 +15,8 @@ func GenerateAndLoadDotEnv(target string, c *Context) error {
 	}
 
 	var updatedKeys []string
-	for _, AppCfg := range c.Configs {
-		for _, field := range AppCfg.Fields {
+	for _, Envconfig := range c.Configs {
+		for _, field := range Envconfig.Fields {
 			if _, ok := envmap[field.Key]; !ok {
 				updatedKeys = append(updatedKeys, field.Key)
 				envmap[field.Key] = field.Default

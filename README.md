@@ -85,17 +85,27 @@ func CloseConn(db *sql.DB){
 
 ## Application Config
 
-Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@app-cfg`). 
+Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@envconfig`). 
 
 ```go
 type (
   // AppCfg application configuration
-  // @app-cfg (prefix:"APP")
+  // @envconfig (prefix:"APP")
   AppCfg struct {
     Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
     Debug   bool   `envconfig:"DEBUG" default:"true"`
   }
 )
+```
+
+Generate usage documentation ([USAGE.md](USAGE.md)) and .env file 
+```go
+// in typical-build
+
+&typcfg.EnvconfigAnnotation{
+  DotEnv:   ".env",     // generate .env file
+  UsageDoc: "USAGE.md", // generate USAGE.md
+}
 ```
 
 ## Mocking

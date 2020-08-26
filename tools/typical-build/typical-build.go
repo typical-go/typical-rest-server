@@ -13,7 +13,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.8.37",
+	ProjectVersion: "0.8.38",
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
@@ -28,7 +28,7 @@ var descriptor = typgo.Descriptor{
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
 				&typapp.DtorAnnotation{},
-				&typcfg.AppCfgAnnotation{
+				&typcfg.EnvconfigAnnotation{
 					DotEnv:   ".env",     // generate .env file
 					UsageDoc: "USAGE.md", // generate USAGE.md
 				},

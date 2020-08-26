@@ -18,7 +18,7 @@ func TestGenerateUsage(t *testing.T) {
 
 	target := "sample.md"
 	c := &typcfg.Context{
-		Configs: []*typcfg.AppCfg{
+		Configs: []*typcfg.Envconfig{
 			{
 				Fields: []*typcfg.Field{
 					{Key: "APP_NAME", Default: "some-name", Required: true},
@@ -46,7 +46,7 @@ Command to generate:
 	./typicalw annotate
 
 Annotation Tag:
-	@app-cfg
+	@envconfig
 
 Annotation Help:
 	https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg
