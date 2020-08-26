@@ -44,7 +44,7 @@ var descriptor = typgo.Descriptor{
 		// docker
 		&typdocker.DockerCmd{},
 		// pg
-		&pg.Utility{},
+		&pg.Command{},
 		// reset
 		&typgo.Command{
 			Name:  "reset",
