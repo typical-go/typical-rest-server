@@ -22,13 +22,17 @@ Opinionated, simple and straight forward Restful server implementation for Golan
 
 The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool.
 
+Run applicaton
 ```bash
-./typicalw docker up   # equivalent with `docker-compose up -d` (if infrastructure not up)
-./typicalw pg reset    # drop, create and migrate postgres database (if database not ready)
-./typicalw mock        # generate mock (if require mock)
-
-./typicalw test        # run test 
+./typicalw docker up   # equivalent with `docker-compose up -d`
+./typicalw reset       # reset infra: drop, create and migrate postgres database 
 ./typicalw run         # run the application
+```
+
+Test application
+```bash
+./typicalw mock        # generate mock (if needed)
+./typicalw test        # run test 
 ```
 
 ## Project Layout
@@ -121,6 +125,8 @@ type(
   }
 )
 ```
+
+Mock class will be generated in `*_mock` package
 
 ## ORM Hate
 
