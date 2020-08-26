@@ -11,7 +11,6 @@ import (
 	"github.com/urfave/cli/v2"
 
 	// load migration file
-
 	_ "github.com/golang-migrate/migrate/source/file"
 )
 
