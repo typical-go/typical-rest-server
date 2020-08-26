@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/envkit"
 )
 
 // GenerateAndLoadDotEnv to create and load envfile
 func GenerateAndLoadDotEnv(target string, c *Context) error {
-	envmap, err := common.CreateEnvMapFromFile(target)
+	envmap, err := envkit.ReadFile(target)
 	if err != nil {
-		envmap = make(common.EnvMap)
+		envmap = make(envkit.Map)
 	}
 
 	var updatedKeys []string
@@ -27,9 +27,9 @@ func GenerateAndLoadDotEnv(target string, c *Context) error {
 		fmt.Fprintf(Stdout, "New keys added in '%s': %s\n", target, strings.Join(updatedKeys, " "))
 	}
 
-	if err := envmap.SaveToFile(target); err != nil {
+	if err := envkit.SaveFile(envmap, target); err != nil {
 		return err
 	}
 
-	return common.Setenv(envmap)
+	return envkit.Setenv(envmap)
 }

@@ -5,9 +5,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/typical-go/typical-go/pkg/common"
-	"github.com/typical-go/typical-go/pkg/typannot"
+	"github.com/typical-go/typical-go/pkg/tmplkit"
+	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
@@ -26,6 +27,25 @@ type (
 		Package string
 		Imports []string
 		Configs []*AppCfg
+	}
+	// Context of config
+	Context struct {
+		*typast.Context
+		Configs []*AppCfg
+	}
+	// AppCfg model
+	AppCfg struct {
+		CtorName string
+		Prefix   string
+		SpecType string
+		Name     string
+		Fields   []*Field
+	}
+	// Field model
+	Field struct {
+		Key      string
+		Default  string
+		Required bool
 	}
 )
 
@@ -70,11 +90,11 @@ func Load{{$c.Name}}() (*{{$c.SpecType}}, error) {
 // AppCfgAnnotation
 //
 
-var _ typannot.Annotator = (*AppCfgAnnotation)(nil)
+var _ typast.Annotator = (*AppCfgAnnotation)(nil)
 
 // Annotate AppCfg to prepare dependency-injection and env-file
-func (m *AppCfgAnnotation) Annotate(c *typannot.Context) error {
-	context := CreateContext(c, m.getTagName())
+func (m *AppCfgAnnotation) Annotate(c *typast.Context) error {
+	context := m.Context(c)
 
 	if err := m.generate(context); err != nil {
 		return err
@@ -95,6 +115,20 @@ func (m *AppCfgAnnotation) Annotate(c *typannot.Context) error {
 	return nil
 }
 
+// Context create context instance
+func (m *AppCfgAnnotation) Context(c *typast.Context) *Context {
+	var configs []*AppCfg
+	for _, annot := range c.FindAnnot(m.isAppCfg) {
+		configs = append(configs, createAppCfg(annot))
+	}
+	return &Context{Context: c, Configs: configs}
+}
+
+func (m *AppCfgAnnotation) isAppCfg(a *typast.Annot) bool {
+	_, ok := a.Type.(*typast.StructDecl)
+	return strings.EqualFold(a.TagName, m.getTagName()) && ok
+}
+
 func (m *AppCfgAnnotation) generate(c *Context) error {
 	target := m.getTarget(c)
 	if len(c.Configs) < 1 {
@@ -103,7 +137,7 @@ func (m *AppCfgAnnotation) generate(c *Context) error {
 	}
 
 	fmt.Fprintf(Stdout, "Generate @app-cfg to %s\n", target)
-	if err := common.ExecuteTmplToFile(target, m.getTemplate(), &AppCfgTmplData{
+	if err := tmplkit.WriteFile(target, m.getTemplate(), &AppCfgTmplData{
 		Package: filepath.Base(c.Destination),
 		Imports: c.CreateImports(typgo.ProjectPkg, "github.com/kelseyhightower/envconfig"),
 		Configs: c.Configs,
@@ -133,4 +167,54 @@ func (m *AppCfgAnnotation) getTarget(c *Context) string {
 		m.Target = fmt.Sprintf("%s/app_cfg_annotated.go", c.Destination)
 	}
 	return m.Target
+}
+
+func createAppCfg(annot *typast.Annot) *AppCfg {
+	prefix := getPrefix(annot)
+	structDecl := annot.Type.(*typast.StructDecl)
+
+	name := annot.GetName()
+	return &AppCfg{
+		CtorName: getCtorName(annot),
+		Name:     name,
+		Prefix:   prefix,
+		SpecType: fmt.Sprintf("%s.%s", annot.Package, name),
+		Fields:   createFields(structDecl, prefix),
+	}
+}
+
+func createFields(structDecl *typast.StructDecl, prefix string) []*Field {
+	var fields []*Field
+	for _, field := range structDecl.Fields {
+		fields = append(fields, CreateField(prefix, field))
+	}
+	return fields
+}
+
+// CreateField create new instance of field
+func CreateField(prefix string, field *typast.Field) *Field {
+	// NOTE: mimic kelseyhightower/envconfig struct tags
+
+	name := field.Get("envconfig")
+	if name == "" {
+		name = strings.ToUpper(field.Names[0])
+	}
+
+	return &Field{
+		Key:      fmt.Sprintf("%s_%s", prefix, name),
+		Default:  field.Get("default"),
+		Required: field.Get("required") == "true",
+	}
+}
+
+func getCtorName(annot *typast.Annot) string {
+	return annot.TagParam.Get("ctor_name")
+}
+
+func getPrefix(annot *typast.Annot) string {
+	prefix := annot.TagParam.Get("prefix")
+	if prefix == "" {
+		prefix = strings.ToUpper(annot.GetName())
+	}
+	return prefix
 }

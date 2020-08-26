@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/typical-go/typical-go/pkg/common"
+	"github.com/typical-go/typical-go/pkg/tmplkit"
 )
 
 type (
@@ -41,7 +41,7 @@ Annotation Help:
 func GenerateUsage(target string, c *Context) error {
 	fields := fields(c)
 	fmt.Fprintf(Stdout, "Generate '%s'\n", target)
-	return common.ExecuteTmplToFile(
+	return tmplkit.WriteFile(
 		target,
 		usageTmpl,
 		usageTmplData{

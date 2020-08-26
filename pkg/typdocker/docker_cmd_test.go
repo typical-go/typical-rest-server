@@ -14,7 +14,7 @@ import (
 func TestCmdUp(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		unpatch := execkit.Patch([]*execkit.RunExpectation{
-			{CommandLine: []string{"docker-compose", "up", "--remove-orphans", "-d"}},
+			{CommandLine: "docker-compose up --remove-orphans -d"},
 		})
 		defer unpatch(t)
 		cmd := &typdocker.DockerCmd{}
@@ -24,8 +24,8 @@ func TestCmdUp(t *testing.T) {
 	})
 	t.Run("with wipe", func(t *testing.T) {
 		unpatch := execkit.Patch([]*execkit.RunExpectation{
-			{CommandLine: []string{"docker", "ps", "-q"}},
-			{CommandLine: []string{"docker-compose", "up", "--remove-orphans", "-d"}},
+			{CommandLine: "docker ps -q"},
+			{CommandLine: "docker-compose up --remove-orphans -d"},
 		})
 		defer unpatch(t)
 		cmd := &typdocker.DockerCmd{}
@@ -45,16 +45,16 @@ func TestCmdUp(t *testing.T) {
 		flagSet.Bool("wipe", true, "")
 
 		err := command.Action(cli.NewContext(nil, flagSet, nil))
-		require.EqualError(t, err, "Docker-ID: execkit-mock: no run expectation for [docker ps -q]")
+		require.EqualError(t, err, "Docker-ID: execkit-mock: no run expectation for \"docker ps -q\"")
 	})
 }
 
 func TestCmdWipe(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		unpatch := execkit.Patch([]*execkit.RunExpectation{
-			{CommandLine: []string{"docker", "ps", "-q"}, OutputBytes: []byte("pid-1\npid-2")},
-			{CommandLine: []string{"docker", "kill", "pid-1"}},
-			{CommandLine: []string{"docker", "kill", "pid-2"}},
+			{CommandLine: "docker ps -q", OutputBytes: []byte("pid-1\npid-2")},
+			{CommandLine: "docker kill pid-1"},
+			{CommandLine: "docker kill pid-2"},
 		})
 		defer unpatch(t)
 		cmd := &typdocker.DockerCmd{}
@@ -70,26 +70,26 @@ func TestCmdWipe(t *testing.T) {
 		command := cmd.CmdWipe(&typgo.BuildSys{})
 
 		err := command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil))
-		require.EqualError(t, err, "Docker-ID: execkit-mock: no run expectation for [docker ps -q]")
+		require.EqualError(t, err, "Docker-ID: execkit-mock: no run expectation for \"docker ps -q\"")
 	})
 
 	t.Run("when kill error", func(t *testing.T) {
 		unpatch := execkit.Patch([]*execkit.RunExpectation{
-			{CommandLine: []string{"docker", "ps", "-q"}, OutputBytes: []byte("pid-1\npid-2")},
+			{CommandLine: "docker ps -q", OutputBytes: []byte("pid-1\npid-2")},
 		})
 		defer unpatch(t)
 		cmd := &typdocker.DockerCmd{}
 		command := cmd.CmdWipe(&typgo.BuildSys{})
 
 		err := command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil))
-		require.EqualError(t, err, "Fail to kill #pid-1: execkit-mock: no run expectation for [docker kill pid-1]")
+		require.EqualError(t, err, "Fail to kill #pid-1: execkit-mock: no run expectation for \"docker kill pid-1\"")
 	})
 
 }
 
 func TestCmdDown(t *testing.T) {
 	unpatch := execkit.Patch([]*execkit.RunExpectation{
-		{CommandLine: []string{"docker-compose", "down", "-v"}},
+		{CommandLine: "docker-compose down -v"},
 	})
 	defer unpatch(t)
 	cmd := &typdocker.DockerCmd{}

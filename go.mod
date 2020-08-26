@@ -11,7 +11,6 @@ require (
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/fatih/color v1.9.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
@@ -27,7 +26,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.10.7
+	github.com/typical-go/typical-go v0.10.8
 	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/dig v1.10.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

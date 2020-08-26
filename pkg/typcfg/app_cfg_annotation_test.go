@@ -3,12 +3,13 @@ package typcfg_test
 import (
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/execkit"
-	"github.com/typical-go/typical-go/pkg/typannot"
+	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 )
@@ -25,24 +26,24 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	defer func() { typcfg.Stdout = os.Stdout }()
 
 	AppCfgAnnotation := &typcfg.AppCfgAnnotation{}
-	c := &typannot.Context{
+	c := &typast.Context{
 		Destination: "somepkg1",
 		Context: &typgo.Context{
 			BuildSys: &typgo.BuildSys{
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		Summary: &typannot.Summary{
-			Annots: []*typannot.Annot{
+		Summary: &typast.Summary{
+			Annots: []*typast.Annot{
 				{
 					TagName: "@app-cfg",
-					Decl: &typannot.Decl{
-						Name:    "SomeSample",
-						Package: "mypkg",
-						Type: &typannot.StructType{
-							Fields: []*typannot.Field{
-								{Name: "SomeField1", Type: "string", StructTag: `default:"some-text"`},
-								{Name: "SomeField2", Type: "int", StructTag: `default:"9876"`},
+					Decl: &typast.Decl{
+						File: typast.File{Package: "mypkg"},
+						Type: &typast.StructDecl{
+							TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+							Fields: []*typast.Field{
+								{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
+								{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 							},
 						},
 					},
@@ -108,23 +109,23 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		DotEnv:   ".env33",
 		UsageDoc: "some-usage.md",
 	}
-	c := &typannot.Context{
+	c := &typast.Context{
 		Context: &typgo.Context{
 			BuildSys: &typgo.BuildSys{
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		Summary: &typannot.Summary{Annots: []*typannot.Annot{
+		Summary: &typast.Summary{Annots: []*typast.Annot{
 			{
 				TagName:  "@app-cfg",
 				TagParam: `ctor_name:"ctor1" prefix:"SS"`,
-				Decl: &typannot.Decl{
-					Name:    "SomeSample",
-					Package: "mypkg",
-					Type: &typannot.StructType{
-						Fields: []*typannot.Field{
-							{Name: "SomeField1", Type: "string", StructTag: `default:"some-text"`},
-							{Name: "SomeField2", Type: "int", StructTag: `default:"9876"`},
+				Decl: &typast.Decl{
+					File: typast.File{Package: "mypkg"},
+					Type: &typast.StructDecl{
+						TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+						Fields: []*typast.Field{
+							{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
+							{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 						},
 					},
 				},
@@ -160,20 +161,22 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 		Template: "some-template",
 		Target:   target,
 	}
-	c := &typannot.Context{
+	c := &typast.Context{
 		Context: &typgo.Context{
 			BuildSys: &typgo.BuildSys{
 				Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
 			},
 		},
-		Summary: &typannot.Summary{
-			Annots: []*typannot.Annot{
+		Summary: &typast.Summary{
+			Annots: []*typast.Annot{
 				{
 					TagName: "@some-tag",
-					Decl: &typannot.Decl{
-						Name:    "SomeSample",
-						Package: "mypkg",
-						Type:    &typannot.StructType{Fields: []*typannot.Field{}},
+					Decl: &typast.Decl{
+						File: typast.File{Package: "mypkg"},
+						Type: &typast.StructDecl{
+							TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+							Fields:   []*typast.Field{},
+						},
 					},
 				},
 			},
@@ -189,13 +192,41 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 	target := "target1"
 	defer os.Remove(target)
 	ioutil.WriteFile(target, []byte("some-content"), 0777)
-	c := &typannot.Context{
+	c := &typast.Context{
 		Context: &typgo.Context{},
-		Summary: &typannot.Summary{},
+		Summary: &typast.Summary{},
 	}
 
 	AppCfgAnnotation := &typcfg.AppCfgAnnotation{Target: target}
 	require.NoError(t, AppCfgAnnotation.Annotate(c))
 	_, err := os.Stat(target)
 	require.True(t, os.IsNotExist(err))
+}
+
+func TestCreateField(t *testing.T) {
+	testnames := []struct {
+		TestName string
+		Prefix   string
+		Field    *typast.Field
+		Expected *typcfg.Field
+	}{
+		{
+			Prefix:   "APP",
+			Field:    &typast.Field{Names: []string{"Address"}},
+			Expected: &typcfg.Field{Key: "APP_ADDRESS"},
+		},
+		{
+			Prefix: "APP",
+			Field: &typast.Field{
+				Names:     []string{"some-name"},
+				StructTag: reflect.StructTag(`envconfig:"ADDRESS" default:"some-address" required:"true"`),
+			},
+			Expected: &typcfg.Field{Key: "APP_ADDRESS", Default: "some-address", Required: true},
+		},
+	}
+	for _, tt := range testnames {
+		t.Run(tt.TestName, func(t *testing.T) {
+			require.Equal(t, tt.Expected, typcfg.CreateField(tt.Prefix, tt.Field))
+		})
+	}
 }

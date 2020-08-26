@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/typical-go/typical-go/pkg/typannot"
 	"github.com/typical-go/typical-go/pkg/typapp"
+	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
@@ -24,12 +24,12 @@ var descriptor = typgo.Descriptor{
 		// compile
 		&typgo.CompileProject{},
 		// annotate
-		&typannot.AnnotateCmd{
-			Annotators: []typannot.Annotator{
+		&typast.AnnotateCmd{
+			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
 				&typapp.DtorAnnotation{},
 				&typcfg.AppCfgAnnotation{
-					DotEnv:   ".env",     // generate .env file reflected to config
+					DotEnv:   ".env",     // generate .env file
 					UsageDoc: "USAGE.md", // generate USAGE.md
 				},
 			},
