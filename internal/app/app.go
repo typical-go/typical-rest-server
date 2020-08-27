@@ -9,9 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/internal/infra"
-	"github.com/typical-go/typical-rest-server/internal/profiler"
-	"github.com/typical-go/typical-rest-server/internal/server"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	"github.com/typical-go/typical-rest-server/internal/app/profiler"
+	"github.com/typical-go/typical-rest-server/internal/app/server"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )

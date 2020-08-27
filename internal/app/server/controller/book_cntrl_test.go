@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/typical-go/typical-rest-server/internal/server/controller"
-	"github.com/typical-go/typical-rest-server/internal/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/server/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/server/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/app/server/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )

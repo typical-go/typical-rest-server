@@ -13,23 +13,19 @@ Opinionated, simple and straight forward Restful server implementation for Golan
 - Use the project as reference for project layout and code best practice.
 - The [pkg](pkg) package is [shared library](#shared-library) that can help in various needs.
 
-## Prerequisite
 
-- [Go](https://golang.org/doc/install) 
-- [Docker-Compose](https://docs.docker.com/compose/install/)
+## Builds 
 
-## Quick Start
+The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The build descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
 
-The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool.
-
-Run applicaton
+Run application:
 ```bash
 ./typicalw docker up   # equivalent with `docker-compose up -d`
 ./typicalw reset       # reset infra: drop, create and migrate postgres database 
 ./typicalw run         # run the application
 ```
 
-Test application
+Test application:
 ```bash
 ./typicalw mock        # generate mock (if needed)
 ./typicalw test        # run test 
@@ -39,31 +35,39 @@ Test application
 
 Typical-Rest encourage [standard go project layout](https://github.com/golang-standards/project-layout)
 
-- [`internal`](internal) Exclusive go source files for the project
-  - [`internal/app`](internal/app) main functionality/entry-point
-  - [`internal/infra`](internal/infra) infrastructure for the project e.g. config and connection object
-  - [`internal/profiler`](internal/profiler) profiling/debug the project e.g. HealthCheck, PProf, etc
-  - [`internal/server`](internal/server) server controller/logic
-  - [`internal/generated`](internal/generated) code generated from annotation
-- [`pkg`](pkg) Shareable go source files e.g. helper/utitily Library
+Source codes:
+- [`cmd`](cmd): the main package
+- [`internal`](internal): Exclusive codes for the project
+  - [`internal/app`](internal/app) 
+    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
+    - [`internal/app/profiler`](internal/app/profiler): profiling/debug the project e.g. HealthCheck, PProf, etc
+    - [`internal/app/server`](internal/app/server) 
+      - [`internal/app/server/controller`](internal/app/server/controller): presentation layer
+      - [`internal/app/server/service`](internal/app/server/service): logic layer
+      - [`internal/app/server/repository`](internal/app/server/repository): data access layer
+  - [`internal/generated`](internal/generated): code generated from annotation
+- [`pkg`](pkg): Shareable codes e.g. helper/utitily Library
+
+Others directory:
+- [`tools`](tool) Supporting tool for the project e.g. Build Tool
 - [`api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
 - [`databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
-- [`tools`](tool) Supporting tool for the project e.g. Build Tool
+
 
 ## Layered Architecture
 
 Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) (as most adoptable architectural pattern) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) and [Table-Driven Test](https://github.com/golang/go/wiki/TableDrivenTests)
 
-- Presentation Layer at [`internal/server/controller`](internal/server/controller)
+- Presentation Layer at [`internal/app/server/controller`](internal/server/controller)
   - Handling HTTP routes
   - Parsing the request
   - Sending response (both success & error)
-- Logic Layer at [`internal/server/service`](internal/server/service)
+- Logic Layer at [`internal/app/server/service`](internal/server/service)
   - Intermediary between controller (end-point) and repository (data)
   - Logic of controller
   - Data Validation
   - DTO (Data Transfer Object) Model
-- Data Access Layer at [`internal/server/repository`](internal/server/repository)
+- Data Access Layer at [`internal/app/server/repository`](internal/server/repository)
   - No logic except operation to database
   - Repository pattern
   - DAO (Data Access Object) Model

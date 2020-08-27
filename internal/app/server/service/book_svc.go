@@ -10,7 +10,7 @@ import (
 
 	"gopkg.in/go-playground/validator.v9"
 
-	"github.com/typical-go/typical-rest-server/internal/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
 	"go.uber.org/dig"
 )
 

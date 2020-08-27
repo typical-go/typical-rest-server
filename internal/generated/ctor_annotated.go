@@ -11,9 +11,9 @@ Help:
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/infra"
-	"github.com/typical-go/typical-rest-server/internal/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/server/service"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/app/server/service"
 )
 
 func init() {

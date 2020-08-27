@@ -8,7 +8,7 @@ import (
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/infra"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
 )
 
 type (

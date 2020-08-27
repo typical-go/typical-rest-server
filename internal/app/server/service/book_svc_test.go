@@ -7,9 +7,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/internal/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/server/repository_mock"
-	"github.com/typical-go/typical-rest-server/internal/server/service"
+	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
+	"github.com/typical-go/typical-rest-server/internal/app/server/repository_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/server/service"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 

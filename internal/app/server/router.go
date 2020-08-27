@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/typical-go/typical-rest-server/internal/server/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/server/controller"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
