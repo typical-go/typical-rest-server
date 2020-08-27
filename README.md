@@ -36,7 +36,6 @@ Test application:
 Typical-Rest encourage [standard go project layout](https://github.com/golang-standards/project-layout)
 
 Source codes:
-- [`cmd`](cmd): the main package
 - [`internal`](internal): Exclusive codes for the project
   - [`internal/app`](internal/app) 
     - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
@@ -47,6 +46,7 @@ Source codes:
       - [`internal/app/server/repository`](internal/app/server/repository): data access layer
   - [`internal/generated`](internal/generated): code generated from annotation
 - [`pkg`](pkg): Shareable codes e.g. helper/utitily Library
+- [`cmd`](cmd): the main package
 
 Others directory:
 - [`tools`](tool) Supporting tool for the project e.g. Build Tool
