@@ -25,6 +25,7 @@ var descriptor = typgo.Descriptor{
 		&typgo.CompileProject{},
 		// annotate
 		&typast.AnnotateCmd{
+			Destination: "internal/generated/typical",
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
 				&typapp.DtorAnnotation{},
