@@ -7,7 +7,7 @@ import (
 
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/typical-go/typical-rest-server/internal/generated"
+	"github.com/typical-go/typical-rest-server/internal/generated/typical"
 	"github.com/urfave/cli/v2"
 
 	// load migration file
@@ -32,7 +32,7 @@ const (
 
 // Command for postgress
 func (*Command) Command(sys *typgo.BuildSys) *cli.Command {
-	postgresCfg, err := generated.LoadPostgresCfg()
+	postgresCfg, err := typical.LoadPostgresCfg()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
