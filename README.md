@@ -50,7 +50,7 @@ Source codes:
       - [`internal/app/server/controller`](internal/app/server/controller): presentation layer
       - [`internal/app/server/service`](internal/app/server/service): logic layer
       - [`internal/app/server/repository`](internal/app/server/repository): data access layer
-  - [`internal/generated`](internal/generated): code generated from annotation
+  - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): Shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package
 
