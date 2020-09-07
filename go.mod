@@ -26,7 +26,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.10.8
+	github.com/typical-go/typical-go v0.10.9
 	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/dig v1.10.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
