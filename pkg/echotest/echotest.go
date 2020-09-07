@@ -13,14 +13,16 @@ import (
 type (
 	// TestCase for echo
 	TestCase struct {
-		Request
-
-		ExpectedCode   int
-		ExpectedHeader map[string]string
-		ExpectedBody   string
-		ExpectedErr    string
+		Request          Request
+		ExpectedResponse Response
+		ExpectedError    string
 	}
-
+	// Response that expected
+	Response struct {
+		Code   int
+		Header map[string]string
+		Body   string
+	}
 	// Request for testcase
 	Request struct {
 		Method    string
@@ -33,26 +35,23 @@ type (
 
 // Execute test case against handle function
 func (tt *TestCase) Execute(t *testing.T, fn echo.HandlerFunc) {
-	req := httptest.NewRequest(tt.Method, tt.Target, strings.NewReader(tt.Body))
-	for key, value := range tt.Header {
+	req := httptest.NewRequest(tt.Request.Method, tt.Request.Target, strings.NewReader(tt.Request.Body))
+	for key, value := range tt.Request.Header {
 		req.Header.Set(key, value)
 	}
 
-	rec, err := execute(fn, req, tt.URLParams)
-	if tt.ExpectedErr != "" {
-		require.EqualError(t, err, tt.ExpectedErr)
-
-		return
+	rec, err := execute(fn, req, tt.Request.URLParams)
+	if tt.ExpectedError != "" {
+		require.EqualError(t, err, tt.ExpectedError)
+	} else {
+		require.NoError(t, err)
+		require.Equal(t, tt.ExpectedResponse.Code, rec.Code)
+		require.Equal(t, tt.ExpectedResponse.Body, rec.Body.String())
+		resHeader := rec.Result().Header
+		for key, value := range tt.ExpectedResponse.Header {
+			require.Equal(t, value, resHeader.Get(key))
+		}
 	}
-
-	require.NoError(t, err)
-	require.Equal(t, tt.ExpectedCode, rec.Code)
-	require.Equal(t, tt.ExpectedBody, rec.Body.String())
-	resHeader := rec.Result().Header
-	for key, value := range tt.ExpectedHeader {
-		require.Equal(t, value, resHeader.Get(key))
-	}
-
 }
 
 func execute(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
