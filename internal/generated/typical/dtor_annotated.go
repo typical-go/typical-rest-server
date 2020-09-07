@@ -16,6 +16,6 @@ import (
 
 func init() {
 	typapp.AppendDtor(
-		&typapp.Destructor{Fn: infra.Disconnect},
+		&typapp.Destructor{Fn: infra.Teardown},
 	)
 }

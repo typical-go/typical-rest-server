@@ -18,7 +18,7 @@ import (
 
 func init() {
 	typapp.AppendCtor(
-		&typapp.Constructor{Name: "", Fn: infra.Connect},
+		&typapp.Constructor{Name: "", Fn: infra.Setup},
 		&typapp.Constructor{Name: "", Fn: repository.NewBookRepo},
 		&typapp.Constructor{Name: "", Fn: service.NewBookSvc},
 	)
