@@ -16,6 +16,8 @@ Annotation Help:
 | Field Name | Default | Required | 
 |---|---|:---:|
 | APP_ADDRESS | :8089 | Yes |
+| APP_READ_TIMEOUT | 5s |  |
+| APP_WRITE_TIMEOUT | 10s |  |
 | APP_DEBUG | true |  |
 | REDIS_HOST | localhost | Yes |
 | REDIS_PORT | 6379 | Yes |
@@ -29,6 +31,8 @@ Annotation Help:
 ## DotEnv example
 ```
 APP_ADDRESS=:8089
+APP_READ_TIMEOUT=5s
+APP_WRITE_TIMEOUT=10s
 APP_DEBUG=true
 REDIS_HOST=localhost
 REDIS_PORT=6379

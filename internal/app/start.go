@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +22,12 @@ func Start(a app) (err error) {
 	if err := a.SetRoute(e); err != nil {
 		return err
 	}
-	return e.Start(a.Address)
+
+	return e.StartServer(&http.Server{
+		Addr:         a.AppCfg.Address,
+		ReadTimeout:  a.AppCfg.ReadTimeout,
+		WriteTimeout: a.AppCfg.WriteTimeout,
+	})
 }
 
 func shutdown(e *echo.Echo) {

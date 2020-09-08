@@ -3,6 +3,7 @@ package infra
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -15,8 +16,10 @@ type (
 	// AppCfg application configuration
 	// @envconfig (prefix:"APP")
 	AppCfg struct {
-		Address string `envconfig:"ADDRESS" default:":8089" required:"true"`
-		Debug   bool   `envconfig:"DEBUG" default:"true"`
+		Address      string        `envconfig:"ADDRESS" default:":8089" required:"true"`
+		ReadTimeout  time.Duration `envconfig:"READ_TIMEOUT" default:"5s"`
+		WriteTimeout time.Duration `envconfig:"WRITE_TIMEOUT" default:"10s"`
+		Debug        bool          `envconfig:"DEBUG" default:"true"`
 	}
 	// RedisCfg redis onfiguration
 	// @envconfig (prefix:"REDIS")
@@ -47,7 +50,7 @@ func (r *RedisCfg) createClient() *redis.Client {
 	})
 
 	if err := client.Ping().Err(); err != nil {
-		log.Fatalf("infra: %s", err.Error())
+		log.Fatalf("redis: %s", err.Error())
 	}
 
 	return client
@@ -64,11 +67,11 @@ func (p *PostgresCfg) createConn() *sql.DB {
 	)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
-		log.Fatalf("infra: %s", err.Error())
+		log.Fatalf("postgres: %s", err.Error())
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Fatalf("infra: %s", err.Error())
+		log.Fatalf("postgres: %s", err.Error())
 	}
 
 	return db
