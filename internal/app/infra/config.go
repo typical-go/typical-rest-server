@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
+	log "github.com/sirupsen/logrus"
 
 	// postgres driver
 	_ "github.com/lib/pq"
@@ -39,35 +40,36 @@ type (
 // RedisCfg
 //
 
-func (r *RedisCfg) createClient() (*redis.Client, error) {
+func (r *RedisCfg) createClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,
 	})
 
 	if err := client.Ping().Err(); err != nil {
-		return nil, fmt.Errorf("infra: %w", err)
+		log.Fatalf("infra: %s", err.Error())
 	}
 
-	return client, nil
+	return client
 }
 
 //
 // PostgresCfg
 //
 
-func (p *PostgresCfg) createConn() (*sql.DB, error) {
+func (p *PostgresCfg) createConn() *sql.DB {
 	conn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName,
 	)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
-		return nil, fmt.Errorf("infra: %w", err)
+		log.Fatalf("infra: %s", err.Error())
 	}
 
 	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("infra: %w", err)
+		log.Fatalf("infra: %s", err.Error())
 	}
-	return db, nil
+
+	return db
 }

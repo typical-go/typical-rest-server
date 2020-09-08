@@ -28,16 +28,11 @@ type (
 
 // Setup infra
 // @ctor
-func Setup(p setupParam) (infras Infra, err error) {
-	pg, err := p.PgCfg.createConn()
-	if err != nil {
-		return
+func Setup(p setupParam) Infra {
+	return Infra{
+		Pg:    p.PgCfg.createConn(),
+		Redis: p.RedisCfg.createClient(),
 	}
-	redis, err := p.RedisCfg.createClient()
-	if err != nil {
-		return
-	}
-	return Infra{Pg: pg, Redis: redis}, nil
 }
 
 // Teardown infra
