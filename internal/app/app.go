@@ -1,8 +1,10 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -25,6 +27,36 @@ type (
 	}
 )
 
+// Start app
+func Start(a app) (err error) {
+	e := echo.New()
+	defer Shutdown(e)
+
+	e.HideBanner = true
+	e.Debug = a.Debug
+
+	a.SetLoggger(e)
+	a.SetMiddleware(e)
+
+	if err := a.SetRoute(e); err != nil {
+		return err
+	}
+
+	return e.StartServer(&http.Server{
+		Addr:         a.AppCfg.Address,
+		ReadTimeout:  a.AppCfg.ReadTimeout,
+		WriteTimeout: a.AppCfg.WriteTimeout,
+	})
+}
+
+// Shutdown app
+func Shutdown(e *echo.Echo) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	e.Shutdown(ctx)
+}
+
+// SetMiddleware set middleware to the app
 func (a app) SetMiddleware(e *echo.Echo) {
 	e.Use(middleware.Recover())
 	if e.Debug {
@@ -32,6 +64,7 @@ func (a app) SetMiddleware(e *echo.Echo) {
 	}
 }
 
+// SetRoute set route the app
 func (a app) SetRoute(e *echo.Echo) error {
 	routers := typrest.Routers{
 		&a.Server,
@@ -40,8 +73,9 @@ func (a app) SetRoute(e *echo.Echo) error {
 	return routers.SetRoute(e)
 }
 
+// SetLogger set logger to the app
 func (a app) SetLoggger(e *echo.Echo) {
-	logger := logrus.StandardLogger()     // NOTE: always use standard logrus logger
+	logger := logrus.StandardLogger()     // NOTE: use standard logger for global use
 	e.Logger = typrest.WrapLogrus(logger) // NOTE: setup echo logger
 	log.SetOutput(logger.Writer())        // NOTE: std golang log use same output writer with logrus
 
