@@ -24,16 +24,21 @@ type (
 	}
 	// Router responsible to route
 	Router interface {
-		SetRoute(Server) error
+		SetRoute(Server)
 	}
 	// SetRouteFn function SetRoute
-	SetRouteFn func(Server) error
+	SetRouteFn func(Server)
 	routerImpl struct {
 		fn SetRouteFn
 	}
-	// Routers is slice of router
-	Routers []Router
 )
+
+// SetRoute to server
+func SetRoute(server Server, routers ...Router) {
+	for _, router := range routers {
+		router.SetRoute(server)
+	}
+}
 
 //
 // Server
@@ -54,22 +59,6 @@ func NewRouter(fn SetRouteFn) Router {
 }
 
 // SetRoute set route
-func (r *routerImpl) SetRoute(server Server) error {
-	return r.fn(server)
-}
-
-//
-// Routers
-//
-
-var _ Router = (Routers)(nil)
-
-// SetRoute to server
-func (r Routers) SetRoute(server Server) error {
-	for _, router := range r {
-		if err := router.SetRoute(server); err != nil {
-			return err
-		}
-	}
-	return nil
+func (r *routerImpl) SetRoute(server Server) {
+	r.fn(server)
 }

@@ -23,14 +23,13 @@ type (
 var _ typrest.Router = (*BookCntrl)(nil)
 
 // SetRoute to define API Route
-func (c *BookCntrl) SetRoute(e typrest.Server) (err error) {
+func (c *BookCntrl) SetRoute(e typrest.Server) {
 	e.GET("books", c.Retrieve)
 	e.GET("books/:id", c.RetrieveOne)
 	e.POST("books", c.Create)
 	e.PUT("books/:id", c.Update)
 	e.PATCH("books/:id", c.Patch)
 	e.DELETE("books/:id", c.Delete)
-	return
 }
 
 // Create book

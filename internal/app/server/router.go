@@ -17,9 +17,8 @@ type (
 var _ typrest.Router = (*Router)(nil)
 
 // SetRoute to echo server
-func (r *Router) SetRoute(e typrest.Server) error {
-	routers := typrest.Routers{
+func (r *Router) SetRoute(e typrest.Server) {
+	typrest.SetRoute(e,
 		&r.BookCntrl,
-	}
-	return routers.SetRoute(e)
+	)
 }

@@ -37,10 +37,7 @@ func Start(a app) (err error) {
 
 	a.SetLoggger(e)
 	a.SetMiddleware(e)
-
-	if err := a.SetRoute(e); err != nil {
-		return err
-	}
+	a.SetRoute(e)
 
 	return e.StartServer(&http.Server{
 		Addr:         a.AppCfg.Address,
@@ -65,12 +62,11 @@ func (a app) SetMiddleware(e *echo.Echo) {
 }
 
 // SetRoute set route the app
-func (a app) SetRoute(e *echo.Echo) error {
-	routers := typrest.Routers{
+func (a app) SetRoute(e *echo.Echo) {
+	typrest.SetRoute(e,
 		&a.Server,
 		&a.Profiler,
-	}
-	return routers.SetRoute(e)
+	)
 }
 
 // SetLogger set logger to the app

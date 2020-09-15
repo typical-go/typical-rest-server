@@ -21,9 +21,8 @@ type (
 var _ typrest.Router = (*HealthCheck)(nil)
 
 // SetRoute to profiler api
-func (h *HealthCheck) SetRoute(e typrest.Server) error {
+func (h *HealthCheck) SetRoute(e typrest.Server) {
 	e.Any("application/health", h.handle)
-	return nil
 }
 
 func (h *HealthCheck) handle(ec echo.Context) error {
