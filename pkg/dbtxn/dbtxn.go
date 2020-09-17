@@ -43,7 +43,7 @@ func Begin(parent *context.Context) CommitFn {
 
 // Use transaction if possible
 func Use(ctx context.Context, db *sql.DB) (*Handler, error) {
-	c := Retrieve(ctx)
+	c := Find(ctx)
 
 	if ctx == nil {
 		return nil, errors.New("dbtxn: missing context.Context")
@@ -66,8 +66,8 @@ func Use(ctx context.Context, db *sql.DB) (*Handler, error) {
 	return &Handler{DB: c.Tx, Context: c}, nil
 }
 
-// Retrieve transaction context
-func Retrieve(ctx context.Context) *Context {
+// Find transaction context
+func Find(ctx context.Context) *Context {
 	if ctx == nil {
 		return nil
 	}
@@ -78,7 +78,7 @@ func Retrieve(ctx context.Context) *Context {
 
 // Error of transaction
 func Error(ctx context.Context) error {
-	if c := Retrieve(ctx); c != nil {
+	if c := Find(ctx); c != nil {
 		return c.Err
 	}
 	return nil

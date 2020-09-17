@@ -307,7 +307,7 @@ func TestBookRepoImpl_Retrieve(t *testing.T) {
 			repo, db := createBookRepo(tt.bookRepoFn)
 			defer db.Close()
 
-			books, err := repo.Retrieve(context.Background(), tt.opts...)
+			books, err := repo.Find(context.Background(), tt.opts...)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {

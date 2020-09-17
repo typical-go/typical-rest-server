@@ -36,7 +36,7 @@ func TestRetrieve(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			require.Equal(t, tt.expectedContext, dbtxn.Retrieve(tt.ctx))
+			require.Equal(t, tt.expectedContext, dbtxn.Find(tt.ctx))
 		})
 	}
 }

@@ -40,17 +40,15 @@ type (
 		UpdatedAt time.Time `json:"update_at"`
 		CreatedAt time.Time `json:"created_at"`
 	}
-
 	// BookRepo to get book data from database
 	// @mock
 	BookRepo interface {
-		Retrieve(context.Context, ...dbkit.SelectOption) ([]*Book, error)
+		Find(context.Context, ...dbkit.SelectOption) ([]*Book, error)
 		Create(context.Context, *Book) (int64, error)
 		Delete(context.Context, dbkit.DeleteOption) (int64, error)
 		Update(context.Context, *Book, dbkit.UpdateOption) (int64, error)
 		Patch(context.Context, *Book, dbkit.UpdateOption) (int64, error)
 	}
-
 	// BookRepoImpl is implementation book repository
 	BookRepoImpl struct {
 		dig.In
@@ -64,8 +62,8 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 	return &impl
 }
 
-// Retrieve book
-func (r *BookRepoImpl) Retrieve(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
+// Find book
+func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*Book, err error) {
 	builder := sq.
 		Select(
 			BookTable.ID,

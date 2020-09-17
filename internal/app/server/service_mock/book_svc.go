@@ -78,34 +78,34 @@ func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockBookSvc)(nil).Patch), arg0, arg1, arg2)
 }
 
-// Retrieve mocks base method
-func (m *MockBookSvc) Retrieve(arg0 context.Context) ([]*repository.Book, error) {
+// Find mocks base method
+func (m *MockBookSvc) Find(arg0 context.Context) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Retrieve", arg0)
+	ret := m.ctrl.Call(m, "Find", arg0)
 	ret0, _ := ret[0].([]*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Retrieve indicates an expected call of Retrieve
-func (mr *MockBookSvcMockRecorder) Retrieve(arg0 interface{}) *gomock.Call {
+// Find indicates an expected call of Find
+func (mr *MockBookSvcMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Retrieve", reflect.TypeOf((*MockBookSvc)(nil).Retrieve), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookSvc)(nil).Find), arg0)
 }
 
-// RetrieveOne mocks base method
-func (m *MockBookSvc) RetrieveOne(arg0 context.Context, arg1 string) (*repository.Book, error) {
+// FindOne mocks base method
+func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*repository.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RetrieveOne", arg0, arg1)
+	ret := m.ctrl.Call(m, "FindOne", arg0, arg1)
 	ret0, _ := ret[0].(*repository.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// RetrieveOne indicates an expected call of RetrieveOne
-func (mr *MockBookSvcMockRecorder) RetrieveOne(arg0, arg1 interface{}) *gomock.Call {
+// FindOne indicates an expected call of FindOne
+func (mr *MockBookSvcMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetrieveOne", reflect.TypeOf((*MockBookSvc)(nil).RetrieveOne), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOne", reflect.TypeOf((*MockBookSvc)(nil).FindOne), arg0, arg1)
 }
 
 // Update mocks base method

@@ -24,8 +24,8 @@ var _ typrest.Router = (*BookCntrl)(nil)
 
 // SetRoute to define API Route
 func (c *BookCntrl) SetRoute(e typrest.Server) {
-	e.GET("books", c.Retrieve)
-	e.GET("books/:id", c.RetrieveOne)
+	e.GET("books", c.Find)
+	e.GET("books/:id", c.FindOne)
 	e.POST("books", c.Create)
 	e.PUT("books/:id", c.Update)
 	e.PATCH("books/:id", c.Patch)
@@ -47,10 +47,10 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	return ec.JSON(http.StatusCreated, newBook)
 }
 
-// Retrieve books
-func (c *BookCntrl) Retrieve(ec echo.Context) (err error) {
+// Find books
+func (c *BookCntrl) Find(ec echo.Context) (err error) {
 	var books []*repository.Book
-	if books, err = c.BookSvc.Retrieve(
+	if books, err = c.BookSvc.Find(
 		ec.Request().Context(),
 	); err != nil {
 		return typrest.HTTPError(err)
@@ -58,9 +58,9 @@ func (c *BookCntrl) Retrieve(ec echo.Context) (err error) {
 	return ec.JSON(http.StatusOK, books)
 }
 
-// RetrieveOne book
-func (c *BookCntrl) RetrieveOne(ec echo.Context) error {
-	book, err := c.BookSvc.RetrieveOne(
+// FindOne book
+func (c *BookCntrl) FindOne(ec echo.Context) error {
+	book, err := c.BookSvc.FindOne(
 		ec.Request().Context(),
 		ec.Param("id"),
 	)

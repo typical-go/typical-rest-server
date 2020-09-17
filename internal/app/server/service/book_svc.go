@@ -18,8 +18,8 @@ type (
 	// BookSvc contain logic for Book Controller
 	// @mock
 	BookSvc interface {
-		RetrieveOne(context.Context, string) (*repository.Book, error)
-		Retrieve(context.Context) ([]*repository.Book, error)
+		FindOne(context.Context, string) (*repository.Book, error)
+		Find(context.Context) ([]*repository.Book, error)
 		Create(context.Context, *repository.Book) (*repository.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *repository.Book) (*repository.Book, error)
@@ -48,40 +48,37 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *repository.Book) (*repos
 	if err != nil {
 		return nil, err
 	}
-
-	return b.retrieveOne(ctx, id)
+	return b.findOne(ctx, id)
 }
 
-// Retrieve books
-func (b *BookSvcImpl) Retrieve(ctx context.Context) ([]*repository.Book, error) {
-	return b.BookRepo.Retrieve(ctx)
+// Find books
+func (b *BookSvcImpl) Find(ctx context.Context) ([]*repository.Book, error) {
+	return b.BookRepo.Find(ctx)
 }
 
-// RetrieveOne book
-func (b *BookSvcImpl) RetrieveOne(ctx context.Context, paramID string) (*repository.Book, error) {
+// FindOne book
+func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*repository.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
 
-	books, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
+	books, err := b.BookRepo.Find(ctx, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
 		return nil, sql.ErrNoRows
 	}
-
 	return books[0], nil
 }
 
-func (b *BookSvcImpl) retrieveOne(ctx context.Context, id int64) (*repository.Book, error) {
-	books, err := b.BookRepo.Retrieve(ctx, dbkit.Equal(repository.BookTable.ID, id))
+func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*repository.Book, error) {
+	books, err := b.BookRepo.Find(ctx, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
 		return nil, sql.ErrNoRows
 	}
-
 	return books[0], nil
 }
 
@@ -91,7 +88,6 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return typrest.NewValidErr("paramID is missing")
 	}
-
 	_, err := b.BookRepo.Delete(ctx, dbkit.Equal(repository.BookTable.ID, id))
 	return err
 }
@@ -102,12 +98,10 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-
 	err := validator.New().Struct(book)
 	if err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-
 	affectedRow, err := b.BookRepo.Update(ctx, book, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
 		return nil, err
@@ -115,8 +109,7 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *reposito
 	if affectedRow < 1 {
 		return nil, sql.ErrNoRows
 	}
-
-	return b.retrieveOne(ctx, id)
+	return b.findOne(ctx, id)
 }
 
 // Patch book
@@ -125,7 +118,6 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repositor
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-
 	affectedRow, err := b.BookRepo.Patch(ctx, book, dbkit.Equal(repository.BookTable.ID, id))
 	if err != nil {
 		return nil, err
@@ -133,6 +125,5 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *repositor
 	if affectedRow < 1 {
 		return nil, sql.ErrNoRows
 	}
-
-	return b.retrieveOne(ctx, id)
+	return b.findOne(ctx, id)
 }
