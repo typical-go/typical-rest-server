@@ -40,7 +40,7 @@ func (tt *TestCase) Execute(t *testing.T, fn echo.HandlerFunc) {
 		req.Header.Set(key, value)
 	}
 
-	rec, err := execute(fn, req, tt.Request.URLParams)
+	rec, err := Do(fn, req, tt.Request.URLParams)
 	if tt.ExpectedError != "" {
 		require.EqualError(t, err, tt.ExpectedError)
 	} else {
@@ -54,7 +54,8 @@ func (tt *TestCase) Execute(t *testing.T, fn echo.HandlerFunc) {
 	}
 }
 
-func execute(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
+// Do request against the handler
+func Do(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	rec = httptest.NewRecorder()
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
@@ -82,25 +83,32 @@ func HeaderForJSON() map[string]string {
 // DoGET return recorder and error for GET API (deprecated)
 func DoGET(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodGet, url, nil)
-	return execute(handler, req, urlParams)
+	return Do(handler, req, urlParams)
 }
 
 // DoPOST return echo.Context and httptest.ResponseRecorder for POST Request (deprecated)
 func DoPOST(handler echo.HandlerFunc, url string, json string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPost, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return execute(handler, req, urlParams)
+	return Do(handler, req, urlParams)
 }
 
 // DoPUT return echo.Context and httptest.ResponseRecorder for PUT Request (deprecated)
 func DoPUT(handler echo.HandlerFunc, url string, json string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodPut, url, strings.NewReader(json))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	return execute(handler, req, urlParams)
+	return Do(handler, req, urlParams)
+}
+
+// DoPATCH return echo.Context and httptest.ResponseRecorder for PUT Request (deprecated)
+func DoPATCH(handler echo.HandlerFunc, url string, json string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
+	req := httptest.NewRequest(http.MethodPatch, url, strings.NewReader(json))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	return Do(handler, req, urlParams)
 }
 
 // DoDELETE return echo.Context and httptest.ResponseRecorder for DELETE Request (deprecated)
 func DoDELETE(handler echo.HandlerFunc, url string, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
-	return execute(handler, req, urlParams)
+	return Do(handler, req, urlParams)
 }
