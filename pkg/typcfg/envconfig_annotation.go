@@ -109,15 +109,10 @@ func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 // Context create context instance
 func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
 	var configs []*Envconfig
-	for _, annot := range c.FindAnnot(m.isEnvconfig) {
+	for _, annot := range c.FindAnnot(m.getTagName(), typast.EqualStruct) {
 		configs = append(configs, createEnvconfig(annot))
 	}
 	return &Context{Context: c, Configs: configs}
-}
-
-func (m *EnvconfigAnnotation) isEnvconfig(a *typast.Annot) bool {
-	_, ok := a.Type.(*typast.StructDecl)
-	return strings.EqualFold(a.TagName, m.getTagName()) && ok
 }
 
 func (m *EnvconfigAnnotation) generate(c *Context) error {

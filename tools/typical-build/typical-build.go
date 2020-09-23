@@ -61,12 +61,10 @@ var descriptor = typgo.Descriptor{
 			},
 		},
 		// release
-		&typrls.ReleaseCmd{
-			Before: typgo.BuildCmdRuns{"test", "compile"},
-			Action: &typrls.ReleaseProject{
-				Validator: typrls.DefaultValidator,
-				Releaser:  &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
-			},
+		&typrls.ReleaseProject{
+			Before:    typgo.BuildCmdRuns{"test", "compile"},
+			Validator: typrls.DefaultValidator,
+			Publisher: &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
 		},
 	},
 }
