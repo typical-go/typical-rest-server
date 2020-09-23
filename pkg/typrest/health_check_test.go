@@ -8,45 +8,41 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
-type (
-	healtCheck struct {
-		testName        string
-		healthCheck     typrest.HealthCheck
-		expectedStatus  int
-		expectedMessage map[string]string
-	}
-)
-
 func TestHealthCheck(t *testing.T) {
-	testcases := []healtCheck{
+	testcases := []struct {
+		TestName       string
+		HealthMap      typrest.HealthMap
+		Expected       bool
+		ExpectedDetail map[string]string
+	}{
 		{
-			healthCheck: typrest.HealthCheck{
+			HealthMap: typrest.HealthMap{
 				"postgres": func() error { return nil },
 				"redis":    func() error { return nil },
 			},
-			expectedStatus: 200,
-			expectedMessage: map[string]string{
+			Expected: true,
+			ExpectedDetail: map[string]string{
 				"postgres": "OK",
 				"redis":    "OK",
 			},
 		},
 		{
-			healthCheck: typrest.HealthCheck{
+			HealthMap: typrest.HealthMap{
 				"postgres": func() error { return errors.New("postgres-error") },
 				"redis":    func() error { return errors.New("redis-error") },
 			},
-			expectedStatus: 503,
-			expectedMessage: map[string]string{
+			Expected: false,
+			ExpectedDetail: map[string]string{
 				"postgres": "postgres-error",
 				"redis":    "redis-error",
 			},
 		},
 	}
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			status, message := tt.healthCheck.Result()
-			require.Equal(t, tt.expectedStatus, status)
-			require.Equal(t, tt.expectedMessage, message)
+		t.Run(tt.TestName, func(t *testing.T) {
+			healthy, detail := typrest.HealthStatus(tt.HealthMap)
+			require.Equal(t, tt.Expected, healthy)
+			require.Equal(t, tt.ExpectedDetail, detail)
 		})
 	}
 }

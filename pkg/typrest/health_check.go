@@ -1,28 +1,24 @@
 package typrest
 
-import (
-	"net/http"
-)
-
 // HealthStatusOK is health status ok
 var HealthStatusOK = "OK"
 
 type (
-	// HealthCheck to handle health-check
-	HealthCheck map[string]func() error
+	// HealthMap to handle health-check
+	HealthMap map[string]func() error
 )
 
-// Result of HealthCheck
-func (h HealthCheck) Result() (status int, message map[string]string) {
-	status = http.StatusOK
-	message = make(map[string]string)
+// HealthStatus of HealthCheck
+func HealthStatus(m HealthMap) (healthy bool, details map[string]string) {
+	healthy = true
+	details = make(map[string]string)
 
-	for name, fn := range h {
+	for name, fn := range m {
 		if err := fn(); err != nil {
-			message[name] = err.Error()
-			status = http.StatusServiceUnavailable
+			details[name] = err.Error()
+			healthy = false
 		} else {
-			message[name] = HealthStatusOK
+			details[name] = HealthStatusOK
 		}
 	}
 	return
