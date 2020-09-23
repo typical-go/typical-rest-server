@@ -79,8 +79,9 @@ func init() {
 // LoadSomeSample load env to new instance of SomeSample
 func LoadSomeSample() (*mypkg.SomeSample, error) {
 	var cfg mypkg.SomeSample
-	if err := envconfig.Process("SOMESAMPLE", &cfg); err != nil {
-		return nil, err
+	prefix := "SOMESAMPLE"
+	if err := envconfig.Process(prefix, &cfg); err != nil {
+		return nil, fmt.Errorf("%s: %w", prefix, err)
 	}
 	return &cfg, nil
 }
