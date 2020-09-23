@@ -70,8 +70,9 @@ func init() { {{if .Configs}}
 // Load{{$c.Name}} load env to new instance of {{$c.Name}}
 func Load{{$c.Name}}() (*{{$c.SpecType}}, error) {
 	var cfg {{$c.SpecType}}
-	if err := envconfig.Process("{{$c.Prefix}}", &cfg); err != nil {
-		return nil, err
+	prefix := "{{$c.Prefix}}"
+	if err := envconfig.Process(prefix, &cfg); err != nil {
+		return nil, fmt.Errorf("%s: %w", prefix, err)
 	}
 	return &cfg, nil
 }{{end}}
