@@ -2,6 +2,7 @@ package profiler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/go-redis/redis"
@@ -17,12 +18,6 @@ type (
 		dig.In
 		PG    *sql.DB
 		Redis *redis.Client
-	}
-	// HealthCheckResponse healthcheck response
-	HealthCheckResponse struct {
-		AppName    string            `json:"name"`
-		AppVersion string            `json:"version"`
-		Status     map[string]string `json:"status"`
 	}
 )
 
@@ -44,9 +39,8 @@ func (h *HealthCheck) handle(ec echo.Context) error {
 		status = http.StatusServiceUnavailable
 	}
 
-	return ec.JSON(status, HealthCheckResponse{
-		AppName:    typgo.AppName,
-		AppVersion: typgo.AppVersion,
-		Status:     detail,
+	return ec.JSON(status, map[string]interface{}{
+		"name":   fmt.Sprintf("%s (%s)", typgo.AppName, typgo.AppVersion),
+		"status": detail,
 	})
 }
