@@ -63,21 +63,6 @@ func (mr *MockBookSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookSvc)(nil).Delete), arg0, arg1)
 }
 
-// Patch mocks base method
-func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *repository.Book) (*repository.Book, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*repository.Book)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Patch indicates an expected call of Patch
-func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockBookSvc)(nil).Patch), arg0, arg1, arg2)
-}
-
 // Find mocks base method
 func (m *MockBookSvc) Find(arg0 context.Context) ([]*repository.Book, error) {
 	m.ctrl.T.Helper()
@@ -106,6 +91,21 @@ func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*repository.Bo
 func (mr *MockBookSvcMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOne", reflect.TypeOf((*MockBookSvc)(nil).FindOne), arg0, arg1)
+}
+
+// Patch mocks base method
+func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *repository.Book) (*repository.Book, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
+	ret0, _ := ret[0].(*repository.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Patch indicates an expected call of Patch
+func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Patch", reflect.TypeOf((*MockBookSvc)(nil).Patch), arg0, arg1, arg2)
 }
 
 // Update mocks base method
