@@ -14,7 +14,7 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	a "github.com/typical-go/typical-rest-server/internal/app/infra"
 )
 
 func init() {
@@ -26,8 +26,8 @@ func init() {
 }
 
 // LoadAppCfg load env to new instance of AppCfg
-func LoadAppCfg() (*infra.AppCfg, error) {
-	var cfg infra.AppCfg
+func LoadAppCfg() (*a.AppCfg, error) {
+	var cfg a.AppCfg
 	prefix := "APP"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
@@ -36,8 +36,8 @@ func LoadAppCfg() (*infra.AppCfg, error) {
 }
 
 // LoadRedisCfg load env to new instance of RedisCfg
-func LoadRedisCfg() (*infra.RedisCfg, error) {
-	var cfg infra.RedisCfg
+func LoadRedisCfg() (*a.RedisCfg, error) {
+	var cfg a.RedisCfg
 	prefix := "REDIS"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
@@ -46,8 +46,8 @@ func LoadRedisCfg() (*infra.RedisCfg, error) {
 }
 
 // LoadPostgresCfg load env to new instance of PostgresCfg
-func LoadPostgresCfg() (*infra.PostgresCfg, error) {
-	var cfg infra.PostgresCfg
+func LoadPostgresCfg() (*a.PostgresCfg, error) {
+	var cfg a.PostgresCfg
 	prefix := "PG"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)

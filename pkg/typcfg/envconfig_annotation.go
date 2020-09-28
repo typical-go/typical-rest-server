@@ -26,13 +26,14 @@ type (
 	EnvconfigTmplData struct {
 		typast.Signature
 		Package string
-		Imports []string
 		Configs []*Envconfig
+		Imports map[string]string
 	}
 	// Context of config
 	Context struct {
 		*typast.Context
 		Configs []*Envconfig
+		Imports map[string]string
 	}
 	// Envconfig model
 	Envconfig struct {
@@ -57,8 +58,8 @@ const defaultCfgTemplate = `package {{.Package}}
 
 /* {{.Signature}}*/
 
-import ({{range $import := .Imports}}
-	"{{$import}}"{{end}}
+import ({{range $import, $alias := .Imports}}
+	{{$alias}} "{{$import}}"{{end}}
 )
 
 func init() { {{if .Configs}}
@@ -110,10 +111,16 @@ func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 // Context create context instance
 func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
 	var configs []*Envconfig
-	for _, annot := range c.FindAnnot(m.getTagName(), typast.EqualStruct) {
+
+	annots, imports := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
+	imports["github.com/kelseyhightower/envconfig"] = ""
+	imports["github.com/typical-go/typical-go/pkg/typapp"] = ""
+	imports["fmt"] = ""
+
+	for _, annot := range annots {
 		configs = append(configs, createEnvconfig(annot))
 	}
-	return &Context{Context: c, Configs: configs}
+	return &Context{Context: c, Configs: configs, Imports: imports}
 }
 
 func (m *EnvconfigAnnotation) generate(c *Context) error {
@@ -123,9 +130,6 @@ func (m *EnvconfigAnnotation) generate(c *Context) error {
 		return nil
 	}
 
-	imports := createImports(c.Dirs)
-	imports = append(imports, "github.com/kelseyhightower/envconfig")
-
 	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
 		Signature: typast.Signature{
@@ -133,7 +137,7 @@ func (m *EnvconfigAnnotation) generate(c *Context) error {
 			Help:    "https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg",
 		},
 		Package: filepath.Base(c.Destination),
-		Imports: imports,
+		Imports: c.Imports,
 		Configs: c.Configs,
 	}); err != nil {
 		return err
@@ -171,16 +175,16 @@ func createImports(dirs []string) []string {
 	return imports
 }
 
-func createEnvconfig(annot *typast.Annot) *Envconfig {
-	prefix := getPrefix(annot)
-	structDecl := annot.Type.(*typast.StructDecl)
+func createEnvconfig(a *typast.Annot2) *Envconfig {
+	prefix := getPrefix(a)
+	structDecl := a.Type.(*typast.StructDecl)
 
-	name := annot.GetName()
+	name := a.GetName()
 	return &Envconfig{
-		CtorName: getCtorName(annot),
+		CtorName: getCtorName(a),
 		Name:     name,
 		Prefix:   prefix,
-		SpecType: fmt.Sprintf("%s.%s", annot.Package, name),
+		SpecType: fmt.Sprintf("%s.%s", a.ImportAlias, name),
 		Fields:   createFields(structDecl, prefix),
 	}
 }
@@ -209,11 +213,11 @@ func CreateField(prefix string, field *typast.Field) *Field {
 	}
 }
 
-func getCtorName(annot *typast.Annot) string {
+func getCtorName(annot *typast.Annot2) string {
 	return annot.TagParam.Get("ctor_name")
 }
 
-func getPrefix(annot *typast.Annot) string {
+func getPrefix(annot *typast.Annot2) string {
 	prefix := annot.TagParam.Get("prefix")
 	if prefix == "" {
 		prefix = strings.ToUpper(annot.GetName())

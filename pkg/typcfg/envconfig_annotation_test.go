@@ -15,6 +15,7 @@ import (
 )
 
 func TestCfgAnnotation_Annotate(t *testing.T) {
+	typgo.ProjectPkg = "github.com/user/project"
 	os.MkdirAll("somepkg1", 0777)
 	defer os.RemoveAll("somepkg1")
 
@@ -38,7 +39,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 				{
 					TagName: "@envconfig",
 					Decl: &typast.Decl{
-						File: typast.File{Package: "mypkg"},
+						File: typast.File{Package: "mypkg", Path: "pkg/file.go"},
 						Type: &typast.StructDecl{
 							TypeDecl: typast.TypeDecl{Name: "SomeSample"},
 							Fields: []*typast.Field{
@@ -67,7 +68,10 @@ Help:
 */
 
 import (
-	"github.com/kelseyhightower/envconfig"
+	 "fmt"
+	 "github.com/kelseyhightower/envconfig"
+	 "github.com/typical-go/typical-go/pkg/typapp"
+	a "github.com/user/project/pkg"
 )
 
 func init() { 
@@ -77,8 +81,8 @@ func init() {
 }
 
 // LoadSomeSample load env to new instance of SomeSample
-func LoadSomeSample() (*mypkg.SomeSample, error) {
-	var cfg mypkg.SomeSample
+func LoadSomeSample() (*a.SomeSample, error) {
+	var cfg a.SomeSample
 	prefix := "SOMESAMPLE"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
