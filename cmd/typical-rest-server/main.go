@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	fmt.Printf("%s %s\n", typgo.AppName, typgo.AppVersion)
+	fmt.Printf("%s %s\n", typgo.ProjectName, typgo.ProjectVersion)
 	if err := typapp.Run(app.Start); err != nil {
 		log.Fatal(err.Error())
 	}

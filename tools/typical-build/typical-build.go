@@ -18,14 +18,12 @@ var descriptor = typgo.Descriptor{
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
-		// clean
-		&typgo.CleanProject{},
 		// test
 		&typgo.TestProject{},
 		// compile
 		&typgo.CompileProject{},
 		// annotate
-		&typast.AnnotateCmd{
+		&typast.AnnotateProject{
 			Destination: "internal/generated/typical",
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
@@ -37,9 +35,8 @@ var descriptor = typgo.Descriptor{
 			},
 		},
 		// run
-		&typgo.RunCmd{
+		&typgo.RunProject{
 			Before: typgo.BuildCmdRuns{"annotate", "compile"},
-			Action: &typgo.RunProject{},
 		},
 		// mock
 		&typmock.MockCmd{},
@@ -62,8 +59,8 @@ var descriptor = typgo.Descriptor{
 		},
 		// release
 		&typrls.ReleaseProject{
-			Before:    typgo.BuildCmdRuns{"test", "compile"},
-			Validator: typrls.DefaultValidator,
+			Before: typgo.BuildCmdRuns{"test", "compile"},
+			// Releaser:  &typrls.CrossCompiler{Targets: []typrls.Target{"darwin/amd64", "linux/amd64"}},
 			Publisher: &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
 		},
 	},

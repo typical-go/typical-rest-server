@@ -11,11 +11,11 @@ Help:
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	a "github.com/typical-go/typical-rest-server/internal/app/infra"
 )
 
 func init() {
 	typapp.AppendDtor(
-		&typapp.Destructor{Fn: infra.Teardown},
+		&typapp.Destructor{Fn: a.Teardown},
 	)
 }

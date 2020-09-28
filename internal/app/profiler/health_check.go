@@ -40,7 +40,7 @@ func (h *HealthCheck) handle(ec echo.Context) error {
 	}
 
 	return ec.JSON(status, map[string]interface{}{
-		"name":   fmt.Sprintf("%s (%s)", typgo.AppName, typgo.AppVersion),
+		"name":   fmt.Sprintf("%s (%s)", typgo.ProjectName, typgo.ProjectVersion),
 		"status": detail,
 	})
 }

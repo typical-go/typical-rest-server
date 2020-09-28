@@ -11,15 +11,15 @@ Help:
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/app/infra"
-	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/app/server/service"
+	a "github.com/typical-go/typical-rest-server/internal/app/infra"
+	b "github.com/typical-go/typical-rest-server/internal/app/server/repository"
+	c "github.com/typical-go/typical-rest-server/internal/app/server/service"
 )
 
 func init() {
 	typapp.AppendCtor(
-		&typapp.Constructor{Name: "", Fn: infra.Setup},
-		&typapp.Constructor{Name: "", Fn: repository.NewBookRepo},
-		&typapp.Constructor{Name: "", Fn: service.NewBookSvc},
+		&typapp.Constructor{Name: "", Fn: a.Setup},
+		&typapp.Constructor{Name: "", Fn: b.NewBookRepo},
+		&typapp.Constructor{Name: "", Fn: c.NewBookSvc},
 	)
 }

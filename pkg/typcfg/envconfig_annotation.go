@@ -123,6 +123,9 @@ func (m *EnvconfigAnnotation) generate(c *Context) error {
 		return nil
 	}
 
+	imports := createImports(c.Dirs)
+	imports = append(imports, "github.com/kelseyhightower/envconfig")
+
 	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
 		Signature: typast.Signature{
@@ -130,7 +133,7 @@ func (m *EnvconfigAnnotation) generate(c *Context) error {
 			Help:    "https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg",
 		},
 		Package: filepath.Base(c.Destination),
-		Imports: c.CreateImports(typgo.ProjectPkg, "github.com/kelseyhightower/envconfig"),
+		Imports: imports,
 		Configs: c.Configs,
 	}); err != nil {
 		return err
@@ -158,6 +161,14 @@ func (m *EnvconfigAnnotation) getTarget(c *Context) string {
 		m.Target = fmt.Sprintf("%s/envconfig_annotated.go", c.Destination)
 	}
 	return m.Target
+}
+
+func createImports(dirs []string) []string {
+	var imports []string
+	for _, dir := range dirs {
+		imports = append(imports, fmt.Sprintf("%s/%s", typgo.ProjectPkg, dir))
+	}
+	return imports
 }
 
 func createEnvconfig(annot *typast.Annot) *Envconfig {
