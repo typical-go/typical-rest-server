@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-
-	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/app/server/service"
+	"github.com/typical-go/typical-rest-server/internal/app/data_access/librarydb"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -24,17 +23,17 @@ var _ typrest.Router = (*BookCntrl)(nil)
 
 // SetRoute to define API Route
 func (c *BookCntrl) SetRoute(e typrest.Server) {
-	e.GET("books", c.Find)
-	e.GET("books/:id", c.FindOne)
-	e.POST("books", c.Create)
-	e.PUT("books/:id", c.Update)
-	e.PATCH("books/:id", c.Patch)
-	e.DELETE("books/:id", c.Delete)
+	e.GET("/books", c.Find)
+	e.GET("/books/:id", c.FindOne)
+	e.POST("/books", c.Create)
+	e.PUT("/books/:id", c.Update)
+	e.PATCH("/books/:id", c.Patch)
+	e.DELETE("/books/:id", c.Delete)
 }
 
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
-	var book repository.Book
+	var book librarydb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -49,7 +48,7 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 // Find books
 func (c *BookCntrl) Find(ec echo.Context) (err error) {
-	var books []*repository.Book
+	var books []*librarydb.Book
 	if books, err = c.BookSvc.Find(
 		ec.Request().Context(),
 	); err != nil {
@@ -83,7 +82,7 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 
 // Update book
 func (c *BookCntrl) Update(ec echo.Context) (err error) {
-	var book repository.Book
+	var book librarydb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -98,7 +97,7 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 
 // Patch book
 func (c *BookCntrl) Patch(ec echo.Context) (err error) {
-	var book repository.Book
+	var book librarydb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}

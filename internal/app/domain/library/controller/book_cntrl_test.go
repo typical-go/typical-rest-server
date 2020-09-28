@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/typical-go/typical-rest-server/internal/app/server/controller"
-	"github.com/typical-go/typical-rest-server/internal/app/server/repository"
-	"github.com/typical-go/typical-rest-server/internal/app/server/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/data_access/librarydb"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/library/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
@@ -49,7 +49,7 @@ func TestBookController_RetrieveOne(t *testing.T) {
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "1").Return(&repository.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
+				svc.EXPECT().FindOne(gomock.Any(), "1").Return(&librarydb.Book{ID: 1, Title: "title1", Author: "author1"}, nil)
 			},
 		},
 		{
@@ -119,9 +119,9 @@ func TestBookController_Retrieve(t *testing.T) {
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return([]*repository.Book{
-					&repository.Book{ID: 1, Title: "title1", Author: "author1"},
-					&repository.Book{ID: 2, Title: "title2", Author: "author2"},
+				svc.EXPECT().Find(gomock.Any()).Return([]*librarydb.Book{
+					&librarydb.Book{ID: 1, Title: "title1", Author: "author1"},
+					&librarydb.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
 			},
 		},
@@ -163,7 +163,7 @@ func TestBookController_Update(t *testing.T) {
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
+					Update(gomock.Any(), "1", &librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -183,8 +183,8 @@ func TestBookController_Update(t *testing.T) {
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
-					Return(&repository.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
+					Update(gomock.Any(), "1", &librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}).
+					Return(&librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
 			},
 		},
 	}
@@ -213,7 +213,7 @@ func TestBookController_Patch(t *testing.T) {
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Patch(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
+					Patch(gomock.Any(), "1", &librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -233,8 +233,8 @@ func TestBookController_Patch(t *testing.T) {
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
-					Patch(gomock.Any(), "1", &repository.Book{ID: 1, Title: "some-title", Author: "some-author"}).
-					Return(&repository.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
+					Patch(gomock.Any(), "1", &librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}).
+					Return(&librarydb.Book{ID: 1, Title: "some-title", Author: "some-author"}, nil)
 			},
 		},
 	}
@@ -346,7 +346,7 @@ func TestBookController_Create(t *testing.T) {
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
 					Create(gomock.Any(), gomock.Any()).
-					Return(&repository.Book{ID: 999, Author: "some-author", Title: "some-title"}, nil)
+					Return(&librarydb.Book{ID: 999, Author: "some-author", Title: "some-title"}, nil)
 			},
 		},
 	}

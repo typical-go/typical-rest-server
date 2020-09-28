@@ -42,16 +42,18 @@ Test application:
 Typical-Rest encourage [standard go project layout](https://github.com/golang-standards/project-layout)
 
 Source codes:
-- [`internal`](internal): Exclusive codes for the project
+- [`internal`](internal): private codes for the project
   - [`internal/app`](internal/app) 
     - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
     - [`internal/app/profiler`](internal/app/profiler): profiling/debug the project e.g. HealthCheck, PProf, etc
-    - [`internal/app/server`](internal/app/server) 
-      - [`internal/app/server/controller`](internal/app/server/controller): presentation layer
-      - [`internal/app/server/service`](internal/app/server/service): logic layer
-      - [`internal/app/server/repository`](internal/app/server/repository): data access layer
+    - [`internal/app/domain`](internal/app/domain) 
+      - [`internal/app/domain/library`](internal/app/domain)
+        - [`internal/app/domain/library/controller`](internal/app/domain/library/controller): presentation for library domain
+        - [`internal/app/domain/library/service`](internal/app/domain/library/service): logic for library domain
+    - [`internal/app/data_access`](internal/app/data_access)
+      - [`internal/app/data_access/librarydb`](internal/app/server/repository): data access to librarydb
   - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
-- [`pkg`](pkg): Shareable codes e.g. helper/utitily Library
+- [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package
 
 Others directory:
@@ -64,16 +66,16 @@ Others directory:
 
 Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) (as most adoptable architectural pattern) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) and [Table-Driven Test](https://github.com/golang/go/wiki/TableDrivenTests)
 
-- Presentation Layer at [`internal/app/server/controller`](internal/server/controller)
+- Presentation Layer at [`internal/app/domain/[DOMAIN]/controller`](internal/server/controller)
   - Handling HTTP routes
   - Parsing the request
   - Sending response (both success & error)
-- Logic Layer at [`internal/app/server/service`](internal/server/service)
+- Logic Layer at [`internal/app/domain/[DOMAIN]/service`](internal/server/service)
   - Intermediary between controller (end-point) and repository (data)
   - Logic of controller
   - Data Validation
   - DTO (Data Transfer Object) Model
-- Data Access Layer at [`internal/app/server/repository`](internal/server/repository)
+- Data Access Layer at [`internal/app/data_access/[DATABASE]`](internal/server/repository)
   - No logic except operation to database
   - Repository pattern
   - DAO (Data Access Object) Model

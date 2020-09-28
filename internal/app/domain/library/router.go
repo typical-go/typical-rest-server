@@ -1,7 +1,7 @@
-package server
+package library
 
 import (
-	"github.com/typical-go/typical-rest-server/internal/app/server/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/library/controller"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -18,7 +18,8 @@ var _ typrest.Router = (*Router)(nil)
 
 // SetRoute to echo server
 func (r *Router) SetRoute(e typrest.Server) {
-	typrest.SetRoute(e,
+	group := e.Group("/library")
+	typrest.SetRoute(group,
 		&r.BookCntrl,
 	)
 }

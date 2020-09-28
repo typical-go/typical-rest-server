@@ -46,8 +46,8 @@ var descriptor = typgo.Descriptor{
 		&pg.Command{
 			ConfigFn:     typical.LoadPostgresCfg,
 			DockerName:   "typical-rest-server_pg01_1",
-			MigrationSrc: "file://databases/pg/migration",
-			SeedSrc:      "databases/pg/seed",
+			MigrationSrc: "file://databases/librarydb/migration",
+			SeedSrc:      "databases/librarydb/seed",
 		},
 		// reset
 		&typgo.Command{
