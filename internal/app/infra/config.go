@@ -10,6 +10,9 @@ import (
 
 	// postgres driver
 	_ "github.com/lib/pq"
+
+	// mysql driver
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type (
@@ -36,6 +39,23 @@ type (
 		DBPass string `envconfig:"DBPASS" default:"pgpass"`
 		Host   string `envconfig:"HOST" required:"true" default:"localhost"`
 		Port   string `envconfig:"PORT" required:"true" default:"5432"`
+
+		MaxOpenConns    int           `envconfig:"MAX_OPEN_CONNS" default:"30" required:"true"`
+		MaxIdleConns    int           `envconfig:"MAX_IDLE_CONNS" default:"6" required:"true"`
+		ConnMaxLifetime time.Duration `envconfig:"CONN_MAX_LIFETIME" default:"30m" required:"true"`
+	}
+	// MySQLCfg is MySQL configuration
+	// @envconfig (prefix:"MYSQL")
+	MySQLCfg struct {
+		DBName string `envconfig:"DBNAME" required:"true" default:"myalbum"`
+		DBUser string `envconfig:"DBUSER" required:"true" default:"mysql"`
+		DBPass string `envconfig:"DBPASS" required:"true" default:"mypass"`
+		Host   string `envconfig:"HOST" default:"localhost"`
+		Port   string `envconfig:"PORT" default:"3306"`
+
+		MaxOpenConns    int           `envconfig:"MAX_OPEN_CONNS" default:"30" required:"true"`
+		MaxIdleConns    int           `envconfig:"MAX_IDLE_CONNS" default:"6" required:"true"`
+		ConnMaxLifetime time.Duration `envconfig:"CONN_MAX_LIFETIME" default:"30m" required:"true"`
 	}
 )
 
@@ -70,9 +90,32 @@ func (p *PostgresCfg) createConn() *sql.DB {
 		log.Fatalf("postgres: %s", err.Error())
 	}
 
+	db.SetConnMaxLifetime(p.ConnMaxLifetime)
+	db.SetMaxIdleConns(p.MaxIdleConns)
+	db.SetMaxOpenConns(p.MaxOpenConns)
+
 	if err = db.Ping(); err != nil {
 		log.Fatalf("postgres: %s", err.Error())
 	}
 
 	return db
+}
+
+//
+// MySQL
+//
+
+func (p *MySQLCfg) createConn() (*sql.DB, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&parseTime=true",
+		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName))
+	if err != nil {
+		return nil, fmt.Errorf("mysql: %w", err)
+	}
+	db.SetConnMaxLifetime(p.ConnMaxLifetime)
+	db.SetMaxIdleConns(p.MaxIdleConns)
+	db.SetMaxOpenConns(p.MaxOpenConns)
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("mysql: %w", err)
+	}
+	return db, nil
 }

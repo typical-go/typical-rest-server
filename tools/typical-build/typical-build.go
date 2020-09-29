@@ -9,6 +9,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/generated/typical"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+	"github.com/typical-go/typical-rest-server/tools/typical-build/mysql"
 	"github.com/typical-go/typical-rest-server/tools/typical-build/pg"
 )
 
@@ -44,10 +45,19 @@ var descriptor = typgo.Descriptor{
 		&typdocker.DockerCmd{},
 		// pg
 		&pg.Command{
+			Name:         "pg",
 			ConfigFn:     typical.LoadPostgresCfg,
 			DockerName:   "typical-rest-server_pg01_1",
 			MigrationSrc: "file://databases/librarydb/migration",
 			SeedSrc:      "databases/librarydb/seed",
+		},
+		// mysql
+		&mysql.Command{
+			Name:         "mysql",
+			ConfigFn:     typical.LoadMySQLCfg,
+			DockerName:   "typical-rest-server_mysql01_1",
+			MigrationSrc: "file://databases/albumdb/migration",
+			SeedSrc:      "databases/albumdb/seed",
 		},
 		// reset
 		&typgo.Command{
@@ -55,6 +65,7 @@ var descriptor = typgo.Descriptor{
 			Usage: "reset the project locally (postgres/etc)",
 			Action: typgo.BuildCmdRuns{
 				"pg.drop", "pg.create", "pg.migrate", "pg.seed",
+				"mysql.drop", "mysql.create", "mysql.migrate", "mysql.seed",
 			},
 		},
 		// release

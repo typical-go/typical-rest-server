@@ -22,6 +22,7 @@ import (
 type (
 	// Command for postgres
 	Command struct {
+		Name         string
 		ConfigFn     func() (*infra.PostgresCfg, error)
 		DockerName   string
 		MigrationSrc string
@@ -43,8 +44,8 @@ func (t *Command) Command(sys *typgo.BuildSys) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:  "pg",
-		Usage: "postgres utility",
+		Name:  t.Name,
+		Usage: t.Name + " utility",
 		Subcommands: []*cli.Command{
 			{Name: "create", Usage: "Create database", Action: sys.ExecuteFn(t.CreateDB)},
 			{Name: "drop", Usage: "Drop database", Action: sys.ExecuteFn(t.DropDB)},
@@ -82,7 +83,7 @@ func (t *Command) CreateDB(c *typgo.Context) error {
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf(`CREATE DATABASE "%s"`, t.cfg.DBName)
+	q := fmt.Sprintf("CREATE DATABASE \"%s\"", t.cfg.DBName)
 	fmt.Fprintln(Stdout, "\npg: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
@@ -96,7 +97,7 @@ func (t *Command) DropDB(c *typgo.Context) error {
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, t.cfg.DBName)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", t.cfg.DBName)
 	fmt.Fprintln(Stdout, "\npg: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err

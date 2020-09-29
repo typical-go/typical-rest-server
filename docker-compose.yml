@@ -22,10 +22,27 @@ services:
     - 6379:6379
     networks:
     - redis01
+  mysql01:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: myalbum
+      MYSQL_ROOT_PASSWORD: mypass
+      MYSQL_PASSWORD: mypass
+      MYSQL_USER: mysql
+    volumes:
+    - mysql01:/var/lib/mysql
+    ports:
+    - 3306:3306
+    networks:
+    - mysql01
+    restart: unless-stopped
 networks:
   pg01:
+    driver: bridge
+  mysql01:
     driver: bridge
   redis01: null
 volumes:
   pg01: null
   redis01: null
+  mysql01: null

@@ -27,6 +27,17 @@ Annotation Help:
 | PG_DBPASS | pgpass |  |
 | PG_HOST | localhost | Yes |
 | PG_PORT | 5432 | Yes |
+| PG_MAX_OPEN_CONNS | 30 | Yes |
+| PG_MAX_IDLE_CONNS | 6 | Yes |
+| PG_CONN_MAX_LIFETIME | 30m | Yes |
+| MYSQL_DBNAME | myalbum | Yes |
+| MYSQL_DBUSER | mysql | Yes |
+| MYSQL_DBPASS | mypass | Yes |
+| MYSQL_HOST | localhost |  |
+| MYSQL_PORT | 3306 |  |
+| MYSQL_MAX_OPEN_CONNS | 30 | Yes |
+| MYSQL_MAX_IDLE_CONNS | 6 | Yes |
+| MYSQL_CONN_MAX_LIFETIME | 30m | Yes |
 
 ## DotEnv example
 ```
@@ -42,5 +53,16 @@ PG_DBUSER=pguser
 PG_DBPASS=pgpass
 PG_HOST=localhost
 PG_PORT=5432
+PG_MAX_OPEN_CONNS=30
+PG_MAX_IDLE_CONNS=6
+PG_CONN_MAX_LIFETIME=30m
+MYSQL_DBNAME=myalbum
+MYSQL_DBUSER=mysql
+MYSQL_DBPASS=mypass
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_MAX_OPEN_CONNS=30
+MYSQL_MAX_IDLE_CONNS=6
+MYSQL_CONN_MAX_LIFETIME=30m
 ```
 
