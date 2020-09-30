@@ -4,6 +4,7 @@ import "time"
 
 type (
 	// Book represented database model
+	// @entity (table:"books" dialect:"postgres")
 	Book struct {
 		ID        int64     `json:"id"`
 		Title     string    `json:"title" validate:"required"`
