@@ -42,24 +42,24 @@ Test application:
 Typical-Rest encourage [standard go project layout](https://github.com/golang-standards/project-layout)
 
 Source codes:
-- [`internal`](internal): private codes for the project
-  - [`internal/app`](internal/app) 
-    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
-    - [`internal/app/profiler`](internal/app/profiler): profiling/debug the project e.g. HealthCheck, PProf, etc
-    - [`internal/app/domain`](internal/app/domain) 
-      - [`internal/app/domain/library`](internal/app/domain)
-        - [`internal/app/domain/library/controller`](internal/app/domain/library/controller): presentation for library domain
-        - [`internal/app/domain/library/service`](internal/app/domain/library/service): logic for library domain
-    - [`internal/app/data_access`](internal/app/data_access)
-      - [`internal/app/data_access/librarydb`](internal/app/server/repository): data access to librarydb
-  - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
-- [`pkg`](pkg): shareable codes e.g. helper/utitily Library
-- [`cmd`](cmd): the main package
+- [`/internal`](internal): private codes for the project
+  - [`/app`](internal/app) 
+    - [`/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
+    - [`/profiler`](internal/app/profiler): profiling/debug the project e.g. HealthCheck, PProf, etc
+    - [`/domain`](internal/app/domain) 
+      - [`/library`](internal/app/domain)
+        - [`/controller`](internal/app/domain/library/controller): presentation for library domain
+        - [`/service`](internal/app/domain/library/service): logic for library domain
+    - [`/data_access`](internal/app/data_access)
+      - [`/librarydb`](internal/app/server/repository): data access to librarydb
+  - [`/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
+- [`/pkg`](pkg): shareable codes e.g. helper/utitily Library
+- [`/cmd`](cmd): the main package
 
 Others directory:
-- [`tools`](tool) Supporting tool for the project e.g. Build Tool
-- [`api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
-- [`databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
+- [`/tools`](tool) Supporting tool for the project e.g. Build Tool
+- [`/api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
+- [`/databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
 
 
 ## Layered Architecture
