@@ -1,16 +1,17 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/internal/generated/typical"
+	"github.com/typical-go/typical-rest-server/pkg/mysqltool"
+	"github.com/typical-go/typical-rest-server/pkg/pgtool"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-	"github.com/typical-go/typical-rest-server/tools/typical-build/mysql"
-	"github.com/typical-go/typical-rest-server/tools/typical-build/pg"
 )
 
 var descriptor = typgo.Descriptor{
@@ -44,17 +45,29 @@ var descriptor = typgo.Descriptor{
 		// docker
 		&typdocker.DockerCmd{},
 		// pg
-		&pg.Command{
-			Name:         "pg",
-			ConfigFn:     typical.LoadPostgresCfg,
+		&pgtool.PgTool{
+			Name: "pg",
+			ConfigFn: func() pgtool.Configurer {
+				cfg, err := typical.LoadPostgresCfg()
+				if err != nil {
+					log.Fatal(err)
+				}
+				return cfg
+			},
 			DockerName:   "typical-rest-server_pg01_1",
 			MigrationSrc: "file://databases/librarydb/migration",
 			SeedSrc:      "databases/librarydb/seed",
 		},
 		// mysql
-		&mysql.Command{
-			Name:         "mysql",
-			ConfigFn:     typical.LoadMySQLCfg,
+		&mysqltool.MySQLTool{
+			Name: "mysql",
+			ConfigFn: func() mysqltool.Configurer {
+				cfg, err := typical.LoadMySQLCfg()
+				if err != nil {
+					log.Fatal(err)
+				}
+				return cfg
+			},
 			DockerName:   "typical-rest-server_mysql01_1",
 			MigrationSrc: "file://databases/albumdb/migration",
 			SeedSrc:      "databases/albumdb/seed",

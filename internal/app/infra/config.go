@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/typical-go/typical-rest-server/pkg/mysqltool"
+	"github.com/typical-go/typical-rest-server/pkg/pgtool"
+
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
 
@@ -80,6 +83,19 @@ func (r *RedisCfg) createClient() *redis.Client {
 // PostgresCfg
 //
 
+var _ pgtool.Configurer = (*PostgresCfg)(nil)
+
+// Config for pgtool
+func (p *PostgresCfg) Config() *pgtool.Config {
+	return &pgtool.Config{
+		DBName: p.DBName,
+		DBUser: p.DBUser,
+		DBPass: p.DBPass,
+		Host:   p.Host,
+		Port:   p.Port,
+	}
+}
+
 func (p *PostgresCfg) createConn() *sql.DB {
 	conn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
@@ -104,6 +120,19 @@ func (p *PostgresCfg) createConn() *sql.DB {
 //
 // MySQL
 //
+
+var _ mysqltool.Configurer = (*MySQLCfg)(nil)
+
+// Config for pgtool
+func (p *MySQLCfg) Config() *mysqltool.Config {
+	return &mysqltool.Config{
+		DBName: p.DBName,
+		DBUser: p.DBUser,
+		DBPass: p.DBPass,
+		Host:   p.Host,
+		Port:   p.Port,
+	}
+}
 
 func (p *MySQLCfg) createConn() (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&parseTime=true",
