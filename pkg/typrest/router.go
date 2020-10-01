@@ -1,6 +1,9 @@
 package typrest
 
 import (
+	"fmt"
+	"sort"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -38,6 +41,18 @@ func SetRoute(server Server, routers ...Router) {
 	for _, router := range routers {
 		router.SetRoute(server)
 	}
+}
+
+// RoutePaths return path of route
+func RoutePaths(router Router) []string {
+	var paths []string
+	e := echo.New()
+	router.SetRoute(e)
+	for _, route := range e.Routes() {
+		paths = append(paths, fmt.Sprintf("%s %s", route.Method, route.Path))
+	}
+	sort.Strings(paths)
+	return paths
 }
 
 //
