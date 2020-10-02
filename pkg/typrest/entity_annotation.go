@@ -63,7 +63,7 @@ func CreateEntity(a *typast.Annot2) *Entity {
 
 	table := a.TagParam.Get("table")
 	if table == "" {
-		table = strings.ToLower(table) + "s"
+		table = strings.ToLower(name) + "s"
 	}
 
 	dialect := a.TagParam.Get("dialect")
