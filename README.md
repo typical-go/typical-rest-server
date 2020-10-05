@@ -51,7 +51,7 @@ Source codes:
         - [`/controller`](internal/app/domain/library/controller): presentation for library domain
         - [`/service`](internal/app/domain/library/service): logic for library domain
     - [`/data_access`](internal/app/data_access)
-      - [`/librarydb`](internal/app/server/repository): data access to librarydb
+      - [`/postgresdb`](internal/app/server/repository): data access to postgresdb
   - [`/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`/pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`/cmd`](cmd): the main package

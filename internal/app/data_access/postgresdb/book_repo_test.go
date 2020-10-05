@@ -1,4 +1,4 @@
-package librarydb_test
+package postgresdb_test
 
 import (
 	"context"
@@ -10,32 +10,32 @@ import (
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/librarydb"
+	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 )
 
 type bookRepoFn func(sqlmock.Sqlmock)
 
-func createBookRepo(fn bookRepoFn) (librarydb.BookRepo, *sql.DB) {
+func createBookRepo(fn bookRepoFn) (postgresdb.BookRepo, *sql.DB) {
 	db, mock, _ := sqlmock.New()
 	if fn != nil {
 		fn(mock)
 	}
-	return &librarydb.BookRepoImpl{DB: db}, db
+	return &postgresdb.BookRepoImpl{DB: db}, db
 }
 
 func TestBookRepoImpl_Create(t *testing.T) {
 	testcases := []struct {
 		testName           string
-		book               *librarydb.Book
+		book               *postgresdb.Book
 		bookRepoFn         bookRepoFn
 		expectedInsertedID int64
 		expectedErr        string
 	}{
 		{
 			testName:    "begin error",
-			book:        &librarydb.Book{Title: "some-title", Author: "some-author"},
+			book:        &postgresdb.Book{Title: "some-title", Author: "some-author"},
 			expectedErr: "dbtxn: some-error",
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("some-error"))
@@ -43,7 +43,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 		},
 		{
 			testName:    "insert error",
-			book:        &librarydb.Book{Title: "some-title", Author: "some-author"},
+			book:        &postgresdb.Book{Title: "some-title", Author: "some-author"},
 			expectedErr: "some-error",
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
@@ -53,7 +53,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 			},
 		},
 		{
-			book: &librarydb.Book{Title: "some-title", Author: "some-author"},
+			book: &postgresdb.Book{Title: "some-title", Author: "some-author"},
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO books (title,author,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING "id"`)).
@@ -90,7 +90,7 @@ func TestBookRepoImpl_Create(t *testing.T) {
 func TestBookRepoImpl_Update(t *testing.T) {
 	testcases := []struct {
 		testName            string
-		book                *librarydb.Book
+		book                *postgresdb.Book
 		bookRepoFn          bookRepoFn
 		opt                 dbkit.UpdateOption
 		expectedErr         string
@@ -98,8 +98,8 @@ func TestBookRepoImpl_Update(t *testing.T) {
 	}{
 		{
 			testName:            "update error",
-			book:                &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:                 dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:                &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:                 dbkit.Equal(postgresdb.BookTable.ID, 888),
 			expectedErr:         "dbtxn: begin-error",
 			expectedAffectedRow: -1,
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
@@ -108,8 +108,8 @@ func TestBookRepoImpl_Update(t *testing.T) {
 		},
 		{
 			testName: "update error",
-			book:     &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -121,8 +121,8 @@ func TestBookRepoImpl_Update(t *testing.T) {
 		},
 		{
 			testName: "complete book",
-			book:     &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -133,8 +133,8 @@ func TestBookRepoImpl_Update(t *testing.T) {
 		},
 		{
 			testName: "empty author",
-			book:     &librarydb.Book{Title: "new-title"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -145,8 +145,8 @@ func TestBookRepoImpl_Update(t *testing.T) {
 		},
 		{
 			testName: "empty title",
-			book:     &librarydb.Book{Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -178,7 +178,7 @@ func TestBookRepoImpl_Update(t *testing.T) {
 func TestBookRepoImpl_Patch(t *testing.T) {
 	testcases := []struct {
 		testName            string
-		book                *librarydb.Book
+		book                *postgresdb.Book
 		bookRepoFn          bookRepoFn
 		opt                 dbkit.UpdateOption
 		expectedErr         string
@@ -186,8 +186,8 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 	}{
 		{
 			testName: "begin error",
-			book:     &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
 			},
@@ -196,8 +196,8 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 		},
 		{
 			testName: "update error",
-			book:     &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -209,8 +209,8 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 		},
 		{
 			testName: "complete book",
-			book:     &librarydb.Book{Title: "new-title", Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title", Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, author = $2, updated_at = $3 WHERE id = $4`)).
@@ -221,8 +221,8 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 		},
 		{
 			testName: "empty author",
-			book:     &librarydb.Book{Title: "new-title"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Title: "new-title"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET title = $1, updated_at = $2 WHERE id = $3`)).
@@ -233,8 +233,8 @@ func TestBookRepoImpl_Patch(t *testing.T) {
 		},
 		{
 			testName: "empty title",
-			book:     &librarydb.Book{Author: "new-author"},
-			opt:      dbkit.Equal(librarydb.BookTable.ID, 888),
+			book:     &postgresdb.Book{Author: "new-author"},
+			opt:      dbkit.Equal(postgresdb.BookTable.ID, 888),
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE books SET author = $1, updated_at = $2 WHERE id = $3`)).
@@ -270,14 +270,14 @@ func TestBookRepoImpl_Retrieve(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		opts        []dbkit.SelectOption
-		expected    []*librarydb.Book
+		expected    []*postgresdb.Book
 		expectedErr string
 		bookRepoFn  bookRepoFn
 	}{
 		{
 
 			opts:        []dbkit.SelectOption{},
-			expected:    []*librarydb.Book{},
+			expected:    []*postgresdb.Book{},
 			expectedErr: "some-error",
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(`SELECT id, title, author, updated_at, created_at FROM books`).
@@ -287,9 +287,9 @@ func TestBookRepoImpl_Retrieve(t *testing.T) {
 		{
 
 			opts: []dbkit.SelectOption{},
-			expected: []*librarydb.Book{
-				&librarydb.Book{ID: 1234, Title: "some-title4", Author: "some-author4", UpdatedAt: now, CreatedAt: now},
-				&librarydb.Book{ID: 1235, Title: "some-title5", Author: "some-author5", UpdatedAt: now, CreatedAt: now},
+			expected: []*postgresdb.Book{
+				&postgresdb.Book{ID: 1234, Title: "some-title4", Author: "some-author4", UpdatedAt: now, CreatedAt: now},
+				&postgresdb.Book{ID: 1235, Title: "some-title5", Author: "some-author5", UpdatedAt: now, CreatedAt: now},
 			},
 			bookRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(`SELECT id, title, author, updated_at, created_at FROM books`).

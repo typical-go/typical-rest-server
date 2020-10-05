@@ -7,7 +7,7 @@ package service_mock
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	librarydb "github.com/typical-go/typical-rest-server/internal/app/data_access/librarydb"
+	postgresdb "github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	reflect "reflect"
 )
 
@@ -35,10 +35,10 @@ func (m *MockBookSvc) EXPECT() *MockBookSvcMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockBookSvc) Create(arg0 context.Context, arg1 *librarydb.Book) (*librarydb.Book, error) {
+func (m *MockBookSvc) Create(arg0 context.Context, arg1 *postgresdb.Book) (*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(*librarydb.Book)
+	ret0, _ := ret[0].(*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,10 +64,10 @@ func (mr *MockBookSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Find mocks base method
-func (m *MockBookSvc) Find(arg0 context.Context) ([]*librarydb.Book, error) {
+func (m *MockBookSvc) Find(arg0 context.Context) ([]*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", arg0)
-	ret0, _ := ret[0].([]*librarydb.Book)
+	ret0, _ := ret[0].([]*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,10 +79,10 @@ func (mr *MockBookSvcMockRecorder) Find(arg0 interface{}) *gomock.Call {
 }
 
 // FindOne mocks base method
-func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*librarydb.Book, error) {
+func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindOne", arg0, arg1)
-	ret0, _ := ret[0].(*librarydb.Book)
+	ret0, _ := ret[0].(*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -94,10 +94,10 @@ func (mr *MockBookSvcMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Patch mocks base method
-func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *librarydb.Book) (*librarydb.Book, error) {
+func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *postgresdb.Book) (*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*librarydb.Book)
+	ret0, _ := ret[0].(*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -109,10 +109,10 @@ func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.C
 }
 
 // Update mocks base method
-func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *librarydb.Book) (*librarydb.Book, error) {
+func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *postgresdb.Book) (*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*librarydb.Book)
+	ret0, _ := ret[0].(*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

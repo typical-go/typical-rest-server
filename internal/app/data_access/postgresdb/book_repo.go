@@ -1,4 +1,4 @@
-package librarydb
+package postgresdb
 
 import (
 	"context"

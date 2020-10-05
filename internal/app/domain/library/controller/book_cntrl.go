@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/librarydb"
+	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
@@ -33,7 +33,7 @@ func (c *BookCntrl) SetRoute(e typrest.Server) {
 
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
-	var book librarydb.Book
+	var book postgresdb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 // Find books
 func (c *BookCntrl) Find(ec echo.Context) (err error) {
-	var books []*librarydb.Book
+	var books []*postgresdb.Book
 	if books, err = c.BookSvc.Find(
 		ec.Request().Context(),
 	); err != nil {
@@ -82,7 +82,7 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 
 // Update book
 func (c *BookCntrl) Update(ec echo.Context) (err error) {
-	var book librarydb.Book
+	var book postgresdb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 
 // Patch book
 func (c *BookCntrl) Patch(ec echo.Context) (err error) {
-	var book librarydb.Book
+	var book postgresdb.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}

@@ -55,8 +55,8 @@ var descriptor = typgo.Descriptor{
 				return cfg
 			},
 			DockerName:   "typical-rest-server_pg01_1",
-			MigrationSrc: "file://databases/librarydb/migration",
-			SeedSrc:      "databases/librarydb/seed",
+			MigrationSrc: "file://databases/postgresdb/migration",
+			SeedSrc:      "databases/postgresdb/seed",
 		},
 		// mysql
 		&mysqltool.MySQLTool{
@@ -69,8 +69,8 @@ var descriptor = typgo.Descriptor{
 				return cfg
 			},
 			DockerName:   "typical-rest-server_mysql01_1",
-			MigrationSrc: "file://databases/albumdb/migration",
-			SeedSrc:      "databases/albumdb/seed",
+			MigrationSrc: "file://databases/mysqldb/migration",
+			SeedSrc:      "databases/mysqldb/seed",
 		},
 		// reset
 		&typgo.Command{
