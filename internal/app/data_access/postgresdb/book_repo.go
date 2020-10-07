@@ -44,7 +44,7 @@ type (
 	// BookRepoImpl is implementation book repository
 	BookRepoImpl struct {
 		dig.In
-		*sql.DB
+		*sql.DB `name:"pg"`
 	}
 )
 

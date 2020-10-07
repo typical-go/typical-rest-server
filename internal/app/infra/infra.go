@@ -11,17 +11,20 @@ type (
 	// Infra infrastructure for the project
 	Infra struct {
 		dig.Out
-		Pg    *sql.DB
+		Pg    *sql.DB `name:"pg"`
+		MySQL *sql.DB `name:"mysql"`
 		Redis *redis.Client
 	}
 	setupParam struct {
 		dig.In
 		PgCfg    *PostgresCfg
+		MysqlCfg *MySQLCfg
 		RedisCfg *RedisCfg
 	}
 	teardownParam struct {
 		dig.In
-		Pg    *sql.DB
+		Pg    *sql.DB `name:"pg"`
+		MySQL *sql.DB `name:"mysql"`
 		Redis *redis.Client
 	}
 )
@@ -31,6 +34,7 @@ type (
 func Setup(p setupParam) Infra {
 	return Infra{
 		Pg:    p.PgCfg.createConn(),
+		MySQL: p.MysqlCfg.createConn(),
 		Redis: p.RedisCfg.createClient(),
 	}
 }

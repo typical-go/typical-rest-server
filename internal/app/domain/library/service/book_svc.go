@@ -23,7 +23,6 @@ type (
 		Update(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
 		Patch(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
 	}
-
 	// BookSvcImpl is implementation of BookSvc
 	BookSvcImpl struct {
 		dig.In

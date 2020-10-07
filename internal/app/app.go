@@ -11,11 +11,22 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/album"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/library"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/app/profiler"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
+)
+
+type (
+	app struct {
+		dig.In
+		*infra.AppCfg
+		Library  library.Router
+		Album    album.Router
+		Profiler profiler.Router
+	}
 )
 
 // Start app
@@ -44,14 +55,9 @@ func Shutdown(e *echo.Echo) {
 	e.Shutdown(ctx)
 }
 
-type (
-	app struct {
-		dig.In
-		*infra.AppCfg
-		Library  library.Router
-		Profiler profiler.Router
-	}
-)
+//
+// app
+//
 
 // SetMiddleware set middleware to the app
 func (a app) SetMiddleware(e *echo.Echo) {
@@ -66,6 +72,7 @@ func (a app) SetRoute(e *echo.Echo) {
 	typrest.SetRoute(e,
 		&a.Library,
 		&a.Profiler,
+		&a.Album,
 	)
 }
 

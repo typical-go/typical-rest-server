@@ -16,7 +16,8 @@ type (
 	// HealthCheck for profiler
 	HealthCheck struct {
 		dig.In
-		PG    *sql.DB
+		PG    *sql.DB `name:"pg"`
+		MySQL *sql.DB `name:"mysql"`
 		Redis *redis.Client
 	}
 )
@@ -31,6 +32,7 @@ func (h *HealthCheck) SetRoute(e typrest.Server) {
 func (h *HealthCheck) handle(ec echo.Context) error {
 	healthy, detail := typrest.HealthStatus(typrest.HealthMap{
 		"postgres": h.PG.Ping,
+		"mysql":    h.MySQL.Ping,
 		"redis":    h.Redis.Ping().Err,
 	})
 
