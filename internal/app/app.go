@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -28,11 +30,15 @@ import (
 type (
 	app struct {
 		dig.In
-		*infra.AppCfg
+		Config      *infra.AppCfg
 		Library     mylibrary.Router
 		Album       mymusic.Router
 		HealthCheck infra.HealthCheck
 	}
+)
+
+const (
+	healthCheckPath = "/application/health"
 )
 
 // Start app
@@ -41,16 +47,16 @@ func Start(a app) (err error) {
 	defer Shutdown(e)
 
 	e.HideBanner = true
-	e.Debug = a.Debug
+	e.Debug = a.Config.Debug
 
 	a.SetLoggger(e)
 	a.SetMiddleware(e)
 	a.SetRoute(e)
 
 	return e.StartServer(&http.Server{
-		Addr:         a.AppCfg.Address,
-		ReadTimeout:  a.AppCfg.ReadTimeout,
-		WriteTimeout: a.AppCfg.WriteTimeout,
+		Addr:         a.Config.Address,
+		ReadTimeout:  a.Config.ReadTimeout,
+		WriteTimeout: a.Config.WriteTimeout,
 	})
 }
 
@@ -75,15 +81,24 @@ func (a app) SetMiddleware(e *echo.Echo) {
 
 // SetRoute set route the app
 func (a app) SetRoute(e *echo.Echo) {
-
 	typrest.SetRoute(e,
 		&a.Library,
 		&a.Album,
 	)
 
-	e.Any("application/health", a.HealthCheck.Handle)
-	e.Any("/debug/*", echo.WrapHandler(http.DefaultServeMux))
-	e.Any("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
+	e.GET(healthCheckPath, a.HealthCheck.Handle)
+	e.HEAD(healthCheckPath, a.HealthCheck.Handle)
+	e.GET("/debug/*", echo.WrapHandler(http.DefaultServeMux))
+	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
+
+	if a.Config.Debug {
+		var routePaths []string
+		for _, route := range e.Routes() {
+			routePaths = append(routePaths, fmt.Sprintf("  %s\t%s", route.Path, route.Method))
+		}
+		sort.Strings(routePaths)
+		logrus.Debugf("Application routes:\n%s\n\n", strings.Join(routePaths, "\n"))
+	}
 }
 
 // SetLogger set logger to the app
@@ -92,7 +107,7 @@ func (a app) SetLoggger(e *echo.Echo) {
 	e.Logger = typrest.WrapLogrus(logger) // NOTE: setup echo logger
 	log.SetOutput(logger.Writer())        // NOTE: std golang log use same output writer with logrus
 
-	if a.AppCfg.Debug {
+	if a.Config.Debug {
 		logger.SetLevel(logrus.DebugLevel)
 		logger.SetFormatter(&logrus.TextFormatter{})
 	} else {
