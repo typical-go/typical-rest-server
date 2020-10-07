@@ -45,13 +45,16 @@ Source codes:
 - [`/internal`](internal): private codes for the project
   - [`/app`](internal/app) 
     - [`/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
-    - [`/profiler`](internal/app/profiler): profiling/debug the project e.g. HealthCheck, PProf, etc
     - [`/domain`](internal/app/domain) 
-      - [`/library`](internal/app/domain)
-        - [`/controller`](internal/app/domain/library/controller): presentation for library domain
-        - [`/service`](internal/app/domain/library/service): logic for library domain
+      - [`/mylibrary`](internal/app/domain/mylibrary)
+        - [`/controller`](internal/app/domain/library/controller): presentation for mylibrary domain
+        - [`/service`](internal/app/domain/library/service): logic for mylibrary domain
+      - [`/mymusic`](internal/app/domain/mymusic)
+        - [`/controller`](internal/app/domain/mymusic/controller): presentation for mymusic domain
+        - [`/service`](internal/app/domain/mymusic/service): logic for mymusic domain
     - [`/data_access`](internal/app/data_access)
-      - [`/postgresdb`](internal/app/server/repository): data access to postgresdb
+      - [`/postgresdb`](internal/app/data_access/postgresdb): data access to postgresdb
+      - [`/mysqldb`](internal/app/data_access/mysqldb): data access to postgresdb
   - [`/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`/pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`/cmd`](cmd): the main package
