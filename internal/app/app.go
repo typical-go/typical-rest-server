@@ -14,18 +14,23 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/album"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/library"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
-	"github.com/typical-go/typical-rest-server/internal/app/profiler"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
+
+	// enable `/debug/vars`
+	_ "expvar"
+
+	// enable `/debug/pprof` API
+	_ "net/http/pprof"
 )
 
 type (
 	app struct {
 		dig.In
 		*infra.AppCfg
-		Library  library.Router
-		Album    album.Router
-		Profiler profiler.Router
+		Library     library.Router
+		Album       album.Router
+		HealthCheck infra.HealthCheck
 	}
 )
 
@@ -69,11 +74,15 @@ func (a app) SetMiddleware(e *echo.Echo) {
 
 // SetRoute set route the app
 func (a app) SetRoute(e *echo.Echo) {
+
 	typrest.SetRoute(e,
 		&a.Library,
-		&a.Profiler,
 		&a.Album,
 	)
+
+	e.Any("application/health", a.HealthCheck.Handle)
+	e.Any("/debug/*", echo.WrapHandler(http.DefaultServeMux))
+	e.Any("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 }
 
 // SetLogger set logger to the app

@@ -1,4 +1,4 @@
-package profiler
+package infra
 
 import (
 	"database/sql"
@@ -22,14 +22,8 @@ type (
 	}
 )
 
-var _ typrest.Router = (*HealthCheck)(nil)
-
-// SetRoute to profiler api
-func (h *HealthCheck) SetRoute(e typrest.Server) {
-	e.Any("application/health", h.handle)
-}
-
-func (h *HealthCheck) handle(ec echo.Context) error {
+// Handle echo function
+func (h *HealthCheck) Handle(ec echo.Context) error {
 	healthy, detail := typrest.HealthStatus(typrest.HealthMap{
 		"postgres": h.PG.Ping,
 		"mysql":    h.MySQL.Ping,
