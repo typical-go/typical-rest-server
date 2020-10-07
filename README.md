@@ -13,7 +13,7 @@ Opinionated, simple and straight forward Restful server implementation for Golan
 ## How to Use 
 
 - References for project layout and code best practice.
-- Shared library ([pkg](#shared-library)) is utility/helper to general use.
+- Shared mylibrary ([pkg](#shared-mylibrary)) is utility/helper to general use.
 - For setup new project, please use [rest-project-starter](https://github.com/typical-go/rest-project-starter)
   ```bash
   curl -s https://raw.githubusercontent.com/typical-go/rest-project-starter/master/setup.sh | bash -s [project_name] [package_name]
@@ -47,8 +47,8 @@ Source codes:
     - [`/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
     - [`/domain`](internal/app/domain) 
       - [`/mylibrary`](internal/app/domain/mylibrary)
-        - [`/controller`](internal/app/domain/library/controller): presentation for mylibrary domain
-        - [`/service`](internal/app/domain/library/service): logic for mylibrary domain
+        - [`/controller`](internal/app/domain/mylibrary/controller): presentation for mylibrary domain
+        - [`/service`](internal/app/domain/mylibrary/service): logic for mylibrary domain
       - [`/mymusic`](internal/app/domain/mymusic)
         - [`/controller`](internal/app/domain/mymusic/controller): presentation for mymusic domain
         - [`/service`](internal/app/domain/mymusic/service): logic for mymusic domain
@@ -149,7 +149,7 @@ Typical-Rest do not encourage Objection-Relation-Mapping/ORM ([ORM Hate](https:/
 
 ## Shared Library
 
-The [`pkg`](pkg) contain useful library for general needs
+The [`pkg`](pkg) contain useful mylibrary for general needs
 
 - [`pkg/typrest`](pkg/typrest) Utility for rest application e.g. health check, error, etc
 - [`pkg/dbkit`](pkg/dbkit) Utility for database operation
@@ -159,7 +159,7 @@ The [`pkg`](pkg) contain useful library for general needs
 
 ## 3rd-Party Library
 
-The project [use go modules](https://blog.golang.org/using-go-modules) to manage package dependency. The compelete library list can be found in [go.mod](go.mod). 
+The project [use go modules](https://blog.golang.org/using-go-modules) to manage package dependency. The compelete mylibrary list can be found in [go.mod](go.mod). 
 
 - [Echo Framework](https://echo.labstack.com/): Web Framework
 - [dig](https://github.com/uber-go/dig): Dependency Injection

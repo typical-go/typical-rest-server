@@ -11,8 +11,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/library"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
@@ -28,7 +29,7 @@ type (
 	app struct {
 		dig.In
 		*infra.AppCfg
-		Library     library.Router
+		Library     mylibrary.Router
 		Album       mymusic.Router
 		HealthCheck infra.HealthCheck
 	}

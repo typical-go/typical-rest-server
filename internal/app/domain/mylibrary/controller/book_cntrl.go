@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )

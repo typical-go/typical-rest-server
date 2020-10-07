@@ -9,8 +9,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/library/controller"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )

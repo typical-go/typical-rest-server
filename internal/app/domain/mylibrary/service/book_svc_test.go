@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb_mock"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/library/service"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 

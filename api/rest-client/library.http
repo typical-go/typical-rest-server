@@ -1,17 +1,17 @@
 
 ### Find Books
 
-http://localhost:8089/library/books
+http://localhost:8089/mylibrary/books
 
 
 ### Find One Book (Invalid ID)
 
-http://localhost:8089/library/books/0
+http://localhost:8089/mylibrary/books/0
 
 
 ### Insert Book
 
-POST http://localhost:8089/library/books
+POST http://localhost:8089/mylibrary/books
 content-type: application/json
 
 
@@ -22,12 +22,12 @@ content-type: application/json
 
 ### Find One Book
 
-http://localhost:8089/library/books/6
+http://localhost:8089/mylibrary/books/6
 
 
 ### Update Book
 
-PUT http://localhost:8089/library/books/6
+PUT http://localhost:8089/mylibrary/books/6
 content-type: application/json
 
 {
@@ -38,7 +38,7 @@ content-type: application/json
 
 ### Patch Book
 
-PATCH http://localhost:8089/library/books/6
+PATCH http://localhost:8089/mylibrary/books/6
 content-type: application/json
 
 {
@@ -47,4 +47,4 @@ content-type: application/json
 
 ### Delete Book
 
-DELETE http://localhost:8089/library/books/6
+DELETE http://localhost:8089/mylibrary/books/6
