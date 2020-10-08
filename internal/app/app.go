@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -92,12 +91,8 @@ func (a app) SetRoute(e *echo.Echo) {
 	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 
 	if a.Config.Debug {
-		var routePaths []string
-		for _, route := range e.Routes() {
-			routePaths = append(routePaths, fmt.Sprintf("  %s\t%s", route.Path, route.Method))
-		}
-		sort.Strings(routePaths)
-		logrus.Debugf("Application routes:\n%s\n\n", strings.Join(routePaths, "\n"))
+		logrus.Debugf("Application routes:\n  %s\n\n",
+			strings.Join(typrest.DumpEcho(e), "\n  "))
 	}
 }
 
