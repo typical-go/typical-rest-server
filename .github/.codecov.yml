@@ -1,4 +1,4 @@
 ignore:
-  - "**/*_mock"
-  - "typical/**"
+  - "**/*_mock/**"
+  - "tools/**"
   - "cmd/**"
