@@ -70,7 +70,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 
 	for _, opt := range opts {
 		if builder, err = opt.CompileSelect(builder); err != nil {
-			return nil, fmt.Errorf("book-repo: %w", err)
+			return nil, err
 		}
 	}
 
@@ -149,13 +149,13 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
 
-	return result.RowsAffected()
+	return res.RowsAffected()
 }
 
 // Update book
@@ -178,12 +178,12 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return result.RowsAffected()
+	return res.RowsAffected()
 }
 
 // Patch book to update field of book if available
@@ -211,10 +211,10 @@ func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOp
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return result.RowsAffected()
+	return res.RowsAffected()
 }

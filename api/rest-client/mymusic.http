@@ -1,3 +1,49 @@
+
 ### Find Books
 
 http://localhost:8089/mymusic/songs
+
+
+### Find One Book (Invalid ID)
+
+http://localhost:8089/mymusic/songs/0
+
+
+### Insert Book
+
+POST http://localhost:8089/mymusic/songs
+content-type: application/json
+
+{
+    "title": "Lose Yourself",
+    "artist": "Eminem"
+}
+
+### Find One Book
+
+http://localhost:8089/mymusic/songs/6
+
+
+### Update Book
+
+PUT http://localhost:8089/mymusic/songs/6
+content-type: application/json
+
+{
+    "title": "Lose Yourself (Revision)",
+    "artist": "Eminem"
+}
+
+
+### Patch Book
+
+PATCH http://localhost:8089/mymusic/songs/6
+content-type: application/json
+
+{
+    "title": "Lose Yourself (Revision2)"
+}
+
+### Delete Book
+
+DELETE http://localhost:8089/mymusic/songs/6

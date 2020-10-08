@@ -9,6 +9,7 @@ import (
 	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
@@ -22,65 +23,65 @@ func createSongRepo(fn bookRepoFn) (mysqldb.SongRepo, *sql.DB) {
 	if fn != nil {
 		fn(mock)
 	}
-	return &mysqldb.SongRepoImpl{DB: db}, db
+	return mysqldb.NewSongRepo(mysqldb.SongRepoImpl{DB: db}), db
 }
 
 func TestSongRepoImpl_Create(t *testing.T) {
 	testcases := []struct {
-		testName           string
-		book               *mysqldb.Song
-		bookRepoFn         bookRepoFn
-		expectedInsertedID int64
-		expectedErr        string
+		TestName    string
+		Song        *mysqldb.Song
+		SongRepoFn  bookRepoFn
+		Expected    int64
+		ExpectedErr string
 	}{
 		{
-			testName:    "begin error",
-			book:        &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
-			expectedErr: "dbtxn: some-error",
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName:    "begin error",
+			Song:        &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
+			ExpectedErr: "dbtxn: some-error",
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("some-error"))
 			},
 		},
 		{
-			testName:    "insert error",
-			book:        &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
-			expectedErr: "some-error",
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName:    "insert error",
+			Song:        &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
+			ExpectedErr: "some-error",
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
-				mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO songs (title,artist,created_at,updated_at) VALUES (?,?,?,?) RETURNING "id"`)).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO songs (title,artist,created_at,updated_at) VALUES (?,?,?,?)`)).
 					WithArgs("some-title", "some-artist", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(errors.New("some-error"))
 			},
 		},
 		{
-			book: &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			Song: &mysqldb.Song{Title: "some-title", Artist: "some-artist"},
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
-				mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO songs (title,artist,created_at,updated_at) VALUES (?,?,?,?) RETURNING "id"`)).
+				mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO songs (title,artist,created_at,updated_at) VALUES (?,?,?,?)`)).
 					WithArgs("some-title", "some-artist", sqlmock.AnyArg(), sqlmock.AnyArg()).
-					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(999))
+					WillReturnResult(sqlmock.NewResult(999, 1))
 			},
-			expectedInsertedID: 999,
+			Expected: 999,
 		},
 	}
 
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			repo, db := createSongRepo(tt.bookRepoFn)
+		t.Run(tt.TestName, func(t *testing.T) {
+			repo, db := createSongRepo(tt.SongRepoFn)
 			defer db.Close()
 
 			ctx := context.Background()
 			dbtxn.Begin(&ctx)
 
-			id, err := repo.Create(ctx, tt.book)
+			id, err := repo.Create(ctx, tt.Song)
 
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
-				require.EqualError(t, dbtxn.Error(ctx), tt.expectedErr)
+			if tt.ExpectedErr != "" {
+				require.EqualError(t, err, tt.ExpectedErr)
+				require.EqualError(t, dbtxn.Error(ctx), tt.ExpectedErr)
 			} else {
 				require.NoError(t, err)
 				require.NoError(t, dbtxn.Error(ctx))
-				require.Equal(t, tt.expectedInsertedID, id)
+				require.Equal(t, tt.Expected, id)
 			}
 
 		})
@@ -89,87 +90,101 @@ func TestSongRepoImpl_Create(t *testing.T) {
 
 func TestSongRepoImpl_Update(t *testing.T) {
 	testcases := []struct {
-		testName            string
-		book                *mysqldb.Song
-		bookRepoFn          bookRepoFn
-		opt                 dbkit.UpdateOption
-		expectedErr         string
-		expectedAffectedRow int64
+		TestName    string
+		Song        *mysqldb.Song
+		SongRepoFn  bookRepoFn
+		Opt         dbkit.UpdateOption
+		ExpectedErr string
+		Expected    int64
 	}{
 		{
-			testName:            "update error",
-			book:                &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:                 dbkit.Equal(mysqldb.SongTable.ID, 888),
-			expectedErr:         "dbtxn: begin-error",
-			expectedAffectedRow: -1,
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName:    "update error",
+			Song:        &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:         dbkit.Equal(mysqldb.SongTable.ID, 888),
+			ExpectedErr: "dbtxn: begin-error",
+			Expected:    -1,
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
 			},
 		},
 		{
-			testName: "update error",
-			book:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "update error",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
 					WillReturnError(errors.New("some-update-error"))
 			},
-			expectedErr:         "some-update-error",
-			expectedAffectedRow: -1,
+			ExpectedErr: "some-update-error",
+			Expected:    -1,
 		},
 		{
-			testName: "complete book",
-			book:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "bad update option",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt: dbkit.NewUpdateOption(func(b sq.UpdateBuilder) (sq.UpdateBuilder, error) {
+				return b, errors.New("bad-option")
+			}),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			ExpectedErr: "bad-option",
 		},
 		{
-			testName: "empty artist",
-			book:     &mysqldb.Song{Title: "new-title"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "success",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
+				mock.ExpectBegin()
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
+					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+			Expected: 1,
+		},
+		{
+			TestName: "success empty artist",
+			Song:     &mysqldb.Song{Title: "new-title"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", "", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			Expected: 1,
 		},
 		{
-			testName: "empty title",
-			book:     &mysqldb.Song{Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "success empty title",
+			Song:     &mysqldb.Song{Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("", "new-artist", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			Expected: 1,
 		},
 	}
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			repo, db := createSongRepo(tt.bookRepoFn)
+		t.Run(tt.TestName, func(t *testing.T) {
+			repo, db := createSongRepo(tt.SongRepoFn)
 			defer db.Close()
 
 			ctx := context.Background()
 			dbtxn.Begin(&ctx)
 
-			affectedRow, err := repo.Update(ctx, tt.book, tt.opt)
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
+			affectedRow, err := repo.Update(ctx, tt.Song, tt.Opt)
+			if tt.ExpectedErr != "" {
+				require.EqualError(t, err, tt.ExpectedErr)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tt.expectedAffectedRow, affectedRow)
+				require.Equal(t, tt.Expected, affectedRow)
 			}
 		})
 	}
@@ -177,89 +192,104 @@ func TestSongRepoImpl_Update(t *testing.T) {
 
 func TestSongRepoImpl_Patch(t *testing.T) {
 	testcases := []struct {
-		testName            string
-		book                *mysqldb.Song
-		bookRepoFn          bookRepoFn
-		opt                 dbkit.UpdateOption
-		expectedErr         string
-		expectedAffectedRow int64
+		TestName    string
+		Song        *mysqldb.Song
+		SongRepoFn  bookRepoFn
+		Opt         dbkit.UpdateOption
+		ExpectedErr string
+		Expected    int64
 	}{
 		{
-			testName: "begin error",
-			book:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "begin error",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
 			},
-			expectedErr:         "dbtxn: begin-error",
-			expectedAffectedRow: -1,
+			ExpectedErr: "dbtxn: begin-error",
+			Expected:    -1,
 		},
 		{
-			testName: "update error",
-			book:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "update error",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
 					WillReturnError(errors.New("some-update-error"))
 			},
-			expectedErr:         "some-update-error",
-			expectedAffectedRow: -1,
+			ExpectedErr: "some-update-error",
+			Expected:    -1,
 		},
+
 		{
-			testName: "complete book",
-			book:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "bad update option",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt: dbkit.NewUpdateOption(func(b sq.UpdateBuilder) (sq.UpdateBuilder, error) {
+				return b, errors.New("bad-option")
+			}),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			ExpectedErr: "bad-option",
 		},
 		{
-			testName: "empty artist",
-			book:     &mysqldb.Song{Title: "new-title"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "success",
+			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
+				mock.ExpectBegin()
+				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
+					WithArgs("new-title", "new-artist", sqlmock.AnyArg(), 888).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+			Expected: 1,
+		},
+		{
+			TestName: "success empty artist",
+			Song:     &mysqldb.Song{Title: "new-title"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-title", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			Expected: 1,
 		},
 		{
-			testName: "empty title",
-			book:     &mysqldb.Song{Artist: "new-artist"},
-			opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "success empty title",
+			Song:     &mysqldb.Song{Artist: "new-artist"},
+			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET artist = ?, updated_at = ? WHERE id = ?`)).
 					WithArgs("new-artist", sqlmock.AnyArg(), 888).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			Expected: 1,
 		},
 	}
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			repo, db := createSongRepo(tt.bookRepoFn)
+		t.Run(tt.TestName, func(t *testing.T) {
+			repo, db := createSongRepo(tt.SongRepoFn)
 			defer db.Close()
 
 			ctx := context.Background()
 			dbtxn.Begin(&ctx)
 
-			affectedRow, err := repo.Patch(ctx, tt.book, tt.opt)
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
-				require.EqualError(t, dbtxn.Error(ctx), tt.expectedErr)
+			affectedRow, err := repo.Patch(ctx, tt.Song, tt.Opt)
+			if tt.ExpectedErr != "" {
+				require.EqualError(t, err, tt.ExpectedErr)
+				require.EqualError(t, dbtxn.Error(ctx), tt.ExpectedErr)
 			} else {
 				require.NoError(t, err)
 				require.NoError(t, dbtxn.Error(ctx))
-				require.Equal(t, tt.expectedAffectedRow, affectedRow)
+				require.Equal(t, tt.Expected, affectedRow)
 			}
 		})
 	}
@@ -268,30 +298,30 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 func TestSongRepoImpl_Retrieve(t *testing.T) {
 	now := time.Now()
 	testcases := []struct {
-		testName    string
-		opts        []dbkit.SelectOption
-		expected    []*mysqldb.Song
-		expectedErr string
-		bookRepoFn  bookRepoFn
+		TestName    string
+		Opts        []dbkit.SelectOption
+		Expected    []*mysqldb.Song
+		ExpectedErr string
+		SongRepoFn  bookRepoFn
 	}{
 		{
-
-			opts:        []dbkit.SelectOption{},
-			expected:    []*mysqldb.Song{},
-			expectedErr: "some-error",
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "sql error",
+			Opts:     []dbkit.SelectOption{},
+			Expected: []*mysqldb.Song{},
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(`SELECT id, title, artist, updated_at, created_at FROM songs`).
 					WillReturnError(errors.New("some-error"))
 			},
+			ExpectedErr: "some-error",
 		},
 		{
-
-			opts: []dbkit.SelectOption{},
-			expected: []*mysqldb.Song{
-				&mysqldb.Song{ID: 1234, Title: "some-title4", Artist: "some-artist4", UpdatedAt: now, CreatedAt: now},
-				&mysqldb.Song{ID: 1235, Title: "some-title5", Artist: "some-artist5", UpdatedAt: now, CreatedAt: now},
+			TestName: "bad option",
+			Opts: []dbkit.SelectOption{
+				dbkit.NewSelectOption(func(b sq.SelectBuilder) (sq.SelectBuilder, error) {
+					return b, errors.New("bad-option")
+				}),
 			},
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(`SELECT id, title, artist, updated_at, created_at FROM songs`).
 					WillReturnRows(sqlmock.
 						NewRows([]string{"id", "title", "artist", "updated_at", "created_at"}).
@@ -299,19 +329,36 @@ func TestSongRepoImpl_Retrieve(t *testing.T) {
 						AddRow("1235", "some-title5", "some-artist5", now, now),
 					)
 			},
+			ExpectedErr: "bad-option",
+		},
+		{
+			TestName: "success",
+			Opts:     []dbkit.SelectOption{},
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
+				mock.ExpectQuery(`SELECT id, title, artist, updated_at, created_at FROM songs`).
+					WillReturnRows(sqlmock.
+						NewRows([]string{"id", "title", "artist", "updated_at", "created_at"}).
+						AddRow("1234", "some-title4", "some-artist4", now, now).
+						AddRow("1235", "some-title5", "some-artist5", now, now),
+					)
+			},
+			Expected: []*mysqldb.Song{
+				&mysqldb.Song{ID: 1234, Title: "some-title4", Artist: "some-artist4", UpdatedAt: now, CreatedAt: now},
+				&mysqldb.Song{ID: 1235, Title: "some-title5", Artist: "some-artist5", UpdatedAt: now, CreatedAt: now},
+			},
 		},
 	}
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			repo, db := createSongRepo(tt.bookRepoFn)
+		t.Run(tt.TestName, func(t *testing.T) {
+			repo, db := createSongRepo(tt.SongRepoFn)
 			defer db.Close()
 
-			songs, err := repo.Find(context.Background(), tt.opts...)
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
+			songs, err := repo.Find(context.Background(), tt.Opts...)
+			if tt.ExpectedErr != "" {
+				require.EqualError(t, err, tt.ExpectedErr)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tt.expected, songs)
+				require.Equal(t, tt.Expected, songs)
 			}
 		})
 	}
@@ -319,25 +366,25 @@ func TestSongRepoImpl_Retrieve(t *testing.T) {
 
 func TestSongRepoImpl_Delete(t *testing.T) {
 	testcases := []struct {
-		testName            string
-		opt                 dbkit.DeleteOption
-		bookRepoFn          bookRepoFn
-		expectedErr         string
-		expectedAffectedRow int64
+		TestName    string
+		Opt         dbkit.DeleteOption
+		SongRepoFn  bookRepoFn
+		ExpectedErr string
+		Expected    int64
 	}{
 		{
-			testName:    "begin error",
-			opt:         dbkit.Equal("id", 666),
-			expectedErr: "dbtxn: begin-error",
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName:    "begin error",
+			Opt:         dbkit.Equal("id", 666),
+			ExpectedErr: "dbtxn: begin-error",
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
 			},
 		},
 		{
-			testName:    "delete error",
-			opt:         dbkit.Equal("id", 666),
-			expectedErr: "delete-error",
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName:    "delete error",
+			Opt:         dbkit.Equal("id", 666),
+			ExpectedErr: "delete-error",
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM songs WHERE id = ?`)).
 					WithArgs(666).
@@ -345,32 +392,46 @@ func TestSongRepoImpl_Delete(t *testing.T) {
 			},
 		},
 		{
-			opt: dbkit.Equal("id", 555),
-			bookRepoFn: func(mock sqlmock.Sqlmock) {
+			TestName: "bad delete option",
+			Opt: dbkit.NewDeleteOption(func(b sq.DeleteBuilder) (sq.DeleteBuilder, error) {
+				return b, errors.New("bad-option")
+			}),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM songs WHERE id = ?`)).
 					WithArgs(555).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
-			expectedAffectedRow: 1,
+			ExpectedErr: "bad-option",
+		},
+		{
+			TestName: "success",
+			Opt:      dbkit.Equal("id", 555),
+			SongRepoFn: func(mock sqlmock.Sqlmock) {
+				mock.ExpectBegin()
+				mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM songs WHERE id = ?`)).
+					WithArgs(555).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+			Expected: 1,
 		},
 	}
 	for _, tt := range testcases {
-		t.Run(tt.testName, func(t *testing.T) {
-			repo, db := createSongRepo(tt.bookRepoFn)
+		t.Run(tt.TestName, func(t *testing.T) {
+			repo, db := createSongRepo(tt.SongRepoFn)
 			defer db.Close()
 
 			ctx := context.Background()
 			dbtxn.Begin(&ctx)
 
-			affectedRow, err := repo.Delete(ctx, tt.opt)
-			if tt.expectedErr != "" {
-				require.EqualError(t, err, tt.expectedErr)
-				require.EqualError(t, dbtxn.Error(ctx), tt.expectedErr)
+			affectedRow, err := repo.Delete(ctx, tt.Opt)
+			if tt.ExpectedErr != "" {
+				require.EqualError(t, err, tt.ExpectedErr)
+				require.EqualError(t, dbtxn.Error(ctx), tt.ExpectedErr)
 			} else {
 				require.NoError(t, err)
 				require.NoError(t, dbtxn.Error(ctx))
-				require.Equal(t, tt.expectedAffectedRow, affectedRow)
+				require.Equal(t, tt.Expected, affectedRow)
 			}
 		})
 	}

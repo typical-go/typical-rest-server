@@ -3,7 +3,6 @@ package mysqldb
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -69,7 +68,7 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 
 	for _, opt := range opts {
 		if builder, err = opt.CompileSelect(builder); err != nil {
-			return nil, fmt.Errorf("song-repo: %w", err)
+			return nil, err
 		}
 	}
 
@@ -102,7 +101,7 @@ func (r *SongRepoImpl) Create(ctx context.Context, song *Song) (int64, error) {
 		return -1, err
 	}
 
-	scanner := sq.
+	res, err := sq.
 		Insert(SongTableName).
 		Columns(
 			SongTable.Title,
@@ -116,18 +115,14 @@ func (r *SongRepoImpl) Create(ctx context.Context, song *Song) (int64, error) {
 			time.Now(),
 			time.Now(),
 		).
-		Suffix(
-			fmt.Sprintf("RETURNING \"%s\"", SongTable.ID),
-		).
 		RunWith(txn.DB).
-		QueryRowContext(ctx)
+		ExecContext(ctx)
 
-	var id int64
-	if err := scanner.Scan(&id); err != nil {
+	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return id, nil
+	return res.LastInsertId()
 }
 
 // Delete song
@@ -146,13 +141,13 @@ func (r *SongRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
 
-	return result.RowsAffected()
+	return res.RowsAffected()
 }
 
 // Update song
@@ -174,12 +169,12 @@ func (r *SongRepoImpl) Update(ctx context.Context, song *Song, opt dbkit.UpdateO
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return result.RowsAffected()
+	return res.RowsAffected()
 }
 
 // Patch song to update field of song if available
@@ -206,10 +201,10 @@ func (r *SongRepoImpl) Patch(ctx context.Context, song *Song, opt dbkit.UpdateOp
 		return -1, err
 	}
 
-	result, err := builder.ExecContext(ctx)
+	res, err := builder.ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return result.RowsAffected()
+	return res.RowsAffected()
 }
