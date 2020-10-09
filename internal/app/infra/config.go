@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/typical-go/typical-rest-server/pkg/mysqltool"
-	"github.com/typical-go/typical-rest-server/pkg/pgtool"
+	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
@@ -83,11 +82,11 @@ func (r *RedisCfg) createClient() *redis.Client {
 // PostgresCfg
 //
 
-var _ pgtool.Configurer = (*PostgresCfg)(nil)
+var _ dbtool.Configurer = (*PostgresCfg)(nil)
 
 // Config for pgtool
-func (p *PostgresCfg) Config() *pgtool.Config {
-	return &pgtool.Config{
+func (p *PostgresCfg) Config() *dbtool.Config {
+	return &dbtool.Config{
 		DBName: p.DBName,
 		DBUser: p.DBUser,
 		DBPass: p.DBPass,
@@ -121,11 +120,11 @@ func (p *PostgresCfg) createConn() *sql.DB {
 // MySQL
 //
 
-var _ mysqltool.Configurer = (*MySQLCfg)(nil)
+var _ dbtool.Configurer = (*MySQLCfg)(nil)
 
 // Config for pgtool
-func (p *MySQLCfg) Config() *mysqltool.Config {
-	return &mysqltool.Config{
+func (p *MySQLCfg) Config() *dbtool.Config {
+	return &dbtool.Config{
 		DBName: p.DBName,
 		DBUser: p.DBUser,
 		DBPass: p.DBPass,

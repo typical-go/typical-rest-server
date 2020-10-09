@@ -11,6 +11,7 @@ import (
 	"github.com/golang-migrate/migrate/database/mysql"
 	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
+	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,23 +19,11 @@ type (
 	// MySQLTool for postgres
 	MySQLTool struct {
 		Name         string
-		ConfigFn     func() Configurer
+		ConfigFn     func() dbtool.Configurer
 		DockerName   string
 		MigrationSrc string
 		SeedSrc      string
-		cfg          *Config
-	}
-	// Config config for postgres tool
-	Config struct {
-		DBName string
-		DBUser string
-		DBPass string
-		Host   string
-		Port   string
-	}
-	// Configurer return config
-	Configurer interface {
-		Config() *Config
+		cfg          *dbtool.Config
 	}
 )
 
