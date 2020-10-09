@@ -13,6 +13,9 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/urfave/cli/v2"
+
+	// load migration file
+	_ "github.com/golang-migrate/migrate/source/file"
 )
 
 type (
