@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/tmplkit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
@@ -14,7 +15,7 @@ import (
 
 type (
 	// EnvconfigAnnotation handle @envconfig annotation
-	// e.g. `@envconfig (prefix: "PREFIX" ctor_name:"CTOR")`
+	// e.g. `@envconfig (prefix: "PREFIX" ctor:"CTOR")`
 	EnvconfigAnnotation struct {
 		TagName  string // By default is `@envconfig`
 		Template string // By default defined in defaultCfgTemplate variable
@@ -37,11 +38,12 @@ type (
 	}
 	// Envconfig model
 	Envconfig struct {
-		CtorName string
+		Ctor     string
 		Prefix   string
 		SpecType string
 		Name     string
 		Fields   []*Field
+		FnName   string
 	}
 	// Field model
 	Field struct {
@@ -64,12 +66,12 @@ import ({{range $import, $alias := .Imports}}
 
 func init() { {{if .Configs}}
 	typapp.AppendCtor({{range $c := .Configs}}
-		&typapp.Constructor{Name: "{{$c.CtorName}}",Fn: Load{{$c.Name}}},{{end}}
+		&typapp.Constructor{Name: "{{$c.Ctor}}",Fn: {{$c.FnName}}},{{end}}
 	){{end}}
 }
 {{range $c := .Configs}}
-// Load{{$c.Name}} load env to new instance of {{$c.Name}}
-func Load{{$c.Name}}() (*{{$c.SpecType}}, error) {
+// {{$c.FnName}} load env to new instance of {{$c.Name}}
+func {{$c.FnName}}() (*{{$c.SpecType}}, error) {
 	var cfg {{$c.SpecType}}
 	prefix := "{{$c.Prefix}}"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
@@ -180,12 +182,14 @@ func createEnvconfig(a *typast.Annot2) *Envconfig {
 	structDecl := a.Type.(*typast.StructDecl)
 
 	name := a.GetName()
+	ctor := getCtorName(a)
 	return &Envconfig{
-		CtorName: getCtorName(a),
+		Ctor:     ctor,
 		Name:     name,
 		Prefix:   prefix,
 		SpecType: fmt.Sprintf("%s.%s", a.ImportAlias, name),
 		Fields:   createFields(structDecl, prefix),
+		FnName:   fmt.Sprintf("Load%s%s", strcase.ToCamel(ctor), name),
 	}
 }
 
@@ -214,7 +218,7 @@ func CreateField(prefix string, field *typast.Field) *Field {
 }
 
 func getCtorName(annot *typast.Annot2) string {
-	return annot.TagParam.Get("ctor_name")
+	return annot.TagParam.Get("ctor")
 }
 
 func getPrefix(annot *typast.Annot2) string {

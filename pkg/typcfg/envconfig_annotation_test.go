@@ -120,7 +120,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		Summary: &typast.Summary{Annots: []*typast.Annot{
 			{
 				TagName:  "@envconfig",
-				TagParam: `ctor_name:"ctor1" prefix:"SS"`,
+				TagParam: `ctor:"ctor1" prefix:"SS"`,
 				Decl: &typast.Decl{
 					File: typast.File{Package: "mypkg"},
 					Type: &typast.StructDecl{
