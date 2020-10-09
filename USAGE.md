@@ -22,22 +22,22 @@ Annotation Help:
 | REDIS_HOST | localhost | Yes |
 | REDIS_PORT | 6379 | Yes |
 | REDIS_PASSWORD | redispass |  |
-| PG_DBNAME | MyLibrary | Yes |
-| PG_DBUSER | pguser | Yes |
-| PG_DBPASS | pgpass |  |
-| PG_HOST | localhost | Yes |
-| PG_PORT | 5432 | Yes |
-| PG_MAX_OPEN_CONNS | 30 | Yes |
-| PG_MAX_IDLE_CONNS | 6 | Yes |
-| PG_CONN_MAX_LIFETIME | 30m | Yes |
-| MYSQL_DBNAME | myalbum | Yes |
-| MYSQL_DBUSER | mysql | Yes |
-| MYSQL_DBPASS | mypass | Yes |
-| MYSQL_HOST | localhost |  |
-| MYSQL_PORT | 3306 |  |
+| MYSQL_DBNAME | dbname | Yes |
+| MYSQL_DBUSER | dbuser | Yes |
+| MYSQL_DBPASS | dbpass | Yes |
+| MYSQL_HOST | localhost | Yes |
+| MYSQL_PORT | 9999 | Yes |
 | MYSQL_MAX_OPEN_CONNS | 30 | Yes |
 | MYSQL_MAX_IDLE_CONNS | 6 | Yes |
 | MYSQL_CONN_MAX_LIFETIME | 30m | Yes |
+| PG_DBNAME | dbname | Yes |
+| PG_DBUSER | dbuser | Yes |
+| PG_DBPASS | dbpass | Yes |
+| PG_HOST | localhost | Yes |
+| PG_PORT | 9999 | Yes |
+| PG_MAX_OPEN_CONNS | 30 | Yes |
+| PG_MAX_IDLE_CONNS | 6 | Yes |
+| PG_CONN_MAX_LIFETIME | 30m | Yes |
 
 ## DotEnv example
 ```
@@ -48,21 +48,21 @@ APP_DEBUG=true
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=redispass
-PG_DBNAME=MyLibrary
-PG_DBUSER=pguser
-PG_DBPASS=pgpass
-PG_HOST=localhost
-PG_PORT=5432
-PG_MAX_OPEN_CONNS=30
-PG_MAX_IDLE_CONNS=6
-PG_CONN_MAX_LIFETIME=30m
-MYSQL_DBNAME=myalbum
-MYSQL_DBUSER=mysql
-MYSQL_DBPASS=mypass
+MYSQL_DBNAME=dbname
+MYSQL_DBUSER=dbuser
+MYSQL_DBPASS=dbpass
 MYSQL_HOST=localhost
-MYSQL_PORT=3306
+MYSQL_PORT=9999
 MYSQL_MAX_OPEN_CONNS=30
 MYSQL_MAX_IDLE_CONNS=6
 MYSQL_CONN_MAX_LIFETIME=30m
+PG_DBNAME=dbname
+PG_DBUSER=dbuser
+PG_DBPASS=dbpass
+PG_HOST=localhost
+PG_PORT=9999
+PG_MAX_OPEN_CONNS=30
+PG_MAX_IDLE_CONNS=6
+PG_CONN_MAX_LIFETIME=30m
 ```
 

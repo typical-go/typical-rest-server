@@ -4,8 +4,8 @@ services:
     image: postgres
     environment:
       PGDATA: /data/postgres
-      POSTGRES_USER: pguser
-      POSTGRES_PASSWORD: pgpass
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
     volumes:
     - pg01:/data/postgres
     ports:
@@ -25,10 +25,10 @@ services:
   mysql01:
     image: mysql:5.7
     environment:
-      MYSQL_DATABASE: myalbum
-      MYSQL_ROOT_PASSWORD: mypass
-      MYSQL_PASSWORD: mypass
-      MYSQL_USER: mysql
+      MYSQL_DATABASE: dbname
+      MYSQL_ROOT_PASSWORD: dbpass
+      MYSQL_PASSWORD: dbpass
+      MYSQL_USER: dbuser
     volumes:
     - mysql01:/var/lib/mysql
     ports:

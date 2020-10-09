@@ -17,8 +17,8 @@ type (
 	}
 	setupParam struct {
 		dig.In
-		PgCfg    *PostgresCfg
-		MysqlCfg *MySQLCfg
+		PgCfg    *DatabaseCfg `name:"pg"`
+		MysqlCfg *DatabaseCfg `name:"mysql"`
 		RedisCfg *RedisCfg
 	}
 	teardownParam struct {
@@ -33,9 +33,9 @@ type (
 // @ctor
 func Setup(p setupParam) Infra {
 	return Infra{
-		Pg:    p.PgCfg.createConn(),
-		MySQL: p.MysqlCfg.createConn(),
-		Redis: p.RedisCfg.createClient(),
+		Pg:    createPGConn(p.PgCfg),
+		MySQL: createMySQLConn(p.MysqlCfg),
+		Redis: createRedisClient(p.RedisCfg),
 	}
 }
 

@@ -34,8 +34,6 @@ var Stdout io.Writer = os.Stdout
 
 // Command for postgress
 func (t *MySQLTool) Command(sys *typgo.BuildSys) *cli.Command {
-
-	t.cfg = t.ConfigFn().Config()
 	return &cli.Command{
 		Name:  t.Name,
 		Usage: t.Name + " utility",
@@ -50,18 +48,27 @@ func (t *MySQLTool) Command(sys *typgo.BuildSys) *cli.Command {
 	}
 }
 
+// Cfg ...
+func (t *MySQLTool) Cfg() *dbtool.Config {
+	if t.cfg == nil {
+		t.cfg = t.ConfigFn().Config()
+	}
+	return t.cfg
+}
+
 // Console interactice for postgres
 func (t *MySQLTool) Console(c *typgo.Context) error {
-	os.Setenv("PGPASSWORD", t.cfg.DBPass)
+	cfg := t.Cfg()
+	os.Setenv("PGPASSWORD", cfg.DBPass)
 	return c.Execute(&execkit.Command{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.DockerName,
 			"mysql",
-			"-h", t.cfg.Host, // host
-			"-P", t.cfg.Port, // port
-			"-u", t.cfg.DBUser, // user
-			fmt.Sprintf("-p%s", t.cfg.DBPass), // password flag can't be spaced
+			"-h", cfg.Host, // host
+			"-P", cfg.Port, // port
+			"-u", cfg.DBUser, // user
+			fmt.Sprintf("-p%s", cfg.DBPass), // password flag can't be spaced
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -71,13 +78,14 @@ func (t *MySQLTool) Console(c *typgo.Context) error {
 
 // CreateDB create database
 func (t *MySQLTool) CreateDB(c *typgo.Context) error {
+	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("CREATE DATABASE `%s`", t.cfg.DBName)
+	q := fmt.Sprintf("CREATE DATABASE `%s`", cfg.DBName)
 	fmt.Fprintln(Stdout, "\nmysql: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
@@ -85,13 +93,14 @@ func (t *MySQLTool) CreateDB(c *typgo.Context) error {
 
 // DropDB delete database
 func (t *MySQLTool) DropDB(c *typgo.Context) error {
+	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", t.cfg.DBName)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", cfg.DBName)
 	fmt.Fprintln(Stdout, "\nmysql: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
@@ -153,15 +162,17 @@ func (t *MySQLTool) createMigration() (*migrate.Migrate, error) {
 }
 
 func (t *MySQLTool) createConn() (*sql.DB, error) {
+	cfg := t.Cfg()
 	return sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
-		t.cfg.DBUser, t.cfg.DBPass, t.cfg.Host, t.cfg.Port, t.cfg.DBName,
+		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port, cfg.DBName,
 	))
 }
 
 func (t *MySQLTool) createAdminConn() (*sql.DB, error) {
+	cfg := t.Cfg()
 	return sql.Open("mysql", fmt.Sprintf(
 		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
-		t.cfg.DBPass, t.cfg.Host, t.cfg.Port,
+		cfg.DBPass, cfg.Host, cfg.Port,
 	))
 }

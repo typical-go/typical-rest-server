@@ -37,7 +37,7 @@ var Stdout io.Writer = os.Stdout
 
 // Command for postgress
 func (t *PgTool) Command(sys *typgo.BuildSys) *cli.Command {
-	t.cfg = t.ConfigFn().Config()
+	//
 
 	return &cli.Command{
 		Name:  t.Name,
@@ -53,17 +53,26 @@ func (t *PgTool) Command(sys *typgo.BuildSys) *cli.Command {
 	}
 }
 
+// Cfg ...
+func (t *PgTool) Cfg() *dbtool.Config {
+	if t.cfg == nil {
+		t.cfg = t.ConfigFn().Config()
+	}
+	return t.cfg
+}
+
 // Console interactice for postgres
 func (t *PgTool) Console(c *typgo.Context) error {
-	os.Setenv("PGPASSWORD", t.cfg.DBPass)
+	cfg := t.Cfg()
+	os.Setenv("PGPASSWORD", cfg.DBPass)
 	return c.Execute(&execkit.Command{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.DockerName,
 			"psql",
-			"-h", t.cfg.Host,
-			"-p", t.cfg.Port,
-			"-U", t.cfg.DBUser,
+			"-h", cfg.Host,
+			"-p", cfg.Port,
+			"-U", cfg.DBUser,
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -73,13 +82,14 @@ func (t *PgTool) Console(c *typgo.Context) error {
 
 // CreateDB create database
 func (t *PgTool) CreateDB(c *typgo.Context) error {
+	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("CREATE DATABASE \"%s\"", t.cfg.DBName)
+	q := fmt.Sprintf("CREATE DATABASE \"%s\"", cfg.DBName)
 	fmt.Fprintln(Stdout, "\npg: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
@@ -87,13 +97,14 @@ func (t *PgTool) CreateDB(c *typgo.Context) error {
 
 // DropDB delete database
 func (t *PgTool) DropDB(c *typgo.Context) error {
+	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", t.cfg.DBName)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", cfg.DBName)
 	fmt.Fprintln(Stdout, "\npg: "+q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
@@ -155,14 +166,18 @@ func (t *PgTool) createMigration() (*migrate.Migrate, error) {
 }
 
 func (t *PgTool) createConn() (*sql.DB, error) {
+	cfg := t.Cfg()
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		t.cfg.DBUser, t.cfg.DBPass, t.cfg.Host, t.cfg.Port, t.cfg.DBName,
+		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port, cfg.DBName,
 	))
 }
 
 func (t *PgTool) createAdminConn() (*sql.DB, error) {
-	return sql.Open("postgres", fmt.Sprintf(
+	cfg := t.Cfg()
+	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/template1?sslmode=disable",
-		t.cfg.DBUser, t.cfg.DBPass, t.cfg.Host, t.cfg.Port))
+		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port)
+	fmt.Println(connStr)
+	return sql.Open("postgres", connStr)
 }

@@ -12,7 +12,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/mysqltool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/pgtool"
-
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 )
@@ -51,7 +50,7 @@ var descriptor = typgo.Descriptor{
 		&pgtool.PgTool{
 			Name: "pg",
 			ConfigFn: func() dbtool.Configurer {
-				cfg, err := typical.LoadPostgresCfg()
+				cfg, err := typical.LoadPgDatabaseCfg()
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -65,7 +64,7 @@ var descriptor = typgo.Descriptor{
 		&mysqltool.MySQLTool{
 			Name: "mysql",
 			ConfigFn: func() dbtool.Configurer {
-				cfg, err := typical.LoadMySQLCfg()
+				cfg, err := typical.LoadMysqlDatabaseCfg()
 				if err != nil {
 					log.Fatal(err)
 				}

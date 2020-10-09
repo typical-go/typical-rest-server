@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -9,12 +8,6 @@ import (
 
 	"github.com/go-redis/redis"
 	log "github.com/sirupsen/logrus"
-
-	// postgres driver
-	_ "github.com/lib/pq"
-
-	// mysql driver
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type (
@@ -33,27 +26,15 @@ type (
 		Port     string `envconfig:"PORT" required:"true" default:"6379"`
 		Password string `envconfig:"PASSWORD" default:"redispass"`
 	}
-	// PostgresCfg postgres configuration
-	// @envconfig (prefix:"PG")
-	PostgresCfg struct {
-		DBName string `envconfig:"DBNAME" required:"true" default:"MyLibrary"`
-		DBUser string `envconfig:"DBUSER" required:"true" default:"pguser"`
-		DBPass string `envconfig:"DBPASS" default:"pgpass"`
+	// DatabaseCfg is MySQL configuration
+	// @envconfig (prefix:"MYSQL" ctor:"mysql")
+	// @envconfig (prefix:"PG" ctor:"pg")
+	DatabaseCfg struct {
+		DBName string `envconfig:"DBNAME" required:"true" default:"dbname"`
+		DBUser string `envconfig:"DBUSER" required:"true" default:"dbuser"`
+		DBPass string `envconfig:"DBPASS" required:"true" default:"dbpass"`
 		Host   string `envconfig:"HOST" required:"true" default:"localhost"`
-		Port   string `envconfig:"PORT" required:"true" default:"5432"`
-
-		MaxOpenConns    int           `envconfig:"MAX_OPEN_CONNS" default:"30" required:"true"`
-		MaxIdleConns    int           `envconfig:"MAX_IDLE_CONNS" default:"6" required:"true"`
-		ConnMaxLifetime time.Duration `envconfig:"CONN_MAX_LIFETIME" default:"30m" required:"true"`
-	}
-	// MySQLCfg is MySQL configuration
-	// @envconfig (prefix:"MYSQL")
-	MySQLCfg struct {
-		DBName string `envconfig:"DBNAME" required:"true" default:"myalbum"`
-		DBUser string `envconfig:"DBUSER" required:"true" default:"mysql"`
-		DBPass string `envconfig:"DBPASS" required:"true" default:"mypass"`
-		Host   string `envconfig:"HOST" default:"localhost"`
-		Port   string `envconfig:"PORT" default:"3306"`
+		Port   string `envconfig:"PORT" required:"true" default:"9999"`
 
 		MaxOpenConns    int           `envconfig:"MAX_OPEN_CONNS" default:"30" required:"true"`
 		MaxIdleConns    int           `envconfig:"MAX_IDLE_CONNS" default:"6" required:"true"`
@@ -82,10 +63,10 @@ func (r *RedisCfg) createClient() *redis.Client {
 // PostgresCfg
 //
 
-var _ dbtool.Configurer = (*PostgresCfg)(nil)
+var _ dbtool.Configurer = (*DatabaseCfg)(nil)
 
 // Config for pgtool
-func (p *PostgresCfg) Config() *dbtool.Config {
+func (p *DatabaseCfg) Config() *dbtool.Config {
 	return &dbtool.Config{
 		DBName: p.DBName,
 		DBUser: p.DBUser,
@@ -93,57 +74,4 @@ func (p *PostgresCfg) Config() *dbtool.Config {
 		Host:   p.Host,
 		Port:   p.Port,
 	}
-}
-
-func (p *PostgresCfg) createConn() *sql.DB {
-	conn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName,
-	)
-	db, err := sql.Open("postgres", conn)
-	if err != nil {
-		log.Fatalf("postgres: %s", err.Error())
-	}
-
-	db.SetConnMaxLifetime(p.ConnMaxLifetime)
-	db.SetMaxIdleConns(p.MaxIdleConns)
-	db.SetMaxOpenConns(p.MaxOpenConns)
-
-	if err = db.Ping(); err != nil {
-		log.Fatalf("postgres: %s", err.Error())
-	}
-
-	return db
-}
-
-//
-// MySQL
-//
-
-var _ dbtool.Configurer = (*MySQLCfg)(nil)
-
-// Config for pgtool
-func (p *MySQLCfg) Config() *dbtool.Config {
-	return &dbtool.Config{
-		DBName: p.DBName,
-		DBUser: p.DBUser,
-		DBPass: p.DBPass,
-		Host:   p.Host,
-		Port:   p.Port,
-	}
-}
-
-func (p *MySQLCfg) createConn() *sql.DB {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&parseTime=true",
-		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName))
-	if err != nil {
-		log.Fatalf("msyql: %s", err.Error())
-	}
-	db.SetConnMaxLifetime(p.ConnMaxLifetime)
-	db.SetMaxIdleConns(p.MaxIdleConns)
-	db.SetMaxOpenConns(p.MaxOpenConns)
-	if err = db.Ping(); err != nil {
-		log.Fatalf("msyql: %s", err.Error())
-	}
-	return db
 }
