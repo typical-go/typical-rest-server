@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
+	"github.com/sirupsen/logrus"
 )
 
 func createRedisClient(r *RedisCfg) *redis.Client {
@@ -12,10 +12,8 @@ func createRedisClient(r *RedisCfg) *redis.Client {
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,
 	})
-
 	if err := client.Ping().Err(); err != nil {
-		log.Fatalf("redis: %s", err.Error())
+		logrus.Fatalf("redis: %s", err.Error())
 	}
-
 	return client
 }

@@ -22,7 +22,7 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		bytesIn := req.Header.Get(echo.HeaderContentLength)
 
-		logrus.WithFields(map[string]interface{}{
+		logrus.WithFields(logrus.Fields{
 			"status":    res.Status,
 			"latency":   stop.Sub(start).String(),
 			"bytes_in":  bytesIn,

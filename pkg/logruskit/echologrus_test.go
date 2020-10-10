@@ -1,4 +1,4 @@
-package typrest_test
+package logruskit_test
 
 import (
 	"strings"
@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/logruskit"
 )
 
 func TestEchoLogrus(t *testing.T) {
@@ -24,7 +24,7 @@ func TestEchoLogrus(t *testing.T) {
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	logger.SetOutput(&out)
 
-	log := typrest.WrapLogrus(logger)
+	log := logruskit.EchoLogger(logger)
 
 	log.Printj(map[string]interface{}{"Printj": "1"})
 	log.Debugj(map[string]interface{}{"Debugj": "1"})
@@ -66,7 +66,7 @@ func TestEchoLogrus_SetLevel(t *testing.T) {
 	for _, tt := range testcases {
 		t.Run(tt.TestName, func(t *testing.T) {
 			logger := logrus.New()
-			log := typrest.WrapLogrus(logger)
+			log := logruskit.EchoLogger(logger)
 			log.SetLevel(tt.lvl)
 			require.Equal(t, tt.expected, logger.GetLevel())
 		})
@@ -89,7 +89,7 @@ func TestEchoLogrus_Level(t *testing.T) {
 		t.Run(tt.TestName, func(t *testing.T) {
 			logger := logrus.New()
 			logger.SetLevel(tt.lvl)
-			log := typrest.WrapLogrus(logger)
+			log := logruskit.EchoLogger(logger)
 			require.Equal(t, tt.expected, log.Level())
 		})
 	}

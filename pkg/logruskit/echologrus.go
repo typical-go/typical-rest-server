@@ -1,4 +1,4 @@
-package typrest
+package logruskit
 
 import (
 	"io"
@@ -18,8 +18,8 @@ type (
 
 var _ (echo.Logger) = (*EchoLogrus)(nil)
 
-// WrapLogrus logrus logger in echo log interface
-func WrapLogrus(logger *logrus.Logger) *EchoLogrus {
+// EchoLogger logrus logger in echo log interface
+func EchoLogger(logger *logrus.Logger) *EchoLogrus {
 	return &EchoLogrus{
 		Logger: logger,
 	}

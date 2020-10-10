@@ -1,9 +1,11 @@
 package log
 
 import (
+	"context"
 	"log"
 
 	"github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/pkg/logruskit"
 )
 
 // SetLogger set logger
@@ -21,41 +23,21 @@ func SetLogger(debug bool) *logrus.Logger {
 }
 
 // Info ..
-func Info(args ...interface{}) {
-	logrus.Info(args...)
+func Info(ctx context.Context, args ...interface{}) {
+	logrus.WithFields(logruskit.GetFields(ctx)).Info(args...)
 }
 
 // Infof ...
-func Infof(format string, args ...interface{}) {
-	logrus.Infof(format, args...)
+func Infof(ctx context.Context, format string, args ...interface{}) {
+	logrus.WithFields(logruskit.GetFields(ctx)).Infof(format, args...)
 }
 
 // Warn ...
-func Warn(args ...interface{}) {
-	logrus.Warn(args...)
+func Warn(ctx context.Context, args ...interface{}) {
+	logrus.WithFields(logruskit.GetFields(ctx)).Warn(args...)
 }
 
 // Warnf ...
-func Warnf(format string, args ...interface{}) {
-	logrus.Warnf(format, args...)
-}
-
-// Error ...
-func Error(args ...interface{}) {
-	logrus.Error(args...)
-}
-
-// Errorf ...
-func Errorf(format string, args ...interface{}) {
-	logrus.Errorf(format, args...)
-}
-
-// Fatal ...
-func Fatal(args ...interface{}) {
-	logrus.Fatal(args...)
-}
-
-// Fatalf ...
-func Fatalf(format string, args ...interface{}) {
-	logrus.Fatalf(format, args...)
+func Warnf(ctx context.Context, format string, args ...interface{}) {
+	logrus.WithFields(logruskit.GetFields(ctx)).Warnf(format, args...)
 }

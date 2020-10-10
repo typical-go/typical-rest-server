@@ -14,6 +14,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
+	"github.com/typical-go/typical-rest-server/pkg/logruskit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 
@@ -46,7 +47,7 @@ func Start(a app) (err error) {
 
 	e.HideBanner = true
 	e.Debug = a.Config.Debug
-	e.Logger = typrest.WrapLogrus(a.Logger)
+	e.Logger = logruskit.EchoLogger(a.Logger)
 
 	setMiddleware(a, e)
 	setRoute(a, e)
@@ -77,7 +78,7 @@ func setRoute(a app, e *echo.Echo) {
 	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 
 	if a.Config.Debug {
-		log.Infof("Application routes:\n  %s\n\n",
+		logrus.Debugf("Application routes:\n  %s\n\n",
 			strings.Join(typrest.DumpEcho(e), "\n  "))
 	}
 }
