@@ -2,10 +2,7 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -26,9 +23,14 @@ import (
 	_ "net/http/pprof"
 )
 
+const (
+	healthCheckPath = "/application/health"
+)
+
 type (
 	app struct {
 		dig.In
+		Logger      *logrus.Logger
 		Config      *infra.AppCfg
 		Library     mylibrary.Router
 		Album       mymusic.Router
@@ -36,21 +38,17 @@ type (
 	}
 )
 
-const (
-	healthCheckPath = "/application/health"
-)
-
 // Start app
 func Start(a app) (err error) {
 	e := echo.New()
-	defer Shutdown(e)
+	defer shutdown(e)
 
 	e.HideBanner = true
 	e.Debug = a.Config.Debug
+	e.Logger = typrest.WrapLogrus(a.Logger)
 
-	a.SetLoggger(e)
-	a.SetMiddleware(e)
-	a.SetRoute(e)
+	setMiddleware(a, e)
+	setRoute(a, e)
 
 	return e.StartServer(&http.Server{
 		Addr:         a.Config.Address,
@@ -59,27 +57,14 @@ func Start(a app) (err error) {
 	})
 }
 
-// Shutdown app
-func Shutdown(e *echo.Echo) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	e.Shutdown(ctx)
-}
-
-//
-// app
-//
-
-// SetMiddleware set middleware to the app
-func (a app) SetMiddleware(e *echo.Echo) {
+func setMiddleware(a app, e *echo.Echo) {
 	e.Use(middleware.Recover())
 	if e.Debug {
-		e.Use(loggerMiddleware())
+		e.Use(infra.LoggingMiddleware)
 	}
 }
 
-// SetRoute set route the app
-func (a app) SetRoute(e *echo.Echo) {
+func setRoute(a app, e *echo.Echo) {
 	typrest.SetRoute(e,
 		&a.Library,
 		&a.Album,
@@ -96,42 +81,8 @@ func (a app) SetRoute(e *echo.Echo) {
 	}
 }
 
-// SetLogger set logger to the app
-func (a app) SetLoggger(e *echo.Echo) {
-	logger := logrus.StandardLogger()     // NOTE: use standard logger for global use
-	e.Logger = typrest.WrapLogrus(logger) // NOTE: setup echo logger
-	log.SetOutput(logger.Writer())        // NOTE: std golang log use same output writer with logrus
-
-	if a.Config.Debug {
-		logger.SetLevel(logrus.DebugLevel)
-		logger.SetFormatter(&logrus.TextFormatter{})
-	} else {
-		logger.SetLevel(logrus.WarnLevel)
-		logger.SetFormatter(&logrus.JSONFormatter{})
-	}
-}
-
-// loggerMiddleware log every request
-func loggerMiddleware() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			req := c.Request()
-			res := c.Response()
-			start := time.Now()
-			if err := next(c); err != nil {
-				c.Error(err)
-			}
-			stop := time.Now()
-
-			bytesIn := req.Header.Get(echo.HeaderContentLength)
-
-			logrus.WithFields(map[string]interface{}{
-				"status":    res.Status,
-				"latency":   stop.Sub(start).String(),
-				"bytes_in":  bytesIn,
-				"bytes_out": strconv.FormatInt(res.Size, 10),
-			}).Info(fmt.Sprintf("%s %s", req.Method, req.RequestURI))
-			return nil
-		}
-	}
+func shutdown(e *echo.Echo) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	e.Shutdown(ctx)
 }
