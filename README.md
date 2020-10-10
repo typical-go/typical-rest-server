@@ -8,21 +8,30 @@
 
 > The project status is `WIP` (Work in progress) which means the author continously evaluate and improve the project.
 
-Opinionated, simple and straight forward Restful server implementation for Golang.
+Example project for Restful Server implementation for Golang. 
+- [x] Project Layout using [Go-Standards](https://github.com/golang-standards/project-layout)
+- [x] Powered by [Echo framework](https://echo.labstack.com/)
+- [x] Layered architecture
+- [x] RESTful API (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+- [x] Config using Environment Variable 
+- [x] Dependency Injection 
+- [x] ORMHate and Repository Pattern
+- [x] Table Driven Test style
+- [x] Test using mock
+- [x] Database migration and seed tool
+- [x] Using Database Transaction in Service Layer
+- [x] Health Check and Debug API
+- [x] Request ID in logger
 
-## How to Use 
 
-- References for project layout and code best practice.
-- Shared mylibrary ([pkg](#shared-mylibrary)) is utility/helper to general use.
-- For setup new project, please use [rest-project-starter](https://github.com/typical-go/rest-project-starter)
-  ```bash
-  curl -s https://raw.githubusercontent.com/typical-go/rest-project-starter/master/setup.sh | bash -s [project_name] [package_name]
-  ```
+## Run/Test Project
 
+The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
 
-## Builds 
-
-The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The build descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
+Edit `.env` to set the config
+```bash
+cp .env.sample .env    # copy the working .env
+```
 
 Run application:
 ```bash
@@ -33,7 +42,7 @@ Run application:
 
 Test application:
 ```bash
-./typicalw mock        # generate mock (if needed)
+./typicalw mock        # generate mock (if new mock needed)
 ./typicalw test        # run test 
 ```
 
@@ -143,38 +152,24 @@ type(
 
 Mock class will be generated in `*_mock` package
 
-## ORM Hate
 
-Typical-Rest do not encourage Objection-Relation-Mapping/ORM ([ORM Hate](https://martinfowler.com/bliki/OrmHate.html))
+## References
 
-## Shared Library
-
-The [`pkg`](pkg) contain useful mylibrary for general needs
-
-- [`pkg/typrest`](pkg/typrest) Utility for rest application e.g. health check, error, etc
-- [`pkg/dbkit`](pkg/dbkit) Utility for database operation
-- [`pkg/dbtxn`](pkg/dbtxn) Utility for database transaction
-- [`pkg/echotest`](pkg/echotest) Utility for table-driven test echo handler
-
-
-## 3rd-Party Library
-
-The project [use go modules](https://blog.golang.org/using-go-modules) to manage package dependency. The compelete mylibrary list can be found in [go.mod](go.mod). 
-
-- [Echo Framework](https://echo.labstack.com/): Web Framework
-- [dig](https://github.com/uber-go/dig): Dependency Injection
-- [gomock](https://github.com/golang/mock): Mock for interface
-- [logrus](https://github.com/sirupsen/logrus): Logging
-- [testify](https://github.com/stretchr/testify): Test assertion
-- [squirrel](https://github.com/Masterminds/squirrel): SQL Query Builder
-- [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock): Mock for database connection 
-
-## Golang References
-
+Golang:
 - [Go Documentation](https://golang.org/doc/)
 - [Go For Industrial Programming](https://peter.bourgon.org/go-for-industrial-programming/)
 - [Uber Go Style Guide](https://github.com/uber-go/guide)
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
+
+RESTful API:
+- [Best Practices for Designing a Pragmatic RESTful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api)
+
+## Project Starter
+
+To setup new project, please use [rest-project-starter](https://github.com/typical-go/rest-project-starter)
+```bash
+curl -s https://raw.githubusercontent.com/typical-go/rest-project-starter/master/setup.sh | bash -s [project_name] [package_name]
+```
 
 ## License
 
