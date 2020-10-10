@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 )
 
 func createRedisClient(r *RedisCfg) *redis.Client {

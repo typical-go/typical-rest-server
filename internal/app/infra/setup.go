@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 	"go.uber.org/dig"
 )
 
@@ -39,7 +40,7 @@ func Setup(p setupParam) Infra {
 		Pg:     createPGConn(p.PgCfg),
 		MySQL:  createMySQLConn(p.MysqlCfg),
 		Redis:  createRedisClient(p.RedisCfg),
-		Logger: setLogger(p.AppCfg),
+		Logger: log.SetLogger(p.AppCfg.Debug),
 	}
 }
 

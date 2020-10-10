@@ -13,6 +13,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
+	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 
@@ -60,7 +61,7 @@ func Start(a app) (err error) {
 func setMiddleware(a app, e *echo.Echo) {
 	e.Use(middleware.Recover())
 	if e.Debug {
-		e.Use(infra.LoggingMiddleware)
+		e.Use(log.Middleware)
 	}
 }
 
@@ -76,7 +77,7 @@ func setRoute(a app, e *echo.Echo) {
 	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 
 	if a.Config.Debug {
-		logrus.Debugf("Application routes:\n  %s\n\n",
+		log.Infof("Application routes:\n  %s\n\n",
 			strings.Join(typrest.DumpEcho(e), "\n  "))
 	}
 }

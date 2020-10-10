@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 
 	// postgres driver
 	_ "github.com/lib/pq"

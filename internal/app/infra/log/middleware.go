@@ -1,8 +1,7 @@
-package infra
+package log
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -10,21 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func setLogger(c *AppCfg) *logrus.Logger {
-	logger := logrus.StandardLogger()
-	if c.Debug {
-		logger.SetLevel(logrus.DebugLevel)
-		logger.SetFormatter(&logrus.TextFormatter{})
-	} else {
-		logger.SetLevel(logrus.WarnLevel)
-		logger.SetFormatter(&logrus.JSONFormatter{})
-	}
-	log.SetOutput(logger.Writer())
-	return logger
-}
-
-// LoggingMiddleware log every request
-func LoggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+// Middleware log every request
+func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
 		res := c.Response()
