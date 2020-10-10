@@ -4,8 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/go-redis/redis"
-	"github.com/sirupsen/logrus"
-	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 	"go.uber.org/dig"
 )
 
@@ -13,10 +11,9 @@ type (
 	// Infra infrastructure for the project
 	Infra struct {
 		dig.Out
-		Pg     *sql.DB `name:"pg"`
-		MySQL  *sql.DB `name:"mysql"`
-		Redis  *redis.Client
-		Logger *logrus.Logger
+		Pg    *sql.DB `name:"pg"`
+		MySQL *sql.DB `name:"mysql"`
+		Redis *redis.Client
 	}
 	setupParam struct {
 		dig.In
@@ -37,10 +34,9 @@ type (
 // @ctor
 func Setup(p setupParam) Infra {
 	return Infra{
-		Pg:     createPGConn(p.PgCfg),
-		MySQL:  createMySQLConn(p.MysqlCfg),
-		Redis:  createRedisClient(p.RedisCfg),
-		Logger: log.SetLogger(p.AppCfg.Debug),
+		Pg:    createPGConn(p.PgCfg),
+		MySQL: createMySQLConn(p.MysqlCfg),
+		Redis: createRedisClient(p.RedisCfg),
 	}
 }
 

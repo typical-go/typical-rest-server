@@ -32,7 +32,6 @@ const (
 type (
 	app struct {
 		dig.In
-		Logger      *logrus.Logger
 		Config      *infra.AppCfg
 		Library     mylibrary.Router
 		Album       mymusic.Router
@@ -47,7 +46,9 @@ func Start(a app) (err error) {
 
 	e.HideBanner = true
 	e.Debug = a.Config.Debug
-	e.Logger = logruskit.EchoLogger(a.Logger)
+
+	logger := log.SetDebug(a.Config.Debug)
+	e.Logger = logruskit.EchoLogger(logger)
 
 	setMiddleware(a, e)
 	setRoute(a, e)
@@ -60,10 +61,8 @@ func Start(a app) (err error) {
 }
 
 func setMiddleware(a app, e *echo.Echo) {
+	e.Use(log.Middleware)
 	e.Use(middleware.Recover())
-	if e.Debug {
-		e.Use(log.Middleware)
-	}
 }
 
 func setRoute(a app, e *echo.Echo) {
@@ -78,7 +77,7 @@ func setRoute(a app, e *echo.Echo) {
 	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
 
 	if a.Config.Debug {
-		logrus.Debugf("Application routes:\n  %s\n\n",
+		logrus.Debugf("Print routes:\n  %s\n\n",
 			strings.Join(typrest.DumpEcho(e), "\n  "))
 	}
 }

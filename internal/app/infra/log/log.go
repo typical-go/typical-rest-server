@@ -8,8 +8,11 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/logruskit"
 )
 
-// SetLogger set logger
-func SetLogger(debug bool) *logrus.Logger {
+var _debug bool
+
+// SetDebug set logger
+func SetDebug(debug bool) *logrus.Logger {
+	_debug = debug
 	logger := logrus.StandardLogger()
 	if debug {
 		logger.SetLevel(logrus.DebugLevel)
