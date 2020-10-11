@@ -23,7 +23,6 @@ Example project for Restful Server implementation for Golang.
 - [x] Health Check and Debug API
 - [x] Request ID in logger
 
-
 ## Run/Test Project
 
 The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
@@ -76,7 +75,9 @@ Others directory:
 
 ## Layered Architecture
 
-Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) (as most adoptable architectural pattern) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) and [Table-Driven Test](https://github.com/golang/go/wiki/TableDrivenTests)
+<img src="architecture.png"  style="max-width:450px;"/>
+
+Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) (as most adoptable architectural pattern) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
 
 - Presentation Layer at [`internal/app/domain/[DOMAIN]/controller`](internal/server/controller)
   - Handling HTTP routes
