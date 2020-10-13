@@ -25,9 +25,9 @@ type (
 // Handle echo function
 func (h *HealthCheck) Handle(ec echo.Context) error {
 	healthy, detail := typrest.HealthStatus(typrest.HealthMap{
-		"postgres": h.PG.Ping,
-		"mysql":    h.MySQL.Ping,
-		"redis":    h.Redis.Ping().Err,
+		"postgres": h.PG.Ping(),
+		"mysql":    h.MySQL.Ping(),
+		"redis":    h.Redis.Ping().Err(),
 	})
 
 	status := http.StatusOK
