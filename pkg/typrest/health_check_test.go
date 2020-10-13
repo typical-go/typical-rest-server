@@ -17,8 +17,8 @@ func TestHealthCheck(t *testing.T) {
 	}{
 		{
 			HealthMap: typrest.HealthMap{
-				"postgres": func() error { return nil },
-				"redis":    func() error { return nil },
+				"postgres": nil,
+				"redis":    nil,
 			},
 			Expected: true,
 			ExpectedDetail: map[string]string{
@@ -28,8 +28,8 @@ func TestHealthCheck(t *testing.T) {
 		},
 		{
 			HealthMap: typrest.HealthMap{
-				"postgres": func() error { return errors.New("postgres-error") },
-				"redis":    func() error { return errors.New("redis-error") },
+				"postgres": errors.New("postgres-error"),
+				"redis":    errors.New("redis-error"),
 			},
 			Expected: false,
 			ExpectedDetail: map[string]string{
