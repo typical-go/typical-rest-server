@@ -9,6 +9,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
+	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
 	"go.uber.org/dig"
 )
 
@@ -183,7 +184,9 @@ func (r *BookRepoImpl) Update(ctx context.Context, book *Book, opt dbkit.UpdateO
 		txn.SetError(err)
 		return -1, err
 	}
-	return res.RowsAffected()
+	affectedRow, err := res.RowsAffected()
+	txn.SetError(err)
+	return affectedRow, err
 }
 
 // Patch book to update field of book if available
@@ -198,10 +201,10 @@ func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOp
 		PlaceholderFormat(sq.Dollar).
 		RunWith(txn.DB)
 
-	if book.Title != "" {
+	if !reflectkit.IsZero(book.Title) {
 		builder = builder.Set(BookTable.Title, book.Title)
 	}
-	if book.Author != "" {
+	if !reflectkit.IsZero(book.Author) {
 		builder = builder.Set(BookTable.Author, book.Author)
 	}
 	builder = builder.Set(BookTable.UpdatedAt, time.Now())
@@ -216,5 +219,8 @@ func (r *BookRepoImpl) Patch(ctx context.Context, book *Book, opt dbkit.UpdateOp
 		txn.SetError(err)
 		return -1, err
 	}
-	return res.RowsAffected()
+
+	affectedRow, err := res.RowsAffected()
+	txn.SetError(err)
+	return affectedRow, err
 }

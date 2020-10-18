@@ -101,9 +101,9 @@ func (c *Context) Commit() error {
 
 // SetError to set error to txn context
 func (t *Handler) SetError(err error) bool {
-	if t.Context == nil {
-		return false
+	if t.Context != nil && err != nil {
+		t.Context.Err = err
+		return true
 	}
-	t.Context.Err = err
-	return true
+	return false
 }
