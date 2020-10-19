@@ -150,7 +150,7 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.Package}}.{{.Name
 		RunWith(txn.DB)
 
 	{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}{{if .DefaultValue}}
-	builder = builder.Set({{$.Name}}Table.UpdatedAt, {{.DefaultValue}}){{else}}
+	builder = builder.Set({{$.Name}}Table.{{.Name}}, {{.DefaultValue}}){{else}}
 	if !reflectkit.IsZero(ent.{{.Name}}) {
 		builder = builder.Set({{$.Name}}Table.{{.Name}}, ent.{{.Name}})
 	}{{end}}{{end}}{{end}}
