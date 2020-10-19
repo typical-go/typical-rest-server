@@ -1,4 +1,4 @@
-package mysqldb
+package repository
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"go.uber.org/dig"
@@ -34,11 +35,11 @@ type (
 	// SongRepo to get song data from database
 	// @mock
 	SongRepo interface {
-		Find(context.Context, ...dbkit.SelectOption) ([]*Song, error)
-		Create(context.Context, *Song) (int64, error)
+		Find(context.Context, ...dbkit.SelectOption) ([]*mysqldb.Song, error)
+		Create(context.Context, *mysqldb.Song) (int64, error)
 		Delete(context.Context, dbkit.DeleteOption) (int64, error)
-		Update(context.Context, *Song, dbkit.UpdateOption) (int64, error)
-		Patch(context.Context, *Song, dbkit.UpdateOption) (int64, error)
+		Update(context.Context, *mysqldb.Song, dbkit.UpdateOption) (int64, error)
+		Patch(context.Context, *mysqldb.Song, dbkit.UpdateOption) (int64, error)
 	}
 	// SongRepoImpl is implementation song repository
 	SongRepoImpl struct {
@@ -54,7 +55,7 @@ func NewSongRepo(impl SongRepoImpl) SongRepo {
 }
 
 // Find song
-func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*Song, err error) {
+func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*mysqldb.Song, err error) {
 	builder := sq.
 		Select(
 			SongTable.ID,
@@ -77,9 +78,9 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 		return
 	}
 
-	list = make([]*Song, 0)
+	list = make([]*mysqldb.Song, 0)
 	for rows.Next() {
-		song := new(Song)
+		song := new(mysqldb.Song)
 		if err = rows.Scan(
 			&song.ID,
 			&song.Title,
@@ -95,7 +96,7 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 }
 
 // Create song
-func (r *SongRepoImpl) Create(ctx context.Context, song *Song) (int64, error) {
+func (r *SongRepoImpl) Create(ctx context.Context, song *mysqldb.Song) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -151,7 +152,7 @@ func (r *SongRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 }
 
 // Update song
-func (r *SongRepoImpl) Update(ctx context.Context, song *Song, opt dbkit.UpdateOption) (int64, error) {
+func (r *SongRepoImpl) Update(ctx context.Context, song *mysqldb.Song, opt dbkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -178,7 +179,7 @@ func (r *SongRepoImpl) Update(ctx context.Context, song *Song, opt dbkit.UpdateO
 }
 
 // Patch song to update field of song if available
-func (r *SongRepoImpl) Patch(ctx context.Context, song *Song, opt dbkit.UpdateOption) (int64, error) {
+func (r *SongRepoImpl) Patch(ctx context.Context, song *mysqldb.Song, opt dbkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err

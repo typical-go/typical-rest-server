@@ -63,7 +63,7 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 	annots, _ := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
 	for _, a := range annots {
 		if err := m.process(a); err != nil {
-			fmt.Fprintf(Stdout, "WARN: %s: %s\n", a.GetName(), err.Error())
+			fmt.Fprintf(Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
 		}
 	}
 	return nil
@@ -93,6 +93,8 @@ func getTemplate(dialect string) (string, error) {
 	switch strings.ToLower(dialect) {
 	case "postgres":
 		return postgresTmpl, nil
+	case "mysql":
+		return mysqlTmpl, nil
 	}
 	return "", fmt.Errorf("Unknown dialect: %s", dialect)
 }

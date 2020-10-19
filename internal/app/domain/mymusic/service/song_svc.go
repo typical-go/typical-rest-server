@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
+	"github.com/typical-go/typical-rest-server/internal/generated/mysqldb_repo"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
@@ -26,7 +27,7 @@ type (
 	// SongSvcImpl is implementation of SongSvc
 	SongSvcImpl struct {
 		dig.In
-		mysqldb.SongRepo
+		mysqldb_repo.SongRepo
 	}
 )
 
@@ -60,7 +61,7 @@ func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Son
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
 
-	books, err := b.SongRepo.Find(ctx, dbkit.Equal(mysqldb.SongTable.ID, id))
+	books, err := b.SongRepo.Find(ctx, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -70,7 +71,7 @@ func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Son
 }
 
 func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, error) {
-	books, err := b.SongRepo.Find(ctx, dbkit.Equal(mysqldb.SongTable.ID, id))
+	books, err := b.SongRepo.Find(ctx, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -85,7 +86,7 @@ func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return typrest.NewValidErr("paramID is missing")
 	}
-	_, err := b.SongRepo.Delete(ctx, dbkit.Equal(mysqldb.SongTable.ID, id))
+	_, err := b.SongRepo.Delete(ctx, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
 	return err
 }
 
@@ -99,7 +100,7 @@ func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.
 	if err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	affectedRow, err := b.SongRepo.Update(ctx, book, dbkit.Equal(mysqldb.SongTable.ID, id))
+	affectedRow, err := b.SongRepo.Update(ctx, book, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +116,7 @@ func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, book *mysqldb.S
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	affectedRow, err := b.SongRepo.Patch(ctx, book, dbkit.Equal(mysqldb.SongTable.ID, id))
+	affectedRow, err := b.SongRepo.Patch(ctx, book, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
 	if err != nil {
 		return nil, err
 	}

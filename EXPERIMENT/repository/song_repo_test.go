@@ -1,4 +1,4 @@
-package mysqldb_test
+package repository_test
 
 import (
 	"context"
@@ -11,26 +11,27 @@ import (
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-rest-server/EXPERIMENT/repository"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 )
 
-type bookRepoFn func(sqlmock.Sqlmock)
+type songRepoFn func(sqlmock.Sqlmock)
 
-func createSongRepo(fn bookRepoFn) (mysqldb.SongRepo, *sql.DB) {
+func createSongRepo(fn songRepoFn) (repository.SongRepo, *sql.DB) {
 	db, mock, _ := sqlmock.New()
 	if fn != nil {
 		fn(mock)
 	}
-	return mysqldb.NewSongRepo(mysqldb.SongRepoImpl{DB: db}), db
+	return repository.NewSongRepo(repository.SongRepoImpl{DB: db}), db
 }
 
 func TestSongRepoImpl_Create(t *testing.T) {
 	testcases := []struct {
 		TestName    string
 		Song        *mysqldb.Song
-		SongRepoFn  bookRepoFn
+		SongRepoFn  songRepoFn
 		Expected    int64
 		ExpectedErr string
 	}{
@@ -92,7 +93,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 	testcases := []struct {
 		TestName    string
 		Song        *mysqldb.Song
-		SongRepoFn  bookRepoFn
+		SongRepoFn  songRepoFn
 		Opt         dbkit.UpdateOption
 		ExpectedErr string
 		Expected    int64
@@ -100,7 +101,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 		{
 			TestName:    "update error",
 			Song:        &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:         dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:         dbkit.Equal(repository.SongTable.ID, 888),
 			ExpectedErr: "dbtxn: begin-error",
 			Expected:    -1,
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
@@ -110,7 +111,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 		{
 			TestName: "update error",
 			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -137,7 +138,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 		{
 			TestName: "success",
 			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -149,7 +150,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 		{
 			TestName: "success empty artist",
 			Song:     &mysqldb.Song{Title: "new-title"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -161,7 +162,7 @@ func TestSongRepoImpl_Update(t *testing.T) {
 		{
 			TestName: "success empty title",
 			Song:     &mysqldb.Song{Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -194,7 +195,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 	testcases := []struct {
 		TestName    string
 		Song        *mysqldb.Song
-		SongRepoFn  bookRepoFn
+		SongRepoFn  songRepoFn
 		Opt         dbkit.UpdateOption
 		ExpectedErr string
 		Expected    int64
@@ -202,7 +203,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 		{
 			TestName: "begin error",
 			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin().WillReturnError(errors.New("begin-error"))
 			},
@@ -212,7 +213,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 		{
 			TestName: "update error",
 			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -240,7 +241,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 		{
 			TestName: "success",
 			Song:     &mysqldb.Song{Title: "new-title", Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, artist = ?, updated_at = ? WHERE id = ?`)).
@@ -252,7 +253,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 		{
 			TestName: "success empty artist",
 			Song:     &mysqldb.Song{Title: "new-title"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET title = ?, updated_at = ? WHERE id = ?`)).
@@ -264,7 +265,7 @@ func TestSongRepoImpl_Patch(t *testing.T) {
 		{
 			TestName: "success empty title",
 			Song:     &mysqldb.Song{Artist: "new-artist"},
-			Opt:      dbkit.Equal(mysqldb.SongTable.ID, 888),
+			Opt:      dbkit.Equal(repository.SongTable.ID, 888),
 			SongRepoFn: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectExec(regexp.QuoteMeta(`UPDATE songs SET artist = ?, updated_at = ? WHERE id = ?`)).
@@ -302,7 +303,7 @@ func TestSongRepoImpl_Retrieve(t *testing.T) {
 		Opts        []dbkit.SelectOption
 		Expected    []*mysqldb.Song
 		ExpectedErr string
-		SongRepoFn  bookRepoFn
+		SongRepoFn  songRepoFn
 	}{
 		{
 			TestName: "sql error",
@@ -368,7 +369,7 @@ func TestSongRepoImpl_Delete(t *testing.T) {
 	testcases := []struct {
 		TestName    string
 		Opt         dbkit.DeleteOption
-		SongRepoFn  bookRepoFn
+		SongRepoFn  songRepoFn
 		ExpectedErr string
 		Expected    int64
 	}{

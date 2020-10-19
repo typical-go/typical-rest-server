@@ -8,16 +8,17 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb_mock"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
+	"github.com/typical-go/typical-rest-server/internal/generated/mysqldb_repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/mysqldb_repo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 )
 
-type songSvcFn func(mockRepo *mysqldb_mock.MockSongRepo)
+type songSvcFn func(mockRepo *mysqldb_repo_mock.MockSongRepo)
 
 func createSongSvc(t *testing.T, fn songSvcFn) (*service.SongSvcImpl, *gomock.Controller) {
 	mock := gomock.NewController(t)
-	mockRepo := mysqldb_mock.NewMockSongRepo(mock)
+	mockRepo := mysqldb_repo_mock.NewMockSongRepo(mock)
 	if fn != nil {
 		fn(mockRepo)
 	}
@@ -44,7 +45,7 @@ func TestSongSvc_Create(t *testing.T) {
 			testName:    "create error",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "create-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Create(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(-1), errors.New("create-error"))
@@ -54,7 +55,7 @@ func TestSongSvc_Create(t *testing.T) {
 			testName:    "Find error",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "Find-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Create(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
@@ -69,7 +70,7 @@ func TestSongSvc_Create(t *testing.T) {
 				Title:  "some-title",
 			},
 			expected: &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Create(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
@@ -110,7 +111,7 @@ func TestSongSvc_RetrieveOne(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return(nil, errors.New("some-error"))
@@ -119,7 +120,7 @@ func TestSongSvc_RetrieveOne(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
 					Return([]*mysqldb.Song{
@@ -189,26 +190,26 @@ func TestSongSvc_Delete(t *testing.T) {
 		{
 			paramID:     "1",
 			expectedErr: `some-error`,
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(mysqldb.SongTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Equal(mysqldb_repo.SongTable.ID, int64(1))).
 					Return(int64(0), errors.New("some-error"))
 			},
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(mysqldb.SongTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Equal(mysqldb_repo.SongTable.ID, int64(1))).
 					Return(int64(1), nil)
 			},
 		},
 		{
 			testName: "success even if no affected row (idempotent)",
 			paramID:  "1",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(mysqldb.SongTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Equal(mysqldb_repo.SongTable.ID, int64(1))).
 					Return(int64(0), nil)
 			},
 		},
@@ -258,7 +259,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "update error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(-1), errors.New("update error"))
@@ -269,7 +270,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "sql: no rows in result set",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(0), nil)
@@ -280,7 +281,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "Find-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
@@ -294,7 +295,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "Find-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
@@ -344,7 +345,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "patch-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(-1), errors.New("patch-error"))
@@ -355,7 +356,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "sql: no rows in result set",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(0), nil)
@@ -366,7 +367,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "Find-error",
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
@@ -379,7 +380,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:  "1",
 			song:     &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expected: &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			songSvcFn: func(mockRepo *mysqldb_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Equal("id", int64(1))).
 					Return(int64(1), nil)
