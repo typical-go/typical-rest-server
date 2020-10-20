@@ -25,6 +25,7 @@ var _ typrest.Router = (*BookCntrl)(nil)
 func (c *BookCntrl) SetRoute(e typrest.Server) {
 	e.GET("/books", c.Find)
 	e.GET("/books/:id", c.FindOne)
+	e.HEAD("/books/:id", c.FindOne)
 	e.POST("/books", c.Create)
 	e.PUT("/books/:id", c.Update)
 	e.PATCH("/books/:id", c.Patch)

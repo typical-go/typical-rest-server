@@ -25,6 +25,7 @@ var _ typrest.Router = (*SongCntrl)(nil)
 func (c *SongCntrl) SetRoute(e typrest.Server) {
 	e.GET("/songs", c.Find)
 	e.GET("/songs/:id", c.FindOne)
+	e.HEAD("/songs/:id", c.FindOne)
 	e.POST("/songs", c.Create)
 	e.PUT("/songs/:id", c.Update)
 	e.PATCH("/songs/:id", c.Patch)

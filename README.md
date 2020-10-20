@@ -8,20 +8,29 @@
 
 > The project status is `WIP` (Work in progress) which means the author continously evaluate and improve the project.
 
-Example project for Restful Server implementation for Golang. 
-- [x] Project Layout using [Go-Standards](https://github.com/golang-standards/project-layout)
-- [x] Powered by [Echo framework](https://echo.labstack.com/)
-- [x] Layered architecture
-- [x] RESTful API (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
-- [x] Config using Environment Variable 
-- [x] Dependency Injection 
-- [x] ORMHate and Repository Pattern
-- [x] Table Driven Test style
-- [x] Test using mock
-- [x] Database migration and seed tool
-- [x] Using Database Transaction in Service Layer
-- [x] Health Check and Debug API
-- [x] Request ID in logger
+Pragmatic Golang RESTful Server Implementation
+- Application
+  - [x] [Go-Standards](https://github.com/golang-standards/project-layout) Project Layout 
+  - [x] Environment Variable Configuration
+  - [x] Health Check and Debug API
+- Layered architecture
+  - [x] Dependency Injection (using `@ctor` annotation)
+  - [x] ORMHate
+  - [x] Database Transaction
+- RESTful Server
+  - [x] [Echo framework](https://echo.labstack.com/)
+  - [x] Standard CRUD
+  - [x] Partially update API (`PATCH` verb)
+  - [x] Check resource (`HEAD` verb)
+  - [x] RequestID in logger
+  - [ ] Server side chaching (support `Cache-Control`)
+- Testing
+  - [x] Table Driven Test
+  - [x] Mocking (using `@mock` annotation)
+- Others
+  - [x] Database migration and seed tool
+  - [x] Code generator for repository layer (using `@entity` annotation)
+
 
 ## Run/Test Project
 
@@ -50,27 +59,27 @@ Test application:
 Typical-Rest encourage [standard go project layout](https://github.com/golang-standards/project-layout)
 
 Source codes:
-- [`/internal`](internal): private codes for the project
-  - [`/app`](internal/app) 
-    - [`/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
-    - [`/domain`](internal/app/domain) 
-      - [`/mylibrary`](internal/app/domain/mylibrary)
-        - [`/controller`](internal/app/domain/mylibrary/controller): presentation for mylibrary domain
-        - [`/service`](internal/app/domain/mylibrary/service): logic for mylibrary domain
-      - [`/mymusic`](internal/app/domain/mymusic)
-        - [`/controller`](internal/app/domain/mymusic/controller): presentation for mymusic domain
-        - [`/service`](internal/app/domain/mymusic/service): logic for mymusic domain
-    - [`/data_access`](internal/app/data_access)
-      - [`/postgresdb`](internal/app/data_access/postgresdb): data access to postgresdb
-      - [`/mysqldb`](internal/app/data_access/mysqldb): data access to postgresdb
-  - [`/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
-- [`/pkg`](pkg): shareable codes e.g. helper/utitily Library
-- [`/cmd`](cmd): the main package
+- [`internal`](internal): private codes for the project
+  - [`internal/app`](internal/app) 
+    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
+    - [`internal/app/domain`](internal/app/domain) 
+      - [`internal/app/domain/mylibrary`](internal/app/domain/mylibrary)
+        - [`internal/app/domain/mylibrary/controller`](internal/app/domain/mylibrary/controller): presentation for mylibrary domain
+        - [`internal/app/domain/mylibrary/service`](internal/app/domain/mylibrary/service): logic for mylibrary domain
+      - [`internal/app/domain/mymusic`](internal/app/domain/mymusic)
+        - [`internal/app/domain/mymusic/controller`](internal/app/domain/mymusic/controller): presentation for mymusic domain
+        - [`internal/app/domain/mymusic/service`](internal/app/domain/mymusic/service): logic for mymusic domain
+    - [`internal/app/data_access`](internal/app/data_access)
+      - [`internal/app/data_access/postgresdb`](internal/app/data_access/postgresdb): data access to postgresdb
+      - [`internal/app/data_access/mysqldb`](internal/app/data_access/mysqldb): data access to postgresdb
+  - [`internal/app/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
+- [`pkg`](pkg): shareable codes e.g. helper/utitily Library
+- [`cmd`](cmd): the main package
 
 Others directory:
-- [`/tools`](tool) Supporting tool for the project e.g. Build Tool
-- [`/api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
-- [`/databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
+- [`tools`](tool) Supporting tool for the project e.g. Build Tool
+- [`api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
+- [`databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
 
 
 ## Layered Architecture
