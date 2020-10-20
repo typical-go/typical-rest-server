@@ -60,14 +60,7 @@ func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Son
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-
-	books, err := b.SongRepo.Find(ctx, dbkit.Equal(mysqldb_repo.SongTable.ID, id))
-	if err != nil {
-		return nil, err
-	} else if len(books) < 1 {
-		return nil, sql.ErrNoRows
-	}
-	return books[0], nil
+	return b.findOne(ctx, id)
 }
 
 func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, error) {

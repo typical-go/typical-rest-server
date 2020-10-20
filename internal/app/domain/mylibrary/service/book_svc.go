@@ -60,14 +60,7 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*postgresdb.
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-
-	books, err := b.BookRepo.Find(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
-	if err != nil {
-		return nil, err
-	} else if len(books) < 1 {
-		return nil, sql.ErrNoRows
-	}
-	return books[0], nil
+	return b.findOne(ctx, id)
 }
 
 func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, error) {
