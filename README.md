@@ -20,10 +20,10 @@ Pragmatic Golang RESTful Server Implementation
 - RESTful Server
   - [x] [Echo framework](https://echo.labstack.com/)
   - [x] Standard CRUD
-  - [x] Partially update API (`PATCH` verb)
+  - [x] Partially update resource (`PATCH` verb)
   - [x] Check resource (`HEAD` verb)
   - [x] RequestID in logger
-  - [ ] Server side chaching (support `Cache-Control`)
+  - [ ] Server side caching (support `Cache-Control`)
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)
