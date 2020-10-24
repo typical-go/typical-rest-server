@@ -34,7 +34,7 @@ func CreateBookCntrl(t *testing.T, fn BookCntrlFn) (*controller.BookCntrl, *gomo
 	return &controller.BookCntrl{Svc: mockSvc}, mock
 }
 
-func TestBookController_RetrieveOne(t *testing.T) {
+func TestBookController_FindOne(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestName: "valid ID",
@@ -106,7 +106,7 @@ func TestBookController_RetrieveOne(t *testing.T) {
 	}
 }
 
-func TestBookController_Retrieve(t *testing.T) {
+func TestBookController_Find(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -130,12 +130,12 @@ func TestBookController_Retrieve(t *testing.T) {
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
 					Method: http.MethodGet,
-					Target: "/",
+					Target: "/?limit=20&offset=10",
 				},
 				ExpectedError: "code=500, message=some-error",
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Limit: 20, Offset: 10}).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}

@@ -8,6 +8,7 @@ import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
 	mysqldb "github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
+	service "github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
 	reflect "reflect"
 )
 
@@ -64,18 +65,18 @@ func (mr *MockSongSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Find mocks base method
-func (m *MockSongSvc) Find(arg0 context.Context) ([]*mysqldb.Song, error) {
+func (m *MockSongSvc) Find(arg0 context.Context, arg1 *service.FindReq) ([]*mysqldb.Song, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", arg0)
+	ret := m.ctrl.Call(m, "Find", arg0, arg1)
 	ret0, _ := ret[0].([]*mysqldb.Song)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find
-func (mr *MockSongSvcMockRecorder) Find(arg0 interface{}) *gomock.Call {
+func (mr *MockSongSvcMockRecorder) Find(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockSongSvc)(nil).Find), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockSongSvc)(nil).Find), arg0, arg1)
 }
 
 // FindOne mocks base method

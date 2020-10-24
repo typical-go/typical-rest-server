@@ -3,6 +3,10 @@
 
 http://localhost:8089/mymusic/songs
 
+### Find Books (Pagination)
+
+http://localhost:8089/mymusic/songs?offset=2&limit=2
+
 
 ### Find One Book (Invalid ID)
 

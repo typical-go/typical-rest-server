@@ -49,10 +49,13 @@ func (c *SongCntrl) Create(ec echo.Context) (err error) {
 
 // Find songs
 func (c *SongCntrl) Find(ec echo.Context) (err error) {
-	var songs []*mysqldb.Song
-	if songs, err = c.SongSvc.Find(
-		ec.Request().Context(),
-	); err != nil {
+	var req service.FindReq
+	if err := ec.Bind(&req); err != nil {
+		return err
+	}
+	ctx := ec.Request().Context()
+	songs, err := c.SongSvc.Find(ctx, &req)
+	if err != nil {
 		return typrest.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, songs)
@@ -60,10 +63,9 @@ func (c *SongCntrl) Find(ec echo.Context) (err error) {
 
 // FindOne book
 func (c *SongCntrl) FindOne(ec echo.Context) error {
-	book, err := c.SongSvc.FindOne(
-		ec.Request().Context(),
-		ec.Param("id"),
-	)
+	ctx := ec.Request().Context()
+	id := ec.Param("id")
+	book, err := c.SongSvc.FindOne(ctx, id)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}

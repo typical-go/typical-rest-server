@@ -11,6 +11,7 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
@@ -34,7 +35,7 @@ func CreateSongCntrl(t *testing.T, fn SongCntrlFn) (*controller.SongCntrl, *gomo
 	return &controller.SongCntrl{SongSvc: mockSvc}, mock
 }
 
-func TestBookController_RetrieveOne(t *testing.T) {
+func TestBookController_FindOne(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestName: "valid ID",
@@ -106,7 +107,7 @@ func TestBookController_RetrieveOne(t *testing.T) {
 	}
 }
 
-func TestBookController_Retrieve(t *testing.T) {
+func TestBookController_Find(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -120,7 +121,7 @@ func TestBookController_Retrieve(t *testing.T) {
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return([]*mysqldb.Song{
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return([]*mysqldb.Song{
 					&mysqldb.Song{ID: 1, Title: "title1", Artist: "artist1"},
 					&mysqldb.Song{ID: 2, Title: "title2", Artist: "artist2"},
 				}, nil)
@@ -130,12 +131,12 @@ func TestBookController_Retrieve(t *testing.T) {
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
 					Method: http.MethodGet,
-					Target: "/",
+					Target: "/?limit=10&offset=20",
 				},
 				ExpectedError: "code=500, message=some-error",
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Limit: 10, Offset: 20}).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}

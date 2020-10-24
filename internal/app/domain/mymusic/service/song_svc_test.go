@@ -24,7 +24,7 @@ func createSongSvc(t *testing.T, fn songSvcFn) (*service.SongSvcImpl, *gomock.Co
 	}
 
 	return &service.SongSvcImpl{
-		SongRepo: mockRepo,
+		Repo: mockRepo,
 	}, mock
 }
 
@@ -80,12 +80,10 @@ func TestSongSvc_Create(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createSongSvc(t, tt.songSvcFn)
 			defer mock.Finish()
-
 			id, err := svc.Create(context.Background(), tt.song)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
@@ -157,6 +155,7 @@ func TestSongSvc_Retrieve(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		songSvcFn   songSvcFn
+		req         *service.FindReq
 		expected    []*mysqldb.Song
 		expectedErr string
 	}{}
@@ -165,7 +164,7 @@ func TestSongSvc_Retrieve(t *testing.T) {
 			svc, mock := createSongSvc(t, tt.songSvcFn)
 			defer mock.Finish()
 
-			songs, err := svc.Find(context.Background())
+			songs, err := svc.Find(context.Background(), tt.req)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
@@ -218,7 +217,6 @@ func TestSongSvc_Delete(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createSongSvc(t, tt.songSvcFn)
 			defer mock.Finish()
-
 			err := svc.Delete(context.Background(), tt.paramID)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
@@ -309,7 +307,6 @@ func TestSongSvc_Update(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createSongSvc(t, tt.songSvcFn)
 			defer mock.Finish()
-
 			song, err := svc.Update(context.Background(), tt.paramID, tt.song)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
