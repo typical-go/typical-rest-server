@@ -14,6 +14,7 @@ Pragmatic Golang RESTful Server Implementation
   - [x] Environment Variable Configuration
   - [x] Health Check and Debug API
 - Layered architecture
+  - [x] [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
   - [x] Dependency Injection (using `@ctor` annotation)
   - [x] ORMHate
   - [x] Database Transaction
@@ -23,13 +24,14 @@ Pragmatic Golang RESTful Server Implementation
   - [x] Partially update resource (`PATCH` verb)
   - [x] Check resource (`HEAD` verb)
   - [x] RequestID in logger
-  - [x] Offset Pagination
+  - [x] Offset Pagination (by query param `?limit=100&offset=0`)
   - [ ] Server side caching (support `Cache-Control` header)
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)
 - Others
   - [x] Database migration and seed tool
+  - [x] Generate code, `.env` file and `USAGE.md` according the configuration (using `@envconfig` annotation)
   - [x] Code generator for repository layer (using `@entity` annotation)
 
 
@@ -37,21 +39,24 @@ Pragmatic Golang RESTful Server Implementation
 
 The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
 
-Edit `.env` to set the config
+Copy `.env.sample` for working configuration
 ```bash
 cp .env.sample .env    # copy the working .env
 ```
 
-Run application:
+Setup the local environment
 ```bash
 ./typicalw docker up   # equivalent with `docker-compose up -d`
 ./typicalw reset       # reset infra: drop, create and migrate postgres database 
+```
+
+Run application:
+```bash
 ./typicalw run         # run the application
 ```
 
 Test application:
 ```bash
-./typicalw mock        # generate mock (if new mock needed)
 ./typicalw test        # run test 
 ```
 
@@ -87,38 +92,26 @@ Others directory:
 
 <img src="architecture.png"  style="max-width:450px;"/>
 
-Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) (as most adoptable architectural pattern) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
+Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) as most adoptable architectural pattern
 
 - Presentation Layer at [`internal/app/domain/[DOMAIN]/controller`](internal/server/controller)
-  - Handling HTTP routes
   - Parsing the request
-  - Sending response (both success & error)
+  - Sending response
 - Logic Layer at [`internal/app/domain/[DOMAIN]/service`](internal/server/service)
   - Intermediary between controller (end-point) and repository (data)
   - Logic of controller
   - Data Validation
-  - DTO (Data Transfer Object) Model
 - Data Access Layer at [`internal/app/data_access/[DATABASE]`](internal/server/repository)
   - No logic except operation to database
-  - Repository pattern
-  - DAO (Data Access Object) Model
-  - Database Entity or Business Entity
 
 ## Dependency Injection
 
 Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) using [uber-dig](https://github.com/uber-go/dig) and annotations (`@ctor` for constructor and `@dtor` for destructor).
 
 ```go
-// OpenConn open new database connection
+// NewConn ... 
 // @ctor
-func OpenConn() *sql.DB{
-}
-```
-
-```go
-// CloseConn close the database connection
-// @dtor
-func CloseConn(db *sql.DB){
+func NewConn() *sql.DB{
 }
 ```
 
@@ -203,6 +196,7 @@ Golang:
 
 RESTful API:
 - [Best Practices for Designing a Pragmatic RESTful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api)
+- [Everything You Need to know About API Pagination](https://nordicapis.com/everything-you-need-to-know-about-api-pagination/)
 
 ## Project Starter
 
