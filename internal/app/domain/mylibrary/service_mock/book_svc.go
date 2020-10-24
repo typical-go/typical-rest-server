@@ -8,6 +8,7 @@ import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
 	postgresdb "github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
+	service "github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	reflect "reflect"
 )
 
@@ -64,18 +65,18 @@ func (mr *MockBookSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Find mocks base method
-func (m *MockBookSvc) Find(arg0 context.Context) ([]*postgresdb.Book, error) {
+func (m *MockBookSvc) Find(arg0 context.Context, arg1 *service.FindReq) ([]*postgresdb.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", arg0)
+	ret := m.ctrl.Call(m, "Find", arg0, arg1)
 	ret0, _ := ret[0].([]*postgresdb.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find
-func (mr *MockBookSvcMockRecorder) Find(arg0 interface{}) *gomock.Call {
+func (mr *MockBookSvcMockRecorder) Find(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookSvc)(nil).Find), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockBookSvc)(nil).Find), arg0, arg1)
 }
 
 // FindOne mocks base method

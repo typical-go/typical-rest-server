@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
@@ -30,7 +31,7 @@ func CreateBookCntrl(t *testing.T, fn BookCntrlFn) (*controller.BookCntrl, *gomo
 	if fn != nil {
 		fn(mockSvc)
 	}
-	return &controller.BookCntrl{BookSvc: mockSvc}, mock
+	return &controller.BookCntrl{Svc: mockSvc}, mock
 }
 
 func TestBookController_RetrieveOne(t *testing.T) {
@@ -119,7 +120,7 @@ func TestBookController_Retrieve(t *testing.T) {
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return([]*postgresdb.Book{
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return([]*postgresdb.Book{
 					&postgresdb.Book{ID: 1, Title: "title1", Author: "author1"},
 					&postgresdb.Book{ID: 2, Title: "title2", Author: "author2"},
 				}, nil)
@@ -134,7 +135,7 @@ func TestBookController_Retrieve(t *testing.T) {
 				ExpectedError: "code=500, message=some-error",
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any()).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}

@@ -23,7 +23,8 @@ Pragmatic Golang RESTful Server Implementation
   - [x] Partially update resource (`PATCH` verb)
   - [x] Check resource (`HEAD` verb)
   - [x] RequestID in logger
-  - [ ] Server side caching (support `Cache-Control`)
+  - [x] Offset Pagination
+  - [ ] Server side caching (support `Cache-Control` header)
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)

@@ -26,7 +26,7 @@ func createBookSvc(t *testing.T, fn bookSvcFn) (*service.BookSvcImpl, *gomock.Co
 	}
 
 	return &service.BookSvcImpl{
-		BookRepo: mockRepo,
+		Repo: mockRepo,
 	}, mock
 }
 
@@ -155,19 +155,22 @@ func TestBookSvc_RetrieveOne(t *testing.T) {
 	}
 }
 
-func TestBookSvc_Retrieve(t *testing.T) {
+func TestBookSvc_Find(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
+		request     *service.FindReq
 		expected    []*postgresdb.Book
 		expectedErr string
-	}{}
+	}{
+		// TODO:
+	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.bookSvcFn)
 			defer mock.Finish()
 
-			books, err := svc.Find(context.Background())
+			books, err := svc.Find(context.Background(), tt.request)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {

@@ -18,7 +18,7 @@ type (
 	// @mock
 	BookSvc interface {
 		FindOne(context.Context, string) (*postgresdb.Book, error)
-		Find(context.Context) ([]*postgresdb.Book, error)
+		Find(context.Context, *FindReq) ([]*postgresdb.Book, error)
 		Create(context.Context, *postgresdb.Book) (*postgresdb.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
@@ -27,7 +27,12 @@ type (
 	// BookSvcImpl is implementation of BookSvc
 	BookSvcImpl struct {
 		dig.In
-		postgresdb_repo.BookRepo
+		Repo postgresdb_repo.BookRepo
+	}
+	// FindReq find request
+	FindReq struct {
+		Limit  uint64 `query:"limit"`
+		Offset uint64 `query:"offset"`
 	}
 )
 
@@ -42,7 +47,7 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *postgresdb.Book) (*postg
 	if err := validator.New().Struct(book); err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	id, err := b.BookRepo.Create(ctx, book)
+	id, err := b.Repo.Create(ctx, book)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +55,14 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *postgresdb.Book) (*postg
 }
 
 // Find books
-func (b *BookSvcImpl) Find(ctx context.Context) ([]*postgresdb.Book, error) {
-	return b.BookRepo.Find(ctx)
+func (b *BookSvcImpl) Find(ctx context.Context, req *FindReq) ([]*postgresdb.Book, error) {
+	return b.Repo.Find(ctx, b.findSelectOpt(req)...)
+}
+
+func (b *BookSvcImpl) findSelectOpt(req *FindReq) []dbkit.SelectOption {
+	return []dbkit.SelectOption{
+		&dbkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit},
+	}
 }
 
 // FindOne book
@@ -64,7 +75,7 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*postgresdb.
 }
 
 func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, error) {
-	books, err := b.BookRepo.Find(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	books, err := b.Repo.Find(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -79,7 +90,7 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return typrest.NewValidErr("paramID is missing")
 	}
-	_, err := b.BookRepo.Delete(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	_, err := b.Repo.Delete(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
 	return err
 }
 
@@ -93,7 +104,7 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgres
 	if err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	affectedRow, err := b.BookRepo.Update(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +120,7 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresd
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	affectedRow, err := b.BookRepo.Patch(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
 	if err != nil {
 		return nil, err
 	}

@@ -15,7 +15,7 @@ type (
 	// BookCntrl is controller to book entity
 	BookCntrl struct {
 		dig.In
-		service.BookSvc
+		Svc service.BookSvc
 	}
 )
 
@@ -39,7 +39,7 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 		return err
 	}
 	ctx := ec.Request().Context()
-	newBook, err := c.BookSvc.Create(ctx, &book)
+	newBook, err := c.Svc.Create(ctx, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -49,10 +49,13 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 // Find books
 func (c *BookCntrl) Find(ec echo.Context) (err error) {
-	var books []*postgresdb.Book
-	if books, err = c.BookSvc.Find(
-		ec.Request().Context(),
-	); err != nil {
+	var req service.FindReq
+	if err = ec.Bind(&req); err != nil {
+		return err
+	}
+	ctx := ec.Request().Context()
+	books, err := c.Svc.Find(ctx, &req)
+	if err != nil {
 		return typrest.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, books)
@@ -60,7 +63,7 @@ func (c *BookCntrl) Find(ec echo.Context) (err error) {
 
 // FindOne book
 func (c *BookCntrl) FindOne(ec echo.Context) error {
-	book, err := c.BookSvc.FindOne(
+	book, err := c.Svc.FindOne(
 		ec.Request().Context(),
 		ec.Param("id"),
 	)
@@ -72,10 +75,9 @@ func (c *BookCntrl) FindOne(ec echo.Context) error {
 
 // Delete book
 func (c *BookCntrl) Delete(ec echo.Context) (err error) {
-	if err = c.BookSvc.Delete(
-		ec.Request().Context(),
-		ec.Param("id"),
-	); err != nil {
+	ctx := ec.Request().Context()
+	id := ec.Param("id")
+	if err = c.Svc.Delete(ctx, id); err != nil {
 		return typrest.HTTPError(err)
 	}
 	return ec.NoContent(http.StatusNoContent)
@@ -89,7 +91,7 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	}
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
-	updatedBook, err := c.BookSvc.Update(ctx, paramID, &book)
+	updatedBook, err := c.Svc.Update(ctx, paramID, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -104,7 +106,7 @@ func (c *BookCntrl) Patch(ec echo.Context) (err error) {
 	}
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
-	patchedBook, err := c.BookSvc.Patch(ctx, paramID, &book)
+	patchedBook, err := c.Svc.Patch(ctx, paramID, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
