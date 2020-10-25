@@ -18,9 +18,7 @@ type (
 
 // NewDeleteOption return new instance of DeleteOption
 func NewDeleteOption(fn CompileDeleteFn) DeleteOption {
-	return &deleteOptionImpl{
-		fn: fn,
-	}
+	return &deleteOptionImpl{fn: fn}
 }
 
 func (s *deleteOptionImpl) CompileDelete(b sq.DeleteBuilder) sq.DeleteBuilder {

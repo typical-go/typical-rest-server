@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
+	"strings"
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/generated/postgresdb_repo"
@@ -33,6 +34,7 @@ type (
 	FindReq struct {
 		Limit  uint64 `query:"limit"`
 		Offset uint64 `query:"offset"`
+		Sort   string `query:"sort"`
 	}
 )
 
@@ -59,10 +61,12 @@ func (b *BookSvcImpl) Find(ctx context.Context, req *FindReq) ([]*postgresdb.Boo
 	return b.Repo.Find(ctx, b.findSelectOpt(req)...)
 }
 
-func (b *BookSvcImpl) findSelectOpt(req *FindReq) []dbkit.SelectOption {
-	return []dbkit.SelectOption{
-		&dbkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit},
+func (b *BookSvcImpl) findSelectOpt(req *FindReq) (opts []dbkit.SelectOption) {
+	opts = append(opts, &dbkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
+	if req.Sort != "" {
+		opts = append(opts, dbkit.Sorts(strings.Split(req.Sort, ",")))
 	}
+	return
 }
 
 // FindOne book

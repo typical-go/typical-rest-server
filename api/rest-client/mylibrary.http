@@ -1,7 +1,7 @@
 
 ### Find Books
 
-http://localhost:8089/mylibrary/books
+http://localhost:8089/mylibrary/books?sort=-title,created_at
 
 ### Find Books (Pagination)
 

@@ -138,6 +138,18 @@ func TestBookController_Find(t *testing.T) {
 				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Limit: 20, Offset: 10}).Return(nil, fmt.Errorf("some-error"))
 			},
 		},
+		{
+			TestCase: echotest.TestCase{
+				Request: echotest.Request{
+					Method: http.MethodGet,
+					Target: "/?sort=name,created_at",
+				},
+				ExpectedError: "code=500, message=some-error",
+			},
+			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
+				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Sort: "name,created_at"}).Return(nil, fmt.Errorf("some-error"))
+			},
+		},
 	}
 
 	for _, tt := range testcases {

@@ -99,7 +99,7 @@ func TestBookSvc_Create(t *testing.T) {
 	}
 }
 
-func TestBookSvc_RetrieveOne(t *testing.T) {
+func TestBookSvc_FindOne(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
@@ -126,16 +126,10 @@ func TestBookSvc_RetrieveOne(t *testing.T) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return([]*postgresdb.Book{
-						{
-							ID:    1,
-							Title: "some-title",
-						},
+						{ID: 1, Title: "some-title"},
 					}, nil)
 			},
-			expected: &postgresdb.Book{
-				ID:    1,
-				Title: "some-title",
-			},
+			expected: &postgresdb.Book{ID: 1, Title: "some-title"},
 		},
 	}
 
@@ -159,18 +153,41 @@ func TestBookSvc_Find(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
-		request     *service.FindReq
+		req         *service.FindReq
 		expected    []*postgresdb.Book
 		expectedErr string
 	}{
-		// TODO:
+		{
+			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), &dbkit.OffsetPagination{}).
+					Return([]*postgresdb.Book{
+						{ID: 1, Title: "title1", Author: "author1"},
+						{ID: 2, Title: "title2", Author: "author2"},
+					}, nil)
+			},
+			req: &service.FindReq{},
+			expected: []*postgresdb.Book{
+				{ID: 1, Title: "title1", Author: "author1"},
+				{ID: 2, Title: "title2", Author: "author2"},
+			},
+		},
+		{
+			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), &dbkit.OffsetPagination{Limit: 20, Offset: 10}, dbkit.Sorts{"title", "created_at"}).
+					Return(nil, errors.New("some-error"))
+			},
+			req:         &service.FindReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "some-error",
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.bookSvcFn)
 			defer mock.Finish()
 
-			books, err := svc.Find(context.Background(), tt.request)
+			books, err := svc.Find(context.Background(), tt.req)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
