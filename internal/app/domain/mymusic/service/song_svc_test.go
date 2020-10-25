@@ -150,14 +150,39 @@ func TestSongSvc_RetrieveOne(t *testing.T) {
 	}
 }
 
-func TestSongSvc_Retrieve(t *testing.T) {
+func TestSongSvc_Find(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		songSvcFn   songSvcFn
 		req         *service.FindReq
 		expected    []*mysqldb.Song
 		expectedErr string
-	}{}
+	}{
+		{
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), &dbkit.OffsetPagination{}).
+					Return([]*mysqldb.Song{
+						{ID: 1, Title: "title1", Artist: "artist1"},
+						{ID: 2, Title: "title2", Artist: "artist2"},
+					}, nil)
+			},
+			req: &service.FindReq{},
+			expected: []*mysqldb.Song{
+				{ID: 1, Title: "title1", Artist: "artist1"},
+				{ID: 2, Title: "title2", Artist: "artist2"},
+			},
+		},
+		{
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), &dbkit.OffsetPagination{Limit: 20, Offset: 10}, dbkit.Sorts{"title", "created_at"}).
+					Return(nil, errors.New("some-error"))
+			},
+			req:         &service.FindReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "some-error",
+		},
+	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createSongSvc(t, tt.songSvcFn)

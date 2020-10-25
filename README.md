@@ -23,9 +23,10 @@ Pragmatic Golang RESTful Server Implementation
   - [x] Standard CRUD
   - [x] Partially update resource (`PATCH` verb)
   - [x] Check resource (`HEAD` verb)
-  - [x] RequestID in logger
-  - [x] Offset Pagination (by query param `?limit=100&offset=0`)
-  - [ ] Server side caching (support `Cache-Control` header)
+  - [x] Request ID in logger
+  - [x] Offset Pagination (Query param `?limit=100&offset=0`)
+  - [x] Sorting (Query param `?sort=-title,created_at`)
+  - [ ] Server side caching (`Cache-Control` header)
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)

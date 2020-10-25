@@ -1,7 +1,7 @@
 
 ### Find Books
 
-http://localhost:8089/mymusic/songs
+http://localhost:8089/mymusic/song?sort=artist
 
 ### Find Books (Pagination)
 
