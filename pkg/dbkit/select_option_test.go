@@ -1,7 +1,6 @@
 package dbkit_test
 
 import (
-	"errors"
 	"testing"
 
 	sq "github.com/Masterminds/squirrel"
@@ -10,12 +9,9 @@ import (
 )
 
 func TestSelectOption(t *testing.T) {
-	expectedErr := errors.New("")
 	expected := sq.Select("")
-	selectOpt := dbkit.NewSelectOption(func(sq.SelectBuilder) (sq.SelectBuilder, error) {
-		return expected, expectedErr
+	selectOpt := dbkit.NewSelectOption(func(sq.SelectBuilder) sq.SelectBuilder {
+		return expected
 	})
-	builder, err := selectOpt.CompileSelect(sq.Select(""))
-	require.Equal(t, expected, builder)
-	require.Equal(t, expectedErr, err)
+	require.Equal(t, expected, selectOpt.CompileSelect(sq.Select("")))
 }

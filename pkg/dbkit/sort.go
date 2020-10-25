@@ -1,63 +1,42 @@
 package dbkit
 
 import (
-	"errors"
 	"fmt"
+	"strings"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
-const (
-	// Asc for ascending
-	Asc OrderBy = iota
-
-	// Desc for descending
-	Desc
-)
-
 type (
-	// SortOption for select
-	SortOption struct {
-		column  string
-		orderBy OrderBy
-	}
-	// OrderBy is type of order by
-	OrderBy int
+	// Sorts sorting
+	Sorts []string
 )
 
 //
 // Sort
 //
 
-var _ SelectOption = (*SortOption)(nil)
-
-// Sort is find option to sort by column and order
-func Sort(column string, orderBy OrderBy) *SortOption {
-	return &SortOption{
-		column:  column,
-		orderBy: orderBy,
-	}
-}
+var _ SelectOption = (*Sorts)(nil)
 
 // CompileSelect to compile select query for sorting
-func (s *SortOption) CompileSelect(base sq.SelectBuilder) (sq.SelectBuilder, error) {
-	if s.column == "" {
-		return base, errors.New("Sort column can't be empty")
+func (s Sorts) CompileSelect(base sq.SelectBuilder) sq.SelectBuilder {
+	for _, sort := range s {
+		base = base.OrderBy(s.statement(sort))
 	}
-	base = base.OrderBy(fmt.Sprintf("%s %s", s.column, s.orderBy))
-	return base, nil
+	return base
 }
 
-//
-// OrderBy
-//
-
-func (o OrderBy) String() string {
-	switch o {
-	case Asc:
-		return "ASC"
-	case Desc:
-		return "DESC"
+func (s Sorts) statement(sort string) string {
+	var column, orderBy string
+	if strings.HasPrefix(sort, "-") {
+		column = sort[1:]
+		orderBy = "DESC"
+	} else if strings.HasPrefix(sort, "+") {
+		column = sort[1:]
+		orderBy = "ASC"
+	} else {
+		column = sort
+		orderBy = "ASC"
 	}
-	return "ASC"
+	return fmt.Sprintf("%s %s", column, orderBy)
 }

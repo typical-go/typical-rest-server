@@ -62,7 +62,7 @@ func TestBookSvc_Create(t *testing.T) {
 					Create(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("Find-error"))
 			},
 		},
@@ -77,7 +77,7 @@ func TestBookSvc_Create(t *testing.T) {
 					Create(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return([]*postgresdb.Book{{Author: "some-author", Title: "some-title"}}, nil)
 			},
 		},
@@ -115,7 +115,7 @@ func TestBookSvc_RetrieveOne(t *testing.T) {
 			paramID: "1",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("some-error"))
 			},
 			expectedErr: "some-error",
@@ -124,7 +124,7 @@ func TestBookSvc_RetrieveOne(t *testing.T) {
 			paramID: "1",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return([]*postgresdb.Book{
 						{
 							ID:    1,
@@ -197,7 +197,7 @@ func TestBookSvc_Delete(t *testing.T) {
 			expectedErr: `some-error`,
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(postgresdb_repo.BookTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Eq{postgresdb_repo.BookTable.ID: int64(1)}).
 					Return(int64(0), errors.New("some-error"))
 			},
 		},
@@ -205,7 +205,7 @@ func TestBookSvc_Delete(t *testing.T) {
 			paramID: "1",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(postgresdb_repo.BookTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Eq{postgresdb_repo.BookTable.ID: int64(1)}).
 					Return(int64(1), nil)
 			},
 		},
@@ -214,7 +214,7 @@ func TestBookSvc_Delete(t *testing.T) {
 			paramID:  "1",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Delete(gomock.Any(), dbkit.Equal(postgresdb_repo.BookTable.ID, int64(1))).
+					Delete(gomock.Any(), dbkit.Eq{postgresdb_repo.BookTable.ID: int64(1)}).
 					Return(int64(0), nil)
 			},
 		},
@@ -266,7 +266,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "update error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(-1), errors.New("update error"))
 			},
 		},
@@ -277,7 +277,7 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "sql: no rows in result set",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(0), nil)
 			},
 		},
@@ -288,10 +288,10 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "Find-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("Find-error"))
 			},
 		},
@@ -302,10 +302,10 @@ func TestBookSvc_Update(t *testing.T) {
 			expectedErr: "Find-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("Find-error"))
 			},
 		},
@@ -352,7 +352,7 @@ func TestBookSvc_Patch(t *testing.T) {
 			expectedErr: "patch-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(-1), errors.New("patch-error"))
 			},
 		},
@@ -363,7 +363,7 @@ func TestBookSvc_Patch(t *testing.T) {
 			expectedErr: "sql: no rows in result set",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(0), nil)
 			},
 		},
@@ -374,10 +374,10 @@ func TestBookSvc_Patch(t *testing.T) {
 			expectedErr: "Find-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("Find-error"))
 			},
 		},
@@ -387,10 +387,10 @@ func TestBookSvc_Patch(t *testing.T) {
 			expected: &postgresdb.Book{Author: "some-author", Title: "some-title"},
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Equal("id", int64(1))).
+					Patch(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Equal("id", int64(1))).
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return([]*postgresdb.Book{{Author: "some-author", Title: "some-title"}}, nil)
 			},
 		},

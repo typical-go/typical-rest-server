@@ -75,7 +75,7 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*postgresdb.
 }
 
 func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, error) {
-	books, err := b.Repo.Find(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	books, err := b.Repo.Find(ctx, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -90,7 +90,7 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return typrest.NewValidErr("paramID is missing")
 	}
-	_, err := b.Repo.Delete(ctx, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	_, err := b.Repo.Delete(ctx, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
 	return err
 }
 
@@ -104,7 +104,7 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgres
 	if err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresd
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Equal(postgresdb_repo.BookTable.ID, id))
+	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
 	if err != nil {
 		return nil, err
 	}

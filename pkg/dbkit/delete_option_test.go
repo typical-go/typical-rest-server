@@ -1,7 +1,6 @@
 package dbkit_test
 
 import (
-	"errors"
 	"testing"
 
 	sq "github.com/Masterminds/squirrel"
@@ -10,13 +9,9 @@ import (
 )
 
 func TestNewDeleteOption(t *testing.T) {
-	expectedErr := errors.New("")
 	expected := sq.Delete("")
-	deleteOpt := dbkit.NewDeleteOption(func(sq.DeleteBuilder) (sq.DeleteBuilder, error) {
-		return expected, expectedErr
+	deleteOpt := dbkit.NewDeleteOption(func(sq.DeleteBuilder) sq.DeleteBuilder {
+		return expected
 	})
-
-	builder, err := deleteOpt.CompileDelete(sq.Delete(""))
-	require.Equal(t, expected, builder)
-	require.Equal(t, expectedErr, err)
+	require.Equal(t, expected, deleteOpt.CompileDelete(sq.Delete("")))
 }

@@ -56,9 +56,7 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption
 		RunWith(r)
 
 	for _, opt := range opts {
-		if builder, err = opt.CompileSelect(builder); err != nil {
-			return nil, err
-		}
+		builder = opt.CompileSelect(builder)
 	}
 
 	rows, err := builder.QueryContext(ctx)
@@ -118,9 +116,8 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.Package}}.{{.Nam
 		Set({{$.Name}}Table.{{.Name}},{{if .DefaultValue}}{{.DefaultValue}}{{else}}ent.{{.Name}},{{end}}).{{end}}{{end}}
 		RunWith(txn.DB)
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileUpdate(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)
@@ -147,9 +144,8 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.Package}}.{{.Name
 		builder = builder.Set({{$.Name}}Table.{{.Name}}, ent.{{.Name}})
 	}{{end}}{{end}}{{end}}
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileUpdate(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)
@@ -172,9 +168,8 @@ func (r *{{.Name}}RepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) 
 	}
 
 	builder := sq.Delete({{.Name}}TableName).RunWith(txn.DB)
-	if builder, err = opt.CompileDelete(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileDelete(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)

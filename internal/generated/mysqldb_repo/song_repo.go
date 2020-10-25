@@ -73,9 +73,7 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (li
 		RunWith(r)
 
 	for _, opt := range opts {
-		if builder, err = opt.CompileSelect(builder); err != nil {
-			return nil, err
-		}
+		builder = opt.CompileSelect(builder)
 	}
 
 	rows, err := builder.QueryContext(ctx)
@@ -148,9 +146,8 @@ func (r *SongRepoImpl) Update(ctx context.Context, ent *mysqldb.Song, opt dbkit.
 		Set(SongTable.UpdatedAt, time.Now()).
 		RunWith(txn.DB)
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileUpdate(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)
@@ -180,9 +177,8 @@ func (r *SongRepoImpl) Patch(ctx context.Context, ent *mysqldb.Song, opt dbkit.U
 	}
 	builder = builder.Set(SongTable.UpdatedAt, time.Now())
 
-	if builder, err = opt.CompileUpdate(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileUpdate(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)
@@ -204,9 +200,8 @@ func (r *SongRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int6
 	}
 
 	builder := sq.Delete(SongTableName).RunWith(txn.DB)
-	if builder, err = opt.CompileDelete(builder); err != nil {
-		txn.SetError(err)
-		return -1, err
+	if opt != nil {
+		builder = opt.CompileDelete(builder)
 	}
 
 	res, err := builder.ExecContext(ctx)
