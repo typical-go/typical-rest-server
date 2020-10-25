@@ -19,7 +19,7 @@ func TestPagination(t *testing.T) {
 		{
 			OffsetPagination: &dbkit.OffsetPagination{},
 			builder:          sq.Select("name", "version").From("sometables"),
-			expectedQuery:    "SELECT name, version FROM sometables OFFSET 0",
+			expectedQuery:    "SELECT name, version FROM sometables",
 		},
 		{
 			OffsetPagination: &dbkit.OffsetPagination{Offset: 10, Limit: 100},
