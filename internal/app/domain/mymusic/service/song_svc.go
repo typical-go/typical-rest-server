@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -104,32 +105,51 @@ func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	err := validator.New().Struct(book)
-	if err != nil {
+	if err := validator.New().Struct(book); err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
-	if err != nil {
+	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}
-	if affectedRow < 1 {
-		return nil, sql.ErrNoRows
+	if err := b.update(ctx, id, book); err != nil {
+		return nil, err
 	}
 	return b.findOne(ctx, id)
 }
 
+func (b *SongSvcImpl) update(ctx context.Context, id int64, song *mysqldb.Song) error {
+	affectedRow, err := b.Repo.Update(ctx, song, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	if err != nil {
+		return err
+	}
+	if affectedRow < 1 {
+		return errors.New("no affected row")
+	}
+	return nil
+}
+
 // Patch book
-func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, book *mysqldb.Song) (*mysqldb.Song, error) {
+func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *mysqldb.Song) (*mysqldb.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
-	if err != nil {
+	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}
-	if affectedRow < 1 {
-		return nil, sql.ErrNoRows
+	if err := b.patch(ctx, id, song); err != nil {
+		return nil, err
 	}
 	return b.findOne(ctx, id)
+}
+
+func (b *SongSvcImpl) patch(ctx context.Context, id int64, song *mysqldb.Song) error {
+	affectedRow, err := b.Repo.Patch(ctx, song, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	if err != nil {
+		return err
+	}
+	if affectedRow < 1 {
+		return errors.New("no affected row")
+	}
+	return nil
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -104,18 +105,27 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgres
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	err := validator.New().Struct(book)
-	if err != nil {
+	if err := validator.New().Struct(book); err != nil {
 		return nil, typrest.NewValidErr(err.Error())
 	}
-	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
-	if err != nil {
+	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}
-	if affectedRow < 1 {
-		return nil, sql.ErrNoRows
+	if err := b.update(ctx, id, book); err != nil {
+		return nil, err
 	}
 	return b.findOne(ctx, id)
+}
+
+func (b *BookSvcImpl) update(ctx context.Context, id int64, book *postgresdb.Book) error {
+	affectedRow, err := b.Repo.Update(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
+	if err != nil {
+		return err
+	}
+	if affectedRow < 1 {
+		return errors.New("no affected row")
+	}
+	return nil
 }
 
 // Patch book
@@ -124,12 +134,22 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresd
 	if id < 1 {
 		return nil, typrest.NewValidErr("paramID is missing")
 	}
-	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
-	if err != nil {
+	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}
-	if affectedRow < 1 {
-		return nil, sql.ErrNoRows
+	if err := b.patch(ctx, id, book); err != nil {
+		return nil, err
 	}
 	return b.findOne(ctx, id)
+}
+
+func (b *BookSvcImpl) patch(ctx context.Context, id int64, book *postgresdb.Book) error {
+	affectedRow, err := b.Repo.Patch(ctx, book, dbkit.Eq{postgresdb_repo.BookTable.ID: id})
+	if err != nil {
+		return err
+	}
+	if affectedRow < 1 {
+		return errors.New("no affected row")
+	}
+	return nil
 }

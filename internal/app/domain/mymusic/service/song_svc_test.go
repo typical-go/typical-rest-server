@@ -94,7 +94,7 @@ func TestSongSvc_Create(t *testing.T) {
 	}
 }
 
-func TestSongSvc_RetrieveOne(t *testing.T) {
+func TestSongSvc_FindOne(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		songSvcFn   songSvcFn
@@ -120,12 +120,7 @@ func TestSongSvc_RetrieveOne(t *testing.T) {
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return([]*mysqldb.Song{
-						{
-							ID:    1,
-							Title: "some-title",
-						},
-					}, nil)
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 			},
 			expected: &mysqldb.Song{
 				ID:    1,
@@ -283,6 +278,9 @@ func TestSongSvc_Update(t *testing.T) {
 			expectedErr: "update error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
+				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(-1), errors.New("update error"))
 			},
@@ -291,39 +289,42 @@ func TestSongSvc_Update(t *testing.T) {
 			testName:    "nothing to update",
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			expectedErr: "sql: no rows in result set",
+			expectedErr: "no affected row",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(0), nil)
 			},
 		},
 		{
-			testName:    "Find error",
+			testName:    "find error before update",
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			expectedErr: "Find-error",
+			expectedErr: "find-error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
-					Return(int64(1), nil)
-				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return(nil, errors.New("Find-error"))
+					Return(nil, errors.New("find-error"))
 			},
 		},
 		{
-			testName:    "Find error",
+			testName:    "find error after update",
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			expectedErr: "Find-error",
+			expectedErr: "find-error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 				mockRepo.EXPECT().
 					Update(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return(nil, errors.New("Find-error"))
+					Return(nil, errors.New("find-error"))
 			},
 		},
 	}
@@ -368,6 +369,9 @@ func TestSongSvc_Patch(t *testing.T) {
 			expectedErr: "patch-error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
+				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(-1), errors.New("patch-error"))
 			},
@@ -376,25 +380,42 @@ func TestSongSvc_Patch(t *testing.T) {
 			testName:    "patch error",
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			expectedErr: "sql: no rows in result set",
+			expectedErr: "no affected row",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(0), nil)
 			},
 		},
 		{
-			testName:    "Find error",
+			testName:    "find error before patch",
 			paramID:     "1",
 			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
-			expectedErr: "Find-error",
+			expectedErr: "find-error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return(nil, errors.New("find-error"))
+			},
+		},
+		{
+			testName:    "find error after patch",
+			paramID:     "1",
+			song:        &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
+			expectedErr: "find-error",
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return(nil, errors.New("Find-error"))
+					Return(nil, errors.New("find-error"))
 			},
 		},
 		{
@@ -402,6 +423,9 @@ func TestSongSvc_Patch(t *testing.T) {
 			song:     &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			expected: &mysqldb.Song{Artist: "some-artist", Title: "some-title"},
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 				mockRepo.EXPECT().
 					Patch(gomock.Any(), &mysqldb.Song{Artist: "some-artist", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
