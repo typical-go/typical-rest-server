@@ -8,11 +8,13 @@
 
 > The project status is `WIP` (Work in progress) which means the author continously evaluate and improve the project.
 
-Pragmatic Golang RESTful Server Implementation
+Pragmatic Golang RESTful Server Implementation. The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. 
+
 - Application
   - [x] [Go-Standards](https://github.com/golang-standards/project-layout) Project Layout 
   - [x] Environment Variable Configuration
-  - [x] Health Check and Debug API
+  - [x] Health-check and debug API
+  - [x] Graceful shutdown
 - Layered architecture
   - [x] [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
   - [x] Dependency Injection (using `@ctor` annotation)
@@ -20,13 +22,16 @@ Pragmatic Golang RESTful Server Implementation
   - [x] Database Transaction
 - RESTful Server
   - [x] [Echo framework](https://echo.labstack.com/)
-  - [x] Standard CRUD
+  - [x] Create resource (`POST` verb)
+  - [x] Update resource (`UPDATE` verb)
   - [x] Partially update resource (`PATCH` verb)
+  - [x] Find resource (`GET` verb)
+    - [x] Offset Pagination (Query param `?limit=100&offset=0`)
+    - [x] Sorting (Query param `?sort=-title,created_at`)
+    - [ ] Server side caching (`Cache-Control` header)
   - [x] Check resource (`HEAD` verb)
+  - [x] Delete resource (`DELETE` verb, idempotent)
   - [x] Request ID in logger
-  - [x] Offset Pagination (Query param `?limit=100&offset=0`)
-  - [x] Sorting (Query param `?sort=-title,created_at`)
-  - [ ] Server side caching (`Cache-Control` header)
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)
@@ -38,7 +43,15 @@ Pragmatic Golang RESTful Server Implementation
 
 ## Run/Test Project
 
-The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. The descriptor can be found in [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
+Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
+```go
+var descriptor = typgo.Descriptor{
+  ProjectName:    "typical-rest-server",
+  ProjectVersion: "0.9.7",
+  ProjectLayouts: []string{"internal", "pkg"},
+  
+  // commands ... 
+```
 
 Copy `.env.sample` for working configuration
 ```bash
