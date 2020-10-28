@@ -52,7 +52,7 @@ type (
 )
 
 func init() {
-	typapp.AppendCtor(&typapp.Constructor{Name: "", Fn: NewBookRepo})
+	typapp.Provide("", NewBookRepo)
 }
 
 // NewBookRepo return new instance of BookRepo

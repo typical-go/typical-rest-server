@@ -8,7 +8,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
-	"github.com/typical-go/typical-rest-server/internal/generated/typical"
+	"github.com/typical-go/typical-rest-server/internal/generated/config"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/mysqltool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/pgtool"
@@ -31,13 +31,9 @@ var descriptor = typgo.Descriptor{
 		&typast.AnnotateProject{
 			Destination: "internal/generated/typical",
 			Annotators: []typast.Annotator{
-				&typrepo.EntityAnnotation{},
-				&typcfg.EnvconfigAnnotation{
-					DotEnv:   ".env",     // generate .env file
-					UsageDoc: "USAGE.md", // generate USAGE.md
-				},
 				&typapp.CtorAnnotation{},
-				&typapp.DtorAnnotation{},
+				&typrepo.EntityAnnotation{},
+				&typcfg.EnvconfigAnnotation{DotEnv: ".env", UsageDoc: "USAGE.md"},
 			},
 		},
 		// run
@@ -52,7 +48,7 @@ var descriptor = typgo.Descriptor{
 		&pgtool.PgTool{
 			Name: "pg",
 			ConfigFn: func() dbtool.Configurer {
-				cfg, err := typical.LoadPgDatabaseCfg()
+				cfg, err := config.LoadPgDatabaseCfg()
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -66,7 +62,7 @@ var descriptor = typgo.Descriptor{
 		&mysqltool.MySQLTool{
 			Name: "mysql",
 			ConfigFn: func() dbtool.Configurer {
-				cfg, err := typical.LoadMysqlDatabaseCfg()
+				cfg, err := config.LoadMysqlDatabaseCfg()
 				if err != nil {
 					log.Fatal(err)
 				}

@@ -64,10 +64,8 @@ import ({{range $import, $alias := .Imports}}
 	{{$alias}} "{{$import}}"{{end}}
 )
 
-func init() { {{if .Configs}}
-	typapp.AppendCtor({{range $c := .Configs}}
-		&typapp.Constructor{Name: "{{$c.Ctor}}",Fn: {{$c.FnName}}},{{end}}
-	){{end}}
+func init() { {{if .Configs}}{{range $c := .Configs}}
+	typapp.Provide("{{$c.Ctor}}",{{$c.FnName}}){{end}}{{end}}
 }
 {{range $c := .Configs}}
 // {{$c.FnName}} load env to new instance of {{$c.Name}}
@@ -90,8 +88,11 @@ var _ typast.Annotator = (*EnvconfigAnnotation)(nil)
 // Annotate Envconfig to prepare dependency-injection and env-file
 func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 	context := m.Context(c)
+	target := m.getTarget(context)
 
-	if err := m.generate(context); err != nil {
+	if len(context.Configs) < 1 {
+		os.Remove(target)
+	} else if err := m.generate(context, target); err != nil {
 		return err
 	}
 
@@ -125,12 +126,10 @@ func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
 	return &Context{Context: c, Configs: configs, Imports: imports}
 }
 
-func (m *EnvconfigAnnotation) generate(c *Context) error {
-	target := m.getTarget(c)
-	if len(c.Configs) < 1 {
-		os.Remove(target)
-		return nil
-	}
+func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
+
+	dest := filepath.Dir(target)
+	os.MkdirAll(dest, 0777)
 
 	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
@@ -138,7 +137,7 @@ func (m *EnvconfigAnnotation) generate(c *Context) error {
 			TagName: m.getTagName(),
 			Help:    "https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg",
 		},
-		Package: filepath.Base(c.Destination),
+		Package: filepath.Base(dest),
 		Imports: c.Imports,
 		Configs: c.Configs,
 	}); err != nil {
@@ -164,7 +163,7 @@ func (m *EnvconfigAnnotation) getTemplate() string {
 
 func (m *EnvconfigAnnotation) getTarget(c *Context) string {
 	if m.Target == "" {
-		m.Target = fmt.Sprintf("%s/envconfig_annotated.go", c.Destination)
+		m.Target = "internal/generated/config/config.go"
 	}
 	return m.Target
 }

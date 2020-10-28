@@ -37,7 +37,7 @@ type (
 )
 
 func init() {
-	typapp.AppendCtor(&typapp.Constructor{Name: "", Fn: New{{.Name}}Repo})
+	typapp.Provide("",New{{.Name}}Repo)
 }
 
 // New{{.Name}}Repo return new instance of {{.Name}}Repo

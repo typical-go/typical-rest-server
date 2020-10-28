@@ -51,7 +51,7 @@ type (
 )
 
 func init() {
-	typapp.AppendCtor(&typapp.Constructor{Name: "", Fn: NewSongRepo})
+	typapp.Provide("", NewSongRepo)
 }
 
 // NewSongRepo return new instance of SongRepo
