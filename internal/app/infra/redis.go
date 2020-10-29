@@ -7,7 +7,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func createRedisClient(r *RedisCfg) *redis.Client {
+// NewRedisClient return new instance of redis client
+// @ctor
+func NewRedisClient(r *RedisCfg) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,

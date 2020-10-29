@@ -19,5 +19,7 @@ import (
 func init() {
 	typapp.Provide("", a.NewBookSvc)
 	typapp.Provide("", b.NewSongSvc)
-	typapp.Provide("", c.Setup)
+	typapp.Provide("", c.NewDatabases)
+	typapp.Provide("", c.NewRedisClient)
+	typapp.Provide("", c.NewServer)
 }

@@ -13,7 +13,7 @@ import (
 
 func main() {
 	fmt.Printf("%s %s\n", typgo.ProjectName, typgo.ProjectVersion)
-	if err := typapp.Run(app.Start); err != nil {
+	if err := typapp.Run(app.Start, app.Shutdown); err != nil {
 		logrus.Fatal(err.Error())
 	}
 }
