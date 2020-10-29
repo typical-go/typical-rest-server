@@ -8,18 +8,18 @@ type (
 	HealthMap map[string]error
 )
 
-// HealthStatus of HealthCheck
-func HealthStatus(m HealthMap) (healthy bool, details map[string]string) {
-	healthy = true
-	details = make(map[string]string)
+// Status of HealthCheck
+func (m HealthMap) Status() (map[string]string, bool) {
+	ok := true
+	status := make(map[string]string)
 
 	for name, err := range m {
 		if err != nil {
-			details[name] = err.Error()
-			healthy = false
+			status[name] = err.Error()
+			ok = false
 		} else {
-			details[name] = HealthStatusOK
+			status[name] = HealthStatusOK
 		}
 	}
-	return
+	return status, ok
 }

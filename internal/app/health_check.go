@@ -1,4 +1,4 @@
-package infra
+package app
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	// HealthCheck for profiler
+	// HealthCheck ...
 	HealthCheck struct {
 		dig.In
 		PG    *sql.DB `name:"pg"`
@@ -24,19 +24,27 @@ type (
 
 // Handle echo function
 func (h *HealthCheck) Handle(ec echo.Context) error {
-	healthy, detail := typrest.HealthStatus(typrest.HealthMap{
+	health := typrest.HealthMap{
 		"postgres": h.PG.Ping(),
 		"mysql":    h.MySQL.Ping(),
 		"redis":    h.Redis.Ping().Err(),
-	})
-
-	status := http.StatusOK
-	if !healthy {
-		status = http.StatusServiceUnavailable
 	}
 
-	return ec.JSON(status, map[string]interface{}{
+	status, ok := health.Status()
+	return ec.JSON(h.httpStatus(ok), h.response(status))
+}
+
+func (h *HealthCheck) httpStatus(ok bool) int {
+	httpStatus := http.StatusServiceUnavailable
+	if ok {
+		httpStatus = http.StatusOK
+	}
+	return httpStatus
+}
+
+func (h *HealthCheck) response(status map[string]string) map[string]interface{} {
+	return map[string]interface{}{
 		"name":   fmt.Sprintf("%s (%s)", typgo.ProjectName, typgo.ProjectVersion),
-		"status": detail,
-	})
+		"status": status,
+	}
 }

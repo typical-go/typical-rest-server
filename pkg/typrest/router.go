@@ -33,19 +33,15 @@ type (
 	}
 )
 
+var _ Server = (*echo.Echo)(nil)
+var _ Server = (*echo.Group)(nil)
+
 // SetRoute to server
 func SetRoute(server Server, routers ...Router) {
 	for _, router := range routers {
 		router.SetRoute(server)
 	}
 }
-
-//
-// Server
-//
-
-var _ Server = (*echo.Echo)(nil)
-var _ Server = (*echo.Group)(nil)
 
 //
 // routerImpl

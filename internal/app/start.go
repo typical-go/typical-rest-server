@@ -33,7 +33,7 @@ type (
 		Config      *infra.AppCfg
 		MyLibrary   mylibrary.Router
 		MyMusic     mymusic.Router
-		HealthCheck infra.HealthCheck
+		HealthCheck HealthCheck
 	}
 )
 
