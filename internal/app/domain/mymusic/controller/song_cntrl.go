@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
+	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -15,7 +16,8 @@ type (
 	// SongCntrl is controller to book entity
 	SongCntrl struct {
 		dig.In
-		service.SongSvc
+		Cache *cachekit.Store
+		Svc   service.SongSvc
 	}
 )
 
@@ -23,9 +25,9 @@ var _ typrest.Router = (*SongCntrl)(nil)
 
 // SetRoute to define API Route
 func (c *SongCntrl) SetRoute(e typrest.Server) {
-	e.GET("/songs", c.Find)
-	e.GET("/songs/:id", c.FindOne)
-	e.HEAD("/songs/:id", c.FindOne)
+	e.GET("/songs", c.Find, c.Cache.Middleware)
+	e.GET("/songs/:id", c.FindOne, c.Cache.Middleware)
+	e.HEAD("/songs/:id", c.FindOne, c.Cache.Middleware)
 	e.POST("/songs", c.Create)
 	e.PUT("/songs/:id", c.Update)
 	e.PATCH("/songs/:id", c.Patch)
@@ -39,7 +41,7 @@ func (c *SongCntrl) Create(ec echo.Context) (err error) {
 		return err
 	}
 	ctx := ec.Request().Context()
-	newSong, err := c.SongSvc.Create(ctx, &book)
+	newSong, err := c.Svc.Create(ctx, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -54,7 +56,7 @@ func (c *SongCntrl) Find(ec echo.Context) (err error) {
 		return err
 	}
 	ctx := ec.Request().Context()
-	songs, err := c.SongSvc.Find(ctx, &req)
+	songs, err := c.Svc.Find(ctx, &req)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -65,7 +67,7 @@ func (c *SongCntrl) Find(ec echo.Context) (err error) {
 func (c *SongCntrl) FindOne(ec echo.Context) error {
 	ctx := ec.Request().Context()
 	id := ec.Param("id")
-	book, err := c.SongSvc.FindOne(ctx, id)
+	book, err := c.Svc.FindOne(ctx, id)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -74,7 +76,7 @@ func (c *SongCntrl) FindOne(ec echo.Context) error {
 
 // Delete book
 func (c *SongCntrl) Delete(ec echo.Context) (err error) {
-	if err = c.SongSvc.Delete(
+	if err = c.Svc.Delete(
 		ec.Request().Context(),
 		ec.Param("id"),
 	); err != nil {
@@ -91,7 +93,7 @@ func (c *SongCntrl) Update(ec echo.Context) (err error) {
 	}
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
-	updatedSong, err := c.SongSvc.Update(ctx, paramID, &book)
+	updatedSong, err := c.Svc.Update(ctx, paramID, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}
@@ -106,7 +108,7 @@ func (c *SongCntrl) Patch(ec echo.Context) (err error) {
 	}
 	ctx := ec.Request().Context()
 	paramID := ec.Param("id")
-	patchedSong, err := c.SongSvc.Patch(ctx, paramID, &book)
+	patchedSong, err := c.Svc.Patch(ctx, paramID, &book)
 	if err != nil {
 		return typrest.HTTPError(err)
 	}

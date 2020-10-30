@@ -32,7 +32,7 @@ func CreateSongCntrl(t *testing.T, fn SongCntrlFn) (*controller.SongCntrl, *gomo
 	if fn != nil {
 		fn(mockSvc)
 	}
-	return &controller.SongCntrl{SongSvc: mockSvc}, mock
+	return &controller.SongCntrl{Svc: mockSvc}, mock
 }
 
 func TestBookController_FindOne(t *testing.T) {

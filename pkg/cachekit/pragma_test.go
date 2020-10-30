@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"bou.ke/monkey"
 	"github.com/stretchr/testify/require"
 
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
@@ -13,7 +12,8 @@ import (
 
 func TestPragma_NoCache(t *testing.T) {
 	testcases := []struct {
-		desc string
+		testName string
+		desc     string
 		*cachekit.Pragma
 		expected bool
 	}{
@@ -34,13 +34,16 @@ func TestPragma_NoCache(t *testing.T) {
 	}
 
 	for _, tt := range testcases {
-		require.Equal(t, tt.expected, tt.NoCache(), tt.desc)
+		t.Run(tt.testName, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.NoCache, tt.desc)
+		})
 	}
 }
 
 func TestPragma_MaxAge(t *testing.T) {
 	testcases := []struct {
-		desc string
+		testName string
+		desc     string
 		*cachekit.Pragma
 		expected time.Duration
 	}{
@@ -67,54 +70,10 @@ func TestPragma_MaxAge(t *testing.T) {
 	}
 
 	for _, tt := range testcases {
-		require.Equal(t, tt.expected, tt.MaxAge(), tt.desc)
+		t.Run(tt.testName, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.MaxAge, tt.desc)
+		})
 	}
-}
-
-func TestPragma_SetExpiresByTTL(t *testing.T) {
-	defer monkey.Patch(time.Now, func() time.Time {
-		return time.Date(2017, time.February, 16, 0, 0, 0, 0, time.UTC)
-	}).Unpatch()
-
-	pragma := pragmaWithCacheControl("")
-	pragma.SetExpiresByTTL(30 * time.Second)
-
-	require.Equal(t, "Thu, 16 Feb 2017 00:00:30 GMT", pragma.ResponseHeaders()[cachekit.HeaderExpires])
-}
-
-func TestPragma_ResponseHeaders(t *testing.T) {
-	testcases := []struct {
-		desc string
-		*cachekit.Pragma
-		expected map[string]string
-	}{
-		{
-			desc:   "empty cache-control",
-			Pragma: pragmaWithCacheControl(""),
-			expected: map[string]string{
-				"Cache-Control": "max-age=30",
-			},
-		},
-		{
-			desc:   "no-cache",
-			Pragma: pragmaWithCacheControl("no-cache"),
-			expected: map[string]string{
-				"Cache-Control": "no-cache",
-			},
-		},
-		{
-			desc:   "initial max-age",
-			Pragma: pragmaWithCacheControl("max-age=3000"),
-			expected: map[string]string{
-				"Cache-Control": "max-age=3000",
-			},
-		},
-	}
-
-	for _, tt := range testcases {
-		require.Equal(t, tt.expected, tt.ResponseHeaders(), tt.desc)
-	}
-
 }
 
 func pragmaWithCacheControl(cacheControl string) *cachekit.Pragma {

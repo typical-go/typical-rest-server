@@ -13,8 +13,8 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 - Application
   - [x] [Go-Standards](https://github.com/golang-standards/project-layout) Project Layout 
   - [x] Environment Variable Configuration
-  - [x] Health-check and debug API
-  - [x] Graceful shutdown
+  - [x] Health-Check and Debug API
+  - [x] Graceful Shutdown
 - Layered architecture
   - [x] [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
   - [x] Dependency Injection (using `@ctor` annotation)
@@ -22,13 +22,15 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
   - [x] Database Transaction
 - RESTful Server
   - [x] [Echo framework](https://echo.labstack.com/)
-  - [x] Create resource (`POST` verb)
-  - [x] Update resource (`UPDATE` verb)
-  - [x] Partially update resource (`PATCH` verb)
-  - [x] Find resource (`GET` verb)
+  - [x] Create Resource (`POST` verb)
+  - [x] Update Resource (`UPDATE` verb)
+  - [x] Partially Update Resource (`PATCH` verb)
+  - [x] Find Resource (`GET` verb)
     - [x] Offset Pagination (Query param `?limit=100&offset=0`)
     - [x] Sorting (Query param `?sort=-title,created_at`)
-    - [ ] Server side caching (`Cache-Control` header)
+  - [x] Server Side Caching 
+    - [x] Skip Caching (Header `Cache-Control: no-cache`)
+    - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
   - [x] Check resource (`HEAD` verb)
   - [x] Delete resource (`DELETE` verb, idempotent)
   - [x] Request ID in logger

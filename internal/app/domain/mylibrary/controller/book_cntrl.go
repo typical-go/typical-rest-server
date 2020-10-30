@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
+	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -15,7 +16,8 @@ type (
 	// BookCntrl is controller to book entity
 	BookCntrl struct {
 		dig.In
-		Svc service.BookSvc
+		Svc   service.BookSvc
+		Cache *cachekit.Store
 	}
 )
 
@@ -23,9 +25,9 @@ var _ typrest.Router = (*BookCntrl)(nil)
 
 // SetRoute to define API Route
 func (c *BookCntrl) SetRoute(e typrest.Server) {
-	e.GET("/books", c.Find)
-	e.GET("/books/:id", c.FindOne)
-	e.HEAD("/books/:id", c.FindOne)
+	e.GET("/books", c.Find, c.Cache.Middleware)
+	e.GET("/books/:id", c.FindOne, c.Cache.Middleware)
+	e.HEAD("/books/:id", c.FindOne, c.Cache.Middleware)
 	e.POST("/books", c.Create)
 	e.PUT("/books/:id", c.Update)
 	e.PATCH("/books/:id", c.Patch)
