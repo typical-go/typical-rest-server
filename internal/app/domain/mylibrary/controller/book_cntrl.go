@@ -9,7 +9,6 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
 
@@ -44,7 +43,7 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	newBook, err := c.Svc.Create(ctx, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/books/%d", newBook.ID))
 	return ec.JSON(http.StatusCreated, newBook)
@@ -59,7 +58,7 @@ func (c *BookCntrl) Find(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	books, err := c.Svc.Find(ctx, &req)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, books)
 }
@@ -71,7 +70,7 @@ func (c *BookCntrl) FindOne(ec echo.Context) error {
 		ec.Param("id"),
 	)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, book)
 }
@@ -81,7 +80,7 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	id := ec.Param("id")
 	if err = c.Svc.Delete(ctx, id); err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.NoContent(http.StatusNoContent)
 }
@@ -96,7 +95,7 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 	paramID := ec.Param("id")
 	updatedBook, err := c.Svc.Update(ctx, paramID, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, updatedBook)
 }
@@ -111,7 +110,7 @@ func (c *BookCntrl) Patch(ec echo.Context) (err error) {
 	paramID := ec.Param("id")
 	patchedBook, err := c.Svc.Patch(ctx, paramID, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, patchedBook)
 }

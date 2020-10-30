@@ -41,7 +41,7 @@ func TestBookSvc_Create(t *testing.T) {
 		{
 			testName:    "validation error",
 			book:        &postgresdb.Book{},
-			expectedErr: "Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "code=422, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
 		},
 		{
 			testName:    "create error",
@@ -109,7 +109,7 @@ func TestBookSvc_FindOne(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			paramID: "1",
@@ -128,6 +128,15 @@ func TestBookSvc_FindOne(t *testing.T) {
 					Return([]*postgresdb.Book{{ID: 1, Title: "some-title"}}, nil)
 			},
 			expected: &postgresdb.Book{ID: 1, Title: "some-title"},
+		},
+		{
+			paramID: "1",
+			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*postgresdb.Book{}, nil)
+			},
+			expectedErr: "code=404, message=Not Found",
 		},
 	}
 
@@ -205,7 +214,7 @@ func TestBookSvc_Delete(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			paramID:     "1",
@@ -261,18 +270,18 @@ func TestBookSvc_Update(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			testName:    "bad request",
 			paramID:     "1",
 			book:        &postgresdb.Book{},
-			expectedErr: "Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "code=422, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
 		},
 		{
 			testName:    "update error",
@@ -365,12 +374,12 @@ func TestBookSvc_Patch(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			testName:    "patch error",

@@ -1,11 +1,12 @@
 package controller_test
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 	"testing"
+
+	"github.com/labstack/echo/v4"
 
 	"github.com/golang/mock/gomock"
 
@@ -13,8 +14,8 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/controller"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service_mock"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
 )
 
 type (
@@ -65,7 +66,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedError: "code=404, message=Not Found",
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "3").Return(nil, sql.ErrNoRows)
+				svc.EXPECT().FindOne(gomock.Any(), "3").Return(nil, echo.NewHTTPError(404))
 			},
 		},
 		{
@@ -79,7 +80,7 @@ func TestBookController_FindOne(t *testing.T) {
 				ExpectedError: "code=422, message=some-validation",
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, typrest.NewValidErr("some-validation"))
+				svc.EXPECT().FindOne(gomock.Any(), "2").Return(nil, echokit.NewValidErr("some-validation"))
 			},
 		},
 		{
@@ -290,7 +291,7 @@ func TestBookController_Delete(t *testing.T) {
 				ExpectedError: "code=422, message=some-validation",
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().Delete(gomock.Any(), "1").Return(typrest.NewValidErr("some-validation"))
+				svc.EXPECT().Delete(gomock.Any(), "1").Return(echokit.NewValidErr("some-validation"))
 			},
 		},
 	}

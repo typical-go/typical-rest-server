@@ -9,7 +9,6 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
 
@@ -44,7 +43,7 @@ func (c *SongCntrl) Create(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	newSong, err := c.Svc.Create(ctx, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	ec.Response().Header().Set(echo.HeaderLocation, fmt.Sprintf("/songs/%d", newSong.ID))
 	return ec.JSON(http.StatusCreated, newSong)
@@ -59,7 +58,7 @@ func (c *SongCntrl) Find(ec echo.Context) (err error) {
 	ctx := ec.Request().Context()
 	songs, err := c.Svc.Find(ctx, &req)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, songs)
 }
@@ -70,7 +69,7 @@ func (c *SongCntrl) FindOne(ec echo.Context) error {
 	id := ec.Param("id")
 	book, err := c.Svc.FindOne(ctx, id)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, book)
 }
@@ -81,7 +80,7 @@ func (c *SongCntrl) Delete(ec echo.Context) (err error) {
 		ec.Request().Context(),
 		ec.Param("id"),
 	); err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.NoContent(http.StatusNoContent)
 }
@@ -96,7 +95,7 @@ func (c *SongCntrl) Update(ec echo.Context) (err error) {
 	paramID := ec.Param("id")
 	updatedSong, err := c.Svc.Update(ctx, paramID, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, updatedSong)
 }
@@ -111,7 +110,7 @@ func (c *SongCntrl) Patch(ec echo.Context) (err error) {
 	paramID := ec.Param("id")
 	patchedSong, err := c.Svc.Patch(ctx, paramID, &book)
 	if err != nil {
-		return typrest.HTTPError(err)
+		return echokit.HTTPError(err)
 	}
 	return ec.JSON(http.StatusOK, patchedSong)
 }

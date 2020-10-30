@@ -38,7 +38,7 @@ func TestSongSvc_Create(t *testing.T) {
 		{
 			testName:    "validation error",
 			song:        &mysqldb.Song{},
-			expectedErr: "Key: 'Song.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Song.Artist' Error:Field validation for 'Artist' failed on the 'required' tag",
+			expectedErr: "code=422, message=Key: 'Song.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Song.Artist' Error:Field validation for 'Artist' failed on the 'required' tag",
 		},
 		{
 			testName:    "create error",
@@ -104,7 +104,7 @@ func TestSongSvc_FindOne(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			paramID: "1",
@@ -203,7 +203,7 @@ func TestSongSvc_Delete(t *testing.T) {
 	}{
 		{
 			paramID:     "",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			paramID:     "1",
@@ -258,18 +258,18 @@ func TestSongSvc_Update(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: `paramID is missing`,
+			expectedErr: `code=422, message=paramID is missing`,
 		},
 		{
 			testName:    "bad request",
 			paramID:     "1",
 			song:        &mysqldb.Song{},
-			expectedErr: "Key: 'Song.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Song.Artist' Error:Field validation for 'Artist' failed on the 'required' tag",
+			expectedErr: "code=422, message=Key: 'Song.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Song.Artist' Error:Field validation for 'Artist' failed on the 'required' tag",
 		},
 		{
 			testName:    "update error",
@@ -355,12 +355,12 @@ func TestSongSvc_Patch(t *testing.T) {
 		{
 			testName:    "empty paramID",
 			paramID:     "",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			testName:    "zero paramID",
 			paramID:     "0",
-			expectedErr: "paramID is missing",
+			expectedErr: "code=422, message=paramID is missing",
 		},
 		{
 			testName:    "patch error",
