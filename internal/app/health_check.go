@@ -35,11 +35,10 @@ func (h *HealthCheck) Handle(ec echo.Context) error {
 }
 
 func (h *HealthCheck) httpStatus(ok bool) int {
-	httpStatus := http.StatusServiceUnavailable
 	if ok {
-		httpStatus = http.StatusOK
+		return http.StatusOK
 	}
-	return httpStatus
+	return http.StatusServiceUnavailable
 }
 
 func (h *HealthCheck) response(status map[string]string) map[string]interface{} {
