@@ -20,20 +20,21 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
   - [x] Dependency Injection (using `@ctor` annotation)
   - [x] ORMHate
   - [x] Database Transaction
-- RESTful Server
+- HTTP Server
   - [x] [Echo framework](https://echo.labstack.com/)
+  - [x] Server Side Caching 
+    - [x] Skip Caching (Header `Cache-Control: no-cache`)
+    - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
+  - [x] Request ID in logger
+- RESTful
   - [x] Create Resource (`POST` verb)
   - [x] Update Resource (`UPDATE` verb)
   - [x] Partially Update Resource (`PATCH` verb)
   - [x] Find Resource (`GET` verb)
     - [x] Offset Pagination (Query param `?limit=100&offset=0`)
     - [x] Sorting (Query param `?sort=-title,created_at`)
-  - [x] Server Side Caching 
-    - [x] Skip Caching (Header `Cache-Control: no-cache`)
-    - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
   - [x] Check resource (`HEAD` verb)
   - [x] Delete resource (`DELETE` verb, idempotent)
-  - [x] Request ID in logger
 - Testing
   - [x] Table Driven Test
   - [x] Mocking (using `@mock` annotation)
@@ -199,6 +200,17 @@ func (s *SvcImpl) SomeOperation(ctx context.Context) error{
   defer dbtxn.Begin(&ctx)()  
   // ...
 }
+```
+
+## Server-Side Cache
+
+Use middleware to handling cache
+```go
+cacheStore := cachekit.Store{
+  Client: redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+}
+e := echo.New()
+e.GET("/", handle, cacheStore.Middleware)
 ```
 
 
