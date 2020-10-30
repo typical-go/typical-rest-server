@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -21,10 +22,10 @@ type (
 	}
 )
 
-var _ typrest.Router = (*SongCntrl)(nil)
+var _ echokit.Router = (*SongCntrl)(nil)
 
 // SetRoute to define API Route
-func (c *SongCntrl) SetRoute(e typrest.Server) {
+func (c *SongCntrl) SetRoute(e echokit.Server) {
 	e.GET("/songs", c.Find, c.Cache.Middleware)
 	e.GET("/songs/:id", c.FindOne, c.Cache.Middleware)
 	e.HEAD("/songs/:id", c.FindOne, c.Cache.Middleware)

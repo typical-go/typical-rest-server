@@ -1,4 +1,4 @@
-package typrest
+package echokit
 
 import (
 	"github.com/labstack/echo/v4"

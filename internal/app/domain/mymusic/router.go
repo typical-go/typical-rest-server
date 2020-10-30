@@ -2,7 +2,7 @@ package mymusic
 
 import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/controller"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 
@@ -14,12 +14,12 @@ type (
 	}
 )
 
-var _ typrest.Router = (*Router)(nil)
+var _ echokit.Router = (*Router)(nil)
 
 // SetRoute to echo server
-func (r *Router) SetRoute(e typrest.Server) {
+func (r *Router) SetRoute(e echokit.Server) {
 	group := e.Group("/mymusic")
-	typrest.SetRoute(group,
+	echokit.SetRoute(group,
 		&r.SongCntrl,
 	)
 }

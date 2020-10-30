@@ -8,6 +8,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -21,10 +22,10 @@ type (
 	}
 )
 
-var _ typrest.Router = (*BookCntrl)(nil)
+var _ echokit.Router = (*BookCntrl)(nil)
 
 // SetRoute to define API Route
-func (c *BookCntrl) SetRoute(e typrest.Server) {
+func (c *BookCntrl) SetRoute(e echokit.Server) {
 	e.GET("/books", c.Find, c.Cache.Middleware)
 	e.GET("/books/:id", c.FindOne, c.Cache.Middleware)
 	e.HEAD("/books/:id", c.FindOne, c.Cache.Middleware)

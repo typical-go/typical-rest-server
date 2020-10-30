@@ -12,7 +12,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 
 	// enable `/debug/vars`
@@ -44,7 +44,7 @@ func Start(a app) (err error) {
 	setProfiler(a)
 
 	if a.Config.Debug {
-		routes := typrest.DumpEcho(a.Echo)
+		routes := echokit.DumpEcho(a.Echo)
 		logrus.Debugf("Print routes:\n  %s\n\n", strings.Join(routes, "\n  "))
 	}
 
@@ -61,7 +61,7 @@ func setMiddleware(a app) {
 }
 
 func setRoute(a app) {
-	typrest.SetRoute(a,
+	echokit.SetRoute(a,
 		&a.MyLibrary,
 		&a.MyMusic,
 	)

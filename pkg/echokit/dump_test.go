@@ -1,16 +1,16 @@
-package typrest_test
+package echokit_test
 
 import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
 func TestDumpEcho(t *testing.T) {
 	e := echo.New()
-	typrest.SetRoute(e, typrest.NewRouter(func(s typrest.Server) {
+	echokit.SetRoute(e, echokit.NewRouter(func(s echokit.Server) {
 		s.Any("/any", nil)
 		s.POST("/post", nil)
 		s.GET("/get", nil)
@@ -25,5 +25,5 @@ func TestDumpEcho(t *testing.T) {
 		"/patch\tPATCH",
 		"/post\tPOST",
 		"/put\tPUT",
-	}, typrest.DumpEcho(e))
+	}, echokit.DumpEcho(e))
 }
