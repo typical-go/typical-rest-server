@@ -58,7 +58,7 @@ var Stdout io.Writer = os.Stdout
 
 const defaultCfgTemplate = `package {{.Package}}
 
-/* {{.Signature}}*/
+/* {{.Signature}} */
 
 import ({{range $import, $alias := .Imports}}
 	{{$alias}} "{{$import}}"{{end}}
@@ -133,13 +133,10 @@ func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
 
 	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
-		Signature: typast.Signature{
-			TagName: m.getTagName(),
-			Help:    "https://pkg.go.dev/github.com/typical-go/typical-rest-server/pkg/typcfg",
-		},
-		Package: filepath.Base(dest),
-		Imports: c.Imports,
-		Configs: c.Configs,
+		Signature: typast.Signature{TagName: m.getTagName()},
+		Package:   filepath.Base(dest),
+		Imports:   c.Imports,
+		Configs:   c.Configs,
 	}); err != nil {
 		return err
 	}

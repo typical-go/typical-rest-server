@@ -22,6 +22,7 @@ require (
 	github.com/labstack/gommon v0.3.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.4.0
+	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/onsi/ginkgo v1.12.0 // indirect
 	github.com/onsi/gomega v1.9.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
@@ -29,10 +30,10 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.4.0
-	github.com/typical-go/typical-go v0.10.14
+	github.com/typical-go/typical-go v0.10.15
 	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/dig v1.10.0
-	go.uber.org/multierr v1.6.0
+	golang.org/x/sys v0.0.0-20201029080932-201ba4db2418 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect

@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/labstack/echo/v4"
+	"github.com/typical-go/typical-go/pkg/errkit"
 	"go.uber.org/dig"
-	"go.uber.org/multierr"
 )
 
 type (
@@ -26,10 +26,12 @@ func Shutdown(p shutdown) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	return multierr.Combine(
+	errs := errkit.Errors{
 		p.Pg.Close(),
 		p.MySQL.Close(),
 		p.Redis.Close(),
 		p.Echo.Shutdown(ctx),
-	)
+	}
+
+	return errs.Unwrap()
 }
