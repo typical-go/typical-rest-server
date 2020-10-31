@@ -12,7 +12,8 @@ import (
 type (
 	// Store ...
 	Store struct {
-		Client *redis.Client
+		Client        *redis.Client
+		DefaultMaxAge time.Duration
 	}
 )
 
@@ -25,13 +26,9 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
 
-		pragma := CreatePragma(req)
+		pragma := s.createPragma(req.Header)
 		key := req.URL.String()
-
-		lastModified, err := s.getLastModified(key)
-		if err != nil {
-			return err
-		}
+		lastModified := s.getLastModified(key)
 
 		if !lastModified.IsZero() {
 			ifModifiedTime := pragma.IfModifiedSince
@@ -75,21 +72,25 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pragma.SetHeader(c.Response().Header())
 
 		rw.CopyTo(c.Response())
-
 		return nil
 	}
 }
 
-func (s *Store) getLastModified(key string) (time.Time, error) {
-	raw := s.Client.Get(key + ":time").Val()
-	if raw == "" {
-		return time.Time{}, nil
+func (s *Store) createPragma(header http.Header) *Pragma {
+	pragma := CreatePragma(header)
+	if pragma.MaxAge < 1 {
+		pragma.MaxAge = s.DefaultMaxAge
 	}
-	return parseTime(raw)
+	return pragma
+}
+
+func (s *Store) getLastModified(key string) time.Time {
+	raw := s.Client.Get(key + ":time").Val()
+	return ParseTime(raw)
 }
 
 func (s *Store) setLastModifid(key string, lastModified time.Time, expr time.Duration) error {
-	return s.Client.Set(key+":time", formatTime(lastModified), expr).Err()
+	return s.Client.Set(key+":time", FormatTime(lastModified), expr).Err()
 }
 
 func (s *Store) set(key string, b []byte, expr time.Duration) error {
@@ -112,10 +113,13 @@ func (s *Store) getCached(key string) ([]byte, error) {
 	return s.Client.Get(key).Bytes()
 }
 
-func formatTime(t time.Time) string {
+// FormatTime format time
+func FormatTime(t time.Time) string {
 	return t.In(gmt).Format(time.RFC1123)
 }
 
-func parseTime(raw string) (time.Time, error) {
-	return time.Parse(time.RFC1123, raw)
+// ParseTime parse time
+func ParseTime(raw string) time.Time {
+	t, _ := time.Parse(time.RFC1123, raw)
+	return t
 }

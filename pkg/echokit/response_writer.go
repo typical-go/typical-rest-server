@@ -9,7 +9,7 @@ type (
 	ResponseWriter struct {
 		Bytes      []byte
 		StatusCode int
-		header     http.Header
+		RespHeader http.Header
 	}
 )
 
@@ -18,13 +18,13 @@ var _ http.ResponseWriter = (*ResponseWriter)(nil)
 // NewResponseWriter return new instance of ResponseWriter
 func NewResponseWriter() *ResponseWriter {
 	return &ResponseWriter{
-		header: make(http.Header),
+		RespHeader: make(http.Header),
 	}
 }
 
 // Header return http header
 func (w *ResponseWriter) Header() http.Header {
-	return w.header
+	return w.RespHeader
 }
 
 func (w *ResponseWriter) Write(b []byte) (int, error) {

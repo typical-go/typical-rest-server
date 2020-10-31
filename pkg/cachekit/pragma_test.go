@@ -6,84 +6,85 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 )
 
-func TestPragma_NoCache(t *testing.T) {
+var (
+	gmt, _ = time.LoadLocation("GMT")
+)
+
+func TestCreatePragma(t *testing.T) {
 	testcases := []struct {
 		testName string
-		desc     string
-		*cachekit.Pragma
-		expected bool
+		header   http.Header
+		expected *cachekit.Pragma
 	}{
 		{
-			desc:   "cache-control not available",
-			Pragma: pragmaWithCacheControl(""),
+			header:   http.Header{},
+			expected: &cachekit.Pragma{},
 		},
 		{
-			desc:     "lower case no-cache",
-			Pragma:   pragmaWithCacheControl("no-cache"),
-			expected: true,
+			header: newHeader(map[string]string{
+				"If-Modified-Since": "Thu, 01 Dec 2020 16:00:00 GMT",
+				"Cache-Control":     "no-cache,max-age=120",
+			}),
+			expected: &cachekit.Pragma{
+				NoCache:         true,
+				MaxAge:          120 * time.Second,
+				IfModifiedSince: cachekit.ParseTime("Thu, 01 Dec 2020 16:00:00 GMT"),
+			},
 		},
 		{
-			desc:     "upper case no-cache",
-			Pragma:   pragmaWithCacheControl("NO-CACHE"),
-			expected: true,
+			header: newHeader(map[string]string{
+				"Cache-Control": "no-cache,max-age=invalid",
+			}),
+			expected: &cachekit.Pragma{NoCache: true},
 		},
 	}
-
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			require.Equal(t, tt.expected, tt.NoCache, tt.desc)
+			require.Equal(t, tt.expected, cachekit.CreatePragma(tt.header))
 		})
 	}
 }
 
-func TestPragma_MaxAge(t *testing.T) {
+func TestSetHeader(t *testing.T) {
 	testcases := []struct {
 		testName string
-		desc     string
-		*cachekit.Pragma
-		expected time.Duration
+		pragma   *cachekit.Pragma
+		expected http.Header
 	}{
 		{
-			desc:     "empty cache control",
-			Pragma:   pragmaWithCacheControl(""),
-			expected: cachekit.DefaultMaxAge,
+			pragma: &cachekit.Pragma{
+				NoCache:      true,
+				MaxAge:       25 * time.Second,
+				LastModified: cachekit.ParseTime("Thu, 01 Dec 2020 16:00:00 GMT"),
+				Expires:      cachekit.ParseTime("Thu, 01 Dec 2020 16:00:25 GMT"),
+			},
+			expected: http.Header{
+				"Cache-Control": []string{"no-cache"},
+				"Expires":       []string{"Tue, 01 Dec 2020 16:00:25 GMT"},
+				"Last-Modified": []string{"Tue, 01 Dec 2020 16:00:00 GMT"},
+			},
 		},
 		{
-			desc:     "empty cache control with new default max-age",
-			Pragma:   pragmaWithCacheControl(""),
-			expected: cachekit.DefaultMaxAge,
-		},
-		{
-			desc:     "max-age in cache control",
-			Pragma:   pragmaWithCacheControl("max-age=100"),
-			expected: 100 * time.Second,
-		},
-		{
-			desc:     "max-age is invalid type",
-			Pragma:   pragmaWithCacheControl("max-age=invalid"),
-			expected: cachekit.DefaultMaxAge,
+			pragma:   &cachekit.Pragma{MaxAge: 25 * time.Second},
+			expected: http.Header{"Cache-Control": []string{"max-age=25"}},
 		},
 	}
-
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			require.Equal(t, tt.expected, tt.MaxAge, tt.desc)
+			header := make(http.Header)
+			tt.pragma.SetHeader(header)
+			require.Equal(t, tt.expected, header)
 		})
 	}
 }
 
-func pragmaWithCacheControl(cacheControl string) *cachekit.Pragma {
-	req, _ := http.NewRequest("GET", "/", nil)
-	req.Header.Set(cachekit.HeaderCacheControl, cacheControl)
-	return cachekit.CreatePragma(req)
-}
-
-func pragmaWithIfModifiedSince(ifModifiedSince string) *cachekit.Pragma {
-	req, _ := http.NewRequest("GET", "/", nil)
-	req.Header.Set(cachekit.HeaderIfModifiedSince, ifModifiedSince)
-	return cachekit.CreatePragma(req)
+func newHeader(m map[string]string) http.Header {
+	header := make(http.Header)
+	for k, v := range m {
+		header.Add(k, v)
+	}
+	return header
 }

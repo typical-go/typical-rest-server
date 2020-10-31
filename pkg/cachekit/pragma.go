@@ -9,18 +9,12 @@ import (
 )
 
 const (
-	// DefaultMaxAge is default max-age value
-	DefaultMaxAge = 30 * time.Second
-
 	// HeaderCacheControl as in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
 	HeaderCacheControl = "Cache-Control"
-
 	// HeaderExpires as in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
 	HeaderExpires = "Expires"
-
 	// HeaderLastModified as in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
 	HeaderLastModified = "Last-Modified"
-
 	// HeaderIfModifiedSince as in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since
 	HeaderIfModifiedSince = "If-Modified-Since"
 )
@@ -37,22 +31,19 @@ type (
 )
 
 // CreatePragma to create new instance of CacheControl from request
-func CreatePragma(req *http.Request) *Pragma {
+func CreatePragma(header http.Header) *Pragma {
 	var noCache bool
 	var ifModifiedSince time.Time
-	maxAge := DefaultMaxAge
+	var maxAge time.Duration
 
-	if raw := req.Header.Get(HeaderIfModifiedSince); raw != "" {
-		ifModifiedSince, _ = time.Parse(time.RFC1123, raw)
-	}
+	ifModifiedSince = ParseTime(header.Get(HeaderIfModifiedSince))
 
-	if raw := req.Header.Get(HeaderCacheControl); raw != "" {
+	if raw := header.Get(HeaderCacheControl); raw != "" {
 		for _, s := range strings.Split(raw, ",") {
 			s = strings.ToLower(strings.TrimSpace(s))
 			if s == "no-cache" {
 				noCache = true
 			}
-
 			maxAgeField := "max-age="
 			if strings.HasPrefix(s, maxAgeField) {
 				maxAgeRaw, err := strconv.Atoi(s[len(maxAgeField):])
@@ -72,14 +63,12 @@ func CreatePragma(req *http.Request) *Pragma {
 
 // SetHeader set header
 func (c *Pragma) SetHeader(header http.Header) {
-
 	if !c.Expires.IsZero() {
-		header.Add(HeaderExpires, formatTime(c.Expires))
+		header.Add(HeaderExpires, FormatTime(c.Expires))
 	}
 	if !c.LastModified.IsZero() {
-		header.Add(HeaderLastModified, formatTime(c.LastModified))
+		header.Add(HeaderLastModified, FormatTime(c.LastModified))
 	}
-
 	header.Add(HeaderCacheControl, c.String())
 }
 
