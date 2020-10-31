@@ -39,9 +39,9 @@ func (w *ResponseWriter) WriteHeader(statusCode int) {
 
 // CopyTo copy to another response writer
 func (w *ResponseWriter) CopyTo(rw http.ResponseWriter) {
-	rw.Write(w.Bytes)
-	rw.WriteHeader(w.StatusCode)
 	for k := range w.Header() {
 		rw.Header().Add(k, w.Header().Get(k))
 	}
+	rw.WriteHeader(w.StatusCode)
+	rw.Write(w.Bytes) // NOTE: commit the response
 }

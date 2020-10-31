@@ -33,6 +33,7 @@ func TestStore_Middleware(t *testing.T) {
 		expectedErr   string
 	}{
 		{
+			testName: "no cache available",
 			next: func(ec echo.Context) error {
 				return ec.JSON(200, "some-response")
 			},
@@ -63,6 +64,7 @@ func TestStore_Middleware(t *testing.T) {
 			},
 		},
 		{
+			testName: "no cache available, got error",
 			next: func(ec echo.Context) error {
 				return errors.New("some-error")
 			},
@@ -70,9 +72,7 @@ func TestStore_Middleware(t *testing.T) {
 			expectedErr:   "some-error",
 		},
 		{
-			next: func(ec echo.Context) error {
-				return ec.JSON(200, "some-response")
-			},
+			testName:      "cache available",
 			defaultMaxAge: 30 * time.Second,
 			prefix:        "cache_",
 			expected: &echokit.ResponseWriter{
@@ -92,6 +92,52 @@ func TestStore_Middleware(t *testing.T) {
 				r.SetTTL("cache_/:time", 30*time.Second)
 				r.Set("cache_/:type", "some-type")
 				r.SetTTL("cache_/:type", 30*time.Second)
+			},
+		},
+		{
+			testName:      "if cache not modified since",
+			defaultMaxAge: 30 * time.Second,
+			prefix:        "cache_",
+			header: map[string]string{
+				"If-Modified-Since": "Wed, 16 Dec 2020 00:00:05 GMT",
+			},
+			beforeFn: func(r *miniredis.Miniredis) {
+				r.Set("cache_/", "\"some-response\"\n")
+				r.SetTTL("cache_/", 30*time.Second)
+				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
+				r.SetTTL("cache_/:time", 30*time.Second)
+				r.Set("cache_/:type", "some-type")
+				r.SetTTL("cache_/:type", 30*time.Second)
+			},
+			expectedErr: "code=304, message=Not Modified",
+		},
+		{
+			testName:      "if cache modified since",
+			defaultMaxAge: 30 * time.Second,
+			prefix:        "cache_",
+			next: func(ec echo.Context) error {
+				return ec.JSON(200, "some-response")
+			},
+			header: map[string]string{
+				"If-Modified-Since": "Wed, 15 Dec 2020 23:59:00 GMT",
+			},
+			beforeFn: func(r *miniredis.Miniredis) {
+				r.Set("cache_/", "\"some-response\"\n")
+				r.SetTTL("cache_/", 30*time.Second)
+				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
+				r.SetTTL("cache_/:time", 30*time.Second)
+				r.Set("cache_/:type", "some-type")
+				r.SetTTL("cache_/:type", 30*time.Second)
+			},
+			expected: &echokit.ResponseWriter{
+				StatusCode: 200,
+				Bytes:      []byte("\"some-response\"\n"),
+				RespHeader: http.Header{
+					"Cache-Control": []string{"max-age=30"},
+					"Content-Type":  []string{"some-type"},
+					"Expires":       []string{"Wed, 16 Dec 2020 00:00:30 GMT"},
+					"Last-Modified": []string{"Wed, 16 Dec 2020 00:00:00 GMT"},
+				},
 			},
 		},
 	}

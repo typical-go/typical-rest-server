@@ -42,6 +42,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 				if err != nil {
 					return err
 				}
+
 				data, err := s.Client.Get(ctx, key).Bytes()
 				if err != nil {
 					return err
@@ -55,8 +56,8 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 				pragma.Expires = time.Now().Add(ttl)
 				pragma.SetHeader(c.Response().Header())
 				c.Response().Header().Add("Content-Type", string(contentType))
-				c.Response().Write(data)
 				c.Response().WriteHeader(http.StatusOK)
+				c.Response().Write(data)
 				return nil
 			}
 		}
@@ -92,6 +93,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pragma.SetHeader(c.Response().Header())
 
 		rw.CopyTo(c.Response())
+
 		return nil
 	}
 }
