@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-go/pkg/errkit"
 	"go.uber.org/dig"

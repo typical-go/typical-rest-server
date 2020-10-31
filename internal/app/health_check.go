@@ -1,11 +1,13 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
@@ -24,10 +26,13 @@ type (
 
 // Handle echo function
 func (h *HealthCheck) Handle(ec echo.Context) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	health := typrest.HealthMap{
 		"postgres": h.PG.Ping(),
 		"mysql":    h.MySQL.Ping(),
-		"redis":    h.Redis.Ping().Err(),
+		"redis":    h.Redis.Ping(ctx).Err(),
 	}
 
 	status, ok := health.Status()

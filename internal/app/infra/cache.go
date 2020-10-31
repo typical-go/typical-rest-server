@@ -3,7 +3,7 @@ package infra
 import (
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 )
 
@@ -13,5 +13,6 @@ func NewCacheStore(client *redis.Client) *cachekit.Store {
 	return &cachekit.Store{
 		Client:        client,
 		DefaultMaxAge: 30 * time.Second,
+		Prefix:        "cache_",
 	}
 }

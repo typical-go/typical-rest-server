@@ -1,9 +1,11 @@
 package infra
 
 import (
+	"context"
 	"fmt"
+	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,7 +16,10 @@ func NewRedisClient(r *RedisCfg) *redis.Client {
 		Addr:     fmt.Sprintf("%s:%s", r.Host, r.Port),
 		Password: r.Password,
 	})
-	if err := client.Ping().Err(); err != nil {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := client.Ping(ctx).Err(); err != nil {
 		logrus.Fatalf("redis: %s", err.Error())
 	}
 	return client

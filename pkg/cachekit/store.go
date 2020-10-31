@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
@@ -14,6 +14,7 @@ type (
 	Store struct {
 		Client        *redis.Client
 		DefaultMaxAge time.Duration
+		Prefix        string
 	}
 )
 
@@ -25,10 +26,10 @@ var (
 func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
-
+		ctx := req.Context()
 		pragma := s.createPragma(req.Header)
-		key := req.URL.String()
-		lastModified := s.getLastModified(key)
+		key := s.Prefix + req.URL.String()
+		lastModified := ParseTime(s.Client.Get(ctx, key+":time").Val())
 
 		if !lastModified.IsZero() {
 			ifModifiedTime := pragma.IfModifiedSince
@@ -37,13 +38,23 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 
 			if !pragma.NoCache {
-				data, ttl, err := s.get(key)
+				ttl, err := s.Client.TTL(ctx, key).Result()
 				if err != nil {
 					return err
 				}
+				data, err := s.Client.Get(ctx, key).Bytes()
+				if err != nil {
+					return err
+				}
+				contentType, err := s.Client.Get(ctx, key+":type").Bytes()
+				if err != nil {
+					return err
+				}
+
 				pragma.LastModified = lastModified
 				pragma.Expires = time.Now().Add(ttl)
 				pragma.SetHeader(c.Response().Header())
+				c.Response().Header().Add("Content-Type", string(contentType))
 				c.Response().Write(data)
 				c.Response().WriteHeader(http.StatusOK)
 				return nil
@@ -61,12 +72,21 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		maxAge := pragma.MaxAge
 		lastModified = time.Now()
 
-		if err := s.set(key, rw.Bytes, maxAge); err != nil {
+		err := s.Client.Set(ctx, key, rw.Bytes, maxAge).Err()
+		if err != nil {
 			return err
 		}
-		if err := s.setLastModifid(key, lastModified, maxAge); err != nil {
+
+		err = s.Client.Set(ctx, key+":time", FormatTime(lastModified), maxAge).Err()
+		if err != nil {
 			return err
 		}
+
+		err = s.Client.Set(ctx, key+":type", rw.Header().Get("Content-Type"), maxAge).Err()
+		if err != nil {
+			return err
+		}
+
 		pragma.LastModified = lastModified
 		pragma.Expires = lastModified.Add(maxAge)
 		pragma.SetHeader(c.Response().Header())
@@ -82,35 +102,6 @@ func (s *Store) createPragma(header http.Header) *Pragma {
 		pragma.MaxAge = s.DefaultMaxAge
 	}
 	return pragma
-}
-
-func (s *Store) getLastModified(key string) time.Time {
-	raw := s.Client.Get(key + ":time").Val()
-	return ParseTime(raw)
-}
-
-func (s *Store) setLastModifid(key string, lastModified time.Time, expr time.Duration) error {
-	return s.Client.Set(key+":time", FormatTime(lastModified), expr).Err()
-}
-
-func (s *Store) set(key string, b []byte, expr time.Duration) error {
-	return s.Client.Set(key, b, expr).Err()
-}
-
-func (s *Store) get(key string) ([]byte, time.Duration, error) {
-	ttl, err := s.Client.TTL(key).Result()
-	if err != nil {
-		return nil, 0, err
-	}
-	data, err := s.Client.Get(key).Bytes()
-	if err != nil {
-		return nil, 0, err
-	}
-	return data, ttl, nil
-}
-
-func (s *Store) getCached(key string) ([]byte, error) {
-	return s.Client.Get(key).Bytes()
 }
 
 // FormatTime format time
