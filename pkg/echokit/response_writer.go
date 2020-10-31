@@ -42,6 +42,6 @@ func (w *ResponseWriter) CopyTo(rw http.ResponseWriter) {
 	rw.Write(w.Bytes)
 	rw.WriteHeader(w.StatusCode)
 	for k := range w.Header() {
-		rw.Header().Add(k, rw.Header().Get(k))
+		rw.Header().Add(k, w.Header().Get(k))
 	}
 }

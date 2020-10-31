@@ -46,16 +46,6 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 
 ## Run/Test Project
 
-Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
-```go
-var descriptor = typgo.Descriptor{
-  ProjectName:    "typical-rest-server",
-  ProjectVersion: "0.9.7",
-  ProjectLayouts: []string{"internal", "pkg"},
-  
-  // commands ... 
-```
-
 Copy `.env.sample` for working configuration
 ```bash
 cp .env.sample .env    # copy the working .env
@@ -75,6 +65,16 @@ Run application:
 Test application:
 ```bash
 ./typicalw test        # run test 
+```
+
+Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
+```go
+var descriptor = typgo.Descriptor{
+  ProjectName:    "typical-rest-server",
+  ProjectVersion: "0.9.7",
+  ProjectLayouts: []string{"internal", "pkg"},
+  
+  // commands ... 
 ```
 
 ## Project Layout

@@ -31,3 +31,7 @@ func TestHTTPError(t *testing.T) {
 		})
 	}
 }
+
+func TestNewValidErr(t *testing.T) {
+	require.Equal(t, echo.NewHTTPError(422, "some-message"), echokit.NewValidErr("some-message"))
+}

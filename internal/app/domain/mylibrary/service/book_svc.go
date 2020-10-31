@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -86,7 +85,7 @@ func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, 
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
-		return nil, echo.NewHTTPError(http.StatusNotFound)
+		return nil, echo.ErrNotFound
 	}
 	return books[0], nil
 }
