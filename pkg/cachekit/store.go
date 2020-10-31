@@ -12,9 +12,9 @@ import (
 type (
 	// Store ...
 	Store struct {
-		Client        *redis.Client
+		*redis.Client
 		DefaultMaxAge time.Duration
-		Prefix        string
+		PrefixKey     string
 	}
 )
 
@@ -28,7 +28,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		req := c.Request()
 		ctx := req.Context()
 		pragma := s.createPragma(req.Header)
-		key := s.Prefix + req.URL.String()
+		key := s.PrefixKey + req.URL.String()
 		lastModified := ParseTime(s.Client.Get(ctx, key+":time").Val())
 
 		if !lastModified.IsZero() {

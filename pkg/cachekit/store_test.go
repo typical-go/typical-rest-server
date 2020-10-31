@@ -25,7 +25,7 @@ func TestStore_Middleware(t *testing.T) {
 		testName      string
 		next          echo.HandlerFunc
 		defaultMaxAge time.Duration
-		prefix        string
+		prefixKey     string
 		header        map[string]string
 		beforeFn      func(*miniredis.Miniredis)
 		assertFn      func(*testing.T, *miniredis.Miniredis)
@@ -38,7 +38,7 @@ func TestStore_Middleware(t *testing.T) {
 				return ec.JSON(200, "some-response")
 			},
 			defaultMaxAge: 30 * time.Second,
-			prefix:        "cache_",
+			prefixKey:     "cache_",
 			expected: &echokit.ResponseWriter{
 				StatusCode: 200,
 				Bytes:      []byte("\"some-response\"\n"),
@@ -74,7 +74,7 @@ func TestStore_Middleware(t *testing.T) {
 		{
 			testName:      "cache available",
 			defaultMaxAge: 30 * time.Second,
-			prefix:        "cache_",
+			prefixKey:     "cache_",
 			expected: &echokit.ResponseWriter{
 				StatusCode: 200,
 				Bytes:      []byte("\"some-response\"\n"),
@@ -97,7 +97,7 @@ func TestStore_Middleware(t *testing.T) {
 		{
 			testName:      "if cache not modified since",
 			defaultMaxAge: 30 * time.Second,
-			prefix:        "cache_",
+			prefixKey:     "cache_",
 			header: map[string]string{
 				"If-Modified-Since": "Wed, 16 Dec 2020 00:00:05 GMT",
 			},
@@ -114,7 +114,7 @@ func TestStore_Middleware(t *testing.T) {
 		{
 			testName:      "if cache modified since",
 			defaultMaxAge: 30 * time.Second,
-			prefix:        "cache_",
+			prefixKey:     "cache_",
 			next: func(ec echo.Context) error {
 				return ec.JSON(200, "some-response")
 			},
@@ -154,7 +154,7 @@ func TestStore_Middleware(t *testing.T) {
 			store := cachekit.Store{
 				Client:        redis.NewClient(&redis.Options{Addr: testRedis.Addr()}),
 				DefaultMaxAge: tt.defaultMaxAge,
-				Prefix:        tt.prefix,
+				PrefixKey:     tt.prefixKey,
 			}
 
 			req, _ := http.NewRequest("GET", "/", nil)

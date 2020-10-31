@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-go/pkg/errkit"
+	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"go.uber.org/dig"
 )
 
@@ -16,7 +16,7 @@ type (
 		dig.In
 		Pg    *sql.DB `name:"pg"`
 		MySQL *sql.DB `name:"mysql"`
-		Redis *redis.Client
+		Cache *cachekit.Store
 		Echo  *echo.Echo
 	}
 )
@@ -29,7 +29,7 @@ func Shutdown(p shutdown) error {
 	errs := errkit.Errors{
 		p.Pg.Close(),
 		p.MySQL.Close(),
-		p.Redis.Close(),
+		p.Cache.Close(),
 		p.Echo.Shutdown(ctx),
 	}
 

@@ -21,6 +21,5 @@ func init() {
 	typapp.Provide("", b.NewSongSvc)
 	typapp.Provide("", c.NewCacheStore)
 	typapp.Provide("", c.NewDatabases)
-	typapp.Provide("", c.NewRedisClient)
 	typapp.Provide("", c.NewServer)
 }

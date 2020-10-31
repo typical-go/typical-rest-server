@@ -19,9 +19,11 @@ Annotation Help:
 | APP_READ_TIMEOUT | 5s |  |
 | APP_WRITE_TIMEOUT | 10s |  |
 | APP_DEBUG | true |  |
-| REDIS_HOST | localhost | Yes |
-| REDIS_PORT | 6379 | Yes |
-| REDIS_PASSWORD | redispass |  |
+| CACHE_DEFAULT_MAX_AGE | 30s |  |
+| CACHE_PREFIX_KEY | cache_ |  |
+| CACHE_REDIS_HOST | localhost | Yes |
+| CACHE_REDIS_PORT | 6379 | Yes |
+| CACHE_REDIS_PASS | redispass |  |
 | MYSQL_DBNAME | dbname | Yes |
 | MYSQL_DBUSER | dbuser | Yes |
 | MYSQL_DBPASS | dbpass | Yes |
@@ -45,9 +47,11 @@ APP_ADDRESS=:8089
 APP_READ_TIMEOUT=5s
 APP_WRITE_TIMEOUT=10s
 APP_DEBUG=true
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=redispass
+CACHE_DEFAULT_MAX_AGE=30s
+CACHE_PREFIX_KEY=cache_
+CACHE_REDIS_HOST=localhost
+CACHE_REDIS_PORT=6379
+CACHE_REDIS_PASS=redispass
 MYSQL_DBNAME=dbname
 MYSQL_DBUSER=dbuser
 MYSQL_DBPASS=dbpass

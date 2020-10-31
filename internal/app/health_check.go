@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-go/pkg/typgo"
+	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/typrest"
 	"go.uber.org/dig"
 )
@@ -20,7 +20,7 @@ type (
 		dig.In
 		PG    *sql.DB `name:"pg"`
 		MySQL *sql.DB `name:"mysql"`
-		Redis *redis.Client
+		Cache *cachekit.Store
 	}
 )
 
@@ -32,7 +32,7 @@ func (h *HealthCheck) Handle(ec echo.Context) error {
 	health := typrest.HealthMap{
 		"postgres": h.PG.Ping(),
 		"mysql":    h.MySQL.Ping(),
-		"redis":    h.Redis.Ping(ctx).Err(),
+		"cache":    h.Cache.Ping(ctx).Err(),
 	}
 
 	status, ok := health.Status()

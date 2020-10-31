@@ -15,12 +15,14 @@ type (
 		WriteTimeout time.Duration `envconfig:"WRITE_TIMEOUT" default:"10s"`
 		Debug        bool          `envconfig:"DEBUG" default:"true"`
 	}
-	// RedisCfg redis onfiguration
-	// @envconfig (prefix:"REDIS")
-	RedisCfg struct {
-		Host     string `envconfig:"HOST" required:"true" default:"localhost"`
-		Port     string `envconfig:"PORT" required:"true" default:"6379"`
-		Password string `envconfig:"PASSWORD" default:"redispass"`
+	// CacheCfg cache onfiguration
+	// @envconfig (prefix:"CACHE")
+	CacheCfg struct {
+		DefaultMaxAge time.Duration `envconfig:"DEFAULT_MAX_AGE" default:"30s"`
+		PrefixKey     string        `envconfig:"PREFIX_KEY" default:"cache_"`
+		RedisHost     string        `envconfig:"REDIS_HOST" required:"true" default:"localhost"`
+		RedisPort     string        `envconfig:"REDIS_PORT" required:"true" default:"6379"`
+		RedisPass     string        `envconfig:"REDIS_PASS" default:"redispass"`
 	}
 	// DatabaseCfg is MySQL configuration
 	// @envconfig (prefix:"MYSQL" ctor:"mysql")

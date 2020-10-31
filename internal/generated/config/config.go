@@ -19,7 +19,7 @@ import (
 
 func init() {
 	typapp.Provide("", LoadAppCfg)
-	typapp.Provide("", LoadRedisCfg)
+	typapp.Provide("", LoadCacheCfg)
 	typapp.Provide("mysql", LoadMysqlDatabaseCfg)
 	typapp.Provide("pg", LoadPgDatabaseCfg)
 }
@@ -34,10 +34,10 @@ func LoadAppCfg() (*a.AppCfg, error) {
 	return &cfg, nil
 }
 
-// LoadRedisCfg load env to new instance of RedisCfg
-func LoadRedisCfg() (*a.RedisCfg, error) {
-	var cfg a.RedisCfg
-	prefix := "REDIS"
+// LoadCacheCfg load env to new instance of CacheCfg
+func LoadCacheCfg() (*a.CacheCfg, error) {
+	var cfg a.CacheCfg
+	prefix := "CACHE"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
 	}
