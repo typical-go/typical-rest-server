@@ -73,18 +73,12 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		maxAge := pragma.MaxAge
 		lastModified = time.Now()
 
-		err := s.Client.Set(ctx, key, rw.Bytes, maxAge).Err()
-		if err != nil {
-			return err
-		}
+		pipe := s.Client.TxPipeline()
+		pipe.Set(ctx, key, rw.Bytes, maxAge).Err()
+		pipe.Set(ctx, key+":time", FormatTime(lastModified), maxAge).Err()
+		pipe.Set(ctx, key+":type", rw.Header().Get("Content-Type"), maxAge).Err()
 
-		err = s.Client.Set(ctx, key+":time", FormatTime(lastModified), maxAge).Err()
-		if err != nil {
-			return err
-		}
-
-		err = s.Client.Set(ctx, key+":type", rw.Header().Get("Content-Type"), maxAge).Err()
-		if err != nil {
+		if _, err := pipe.Exec(ctx); err != nil {
 			return err
 		}
 
