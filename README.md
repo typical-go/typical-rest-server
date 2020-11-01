@@ -42,7 +42,8 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 - Others
   - [x] Database migration and seed tool
   - [x] Generate code, `.env` file and `USAGE.md` according the configuration (using `@envconfig` annotation)
-  - [x] Code generator for repository layer (using `@entity` annotation)
+  - [x] Generate code for repository layer (using `@entity` annotation)
+  - [x] Releaser
 
 
 ## Run/Test Project
@@ -205,11 +206,14 @@ func (s *SvcImpl) SomeOperation(ctx context.Context) error{
 
 ## Server-Side Cache
 
-Use middleware to handling cache
+Use echo middleware to handling cache
 ```go
-cacheStore := cachekit.Store{
-  Client: redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+cacheStore := &cachekit.Store{
+  Client:        redis.NewClient(&redis.Options{Addr: "localhost:6379"}),
+  DefaultMaxAge: 30 * time.Second,
+  PrefixKey:     "cache_",
 }
+
 e := echo.New()
 e.GET("/", handle, cacheStore.Middleware)
 ```
@@ -226,13 +230,6 @@ Golang:
 RESTful API:
 - [Best Practices for Designing a Pragmatic RESTful API](https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api)
 - [Everything You Need to know About API Pagination](https://nordicapis.com/everything-you-need-to-know-about-api-pagination/)
-
-## Project Starter
-
-To setup new project, please use [rest-project-starter](https://github.com/typical-go/rest-project-starter)
-```bash
-curl -s https://raw.githubusercontent.com/typical-go/rest-project-starter/master/setup.sh | bash -s [project_name] [package_name]
-```
 
 ## License
 
