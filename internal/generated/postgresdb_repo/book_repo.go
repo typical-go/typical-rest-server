@@ -9,9 +9,9 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
 )
 
@@ -38,11 +38,11 @@ type (
 	// BookRepo to get books data from database
 	// @mock
 	BookRepo interface {
-		Find(context.Context, ...dbkit.SelectOption) ([]*postgresdb.Book, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*postgresdb.Book, error)
 		Create(context.Context, *postgresdb.Book) (int64, error)
-		Delete(context.Context, dbkit.DeleteOption) (int64, error)
-		Update(context.Context, *postgresdb.Book, dbkit.UpdateOption) (int64, error)
-		Patch(context.Context, *postgresdb.Book, dbkit.UpdateOption) (int64, error)
+		Delete(context.Context, sqkit.DeleteOption) (int64, error)
+		Update(context.Context, *postgresdb.Book, sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *postgresdb.Book, sqkit.UpdateOption) (int64, error)
 	}
 	// BookRepoImpl is implementation books repository
 	BookRepoImpl struct {
@@ -61,7 +61,7 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 }
 
 // Find books
-func (r *BookRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*postgresdb.Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*postgresdb.Book, err error) {
 	builder := sq.
 		Select(
 			BookTable.ID,
@@ -137,7 +137,7 @@ func (r *BookRepoImpl) Create(ctx context.Context, ent *postgresdb.Book) (int64,
 }
 
 // Update books
-func (r *BookRepoImpl) Update(ctx context.Context, ent *postgresdb.Book, opt dbkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Update(ctx context.Context, ent *postgresdb.Book, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -166,7 +166,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *postgresdb.Book, opt dbk
 }
 
 // Patch books
-func (r *BookRepoImpl) Patch(ctx context.Context, ent *postgresdb.Book, opt dbkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Patch(ctx context.Context, ent *postgresdb.Book, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -201,7 +201,7 @@ func (r *BookRepoImpl) Patch(ctx context.Context, ent *postgresdb.Book, opt dbki
 }
 
 // Delete books
-func (r *BookRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int64, error) {
+func (r *BookRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err

@@ -8,7 +8,7 @@ import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
 	mysqldb "github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	dbkit "github.com/typical-go/typical-rest-server/pkg/dbkit"
+	sqkit "github.com/typical-go/typical-rest-server/pkg/sqkit"
 	reflect "reflect"
 )
 
@@ -51,7 +51,7 @@ func (mr *MockSongRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Delete mocks base method
-func (m *MockSongRepo) Delete(arg0 context.Context, arg1 dbkit.DeleteOption) (int64, error) {
+func (m *MockSongRepo) Delete(arg0 context.Context, arg1 sqkit.DeleteOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(int64)
@@ -66,7 +66,7 @@ func (mr *MockSongRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Find mocks base method
-func (m *MockSongRepo) Find(arg0 context.Context, arg1 ...dbkit.SelectOption) ([]*mysqldb.Song, error) {
+func (m *MockSongRepo) Find(arg0 context.Context, arg1 ...sqkit.SelectOption) ([]*mysqldb.Song, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0}
 	for _, a := range arg1 {
@@ -86,7 +86,7 @@ func (mr *MockSongRepoMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) 
 }
 
 // Patch mocks base method
-func (m *MockSongRepo) Patch(arg0 context.Context, arg1 *mysqldb.Song, arg2 dbkit.UpdateOption) (int64, error) {
+func (m *MockSongRepo) Patch(arg0 context.Context, arg1 *mysqldb.Song, arg2 sqkit.UpdateOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
 	ret0, _ := ret[0].(int64)
@@ -101,7 +101,7 @@ func (mr *MockSongRepoMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.
 }
 
 // Update mocks base method
-func (m *MockSongRepo) Update(arg0 context.Context, arg1 *mysqldb.Song, arg2 dbkit.UpdateOption) (int64, error) {
+func (m *MockSongRepo) Update(arg0 context.Context, arg1 *mysqldb.Song, arg2 sqkit.UpdateOption) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
 	ret0, _ := ret[0].(int64)

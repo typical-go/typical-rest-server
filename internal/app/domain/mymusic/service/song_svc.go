@@ -10,7 +10,7 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/generated/mysqldb_repo"
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
@@ -63,10 +63,10 @@ func (b *SongSvcImpl) Find(ctx context.Context, req *FindReq) ([]*mysqldb.Song, 
 	return b.Repo.Find(ctx, b.findSelectOpt(req)...)
 }
 
-func (b *SongSvcImpl) findSelectOpt(req *FindReq) (opts []dbkit.SelectOption) {
-	opts = append(opts, &dbkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
+func (b *SongSvcImpl) findSelectOpt(req *FindReq) (opts []sqkit.SelectOption) {
+	opts = append(opts, &sqkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
 	if req.Sort != "" {
-		opts = append(opts, dbkit.Sorts(strings.Split(req.Sort, ",")))
+		opts = append(opts, sqkit.Sorts(strings.Split(req.Sort, ",")))
 	}
 	return
 }
@@ -81,7 +81,7 @@ func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Son
 }
 
 func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, error) {
-	books, err := b.Repo.Find(ctx, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	books, err := b.Repo.Find(ctx, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -96,7 +96,7 @@ func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 	if id < 1 {
 		return echokit.NewValidErr("paramID is missing")
 	}
-	_, err := b.Repo.Delete(ctx, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	_, err := b.Repo.Delete(ctx, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
 	return err
 }
 
@@ -119,7 +119,7 @@ func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.
 }
 
 func (b *SongSvcImpl) update(ctx context.Context, id int64, song *mysqldb.Song) error {
-	affectedRow, err := b.Repo.Update(ctx, song, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	affectedRow, err := b.Repo.Update(ctx, song, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *mysqldb.S
 }
 
 func (b *SongSvcImpl) patch(ctx context.Context, id int64, song *mysqldb.Song) error {
-	affectedRow, err := b.Repo.Patch(ctx, song, dbkit.Eq{mysqldb_repo.SongTable.ID: id})
+	affectedRow, err := b.Repo.Patch(ctx, song, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}

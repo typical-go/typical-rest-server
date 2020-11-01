@@ -8,7 +8,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
 	"go.uber.org/dig"
@@ -37,11 +37,11 @@ type (
 	// SongRepo to get songs data from database
 	// @mock
 	SongRepo interface {
-		Find(context.Context, ...dbkit.SelectOption) ([]*mysqldb.Song, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*mysqldb.Song, error)
 		Create(context.Context, *mysqldb.Song) (int64, error)
-		Delete(context.Context, dbkit.DeleteOption) (int64, error)
-		Update(context.Context, *mysqldb.Song, dbkit.UpdateOption) (int64, error)
-		Patch(context.Context, *mysqldb.Song, dbkit.UpdateOption) (int64, error)
+		Delete(context.Context, sqkit.DeleteOption) (int64, error)
+		Update(context.Context, *mysqldb.Song, sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *mysqldb.Song, sqkit.UpdateOption) (int64, error)
 	}
 	// SongRepoImpl is implementation songs repository
 	SongRepoImpl struct {
@@ -60,7 +60,7 @@ func NewSongRepo(impl SongRepoImpl) SongRepo {
 }
 
 // Find songs
-func (r *SongRepoImpl) Find(ctx context.Context, opts ...dbkit.SelectOption) (list []*mysqldb.Song, err error) {
+func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*mysqldb.Song, err error) {
 	builder := sq.
 		Select(
 			SongTable.ID,
@@ -133,7 +133,7 @@ func (r *SongRepoImpl) Create(ctx context.Context, ent *mysqldb.Song) (int64, er
 }
 
 // Update songs
-func (r *SongRepoImpl) Update(ctx context.Context, ent *mysqldb.Song, opt dbkit.UpdateOption) (int64, error) {
+func (r *SongRepoImpl) Update(ctx context.Context, ent *mysqldb.Song, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -161,7 +161,7 @@ func (r *SongRepoImpl) Update(ctx context.Context, ent *mysqldb.Song, opt dbkit.
 }
 
 // Patch songs
-func (r *SongRepoImpl) Patch(ctx context.Context, ent *mysqldb.Song, opt dbkit.UpdateOption) (int64, error) {
+func (r *SongRepoImpl) Patch(ctx context.Context, ent *mysqldb.Song, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -193,7 +193,7 @@ func (r *SongRepoImpl) Patch(ctx context.Context, ent *mysqldb.Song, opt dbkit.U
 }
 
 // Delete songs
-func (r *SongRepoImpl) Delete(ctx context.Context, opt dbkit.DeleteOption) (int64, error) {
+func (r *SongRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err

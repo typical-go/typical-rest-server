@@ -163,7 +163,7 @@ func CreateEntity(a *typast.Annot2) (*Entity, error) {
 		"fmt":                             "",
 		"time":                            "",
 		"github.com/Masterminds/squirrel": "sq",
-		"github.com/typical-go/typical-rest-server/pkg/dbkit":      "",
+		"github.com/typical-go/typical-rest-server/pkg/sqkit":      "",
 		"github.com/typical-go/typical-rest-server/pkg/dbtxn":      "",
 		"github.com/typical-go/typical-rest-server/pkg/reflectkit": "",
 		"go.uber.org/dig": "",

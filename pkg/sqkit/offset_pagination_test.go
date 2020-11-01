@@ -1,28 +1,28 @@
-package dbkit_test
+package sqkit_test
 
 import (
 	"testing"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 
 func TestPagination(t *testing.T) {
 	testcases := []struct {
 		testName string
-		*dbkit.OffsetPagination
+		*sqkit.OffsetPagination
 		builder       sq.SelectBuilder
 		expectedQuery string
 		expectedArgs  []interface{}
 	}{
 		{
-			OffsetPagination: &dbkit.OffsetPagination{},
+			OffsetPagination: &sqkit.OffsetPagination{},
 			builder:          sq.Select("name", "version").From("sometables"),
 			expectedQuery:    "SELECT name, version FROM sometables",
 		},
 		{
-			OffsetPagination: &dbkit.OffsetPagination{Offset: 10, Limit: 100},
+			OffsetPagination: &sqkit.OffsetPagination{Offset: 10, Limit: 100},
 			builder:          sq.Select("name", "version").From("sometables"),
 			expectedQuery:    "SELECT name, version FROM sometables LIMIT 100 OFFSET 10",
 		},

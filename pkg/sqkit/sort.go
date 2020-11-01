@@ -1,4 +1,4 @@
-package dbkit
+package sqkit
 
 import (
 	"fmt"

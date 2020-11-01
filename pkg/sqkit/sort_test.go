@@ -1,28 +1,28 @@
-package dbkit_test
+package sqkit_test
 
 import (
 	"testing"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/dbkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 
 func TestSort(t *testing.T) {
 	testcases := []struct {
 		testName      string
-		sorts         dbkit.Sorts
+		sorts         sqkit.Sorts
 		builder       sq.SelectBuilder
 		expectedQuery string
 		expectedArgs  []interface{}
 	}{
 		{
-			sorts:         dbkit.Sorts{},
+			sorts:         sqkit.Sorts{},
 			builder:       sq.Select("col1", "col2", "col3").From("sometables"),
 			expectedQuery: "SELECT col1, col2, col3 FROM sometables",
 		},
 		{
-			sorts:         dbkit.Sorts{"col1", "+col2", "-col3"},
+			sorts:         sqkit.Sorts{"col1", "+col2", "-col3"},
 			builder:       sq.Select("col1", "col2", "col3").From("sometables"),
 			expectedQuery: "SELECT col1, col2, col3 FROM sometables ORDER BY col1 ASC, col2 ASC, col3 DESC",
 		},
