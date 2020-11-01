@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
 
 	"github.com/golang/mock/gomock"
 
@@ -36,7 +37,16 @@ func CreateSongCntrl(t *testing.T, fn SongCntrlFn) (*controller.SongCntrl, *gomo
 	return &controller.SongCntrl{Svc: mockSvc}, mock
 }
 
-func TestBookController_FindOne(t *testing.T) {
+func TestSongCntrl_SetRoute(t *testing.T) {
+	e := echo.New()
+	echokit.SetRoute(e, &controller.SongCntrl{})
+	require.Equal(t, []string{
+		"/songs\tGET,POST",
+		"/songs/:id\tDELETE,GET,HEAD,PATCH,PUT",
+	}, echokit.DumpEcho(e))
+}
+
+func TestSongCntrl_FindOne(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestName: "valid ID",
@@ -108,7 +118,7 @@ func TestBookController_FindOne(t *testing.T) {
 	}
 }
 
-func TestBookController_Find(t *testing.T) {
+func TestSongCntrl_Find(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -151,8 +161,20 @@ func TestBookController_Find(t *testing.T) {
 	}
 }
 
-func TestBookController_Update(t *testing.T) {
+func TestSongCntrl_Update(t *testing.T) {
 	testcases := []SongCntrlTestCase{
+		{
+			TestCase: echotest.TestCase{
+				Request: echotest.Request{
+					Method:    http.MethodPut,
+					Target:    "/",
+					URLParams: map[string]string{"id": "1"},
+					Header:    echotest.HeaderForJSON(),
+					Body:      `{bad-json`,
+				},
+				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
+			},
+		},
 		{
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
@@ -201,8 +223,20 @@ func TestBookController_Update(t *testing.T) {
 	}
 }
 
-func TestBookController_Patch(t *testing.T) {
+func TestSongCntrl_Patch(t *testing.T) {
 	testcases := []SongCntrlTestCase{
+		{
+			TestCase: echotest.TestCase{
+				Request: echotest.Request{
+					Method:    http.MethodPut,
+					Target:    "/",
+					URLParams: map[string]string{"id": "1"},
+					Header:    echotest.HeaderForJSON(),
+					Body:      `{bad-json`,
+				},
+				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
+			},
+		},
 		{
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
@@ -251,7 +285,7 @@ func TestBookController_Patch(t *testing.T) {
 	}
 }
 
-func TestBookController_Delete(t *testing.T) {
+func TestSongCntrl_Delete(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -305,7 +339,7 @@ func TestBookController_Delete(t *testing.T) {
 	}
 }
 
-func TestBookController_Create(t *testing.T) {
+func TestSongCntrl_Create(t *testing.T) {
 	testcases := []SongCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{

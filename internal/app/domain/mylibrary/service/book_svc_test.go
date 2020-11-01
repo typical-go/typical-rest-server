@@ -18,16 +18,16 @@ import (
 
 type bookSvcFn func(mockRepo *postgresdb_repo_mock.MockBookRepo)
 
-func createBookSvc(t *testing.T, fn bookSvcFn) (*service.BookSvcImpl, *gomock.Controller) {
+func createBookSvc(t *testing.T, fn bookSvcFn) (service.BookSvc, *gomock.Controller) {
 	mock := gomock.NewController(t)
 	mockRepo := postgresdb_repo_mock.NewMockBookRepo(mock)
 	if fn != nil {
 		fn(mockRepo)
 	}
 
-	return &service.BookSvcImpl{
+	return service.NewBookSvc(service.BookSvcImpl{
 		Repo: mockRepo,
-	}, mock
+	}), mock
 }
 
 func TestBookSvc_Create(t *testing.T) {
@@ -54,16 +54,16 @@ func TestBookSvc_Create(t *testing.T) {
 			},
 		},
 		{
-			testName:    "Find error",
+			testName:    "find error",
 			book:        &postgresdb.Book{Author: "some-author", Title: "some-title"},
-			expectedErr: "Find-error",
+			expectedErr: "find-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Create(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return(nil, errors.New("Find-error"))
+					Return(nil, errors.New("find-error"))
 			},
 		},
 		{
@@ -312,20 +312,14 @@ func TestBookSvc_Update(t *testing.T) {
 			},
 		},
 		{
-			testName:    "Find error",
+			testName:    "find error before update",
 			paramID:     "1",
 			book:        &postgresdb.Book{Author: "some-author", Title: "some-title"},
-			expectedErr: "Find-error",
+			expectedErr: "find-error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return([]*postgresdb.Book{{ID: 1, Title: "some-title"}}, nil)
-				mockRepo.EXPECT().
-					Update(gomock.Any(), &postgresdb.Book{Author: "some-author", Title: "some-title"}, dbkit.Eq{"id": int64(1)}).
-					Return(int64(1), nil)
-				mockRepo.EXPECT().
-					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
-					Return(nil, errors.New("Find-error"))
+					Return(nil, errors.New("find-error"))
 			},
 		},
 		{

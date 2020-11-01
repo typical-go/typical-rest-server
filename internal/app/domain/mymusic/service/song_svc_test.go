@@ -15,16 +15,16 @@ import (
 
 type songSvcFn func(mockRepo *mysqldb_repo_mock.MockSongRepo)
 
-func createSongSvc(t *testing.T, fn songSvcFn) (*service.SongSvcImpl, *gomock.Controller) {
+func createSongSvc(t *testing.T, fn songSvcFn) (service.SongSvc, *gomock.Controller) {
 	mock := gomock.NewController(t)
 	mockRepo := mysqldb_repo_mock.NewMockSongRepo(mock)
 	if fn != nil {
 		fn(mockRepo)
 	}
 
-	return &service.SongSvcImpl{
+	return service.NewSongSvc(service.SongSvcImpl{
 		Repo: mockRepo,
-	}, mock
+	}), mock
 }
 
 func TestSongSvc_Create(t *testing.T) {
@@ -122,10 +122,16 @@ func TestSongSvc_FindOne(t *testing.T) {
 					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
 					Return([]*mysqldb.Song{{ID: 1, Title: "some-title"}}, nil)
 			},
-			expected: &mysqldb.Song{
-				ID:    1,
-				Title: "some-title",
+			expected: &mysqldb.Song{ID: 1, Title: "some-title"},
+		},
+		{
+			paramID: "1",
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().
+					Find(gomock.Any(), dbkit.Eq{"id": int64(1)}).
+					Return([]*mysqldb.Song{}, nil)
 			},
+			expectedErr: "code=404, message=Not Found",
 		},
 	}
 

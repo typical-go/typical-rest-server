@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/controller"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
@@ -34,7 +35,16 @@ func CreateBookCntrl(t *testing.T, fn BookCntrlFn) (*controller.BookCntrl, *gomo
 	return &controller.BookCntrl{Svc: mockSvc}, mock
 }
 
-func TestBookController_FindOne(t *testing.T) {
+func TestBookCntrl_SetRoute(t *testing.T) {
+	e := echo.New()
+	echokit.SetRoute(e, &controller.BookCntrl{})
+	require.Equal(t, []string{
+		"/books\tGET,POST",
+		"/books/:id\tDELETE,GET,HEAD,PATCH,PUT",
+	}, echokit.DumpEcho(e))
+}
+
+func TestBookCntrl_FindOne(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestName: "valid ID",
@@ -106,7 +116,7 @@ func TestBookController_FindOne(t *testing.T) {
 	}
 }
 
-func TestBookController_Find(t *testing.T) {
+func TestBookCntrl_Find(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -161,8 +171,20 @@ func TestBookController_Find(t *testing.T) {
 	}
 }
 
-func TestBookController_Update(t *testing.T) {
+func TestBookCntrl_Update(t *testing.T) {
 	testcases := []BookCntrlTestCase{
+		{
+			TestCase: echotest.TestCase{
+				Request: echotest.Request{
+					Method:    http.MethodPut,
+					Target:    "/",
+					URLParams: map[string]string{"id": "1"},
+					Header:    echotest.HeaderForJSON(),
+					Body:      `{bad-json`,
+				},
+				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
+			},
+		},
 		{
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
@@ -211,8 +233,20 @@ func TestBookController_Update(t *testing.T) {
 	}
 }
 
-func TestBookController_Patch(t *testing.T) {
+func TestBookCntrl_Patch(t *testing.T) {
 	testcases := []BookCntrlTestCase{
+		{
+			TestCase: echotest.TestCase{
+				Request: echotest.Request{
+					Method:    http.MethodPut,
+					Target:    "/",
+					URLParams: map[string]string{"id": "1"},
+					Header:    echotest.HeaderForJSON(),
+					Body:      `{bad-json`,
+				},
+				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
+			},
+		},
 		{
 			TestCase: echotest.TestCase{
 				Request: echotest.Request{
@@ -261,7 +295,7 @@ func TestBookController_Patch(t *testing.T) {
 	}
 }
 
-func TestBookController_Delete(t *testing.T) {
+func TestBookCntrl_Delete(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
@@ -315,7 +349,7 @@ func TestBookController_Delete(t *testing.T) {
 	}
 }
 
-func TestBookController_Create(t *testing.T) {
+func TestBookCntrl_Create(t *testing.T) {
 	testcases := []BookCntrlTestCase{
 		{
 			TestCase: echotest.TestCase{
