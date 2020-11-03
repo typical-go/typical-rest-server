@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -21,7 +22,7 @@ type (
 	// @mock
 	SongSvc interface {
 		FindOne(context.Context, string) (*mysqldb.Song, error)
-		Find(context.Context, *FindReq) ([]*mysqldb.Song, error)
+		Find(context.Context, *FindSongReq) (*FindSongResp, error)
 		Create(context.Context, *mysqldb.Song) (*mysqldb.Song, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *mysqldb.Song) (*mysqldb.Song, error)
@@ -32,11 +33,16 @@ type (
 		dig.In
 		Repo mysqldb_repo.SongRepo
 	}
-	// FindReq find request
-	FindReq struct {
+	// FindSongReq find request
+	FindSongReq struct {
 		Limit  uint64 `query:"limit"`
 		Offset uint64 `query:"offset"`
 		Sort   string `query:"sort"`
+	}
+	// FindSongResp find song response
+	FindSongResp struct {
+		Songs      []*mysqldb.Song
+		TotalCount string
 	}
 )
 
@@ -59,13 +65,24 @@ func (b *SongSvcImpl) Create(ctx context.Context, book *mysqldb.Song) (*mysqldb.
 }
 
 // Find books
-func (b *SongSvcImpl) Find(ctx context.Context, req *FindReq) ([]*mysqldb.Song, error) {
+func (b *SongSvcImpl) Find(ctx context.Context, req *FindSongReq) (*FindSongResp, error) {
 	var opts []sqkit.SelectOption
 	opts = append(opts, &sqkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
 	if req.Sort != "" {
 		opts = append(opts, sqkit.Sorts(strings.Split(req.Sort, ",")))
 	}
-	return b.Repo.Find(ctx, opts...)
+	totalCount, err := b.Repo.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+	songs, err := b.Repo.Find(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &FindSongResp{
+		TotalCount: fmt.Sprintf("%d", totalCount),
+		Songs:      songs,
+	}, nil
 }
 
 // FindOne book

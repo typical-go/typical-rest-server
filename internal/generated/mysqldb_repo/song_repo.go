@@ -37,6 +37,7 @@ type (
 	// SongRepo to get songs data from database
 	// @mock
 	SongRepo interface {
+		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*mysqldb.Song, error)
 		Create(context.Context, *mysqldb.Song) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
@@ -57,6 +58,26 @@ func init() {
 // NewSongRepo return new instance of SongRepo
 func NewSongRepo(impl SongRepoImpl) SongRepo {
 	return &impl
+}
+
+// Count songs
+func (r *SongRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	builder := sq.
+		Select("count(*)").
+		From(SongTableName).
+		RunWith(r)
+
+	for _, opt := range opts {
+		builder = opt.CompileSelect(builder)
+	}
+
+	row := builder.QueryRowContext(ctx)
+
+	var cnt int64
+	if err := row.Scan(&cnt); err != nil {
+		return -1, err
+	}
+	return cnt, nil
 }
 
 // Find songs

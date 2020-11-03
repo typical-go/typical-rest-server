@@ -151,12 +151,13 @@ func TestSongSvc_Find(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		songSvcFn   songSvcFn
-		req         *service.FindReq
-		expected    []*mysqldb.Song
+		req         *service.FindSongReq
+		expected    *service.FindSongResp
 		expectedErr string
 	}{
 		{
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{}).
 					Return([]*mysqldb.Song{
@@ -164,20 +165,33 @@ func TestSongSvc_Find(t *testing.T) {
 						{ID: 2, Title: "title2", Artist: "artist2"},
 					}, nil)
 			},
-			req: &service.FindReq{},
-			expected: []*mysqldb.Song{
-				{ID: 1, Title: "title1", Artist: "artist1"},
-				{ID: 2, Title: "title2", Artist: "artist2"},
+			req: &service.FindSongReq{},
+			expected: &service.FindSongResp{
+				Songs: []*mysqldb.Song{
+					{ID: 1, Title: "title1", Artist: "artist1"},
+					{ID: 2, Title: "title2", Artist: "artist2"},
+				},
+				TotalCount: "10",
 			},
 		},
 		{
+			testName: "find error",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{Limit: 20, Offset: 10}, sqkit.Sorts{"title", "created_at"}).
-					Return(nil, errors.New("some-error"))
+					Return(nil, errors.New("find-error"))
 			},
-			req:         &service.FindReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
-			expectedErr: "some-error",
+			req:         &service.FindSongReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "find-error",
+		},
+		{
+			testName: "count error",
+			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
+				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(-1), errors.New("count-error"))
+			},
+			req:         &service.FindSongReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "count-error",
 		},
 	}
 	for _, tt := range testcases {

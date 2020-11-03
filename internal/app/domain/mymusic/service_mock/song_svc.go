@@ -65,10 +65,10 @@ func (mr *MockSongSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Find mocks base method
-func (m *MockSongSvc) Find(arg0 context.Context, arg1 *service.FindReq) ([]*mysqldb.Song, error) {
+func (m *MockSongSvc) Find(arg0 context.Context, arg1 *service.FindSongReq) (*service.FindSongResp, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", arg0, arg1)
-	ret0, _ := ret[0].([]*mysqldb.Song)
+	ret0, _ := ret[0].(*service.FindSongResp)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

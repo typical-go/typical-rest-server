@@ -127,15 +127,21 @@ func TestSongCntrl_Find(t *testing.T) {
 					Target: "/",
 				},
 				ExpectedResponse: echotest.Response{
-					Code: http.StatusOK,
-					Body: "[{\"id\":1,\"title\":\"title1\",\"artist\":\"artist1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"artist\":\"artist2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
+					Code:   http.StatusOK,
+					Body:   "[{\"id\":1,\"title\":\"title1\",\"artist\":\"artist1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"artist\":\"artist2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
+					Header: map[string]string{"X-Total-Count": "10"},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return([]*mysqldb.Song{
-					&mysqldb.Song{ID: 1, Title: "title1", Artist: "artist1"},
-					&mysqldb.Song{ID: 2, Title: "title2", Artist: "artist2"},
-				}, nil)
+				svc.EXPECT().
+					Find(gomock.Any(), &service.FindSongReq{}).
+					Return(&service.FindSongResp{
+						Songs: []*mysqldb.Song{
+							&mysqldb.Song{ID: 1, Title: "title1", Artist: "artist1"},
+							&mysqldb.Song{ID: 2, Title: "title2", Artist: "artist2"},
+						},
+						TotalCount: "10",
+					}, nil)
 			},
 		},
 		{
@@ -147,7 +153,9 @@ func TestSongCntrl_Find(t *testing.T) {
 				ExpectedError: "code=500, message=some-error",
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Limit: 10, Offset: 20}).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().
+					Find(gomock.Any(), &service.FindSongReq{Limit: 10, Offset: 20}).
+					Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}
