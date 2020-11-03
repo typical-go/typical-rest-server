@@ -108,10 +108,6 @@ func TestBookSvc_FindOne(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			paramID:     "",
-			expectedErr: "code=422, message=paramID is missing",
-		},
-		{
 			paramID: "1",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
@@ -139,7 +135,6 @@ func TestBookSvc_FindOne(t *testing.T) {
 			expectedErr: "code=404, message=Not Found",
 		},
 	}
-
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.bookSvcFn)
@@ -213,10 +208,6 @@ func TestBookSvc_Delete(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			paramID:     "",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
-		{
 			paramID:     "1",
 			expectedErr: `some-error`,
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
@@ -267,16 +258,6 @@ func TestBookSvc_Update(t *testing.T) {
 		expected    *postgresdb.Book
 		expectedErr string
 	}{
-		{
-			testName:    "empty paramID",
-			paramID:     "",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
-		{
-			testName:    "zero paramID",
-			paramID:     "0",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
 		{
 			testName:    "bad request",
 			paramID:     "1",
@@ -366,16 +347,6 @@ func TestBookSvc_Patch(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			testName:    "empty paramID",
-			paramID:     "",
-			expectedErr: "code=422, message=paramID is missing",
-		},
-		{
-			testName:    "zero paramID",
-			paramID:     "0",
-			expectedErr: "code=422, message=paramID is missing",
-		},
-		{
 			testName:    "patch error",
 			paramID:     "1",
 			book:        &postgresdb.Book{Author: "some-author", Title: "some-title"},
@@ -452,7 +423,6 @@ func TestBookSvc_Patch(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			svc, mock := createBookSvc(t, tt.bookSvcFn)
 			defer mock.Finish()
-
 			book, err := svc.Patch(context.Background(), tt.paramID, tt.book)
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)

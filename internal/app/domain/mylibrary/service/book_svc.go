@@ -10,8 +10,8 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/generated/postgresdb_repo"
-	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -60,23 +60,17 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *postgresdb.Book) (*postg
 
 // Find books
 func (b *BookSvcImpl) Find(ctx context.Context, req *FindReq) ([]*postgresdb.Book, error) {
-	return b.Repo.Find(ctx, b.findSelectOpt(req)...)
-}
-
-func (b *BookSvcImpl) findSelectOpt(req *FindReq) (opts []sqkit.SelectOption) {
+	var opts []sqkit.SelectOption
 	opts = append(opts, &sqkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
 	if req.Sort != "" {
 		opts = append(opts, sqkit.Sorts(strings.Split(req.Sort, ",")))
 	}
-	return
+	return b.Repo.Find(ctx, opts...)
 }
 
 // FindOne book
 func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*postgresdb.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
 	return b.findOne(ctx, id)
 }
 
@@ -93,9 +87,6 @@ func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, 
 // Delete book
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return echokit.NewValidErr("paramID is missing")
-	}
 	_, err := b.Repo.Delete(ctx, sqkit.Eq{postgresdb_repo.BookTable.ID: id})
 	return err
 }
@@ -103,9 +94,6 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 // Update book
 func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgresdb.Book) (*postgresdb.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
@@ -132,9 +120,6 @@ func (b *BookSvcImpl) update(ctx context.Context, id int64, book *postgresdb.Boo
 // Patch book
 func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresdb.Book) (*postgresdb.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
 	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}

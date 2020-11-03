@@ -103,10 +103,6 @@ func TestSongSvc_FindOne(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			paramID:     "",
-			expectedErr: "code=422, message=paramID is missing",
-		},
-		{
 			paramID: "1",
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
@@ -208,10 +204,6 @@ func TestSongSvc_Delete(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			paramID:     "",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
-		{
 			paramID:     "1",
 			expectedErr: `some-error`,
 			songSvcFn: func(mockRepo *mysqldb_repo_mock.MockSongRepo) {
@@ -261,16 +253,6 @@ func TestSongSvc_Update(t *testing.T) {
 		expected    *mysqldb.Song
 		expectedErr string
 	}{
-		{
-			testName:    "empty paramID",
-			paramID:     "",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
-		{
-			testName:    "zero paramID",
-			paramID:     "0",
-			expectedErr: `code=422, message=paramID is missing`,
-		},
 		{
 			testName:    "bad request",
 			paramID:     "1",
@@ -358,16 +340,6 @@ func TestSongSvc_Patch(t *testing.T) {
 		expected    *mysqldb.Song
 		expectedErr string
 	}{
-		{
-			testName:    "empty paramID",
-			paramID:     "",
-			expectedErr: "code=422, message=paramID is missing",
-		},
-		{
-			testName:    "zero paramID",
-			paramID:     "0",
-			expectedErr: "code=422, message=paramID is missing",
-		},
 		{
 			testName:    "patch error",
 			paramID:     "1",

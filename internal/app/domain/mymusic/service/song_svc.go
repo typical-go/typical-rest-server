@@ -10,8 +10,8 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/generated/mysqldb_repo"
-	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -60,23 +60,18 @@ func (b *SongSvcImpl) Create(ctx context.Context, book *mysqldb.Song) (*mysqldb.
 
 // Find books
 func (b *SongSvcImpl) Find(ctx context.Context, req *FindReq) ([]*mysqldb.Song, error) {
-	return b.Repo.Find(ctx, b.findSelectOpt(req)...)
-}
-
-func (b *SongSvcImpl) findSelectOpt(req *FindReq) (opts []sqkit.SelectOption) {
+	var opts []sqkit.SelectOption
 	opts = append(opts, &sqkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
 	if req.Sort != "" {
 		opts = append(opts, sqkit.Sorts(strings.Split(req.Sort, ",")))
 	}
-	return
+	return b.Repo.Find(ctx, opts...)
 }
 
 // FindOne book
 func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
+
 	return b.findOne(ctx, id)
 }
 
@@ -93,9 +88,6 @@ func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, err
 // Delete book
 func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return echokit.NewValidErr("paramID is missing")
-	}
 	_, err := b.Repo.Delete(ctx, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
 	return err
 }
@@ -103,9 +95,7 @@ func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 // Update book
 func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.Song) (*mysqldb.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
+
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
@@ -132,9 +122,7 @@ func (b *SongSvcImpl) update(ctx context.Context, id int64, song *mysqldb.Song) 
 // Patch book
 func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *mysqldb.Song) (*mysqldb.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if id < 1 {
-		return nil, echokit.NewValidErr("paramID is missing")
-	}
+
 	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
 	}

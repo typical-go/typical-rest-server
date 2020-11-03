@@ -62,11 +62,13 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		rw := echokit.NewResponseWriter()
-		c1 := c.Echo().NewContext(req, rw)
+		ogResp := c.Response()
 
-		if err := next(c1); err != nil {
-			c.Error(err)
+		rw := echokit.NewResponseWriter()
+		c.SetResponse(echo.NewResponse(rw, c.Echo()))
+
+		if err := next(c); err != nil {
+			c.SetResponse(ogResp)
 			return err
 		}
 
@@ -79,6 +81,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pipe.Set(ctx, key+":type", rw.Header().Get("Content-Type"), maxAge).Err()
 
 		if _, err := pipe.Exec(ctx); err != nil {
+			c.SetResponse(ogResp)
 			return err
 		}
 
@@ -86,7 +89,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pragma.Expires = lastModified.Add(maxAge)
 		pragma.SetHeader(c.Response().Header())
 
-		rw.CopyTo(c.Response())
+		rw.CopyTo(ogResp)
 
 		return nil
 	}

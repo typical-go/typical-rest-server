@@ -8,9 +8,9 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
+	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
 )
 
