@@ -1,12 +1,13 @@
 package cachekit
 
 import (
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
 type (
@@ -22,6 +23,11 @@ var (
 	gmt, _ = time.LoadLocation("GMT")
 )
 
+const (
+	suffixKeyTime   = ":time"
+	suffixKeyHeader = ":header"
+)
+
 // Middleware ...
 func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -29,7 +35,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx := req.Context()
 		pragma := s.createPragma(req.Header)
 		key := s.PrefixKey + req.URL.String()
-		lastModified := ParseTime(s.Client.Get(ctx, key+":time").Val())
+		lastModified := ParseTime(s.Client.Get(ctx, key+suffixKeyTime).Val())
 
 		if !lastModified.IsZero() {
 			ifModifiedTime := pragma.IfModifiedSince
@@ -47,7 +53,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 				if err != nil {
 					return err
 				}
-				contentType, err := s.Client.Get(ctx, key+":type").Bytes()
+				headerBytes, err := s.Client.Get(ctx, key+suffixKeyHeader).Bytes()
 				if err != nil {
 					return err
 				}
@@ -55,7 +61,12 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 				pragma.LastModified = lastModified
 				pragma.Expires = time.Now().Add(ttl)
 				pragma.SetHeader(c.Response().Header())
-				c.Response().Header().Add("Content-Type", string(contentType))
+
+				var header http.Header
+				json.Unmarshal(headerBytes, &header)
+				for k := range header {
+					c.Response().Header().Add(k, header.Get(k))
+				}
 				c.Response().WriteHeader(http.StatusOK)
 				c.Response().Write(data)
 				return nil
@@ -64,8 +75,8 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		ogResp := c.Response()
 
-		rw := echokit.NewResponseWriter()
-		c.SetResponse(echo.NewResponse(rw, c.Echo()))
+		rec := httptest.NewRecorder()
+		c.SetResponse(echo.NewResponse(rec, c.Echo()))
 
 		if err := next(c); err != nil {
 			c.SetResponse(ogResp)
@@ -76,10 +87,11 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		lastModified = time.Now()
 
 		pipe := s.Client.TxPipeline()
-		pipe.Set(ctx, key, rw.Bytes, maxAge).Err()
-		pipe.Set(ctx, key+":time", FormatTime(lastModified), maxAge).Err()
-		pipe.Set(ctx, key+":type", rw.Header().Get("Content-Type"), maxAge).Err()
+		pipe.Set(ctx, key, rec.Body.Bytes(), maxAge)
+		pipe.Set(ctx, key+suffixKeyTime, FormatTime(lastModified), maxAge)
 
+		headerBytes, _ := json.Marshal(rec.HeaderMap)
+		pipe.Set(ctx, key+suffixKeyHeader, string(headerBytes), maxAge)
 		if _, err := pipe.Exec(ctx); err != nil {
 			c.SetResponse(ogResp)
 			return err
@@ -89,8 +101,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pragma.Expires = lastModified.Add(maxAge)
 		pragma.SetHeader(c.Response().Header())
 
-		rw.CopyTo(ogResp)
-
+		copyResponseWriter(rec, ogResp)
 		return nil
 	}
 }
@@ -112,4 +123,12 @@ func FormatTime(t time.Time) string {
 func ParseTime(raw string) time.Time {
 	t, _ := time.Parse(time.RFC1123, raw)
 	return t
+}
+
+func copyResponseWriter(from *httptest.ResponseRecorder, to http.ResponseWriter) {
+	for k := range from.HeaderMap {
+		to.Header().Add(k, from.HeaderMap.Get(k))
+	}
+	to.WriteHeader(from.Code)
+	to.Write(from.Body.Bytes()) // NOTE: commit the response
 }

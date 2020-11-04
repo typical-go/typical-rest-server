@@ -45,12 +45,7 @@ func (tt *TestCase) Execute(t *testing.T, fn echo.HandlerFunc) {
 		require.EqualError(t, err, tt.ExpectedError)
 	} else {
 		require.NoError(t, err)
-		require.Equal(t, tt.ExpectedResponse.Code, rec.Code)
-		require.Equal(t, tt.ExpectedResponse.Body, rec.Body.String())
-		resHeader := rec.Result().Header
-		for key, value := range tt.ExpectedResponse.Header {
-			require.Equal(t, value, resHeader.Get(key))
-		}
+		EqualResp(t, tt.ExpectedResponse, rec)
 	}
 }
 
@@ -77,6 +72,16 @@ func Do(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string
 func HeaderForJSON() map[string]string {
 	return map[string]string{
 		echo.HeaderContentType: echo.MIMEApplicationJSON,
+	}
+}
+
+// EqualResp expect response
+func EqualResp(t *testing.T, expected Response, rec *httptest.ResponseRecorder) {
+	require.Equal(t, expected.Code, rec.Code)
+	require.Equal(t, expected.Body, rec.Body.String())
+	resHeader := rec.Result().Header
+	for key, value := range expected.Header {
+		require.Equal(t, value, resHeader.Get(key))
 	}
 }
 

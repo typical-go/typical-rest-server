@@ -3,17 +3,18 @@ package cachekit_test
 import (
 	"errors"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
 	"bou.ke/monkey"
-	"github.com/typical-go/typical-rest-server/pkg/echokit"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
+	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )
 
 func TestStore_Middleware(t *testing.T) {
@@ -29,7 +30,7 @@ func TestStore_Middleware(t *testing.T) {
 		header        map[string]string
 		beforeFn      func(*miniredis.Miniredis)
 		assertFn      func(*testing.T, *miniredis.Miniredis)
-		expected      *echokit.ResponseWriter
+		expected      echotest.Response
 		expectedErr   string
 	}{
 		{
@@ -39,28 +40,29 @@ func TestStore_Middleware(t *testing.T) {
 			},
 			defaultMaxAge: 30 * time.Second,
 			prefixKey:     "cache_",
-			expected: &echokit.ResponseWriter{
-				StatusCode: 200,
-				Bytes:      []byte("\"some-response\"\n"),
-				RespHeader: http.Header{
-					"Cache-Control": []string{"max-age=30"},
-					"Content-Type":  []string{"application/json; charset=UTF-8"},
-					"Expires":       []string{"Wed, 16 Dec 2020 00:00:30 GMT"},
-					"Last-Modified": []string{"Wed, 16 Dec 2020 00:00:00 GMT"},
+			expected: echotest.Response{
+				Code: 200,
+				Body: "\"some-response\"\n",
+				Header: map[string]string{
+					"Cache-Control": "max-age=30",
+					"Content-Type":  "application/json; charset=UTF-8",
+					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
+					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
 				},
 			},
+
 			assertFn: func(t *testing.T, r *miniredis.Miniredis) {
 				data, _ := r.Get("cache_/")
 				lastModified, _ := r.Get("cache_/:time")
-				contentType, _ := r.Get("cache_/:type")
+				header, _ := r.Get("cache_/:header")
 
 				require.Equal(t, "\"some-response\"\n", data)
 				require.Equal(t, "Wed, 16 Dec 2020 00:00:00 GMT", lastModified)
-				require.Equal(t, "application/json; charset=UTF-8", contentType)
+				require.Equal(t, "{\"Content-Type\":[\"application/json; charset=UTF-8\"]}", header)
 
 				require.Equal(t, 30*time.Second, r.TTL("cache_/"))
 				require.Equal(t, 30*time.Second, r.TTL("cache_/:time"))
-				require.Equal(t, 30*time.Second, r.TTL("cache_/:type"))
+				require.Equal(t, 30*time.Second, r.TTL("cache_/:header"))
 			},
 		},
 		{
@@ -75,14 +77,15 @@ func TestStore_Middleware(t *testing.T) {
 			testName:      "cache available",
 			defaultMaxAge: 30 * time.Second,
 			prefixKey:     "cache_",
-			expected: &echokit.ResponseWriter{
-				StatusCode: 200,
-				Bytes:      []byte("\"some-response\"\n"),
-				RespHeader: http.Header{
-					"Cache-Control": []string{"max-age=30"},
-					"Content-Type":  []string{"some-type"},
-					"Expires":       []string{"Wed, 16 Dec 2020 00:00:30 GMT"},
-					"Last-Modified": []string{"Wed, 16 Dec 2020 00:00:00 GMT"},
+			expected: echotest.Response{
+				Code: 200,
+				Body: "\"some-response\"\n",
+				Header: map[string]string{
+					"Cache-Control": "max-age=30",
+					"Content-Type":  "application/json; charset=UTF-8",
+					"X-Total-Count": "6",
+					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
+					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
 				},
 			},
 			beforeFn: func(r *miniredis.Miniredis) {
@@ -90,8 +93,8 @@ func TestStore_Middleware(t *testing.T) {
 				r.SetTTL("cache_/", 30*time.Second)
 				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
 				r.SetTTL("cache_/:time", 30*time.Second)
-				r.Set("cache_/:type", "some-type")
-				r.SetTTL("cache_/:type", 30*time.Second)
+				r.Set("cache_/:header", "{\"Content-Type\":[\"application/json; charset=UTF-8\"],\"X-Total-Count\":[\"6\"]}")
+				r.SetTTL("cache_/:header", 30*time.Second)
 			},
 		},
 		{
@@ -106,8 +109,8 @@ func TestStore_Middleware(t *testing.T) {
 				r.SetTTL("cache_/", 30*time.Second)
 				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
 				r.SetTTL("cache_/:time", 30*time.Second)
-				r.Set("cache_/:type", "some-type")
-				r.SetTTL("cache_/:type", 30*time.Second)
+				r.Set("cache_/:header", "{}")
+				r.SetTTL("cache_/:header", 30*time.Second)
 			},
 			expectedErr: "code=304, message=Not Modified",
 		},
@@ -126,17 +129,17 @@ func TestStore_Middleware(t *testing.T) {
 				r.SetTTL("cache_/", 30*time.Second)
 				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
 				r.SetTTL("cache_/:time", 30*time.Second)
-				r.Set("cache_/:type", "some-type")
-				r.SetTTL("cache_/:type", 30*time.Second)
+				r.Set("cache_/:header", "{\"Content-Type\":[\"application/json; charset=UTF-8\"]}")
+				r.SetTTL("cache_/:header", 30*time.Second)
 			},
-			expected: &echokit.ResponseWriter{
-				StatusCode: 200,
-				Bytes:      []byte("\"some-response\"\n"),
-				RespHeader: http.Header{
-					"Cache-Control": []string{"max-age=30"},
-					"Content-Type":  []string{"some-type"},
-					"Expires":       []string{"Wed, 16 Dec 2020 00:00:30 GMT"},
-					"Last-Modified": []string{"Wed, 16 Dec 2020 00:00:00 GMT"},
+			expected: echotest.Response{
+				Code: 200,
+				Body: "\"some-response\"\n",
+				Header: map[string]string{
+					"Cache-Control": "max-age=30",
+					"Content-Type":  "application/json; charset=UTF-8",
+					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
+					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
 				},
 			},
 		},
@@ -163,13 +166,13 @@ func TestStore_Middleware(t *testing.T) {
 			}
 
 			e := echo.New()
-			w := echokit.NewResponseWriter()
-			err = store.Middleware(tt.next)(e.NewContext(req, w))
+			rec := httptest.NewRecorder()
+			err = store.Middleware(tt.next)(e.NewContext(req, rec))
 			if tt.expectedErr != "" {
 				require.EqualError(t, err, tt.expectedErr)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tt.expected, w)
+				echotest.EqualResp(t, tt.expected, rec)
 				if tt.assertFn != nil {
 					tt.assertFn(t, testRedis)
 				}
