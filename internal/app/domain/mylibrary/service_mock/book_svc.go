@@ -65,10 +65,10 @@ func (mr *MockBookSvcMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // Find mocks base method
-func (m *MockBookSvc) Find(arg0 context.Context, arg1 *service.FindReq) ([]*postgresdb.Book, error) {
+func (m *MockBookSvc) Find(arg0 context.Context, arg1 *service.FindBookReq) (*service.FindBookResp, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Find", arg0, arg1)
-	ret0, _ := ret[0].([]*postgresdb.Book)
+	ret0, _ := ret[0].(*service.FindBookResp)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

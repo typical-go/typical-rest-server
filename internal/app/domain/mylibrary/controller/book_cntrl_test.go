@@ -130,10 +130,14 @@ func TestBookCntrl_Find(t *testing.T) {
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{}).Return([]*postgresdb.Book{
-					&postgresdb.Book{ID: 1, Title: "title1", Author: "author1"},
-					&postgresdb.Book{ID: 2, Title: "title2", Author: "author2"},
-				}, nil)
+				svc.EXPECT().
+					Find(gomock.Any(), &service.FindBookReq{}).
+					Return(&service.FindBookResp{
+						Books: []*postgresdb.Book{
+							&postgresdb.Book{ID: 1, Title: "title1", Author: "author1"},
+							&postgresdb.Book{ID: 2, Title: "title2", Author: "author2"},
+						},
+					}, nil)
 			},
 		},
 		{
@@ -145,7 +149,9 @@ func TestBookCntrl_Find(t *testing.T) {
 				ExpectedError: "code=500, message=some-error",
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Limit: 20, Offset: 10}).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().
+					Find(gomock.Any(), &service.FindBookReq{Limit: 20, Offset: 10}).
+					Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 		{
@@ -157,7 +163,9 @@ func TestBookCntrl_Find(t *testing.T) {
 				ExpectedError: "code=500, message=some-error",
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
-				svc.EXPECT().Find(gomock.Any(), &service.FindReq{Sort: "name,created_at"}).Return(nil, fmt.Errorf("some-error"))
+				svc.EXPECT().
+					Find(gomock.Any(), &service.FindBookReq{Sort: "name,created_at"}).
+					Return(nil, fmt.Errorf("some-error"))
 			},
 		},
 	}

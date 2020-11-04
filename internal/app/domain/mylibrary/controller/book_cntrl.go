@@ -51,16 +51,17 @@ func (c *BookCntrl) Create(ec echo.Context) (err error) {
 
 // Find books
 func (c *BookCntrl) Find(ec echo.Context) (err error) {
-	var req service.FindReq
+	var req service.FindBookReq
 	if err = ec.Bind(&req); err != nil {
 		return err
 	}
 	ctx := ec.Request().Context()
-	books, err := c.Svc.Find(ctx, &req)
+	resp, err := c.Svc.Find(ctx, &req)
 	if err != nil {
 		return echokit.HTTPError(err)
 	}
-	return ec.JSON(http.StatusOK, books)
+	ec.Response().Header().Add(echokit.HeaderTotalCount, resp.TotalCount)
+	return ec.JSON(http.StatusOK, resp.Books)
 }
 
 // FindOne book

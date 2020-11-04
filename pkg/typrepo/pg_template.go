@@ -23,6 +23,7 @@ type (
 	// {{.Name}}Repo to get {{.Table}} data from database
 	// @mock
 	{{.Name}}Repo interface {
+		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*{{.Package}}.{{.Name}}, error)
 		Create(context.Context, *{{.Package}}.{{.Name}}) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
@@ -38,6 +39,26 @@ type (
 
 func init() {
 	typapp.Provide("",New{{.Name}}Repo)
+}
+
+// Count {{.Table}}
+func (r *{{.Name}}RepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	builder := sq.
+		Select("count(*)").
+		From({{.Name}}TableName).
+		RunWith(r)
+
+	for _, opt := range opts {
+		builder = opt.CompileSelect(builder)
+	}
+
+	row := builder.QueryRowContext(ctx)
+
+	var cnt int64
+	if err := row.Scan(&cnt); err != nil {
+		return -1, err
+	}
+	return cnt, nil
 }
 
 // New{{.Name}}Repo return new instance of {{.Name}}Repo

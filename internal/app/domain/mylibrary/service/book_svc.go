@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -21,7 +22,7 @@ type (
 	// @mock
 	BookSvc interface {
 		FindOne(context.Context, string) (*postgresdb.Book, error)
-		Find(context.Context, *FindReq) ([]*postgresdb.Book, error)
+		Find(context.Context, *FindBookReq) (*FindBookResp, error)
 		Create(context.Context, *postgresdb.Book) (*postgresdb.Book, error)
 		Delete(context.Context, string) error
 		Update(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
@@ -32,11 +33,16 @@ type (
 		dig.In
 		Repo postgresdb_repo.BookRepo
 	}
-	// FindReq find request
-	FindReq struct {
+	// FindBookReq find request
+	FindBookReq struct {
 		Limit  uint64 `query:"limit"`
 		Offset uint64 `query:"offset"`
 		Sort   string `query:"sort"`
+	}
+	// FindBookResp find book resp
+	FindBookResp struct {
+		Books      []*postgresdb.Book
+		TotalCount string
 	}
 )
 
@@ -59,13 +65,24 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *postgresdb.Book) (*postg
 }
 
 // Find books
-func (b *BookSvcImpl) Find(ctx context.Context, req *FindReq) ([]*postgresdb.Book, error) {
+func (b *BookSvcImpl) Find(ctx context.Context, req *FindBookReq) (*FindBookResp, error) {
 	var opts []sqkit.SelectOption
 	opts = append(opts, &sqkit.OffsetPagination{Offset: req.Offset, Limit: req.Limit})
 	if req.Sort != "" {
 		opts = append(opts, sqkit.Sorts(strings.Split(req.Sort, ",")))
 	}
-	return b.Repo.Find(ctx, opts...)
+	totalCount, err := b.Repo.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+	books, err := b.Repo.Find(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &FindBookResp{
+		Books:      books,
+		TotalCount: fmt.Sprintf("%d", totalCount),
+	}, nil
 }
 
 // FindOne book

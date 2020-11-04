@@ -155,12 +155,13 @@ func TestBookSvc_Find(t *testing.T) {
 	testcases := []struct {
 		testName    string
 		bookSvcFn   bookSvcFn
-		req         *service.FindReq
-		expected    []*postgresdb.Book
+		req         *service.FindBookReq
+		expected    *service.FindBookResp
 		expectedErr string
 	}{
 		{
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
+				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{}).
 					Return([]*postgresdb.Book{
@@ -168,20 +169,35 @@ func TestBookSvc_Find(t *testing.T) {
 						{ID: 2, Title: "title2", Author: "author2"},
 					}, nil)
 			},
-			req: &service.FindReq{},
-			expected: []*postgresdb.Book{
-				{ID: 1, Title: "title1", Author: "author1"},
-				{ID: 2, Title: "title2", Author: "author2"},
+			req: &service.FindBookReq{},
+			expected: &service.FindBookResp{
+				Books: []*postgresdb.Book{
+					{ID: 1, Title: "title1", Author: "author1"},
+					{ID: 2, Title: "title2", Author: "author2"},
+				},
+				TotalCount: "10",
 			},
 		},
 		{
+			testName: "count error",
 			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Find(gomock.Any(), &sqkit.OffsetPagination{Limit: 20, Offset: 10}, sqkit.Sorts{"title", "created_at"}).
-					Return(nil, errors.New("some-error"))
+					Count(gomock.Any()).
+					Return(int64(-1), errors.New("count-error"))
 			},
-			req:         &service.FindReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
-			expectedErr: "some-error",
+			req:         &service.FindBookReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "count-error",
+		},
+		{
+			testName: "find error",
+			bookSvcFn: func(mockRepo *postgresdb_repo_mock.MockBookRepo) {
+				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
+				mockRepo.EXPECT().
+					Find(gomock.Any(), &sqkit.OffsetPagination{Limit: 20, Offset: 10}, sqkit.Sorts{"title", "created_at"}).
+					Return(nil, errors.New("find-error"))
+			},
+			req:         &service.FindBookReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
+			expectedErr: "find-error",
 		},
 	}
 	for _, tt := range testcases {

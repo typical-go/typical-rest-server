@@ -18,7 +18,6 @@ http://localhost:8089/mylibrary/books/0
 POST http://localhost:8089/mylibrary/books
 content-type: application/json
 
-
 {
     "title": "Harry Potter and the Philosopher's Stone",
     "author": "J. K. Rowling"

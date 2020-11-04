@@ -38,6 +38,7 @@ type (
 	// BookRepo to get books data from database
 	// @mock
 	BookRepo interface {
+		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*postgresdb.Book, error)
 		Create(context.Context, *postgresdb.Book) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
@@ -53,6 +54,26 @@ type (
 
 func init() {
 	typapp.Provide("", NewBookRepo)
+}
+
+// Count books
+func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	builder := sq.
+		Select("count(*)").
+		From(BookTableName).
+		RunWith(r)
+
+	for _, opt := range opts {
+		builder = opt.CompileSelect(builder)
+	}
+
+	row := builder.QueryRowContext(ctx)
+
+	var cnt int64
+	if err := row.Scan(&cnt); err != nil {
+		return -1, err
+	}
+	return cnt, nil
 }
 
 // NewBookRepo return new instance of BookRepo
