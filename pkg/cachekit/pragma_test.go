@@ -74,9 +74,7 @@ func TestSetHeader(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.testName, func(t *testing.T) {
-			header := make(http.Header)
-			tt.pragma.SetHeader(header)
-			require.Equal(t, tt.expected, header)
+			require.Equal(t, tt.expected, tt.pragma.Header())
 		})
 	}
 }

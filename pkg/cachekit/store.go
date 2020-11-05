@@ -1,6 +1,7 @@
 package cachekit
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -17,6 +18,16 @@ type (
 		DefaultMaxAge time.Duration
 		PrefixKey     string
 	}
+	// Cached ...
+	Cached struct {
+		Bytes []byte
+		Head  Head
+	}
+	// Head ...
+	Head struct {
+		StatusCode int
+		Header     http.Header
+	}
 )
 
 var (
@@ -24,8 +35,9 @@ var (
 )
 
 const (
-	suffixKeyTime   = ":time"
-	suffixKeyHeader = ":header"
+	suffixKeyTime = ":time"
+	suffixKeyHead = ":head"
+	suffixKeyBody = ":body"
 )
 
 // Middleware ...
@@ -33,48 +45,30 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
 		ctx := req.Context()
-		pragma := s.createPragma(req.Header)
-		key := s.PrefixKey + req.URL.String()
-		lastModified := ParseTime(s.Client.Get(ctx, key+suffixKeyTime).Val())
 
-		if !lastModified.IsZero() {
+		key := s.PrefixKey + req.URL.String()
+		pragma := s.pragma(ctx, req.Header, key)
+
+		if !pragma.LastModified.IsZero() {
 			ifModifiedTime := pragma.IfModifiedSince
-			if !ifModifiedTime.IsZero() && lastModified.Before(ifModifiedTime) {
+			if !ifModifiedTime.IsZero() && pragma.LastModified.Before(ifModifiedTime) {
 				return echo.NewHTTPError(http.StatusNotModified)
 			}
 
 			if !pragma.NoCache {
-				ttl, err := s.Client.TTL(ctx, key).Result()
-				if err != nil {
-					return err
+				cached, err := s.getCached(ctx, key)
+				if err == nil {
+					resp := c.Response()
+					addHeader(resp.Header(), pragma.Header())
+					addHeader(resp.Header(), cached.Head.Header)
+					resp.WriteHeader(cached.Head.StatusCode)
+					resp.Write(cached.Bytes)
+					return nil
 				}
-
-				data, err := s.Client.Get(ctx, key).Bytes()
-				if err != nil {
-					return err
-				}
-				headerBytes, err := s.Client.Get(ctx, key+suffixKeyHeader).Bytes()
-				if err != nil {
-					return err
-				}
-
-				pragma.LastModified = lastModified
-				pragma.Expires = time.Now().Add(ttl)
-				pragma.SetHeader(c.Response().Header())
-
-				var header http.Header
-				json.Unmarshal(headerBytes, &header)
-				for k := range header {
-					c.Response().Header().Add(k, header.Get(k))
-				}
-				c.Response().WriteHeader(http.StatusOK)
-				c.Response().Write(data)
-				return nil
 			}
 		}
 
 		ogResp := c.Response()
-
 		rec := httptest.NewRecorder()
 		c.SetResponse(echo.NewResponse(rec, c.Echo()))
 
@@ -83,34 +77,68 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return err
 		}
 
-		maxAge := pragma.MaxAge
-		lastModified = time.Now()
-
-		pipe := s.Client.TxPipeline()
-		pipe.Set(ctx, key, rec.Body.Bytes(), maxAge)
-		pipe.Set(ctx, key+suffixKeyTime, FormatTime(lastModified), maxAge)
-
-		headerBytes, _ := json.Marshal(rec.HeaderMap)
-		pipe.Set(ctx, key+suffixKeyHeader, string(headerBytes), maxAge)
-		if _, err := pipe.Exec(ctx); err != nil {
+		lastModified, err := s.store(ctx, key, rec, pragma.MaxAge)
+		if err != nil {
 			c.SetResponse(ogResp)
 			return err
 		}
 
 		pragma.LastModified = lastModified
-		pragma.Expires = lastModified.Add(maxAge)
-		pragma.SetHeader(c.Response().Header())
+		pragma.Expires = lastModified.Add(pragma.MaxAge)
 
+		addHeader(rec.HeaderMap, pragma.Header())
 		copyResponseWriter(rec, ogResp)
 		return nil
 	}
 }
 
-func (s *Store) createPragma(header http.Header) *Pragma {
+func (s *Store) getCached(ctx context.Context, key string) (*Cached, error) {
+
+	bytes, err := s.Client.Get(ctx, key+suffixKeyBody).Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	headerBytes, err := s.Client.Get(ctx, key+suffixKeyHead).Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	var head Head
+	json.Unmarshal(headerBytes, &head)
+
+	return &Cached{
+		Bytes: bytes,
+		Head:  head,
+	}, nil
+}
+
+func (s *Store) store(ctx context.Context, key string, rec *httptest.ResponseRecorder, maxAge time.Duration) (time.Time, error) {
+	lastModified := time.Now()
+	headBytes, _ := json.Marshal(Head{
+		StatusCode: rec.Code,
+		Header:     rec.HeaderMap,
+	})
+	pipe := s.Client.TxPipeline()
+	pipe.Set(ctx, key+suffixKeyTime, FormatTime(lastModified), maxAge)
+	pipe.Set(ctx, key+suffixKeyBody, rec.Body.Bytes(), maxAge)
+	pipe.Set(ctx, key+suffixKeyHead, string(headBytes), maxAge)
+
+	_, err := pipe.Exec(ctx)
+	return lastModified, err
+}
+
+func (s *Store) pragma(ctx context.Context, header http.Header, key string) *Pragma {
 	pragma := CreatePragma(header)
 	if pragma.MaxAge < 1 {
 		pragma.MaxAge = s.DefaultMaxAge
 	}
+
+	lastModified := ParseTime(s.Client.Get(ctx, key+suffixKeyTime).Val())
+	ttl, _ := s.Client.TTL(ctx, key+suffixKeyTime).Result()
+
+	pragma.LastModified = lastModified
+	pragma.Expires = time.Now().Add(ttl)
 	return pragma
 }
 
@@ -131,4 +159,10 @@ func copyResponseWriter(from *httptest.ResponseRecorder, to http.ResponseWriter)
 	}
 	to.WriteHeader(from.Code)
 	to.Write(from.Body.Bytes()) // NOTE: commit the response
+}
+
+func addHeader(parent http.Header, header http.Header) {
+	for k := range header {
+		parent.Add(k, header.Get(k))
+	}
 }

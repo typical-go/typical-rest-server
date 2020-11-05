@@ -61,8 +61,9 @@ func CreatePragma(header http.Header) *Pragma {
 	}
 }
 
-// SetHeader set header
-func (c *Pragma) SetHeader(header http.Header) {
+// Header set header
+func (c *Pragma) Header() http.Header {
+	header := make(http.Header)
 	if !c.Expires.IsZero() {
 		header.Add(HeaderExpires, FormatTime(c.Expires))
 	}
@@ -70,6 +71,7 @@ func (c *Pragma) SetHeader(header http.Header) {
 		header.Add(HeaderLastModified, FormatTime(c.LastModified))
 	}
 	header.Add(HeaderCacheControl, c.String())
+	return header
 }
 
 func (c *Pragma) String() string {
