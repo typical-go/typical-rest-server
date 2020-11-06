@@ -43,11 +43,11 @@ func TestStore_Middleware(t *testing.T) {
 			expected: echotest.Response{
 				Code: 200,
 				Body: "\"some-response\"\n",
-				Header: map[string]string{
-					"Cache-Control": "max-age=30",
-					"Content-Type":  "application/json; charset=UTF-8",
-					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
-					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
+				Header: http.Header{
+					"Cache-Control": {"max-age=30"},
+					"Content-Type":  {"application/json; charset=UTF-8"},
+					"Expires":       {"Wed, 16 Dec 2020 00:00:30 GMT"},
+					"Last-Modified": {"Wed, 16 Dec 2020 00:00:00 GMT"},
 				},
 			},
 
@@ -80,12 +80,12 @@ func TestStore_Middleware(t *testing.T) {
 			expected: echotest.Response{
 				Code: 200,
 				Body: "\"some-response\"\n",
-				Header: map[string]string{
-					"Cache-Control": "max-age=30",
-					"Content-Type":  "application/json; charset=UTF-8",
-					"X-Total-Count": "6",
-					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
-					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
+				Header: http.Header{
+					"Cache-Control": {"max-age=30"},
+					"Content-Type":  {"application/json; charset=UTF-8"},
+					"X-Total-Count": {"6"},
+					"Expires":       {"Wed, 16 Dec 2020 00:00:30 GMT"},
+					"Last-Modified": {"Wed, 16 Dec 2020 00:00:00 GMT"},
 				},
 			},
 			beforeFn: func(r *miniredis.Miniredis) {
@@ -135,11 +135,11 @@ func TestStore_Middleware(t *testing.T) {
 			expected: echotest.Response{
 				Code: 200,
 				Body: "\"some-response\"\n",
-				Header: map[string]string{
-					"Cache-Control": "max-age=30",
-					"Content-Type":  "application/json; charset=UTF-8",
-					"Expires":       "Wed, 16 Dec 2020 00:00:30 GMT",
-					"Last-Modified": "Wed, 16 Dec 2020 00:00:00 GMT",
+				Header: http.Header{
+					"Cache-Control": {"max-age=30"},
+					"Content-Type":  {"application/json; charset=UTF-8"},
+					"Expires":       {"Wed, 16 Dec 2020 00:00:30 GMT"},
+					"Last-Modified": {"Wed, 16 Dec 2020 00:00:00 GMT"},
 				},
 			},
 		},

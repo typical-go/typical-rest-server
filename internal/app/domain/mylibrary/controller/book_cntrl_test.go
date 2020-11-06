@@ -57,6 +57,9 @@ func TestBookCntrl_FindOne(t *testing.T) {
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
@@ -127,12 +130,17 @@ func TestBookCntrl_Find(t *testing.T) {
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "[{\"id\":1,\"title\":\"title1\",\"author\":\"author1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"author\":\"author2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
+					Header: http.Header{
+						"Content-Type":  {"application/json; charset=UTF-8"},
+						"X-Total-Count": {"10"},
+					},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
 				svc.EXPECT().
 					Find(gomock.Any(), &service.FindBookReq{}).
 					Return(&service.FindBookResp{
+						TotalCount: "10",
 						Books: []*postgresdb.Book{
 							&postgresdb.Book{ID: 1, Title: "title1", Author: "author1"},
 							&postgresdb.Book{ID: 2, Title: "title2", Author: "author2"},
@@ -187,7 +195,7 @@ func TestBookCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{bad-json`,
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
@@ -199,7 +207,7 @@ func TestBookCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "author": "some-author"}`,
 				},
 				ExpectedError: "code=500, message=some-error",
@@ -216,12 +224,15 @@ func TestBookCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "author": "some-author"}`,
 				},
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
@@ -249,7 +260,7 @@ func TestBookCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{bad-json`,
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
@@ -261,7 +272,7 @@ func TestBookCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "author": "some-author"}`,
 				},
 				ExpectedError: "code=500, message=some-error",
@@ -278,12 +289,15 @@ func TestBookCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "author": "some-author"}`,
 				},
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
@@ -313,7 +327,8 @@ func TestBookCntrl_Delete(t *testing.T) {
 					URLParams: map[string]string{"id": "1"},
 				},
 				ExpectedResponse: echotest.Response{
-					Code: http.StatusNoContent,
+					Code:   http.StatusNoContent,
+					Header: http.Header{},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {
@@ -365,7 +380,7 @@ func TestBookCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `invalid}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value, internal=invalid character 'i' looking for beginning of value",
 			},
@@ -376,7 +391,7 @@ func TestBookCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `{"author":"some-author", "title":"some-title"}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedError: "code=500, message=some-error",
 			},
@@ -390,12 +405,15 @@ func TestBookCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `{"author":"some-author", "title":"some-title"}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedResponse: echotest.Response{
-					Body:   "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
-					Code:   http.StatusCreated,
-					Header: map[string]string{"Location": "/books/999"},
+					Body: "{\"id\":999,\"title\":\"some-title\",\"author\":\"some-author\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Code: http.StatusCreated,
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+						"Location":     {"/books/999"},
+					},
 				},
 			},
 			BookCntrlFn: func(svc *service_mock.MockBookSvc) {

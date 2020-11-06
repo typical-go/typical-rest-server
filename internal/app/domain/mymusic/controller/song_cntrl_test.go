@@ -59,6 +59,9 @@ func TestSongCntrl_FindOne(t *testing.T) {
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"title1\",\"artist\":\"artist1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
@@ -127,9 +130,12 @@ func TestSongCntrl_Find(t *testing.T) {
 					Target: "/",
 				},
 				ExpectedResponse: echotest.Response{
-					Code:   http.StatusOK,
-					Body:   "[{\"id\":1,\"title\":\"title1\",\"artist\":\"artist1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"artist\":\"artist2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
-					Header: map[string]string{"X-Total-Count": "10"},
+					Code: http.StatusOK,
+					Body: "[{\"id\":1,\"title\":\"title1\",\"artist\":\"artist1\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"},{\"id\":2,\"title\":\"title2\",\"artist\":\"artist2\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}]\n",
+					Header: http.Header{
+						"Content-Type":  {"application/json; charset=UTF-8"},
+						"X-Total-Count": {"10"},
+					},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
@@ -177,7 +183,7 @@ func TestSongCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{bad-json`,
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
@@ -189,7 +195,7 @@ func TestSongCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "artist": "some-artist"}`,
 				},
 				ExpectedError: "code=500, message=some-error",
@@ -206,12 +212,15 @@ func TestSongCntrl_Update(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "artist": "some-artist"}`,
 				},
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"some-title\",\"artist\":\"some-artist\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
@@ -239,7 +248,7 @@ func TestSongCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{bad-json`,
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=2, error=invalid character 'b' looking for beginning of object key string, internal=invalid character 'b' looking for beginning of object key string",
@@ -251,7 +260,7 @@ func TestSongCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "artist": "some-artist"}`,
 				},
 				ExpectedError: "code=500, message=some-error",
@@ -268,12 +277,15 @@ func TestSongCntrl_Patch(t *testing.T) {
 					Method:    http.MethodPut,
 					Target:    "/",
 					URLParams: map[string]string{"id": "1"},
-					Header:    echotest.HeaderForJSON(),
+					Header:    http.Header{"Content-Type": {"application/json"}},
 					Body:      `{"title":"some-title", "artist": "some-artist"}`,
 				},
 				ExpectedResponse: echotest.Response{
 					Code: http.StatusOK,
 					Body: "{\"id\":1,\"title\":\"some-title\",\"artist\":\"some-artist\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+					},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
@@ -303,7 +315,8 @@ func TestSongCntrl_Delete(t *testing.T) {
 					URLParams: map[string]string{"id": "1"},
 				},
 				ExpectedResponse: echotest.Response{
-					Code: http.StatusNoContent,
+					Code:   http.StatusNoContent,
+					Header: http.Header{},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
@@ -355,7 +368,7 @@ func TestSongCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `invalid}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedError: "code=400, message=Syntax error: offset=1, error=invalid character 'i' looking for beginning of value, internal=invalid character 'i' looking for beginning of value",
 			},
@@ -366,7 +379,7 @@ func TestSongCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `{"artist":"some-artist", "title":"some-title"}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedError: "code=500, message=some-error",
 			},
@@ -380,12 +393,15 @@ func TestSongCntrl_Create(t *testing.T) {
 					Method: http.MethodPost,
 					Target: "/",
 					Body:   `{"artist":"some-artist", "title":"some-title"}`,
-					Header: echotest.HeaderForJSON(),
+					Header: http.Header{"Content-Type": {"application/json"}},
 				},
 				ExpectedResponse: echotest.Response{
-					Body:   "{\"id\":999,\"title\":\"some-title\",\"artist\":\"some-artist\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
-					Code:   http.StatusCreated,
-					Header: map[string]string{"Location": "/songs/999"},
+					Body: "{\"id\":999,\"title\":\"some-title\",\"artist\":\"some-artist\",\"update_at\":\"0001-01-01T00:00:00Z\",\"created_at\":\"0001-01-01T00:00:00Z\"}\n",
+					Code: http.StatusCreated,
+					Header: http.Header{
+						"Content-Type": {"application/json; charset=UTF-8"},
+						"Location":     {"/songs/999"},
+					},
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {

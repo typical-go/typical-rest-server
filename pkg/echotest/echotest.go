@@ -10,45 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type (
-	// TestCase for echo
-	TestCase struct {
-		Request          Request
-		ExpectedResponse Response
-		ExpectedError    string
-	}
-	// Response that expected
-	Response struct {
-		Code   int
-		Header map[string]string
-		Body   string
-	}
-	// Request for testcase
-	Request struct {
-		Method    string
-		Target    string
-		Body      string
-		Header    map[string]string
-		URLParams map[string]string
-	}
-)
-
-// Execute test case against handle function
-func (tt *TestCase) Execute(t *testing.T, fn echo.HandlerFunc) {
-	req := httptest.NewRequest(tt.Request.Method, tt.Request.Target, strings.NewReader(tt.Request.Body))
-	for key, value := range tt.Request.Header {
-		req.Header.Set(key, value)
-	}
-
-	rec, err := Do(fn, req, tt.Request.URLParams)
-	if tt.ExpectedError != "" {
-		require.EqualError(t, err, tt.ExpectedError)
-	} else {
-		require.NoError(t, err)
-		EqualResp(t, tt.ExpectedResponse, rec)
-	}
-}
-
 // Do request against the handler
 func Do(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string) (rec *httptest.ResponseRecorder, err error) {
 	rec = httptest.NewRecorder()
@@ -68,21 +29,11 @@ func Do(handler echo.HandlerFunc, req *http.Request, urlParams map[string]string
 	return
 }
 
-// HeaderForJSON to generate header for json-based API
-func HeaderForJSON() map[string]string {
-	return map[string]string{
-		echo.HeaderContentType: echo.MIMEApplicationJSON,
-	}
-}
-
 // EqualResp expect response
 func EqualResp(t *testing.T, expected Response, rec *httptest.ResponseRecorder) {
 	require.Equal(t, expected.Code, rec.Code)
 	require.Equal(t, expected.Body, rec.Body.String())
-	resHeader := rec.Result().Header
-	for key, value := range expected.Header {
-		require.Equal(t, value, resHeader.Get(key))
-	}
+	require.Equal(t, expected.Header, rec.HeaderMap)
 }
 
 // DoGET return recorder and error for GET API (deprecated)
