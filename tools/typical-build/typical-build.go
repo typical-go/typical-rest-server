@@ -19,7 +19,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.9.8",
+	ProjectVersion: "0.9.9",
 	ProjectLayouts: []string{"internal", "pkg"},
 
 	Cmds: []typgo.Cmd{
