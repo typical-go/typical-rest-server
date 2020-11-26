@@ -196,10 +196,12 @@ func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
 
 In `Service` layer
 ```go
-func (s *SvcImpl) SomeOperation(ctx context.Context) error{
+func (s *SvcImpl) SomeOperation(ctx context.Context) (err error){
   // begin the transaction 
-  // and commit/rollback in end function
-  defer dbtxn.Begin(&ctx)()  
+  commitFn := dbtxn.Begin(&ctx)
+
+  // commit/rollback in end function
+  defer func(){ err = commitFn() }()
   // ...
 }
 ```
