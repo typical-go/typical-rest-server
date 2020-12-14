@@ -2,8 +2,6 @@ package infra
 
 import (
 	"time"
-
-	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 )
 
 type (
@@ -39,20 +37,3 @@ type (
 		ConnMaxLifetime time.Duration `envconfig:"CONN_MAX_LIFETIME" default:"30m" required:"true"`
 	}
 )
-
-//
-// DatabaseCfg
-//
-
-var _ dbtool.Configurer = (*DatabaseCfg)(nil)
-
-// Config for pgtool
-func (p *DatabaseCfg) Config() *dbtool.Config {
-	return &dbtool.Config{
-		DBName: p.DBName,
-		DBUser: p.DBUser,
-		DBPass: p.DBPass,
-		Host:   p.Host,
-		Port:   p.Port,
-	}
-}
