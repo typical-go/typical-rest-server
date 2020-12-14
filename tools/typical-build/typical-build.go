@@ -1,14 +1,11 @@
 package main
 
 import (
-	"log"
-
 	"github.com/typical-go/typical-go/pkg/typapp"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
-	"github.com/typical-go/typical-rest-server/internal/generated/config"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/mysqltool"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/pgtool"
@@ -49,12 +46,12 @@ var descriptor = typgo.Descriptor{
 		// pg
 		&pgtool.PgTool{
 			Name: "pg",
-			ConfigFn: func() dbtool.Configurer {
-				cfg, err := config.LoadPgDatabaseCfg()
-				if err != nil {
-					log.Fatal(err)
-				}
-				return cfg
+			Config: dbtool.Config{ // based on docker-compose.yml
+				DBName: "dbname",
+				DBUser: "dbuser",
+				DBPass: "dbpass",
+				Host:   "localhost",
+				Port:   "5432",
 			},
 			DockerName:   "typical-rest-server_pg01_1",
 			MigrationSrc: "file://databases/postgresdb/migration",
@@ -63,12 +60,12 @@ var descriptor = typgo.Descriptor{
 		// mysql
 		&mysqltool.MySQLTool{
 			Name: "mysql",
-			ConfigFn: func() dbtool.Configurer {
-				cfg, err := config.LoadMysqlDatabaseCfg()
-				if err != nil {
-					log.Fatal(err)
-				}
-				return cfg
+			Config: dbtool.Config{ // based on docker-compose.yml
+				DBName: "dbname",
+				DBUser: "dbuser",
+				DBPass: "dbpass",
+				Host:   "localhost",
+				Port:   "3306",
 			},
 			DockerName:   "typical-rest-server_mysql01_1",
 			MigrationSrc: "file://databases/mysqldb/migration",

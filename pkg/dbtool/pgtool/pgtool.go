@@ -3,12 +3,12 @@ package pgtool
 import (
 	"database/sql"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/urfave/cli/v2"
@@ -21,7 +21,7 @@ type (
 	// PgTool for postgres
 	PgTool struct {
 		Name         string
-		ConfigFn     func() dbtool.Configurer
+		Config       dbtool.Config
 		DockerName   string
 		MigrationSrc string
 		SeedSrc      string
@@ -30,9 +30,6 @@ type (
 )
 
 var _ (typgo.Tasker) = (*PgTool)(nil)
-
-// Stdout standard output
-var Stdout io.Writer = os.Stdout
 
 // Task for postgres
 func (t *PgTool) Task(sys *typgo.BuildSys) *cli.Command {
@@ -50,26 +47,17 @@ func (t *PgTool) Task(sys *typgo.BuildSys) *cli.Command {
 	}
 }
 
-// Cfg ...
-func (t *PgTool) Cfg() *dbtool.Config {
-	if t.cfg == nil {
-		t.cfg = t.ConfigFn().Config()
-	}
-	return t.cfg
-}
-
 // Console interactice for postgres
 func (t *PgTool) Console(c *typgo.Context) error {
-	cfg := t.Cfg()
-	os.Setenv("PGPASSWORD", cfg.DBPass)
+	os.Setenv("PGPASSWORD", t.Config.DBPass)
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.DockerName,
 			"psql",
-			"-h", cfg.Host,
-			"-p", cfg.Port,
-			"-U", cfg.DBUser,
+			"-h", t.Config.Host,
+			"-p", t.Config.Port,
+			"-U", t.Config.DBUser,
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -79,37 +67,35 @@ func (t *PgTool) Console(c *typgo.Context) error {
 
 // CreateDB create database
 func (t *PgTool) CreateDB(c *typgo.Context) error {
-	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("CREATE DATABASE \"%s\"", cfg.DBName)
-	fmt.Fprintln(Stdout, "\npg: "+q)
+	q := fmt.Sprintf("CREATE DATABASE \"%s\"", t.Config.DBName)
+	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // DropDB delete database
 func (t *PgTool) DropDB(c *typgo.Context) error {
-	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", cfg.DBName)
-	fmt.Fprintln(Stdout, "\npg: "+q)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", t.Config.DBName)
+	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // MigrateDB migrate database
 func (t *PgTool) MigrateDB(c *typgo.Context) error {
-	fmt.Fprintf(Stdout, "\npg: Migrate '%s'\n", t.MigrationSrc)
+	fmt.Fprintf(oskit.Stdout, "\n%s: Migrate '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -120,7 +106,7 @@ func (t *PgTool) MigrateDB(c *typgo.Context) error {
 
 // RollbackDB rollback database
 func (t *PgTool) RollbackDB(c *typgo.Context) error {
-	fmt.Fprintf(Stdout, "\npg: Rollback '%s'\n", t.MigrationSrc)
+	fmt.Fprintf(oskit.Stdout, "\n%s: Rollback '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -140,7 +126,7 @@ func (t *PgTool) SeedDB(c *typgo.Context) error {
 	files, _ := ioutil.ReadDir(t.SeedSrc)
 	for _, f := range files {
 		filename := fmt.Sprintf("%s/%s", t.SeedSrc, f.Name())
-		fmt.Printf("\npg: Seed '%s'\n", filename)
+		fmt.Fprintf(oskit.Stdout, "\n%s: Seed '%s'\n", t.Name, filename)
 		b, _ := ioutil.ReadFile(filename)
 		_, err = db.ExecContext(c.Ctx(), string(b))
 		if err != nil {
@@ -163,18 +149,14 @@ func (t *PgTool) createMigration() (*migrate.Migrate, error) {
 }
 
 func (t *PgTool) createConn() (*sql.DB, error) {
-	cfg := t.Cfg()
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port, cfg.DBName,
+		t.Config.DBUser, t.Config.DBPass, t.Config.Host, t.Config.Port, t.Config.DBName,
 	))
 }
 
 func (t *PgTool) createAdminConn() (*sql.DB, error) {
-	cfg := t.Cfg()
-	connStr := fmt.Sprintf(
+	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/template1?sslmode=disable",
-		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port)
-	fmt.Println(connStr)
-	return sql.Open("postgres", connStr)
+		t.Config.DBUser, t.Config.DBPass, t.Config.Host, t.Config.Port))
 }

@@ -9,8 +9,4 @@ type (
 		Host   string
 		Port   string
 	}
-	// Configurer return config
-	Configurer interface {
-		Config() *Config
-	}
 )

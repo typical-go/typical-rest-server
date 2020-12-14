@@ -3,12 +3,12 @@ package mysqltool
 import (
 	"database/sql"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/mysql"
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/urfave/cli/v2"
@@ -21,7 +21,7 @@ type (
 	// MySQLTool for postgres
 	MySQLTool struct {
 		Name         string
-		ConfigFn     func() dbtool.Configurer
+		Config       dbtool.Config
 		DockerName   string
 		MigrationSrc string
 		SeedSrc      string
@@ -30,9 +30,6 @@ type (
 )
 
 var _ (typgo.Tasker) = (*MySQLTool)(nil)
-
-// Stdout standard output
-var Stdout io.Writer = os.Stdout
 
 // Task for postgress
 func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
@@ -50,27 +47,19 @@ func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
 	}
 }
 
-// Cfg ...
-func (t *MySQLTool) Cfg() *dbtool.Config {
-	if t.cfg == nil {
-		t.cfg = t.ConfigFn().Config()
-	}
-	return t.cfg
-}
-
 // Console interactice for postgres
 func (t *MySQLTool) Console(c *typgo.Context) error {
-	cfg := t.Cfg()
-	os.Setenv("PGPASSWORD", cfg.DBPass)
+
+	os.Setenv("PGPASSWORD", t.Config.DBPass)
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.DockerName,
 			"mysql",
-			"-h", cfg.Host, // host
-			"-P", cfg.Port, // port
-			"-u", cfg.DBUser, // user
-			fmt.Sprintf("-p%s", cfg.DBPass), // password flag can't be spaced
+			"-h", t.Config.Host, // host
+			"-P", t.Config.Port, // port
+			"-u", t.Config.DBUser, // user
+			fmt.Sprintf("-p%s", t.Config.DBPass), // password flag can't be spaced
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -80,37 +69,35 @@ func (t *MySQLTool) Console(c *typgo.Context) error {
 
 // CreateDB create database
 func (t *MySQLTool) CreateDB(c *typgo.Context) error {
-	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("CREATE DATABASE `%s`", cfg.DBName)
-	fmt.Fprintln(Stdout, "\nmysql: "+q)
+	q := fmt.Sprintf("CREATE DATABASE `%s`", t.Config.DBName)
+	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // DropDB delete database
 func (t *MySQLTool) DropDB(c *typgo.Context) error {
-	cfg := t.Cfg()
 	conn, err := t.createAdminConn()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", cfg.DBName)
-	fmt.Fprintln(Stdout, "\nmysql: "+q)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", t.Config.DBName)
+	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // MigrateDB migrate database
 func (t *MySQLTool) MigrateDB(c *typgo.Context) error {
-	fmt.Fprintf(Stdout, "\nmysql: Migrate '%s'\n", t.MigrationSrc)
+	fmt.Fprintf(oskit.Stdout, "\n%s: Migrate '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -121,7 +108,7 @@ func (t *MySQLTool) MigrateDB(c *typgo.Context) error {
 
 // RollbackDB rollback database
 func (t *MySQLTool) RollbackDB(c *typgo.Context) error {
-	fmt.Fprintf(Stdout, "\nmysql: Rollback '%s'\n", t.MigrationSrc)
+	fmt.Fprintf(oskit.Stdout, "\n%s: Rollback '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -141,7 +128,7 @@ func (t *MySQLTool) SeedDB(c *typgo.Context) error {
 	files, _ := ioutil.ReadDir(t.SeedSrc)
 	for _, f := range files {
 		filename := fmt.Sprintf("%s/%s", t.SeedSrc, f.Name())
-		fmt.Printf("\nmysql: Seed '%s'\n", filename)
+		fmt.Fprintf(oskit.Stdout, "\n%s: Seed '%s'\n", t.Name, filename)
 		b, _ := ioutil.ReadFile(filename)
 		_, err = db.ExecContext(c.Ctx(), string(b))
 		if err != nil {
@@ -164,17 +151,15 @@ func (t *MySQLTool) createMigration() (*migrate.Migrate, error) {
 }
 
 func (t *MySQLTool) createConn() (*sql.DB, error) {
-	cfg := t.Cfg()
 	return sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
-		cfg.DBUser, cfg.DBPass, cfg.Host, cfg.Port, cfg.DBName,
+		t.Config.DBUser, t.Config.DBPass, t.Config.Host, t.Config.Port, t.Config.DBName,
 	))
 }
 
 func (t *MySQLTool) createAdminConn() (*sql.DB, error) {
-	cfg := t.Cfg()
 	return sql.Open("mysql", fmt.Sprintf(
 		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
-		cfg.DBPass, cfg.Host, cfg.Port,
+		t.Config.DBPass, t.Config.Host, t.Config.Port,
 	))
 }
