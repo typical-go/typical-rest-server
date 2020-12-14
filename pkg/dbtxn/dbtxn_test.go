@@ -46,7 +46,7 @@ func TestUse(t *testing.T) {
 		TestName    string
 		Ctx         context.Context
 		DB          *sql.DB
-		Expected    *dbtxn.Handler
+		Expected    *dbtxn.UseHandler
 		ExpectedErr string
 	}{
 		{
@@ -57,7 +57,7 @@ func TestUse(t *testing.T) {
 			TestName: "non transactional",
 			DB:       &sql.DB{},
 			Ctx:      context.Background(),
-			Expected: &dbtxn.Handler{DB: &sql.DB{}},
+			Expected: &dbtxn.UseHandler{DB: &sql.DB{}},
 		},
 		{
 			TestName: "begin error",

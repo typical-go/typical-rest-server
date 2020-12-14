@@ -21,12 +21,12 @@ type (
 	}
 	// CommitFn is commit function to close the transaction
 	CommitFn func() error
-	// Handler responsible to handle transaction
-	Handler struct {
-		DB      sq.BaseRunner
-		Context *Context
+	// UseHandler responsible to handle transaction
+	UseHandler struct {
+		*Context
+		DB sq.BaseRunner
 	}
-	// Tx is interface for database transaction
+	// Tx is interface for *db.Tx
 	Tx interface {
 		sq.BaseRunner
 		Rollback() error
@@ -35,21 +35,20 @@ type (
 )
 
 // Begin transaction
-func Begin(parent *context.Context) CommitFn {
+func Begin(parent *context.Context) *Context {
 	c := &Context{}
 	*parent = context.WithValue(*parent, ContextKey, c)
-	return c.Commit
+	return c
 }
 
 // Use transaction if possible
-func Use(ctx context.Context, db *sql.DB) (*Handler, error) {
+func Use(ctx context.Context, db *sql.DB) (*UseHandler, error) {
 	c := Find(ctx)
 	if ctx == nil {
 		return nil, errors.New("dbtxn: missing context.Context")
 	}
-	// NOTE: not transactional
-	if c == nil {
-		return &Handler{DB: db}, nil
+	if c == nil { // NOTE: not transactional
+		return &UseHandler{DB: db}, nil
 	}
 	if c.Tx == nil {
 		tx, err := db.BeginTx(ctx, nil)
@@ -59,7 +58,7 @@ func Use(ctx context.Context, db *sql.DB) (*Handler, error) {
 		}
 		c.Tx = tx
 	}
-	return &Handler{DB: c.Tx, Context: c}, nil
+	return &UseHandler{DB: c.Tx, Context: c}, nil
 }
 
 // Find transaction context
@@ -67,7 +66,6 @@ func Find(ctx context.Context) *Context {
 	if ctx == nil {
 		return nil
 	}
-
 	c, _ := ctx.Value(ContextKey).(*Context)
 	return c
 }
@@ -95,14 +93,10 @@ func (c *Context) Commit() error {
 	return c.Tx.Commit()
 }
 
-//
-// Handler
-//
-
 // SetError to set error to txn context
-func (t *Handler) SetError(err error) bool {
-	if t.Context != nil && err != nil {
-		t.Context.Err = err
+func (c *Context) SetError(err error) bool {
+	if c != nil && err != nil {
+		c.Err = err
 		return true
 	}
 	return false
