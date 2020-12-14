@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
@@ -18,8 +17,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	typgo.ProjectPkg = "github.com/user/project"
 	defer os.RemoveAll("internal")
 
-	unpatch := execkit.Patch([]*execkit.RunExpectation{})
-	defer unpatch(t)
+	defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
 
 	var out strings.Builder
 	typcfg.Stdout = &out
@@ -85,8 +83,7 @@ func LoadSomeSample() (*a.SomeSample, error) {
 }
 
 func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
-	unpatch := execkit.Patch([]*execkit.RunExpectation{})
-	defer unpatch(t)
+	defer typgo.PatchBash(nil)(t)
 
 	var out strings.Builder
 	typcfg.Stdout = &out
@@ -141,9 +138,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
-
-	unpatch := execkit.Patch([]*execkit.RunExpectation{})
-	defer unpatch(t)
+	defer typgo.PatchBash(nil)(t)
 	defer os.RemoveAll("predefined")
 
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{

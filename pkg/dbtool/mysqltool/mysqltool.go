@@ -9,7 +9,6 @@ import (
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/mysql"
-	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/urfave/cli/v2"
@@ -30,13 +29,13 @@ type (
 	}
 )
 
-var _ (typgo.Cmd) = (*MySQLTool)(nil)
+var _ (typgo.Tasker) = (*MySQLTool)(nil)
 
 // Stdout standard output
 var Stdout io.Writer = os.Stdout
 
-// Command for postgress
-func (t *MySQLTool) Command(sys *typgo.BuildSys) *cli.Command {
+// Task for postgress
+func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:  t.Name,
 		Usage: t.Name + " utility",
@@ -63,7 +62,7 @@ func (t *MySQLTool) Cfg() *dbtool.Config {
 func (t *MySQLTool) Console(c *typgo.Context) error {
 	cfg := t.Cfg()
 	os.Setenv("PGPASSWORD", cfg.DBPass)
-	return c.Execute(&execkit.Command{
+	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.DockerName,

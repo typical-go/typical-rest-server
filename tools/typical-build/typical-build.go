@@ -20,30 +20,32 @@ import (
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
 	ProjectVersion: "0.9.9",
-	ProjectLayouts: []string{"internal", "pkg"},
 
-	Cmds: []typgo.Cmd{
-		// test
-		&typgo.TestProject{},
-		// compile
-		&typgo.CompileProject{},
+	Tasks: []typgo.Tasker{
 		// annotate
-		&typast.AnnotateProject{
-			Destination: "internal/generated/typical",
+		&typast.AnnotateMe{
+			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
 				&typrepo.EntityAnnotation{},
 				&typcfg.EnvconfigAnnotation{DotEnv: ".env", UsageDoc: "USAGE.md"},
 			},
 		},
+		// test
+		&typgo.GoTest{
+			Includes: []string{"internal/app/*/**", "pkg/**"},
+			// Excludes: []string{"internal/app/*"},
+		},
+		// compile
+		&typgo.GoBuild{},
 		// run
-		&typgo.RunProject{
-			Before: typgo.BuildCmdRuns{"annotate", "compile"},
+		&typgo.RunBinary{
+			Before: typgo.TaskNames{"annotate", "build"},
 		},
 		// mock
-		&typmock.MockCmd{},
+		&typmock.GenerateMock{},
 		// docker
-		&typdocker.DockerCmd{},
+		&typdocker.DockerTool{},
 		// pg
 		&pgtool.PgTool{
 			Name: "pg",
@@ -73,17 +75,17 @@ var descriptor = typgo.Descriptor{
 			SeedSrc:      "databases/mysqldb/seed",
 		},
 		// reset
-		&typgo.Command{
+		&typgo.Task{
 			Name:  "reset",
 			Usage: "reset the project locally (postgres/etc)",
-			Action: typgo.BuildCmdRuns{
+			Action: typgo.TaskNames{
 				"pg.drop", "pg.create", "pg.migrate", "pg.seed",
 				"mysql.drop", "mysql.create", "mysql.migrate", "mysql.seed",
 			},
 		},
 		// release
-		&typrls.ReleaseProject{
-			Before: typgo.BuildCmdRuns{"test", "compile"},
+		&typrls.ReleaseTool{
+			Before: typgo.TaskNames{"test", "build"},
 			// Releaser:  &typrls.CrossCompiler{Targets: []typrls.Target{"darwin/amd64", "linux/amd64"}},
 			Publisher: &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},
 		},

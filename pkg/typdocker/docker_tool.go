@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/typical-go/typical-go/pkg/execkit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 
 	"github.com/urfave/cli/v2"
@@ -19,18 +18,18 @@ var (
 )
 
 type (
-	// DockerCmd for docker
-	DockerCmd struct{}
+	// DockerTool for docker
+	DockerTool struct{}
 )
 
 //
 // Command
 //
 
-var _ typgo.Cmd = (*DockerCmd)(nil)
+var _ typgo.Tasker = (*DockerTool)(nil)
 
-// Command of docker
-func (m *DockerCmd) Command(sys *typgo.BuildSys) *cli.Command {
+// Task for docker
+func (m *DockerTool) Task(sys *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:  "docker",
 		Usage: "Docker utility",
@@ -43,7 +42,7 @@ func (m *DockerCmd) Command(sys *typgo.BuildSys) *cli.Command {
 }
 
 // CmdWipe command wipe
-func (m *DockerCmd) CmdWipe(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdWipe(c *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:   "wipe",
 		Usage:  "Kill all running docker container",
@@ -51,7 +50,7 @@ func (m *DockerCmd) CmdWipe(c *typgo.BuildSys) *cli.Command {
 	}
 }
 
-func (m *DockerCmd) dockerWipe(c *typgo.Context) error {
+func (m *DockerTool) dockerWipe(c *typgo.Context) error {
 	ids, err := dockerIDs(c)
 	if err != nil {
 		return fmt.Errorf("Docker-ID: %w", err)
@@ -65,7 +64,7 @@ func (m *DockerCmd) dockerWipe(c *typgo.Context) error {
 }
 
 // CmdUp command up
-func (m *DockerCmd) CmdUp(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdUp(c *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:    "up",
 		Aliases: []string{"start"},
@@ -77,13 +76,13 @@ func (m *DockerCmd) CmdUp(c *typgo.BuildSys) *cli.Command {
 	}
 }
 
-func (m *DockerCmd) dockerUp(c *typgo.Context) (err error) {
+func (m *DockerTool) dockerUp(c *typgo.Context) (err error) {
 	if c.Bool("wipe") {
 		if err := m.dockerWipe(c); err != nil {
 			return err
 		}
 	}
-	return c.Execute(&execkit.Command{
+	return c.Execute(&typgo.Bash{
 		Name:   "docker-compose",
 		Args:   []string{"up", "--remove-orphans", "-d"},
 		Stdout: os.Stdout,
@@ -92,7 +91,7 @@ func (m *DockerCmd) dockerUp(c *typgo.Context) (err error) {
 }
 
 // CmdDown command down
-func (m *DockerCmd) CmdDown(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdDown(c *typgo.BuildSys) *cli.Command {
 	return &cli.Command{
 		Name:    "down",
 		Aliases: []string{"stop"},
@@ -102,7 +101,7 @@ func (m *DockerCmd) CmdDown(c *typgo.BuildSys) *cli.Command {
 }
 
 func dockerDown(c *typgo.Context) error {
-	return c.Execute(&execkit.Command{
+	return c.Execute(&typgo.Bash{
 		Name:   "docker-compose",
 		Args:   []string{"down", "-v"},
 		Stdout: os.Stdout,
@@ -113,7 +112,7 @@ func dockerDown(c *typgo.Context) error {
 func dockerIDs(c *typgo.Context) (ids []string, err error) {
 	var out strings.Builder
 
-	if err = c.Execute(&execkit.Command{
+	if err = c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"ps", "-q"},
 		Stderr: os.Stderr,
@@ -131,7 +130,7 @@ func dockerIDs(c *typgo.Context) (ids []string, err error) {
 }
 
 func kill(c *typgo.Context, id string) (err error) {
-	return c.Execute(&execkit.Command{
+	return c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"kill", id},
 		Stderr: os.Stderr,

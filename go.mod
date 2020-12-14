@@ -31,7 +31,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.6.1
-	github.com/typical-go/typical-go v0.10.16
+	github.com/typical-go/typical-go v0.10.18
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da // indirect
 	go.uber.org/dig v1.10.0
