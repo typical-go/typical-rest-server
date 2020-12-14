@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Test
-      run: ./typicalw test
+      run: ./typicalw test -coverprofile=cover.out
 
     - name: Build
       run: ./typicalw build
