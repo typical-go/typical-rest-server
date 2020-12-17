@@ -51,8 +51,8 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 
 	require.NoError(t, EnvconfigAnnotation.Annotate(c))
 
-	b, _ := ioutil.ReadFile("internal/generated/config/config.go")
-	require.Equal(t, `package config
+	b, _ := ioutil.ReadFile("internal/generated/envcfg/envcfg.go")
+	require.Equal(t, `package envcfg
 
 /* DO NOT EDIT. This file generated due to '@envconfig' annotation */
 
@@ -78,7 +78,7 @@ func LoadSomeSample() (*a.SomeSample, error) {
 }
 `, string(b))
 
-	require.Equal(t, "Generate @envconfig to internal/generated/config/config.go\n", out.String())
+	require.Equal(t, "Generate @envconfig to internal/generated/envcfg/envcfg.go\n", out.String())
 
 }
 

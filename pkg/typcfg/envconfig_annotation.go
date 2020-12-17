@@ -56,6 +56,10 @@ type (
 // Stdout standard output
 var Stdout io.Writer = os.Stdout
 
+const (
+	defaultCfgTarget = "internal/generated/envcfg/envcfg.go"
+)
+
 const defaultCfgTemplate = `package {{.Package}}
 
 /* {{.Signature}} */
@@ -160,7 +164,7 @@ func (m *EnvconfigAnnotation) getTemplate() string {
 
 func (m *EnvconfigAnnotation) getTarget(c *Context) string {
 	if m.Target == "" {
-		m.Target = "internal/generated/config/config.go"
+		m.Target = defaultCfgTarget
 	}
 	return m.Target
 }
