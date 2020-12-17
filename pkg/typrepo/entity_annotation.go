@@ -166,6 +166,7 @@ func CreateEntity(a *typast.Annot2) (*Entity, error) {
 		"github.com/typical-go/typical-rest-server/pkg/sqkit":      "",
 		"github.com/typical-go/typical-rest-server/pkg/dbtxn":      "",
 		"github.com/typical-go/typical-rest-server/pkg/reflectkit": "",
+		"github.com/typical-go/typical-go/pkg/typapp":              "",
 		"go.uber.org/dig": "",
 		typgo.ProjectPkg + "/" + filepath.Dir(a.File.Path): "",
 	}
