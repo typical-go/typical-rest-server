@@ -8,7 +8,7 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/internal/app"
 
-	_ "github.com/typical-go/typical-rest-server/internal/generated/constructor"
+	_ "github.com/typical-go/typical-rest-server/internal/generated/ctor"
 	_ "github.com/typical-go/typical-rest-server/internal/generated/envcfg"
 )
 
