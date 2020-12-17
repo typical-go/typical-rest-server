@@ -1,5 +1,7 @@
 package postgresdb_repo
 
+/* DO NOT EDIT. This file generated due to '@entity' annotation */
+
 import (
 	"context"
 	"database/sql"

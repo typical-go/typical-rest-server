@@ -2,6 +2,8 @@ package typrepo
 
 const mysqlTmpl = `package {{.Package}}_repo
 
+/* {{.Signature}} */
+
 import({{range $pkg, $alias := .Imports}}
 	{{$alias}} "{{$pkg}}"{{end}}
 )

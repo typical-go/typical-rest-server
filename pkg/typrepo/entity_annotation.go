@@ -17,8 +17,9 @@ type (
 	EntityAnnotation struct {
 		TagName string // By default is @entity
 	}
-	// Entity ...
-	Entity struct {
+	// EntityTmplData ...
+	EntityTmplData struct {
+		typast.Signature
 		Name       string
 		Table      string
 		Dialect    string
@@ -70,7 +71,7 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 }
 
 func (m *EntityAnnotation) process(a *typast.Annot2) error {
-	entity, err := CreateEntity(a)
+	entity, err := m.createEntity(a)
 	if err != nil {
 		return err
 	}
@@ -111,7 +112,7 @@ func (m *EntityAnnotation) getTagName() string {
 //
 
 // CreateEntity create entity
-func CreateEntity(a *typast.Annot2) (*Entity, error) {
+func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, error) {
 	name := a.GetName()
 	table := a.TagParam.Get("table")
 
@@ -171,7 +172,8 @@ func CreateEntity(a *typast.Annot2) (*Entity, error) {
 		typgo.ProjectPkg + "/" + filepath.Dir(a.File.Path): "",
 	}
 
-	return &Entity{
+	return &EntityTmplData{
+		Signature:  typast.Signature{TagName: m.getTagName()},
 		Name:       name,
 		Table:      table,
 		Dialect:    dialect,
