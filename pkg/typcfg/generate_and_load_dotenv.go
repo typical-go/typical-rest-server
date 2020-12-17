@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/envkit"
+	"github.com/typical-go/typical-go/pkg/oskit"
 )
 
 // GenerateAndLoadDotEnv to create and load envfile
@@ -24,7 +25,7 @@ func GenerateAndLoadDotEnv(target string, c *Context) error {
 		}
 	}
 	if len(updatedKeys) > 0 {
-		fmt.Fprintf(Stdout, "New keys added in '%s': %s\n", target, strings.Join(updatedKeys, " "))
+		fmt.Fprintf(oskit.Stdout, "New keys added in '%s': %s\n", target, strings.Join(updatedKeys, " "))
 	}
 
 	if err := envkit.SaveFile(envmap, target); err != nil {

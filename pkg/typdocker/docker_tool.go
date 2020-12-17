@@ -6,8 +6,12 @@ import (
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/typgo"
-
 	"github.com/urfave/cli/v2"
+)
+
+type (
+	// DockerTool for docker
+	DockerTool struct{}
 )
 
 var (
@@ -15,11 +19,6 @@ var (
 	DockerComposeYml = "docker-compose.yml"
 	// Version of docker compose
 	Version = "3"
-)
-
-type (
-	// DockerTool for docker
-	DockerTool struct{}
 )
 
 //

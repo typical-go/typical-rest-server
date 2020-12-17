@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 )
 
@@ -14,9 +15,9 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	target := "some-env"
 	ioutil.WriteFile(target, []byte("key1=val111\nkey2=val222"), 0777)
 	var out strings.Builder
-	typcfg.Stdout = &out
+
+	defer oskit.PatchStdout(&out)()
 	defer os.Remove(target)
-	defer func() { typcfg.Stdout = os.Stdout }()
 
 	c := &typcfg.Context{
 		Configs: []*typcfg.Envconfig{

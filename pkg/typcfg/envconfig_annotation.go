@@ -2,12 +2,12 @@ package typcfg
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/iancoleman/strcase"
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/tmplkit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
@@ -52,9 +52,6 @@ type (
 		Required bool
 	}
 )
-
-// Stdout standard output
-var Stdout io.Writer = os.Stdout
 
 const (
 	defaultCfgTarget = "internal/generated/envcfg/envcfg.go"
@@ -135,7 +132,7 @@ func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
 	dest := filepath.Dir(target)
 	os.MkdirAll(dest, 0777)
 
-	fmt.Fprintf(Stdout, "Generate @envconfig to %s\n", target)
+	fmt.Fprintf(oskit.Stdout, "Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
 		Signature: typast.Signature{TagName: m.getTagName()},
 		Package:   filepath.Base(dest),

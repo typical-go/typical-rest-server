@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/typical-go/typical-go/pkg/oskit"
+
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
@@ -20,8 +22,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
 
 	var out strings.Builder
-	typcfg.Stdout = &out
-	defer func() { typcfg.Stdout = os.Stdout }()
+	defer oskit.PatchStdout(&out)()
 
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{}
 	c := &typast.Context{
@@ -83,11 +84,10 @@ func LoadSomeSample() (*a.SomeSample, error) {
 }
 
 func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
-	defer typgo.PatchBash(nil)(t)
-
 	var out strings.Builder
-	typcfg.Stdout = &out
-	defer func() { typcfg.Stdout = os.Stdout }()
+
+	defer typgo.PatchBash(nil)(t)
+	defer oskit.PatchStdout(&out)()
 	defer os.Clearenv()
 	defer os.RemoveAll("folder")
 

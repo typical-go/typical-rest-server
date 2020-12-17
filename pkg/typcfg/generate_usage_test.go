@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
@@ -15,8 +16,7 @@ import (
 
 func TestGenerateUsage(t *testing.T) {
 	var out strings.Builder
-	typcfg.Stdout = &out
-	defer func() { typcfg.Stdout = os.Stdout }()
+	defer oskit.PatchStdout(&out)()
 
 	target := "sample.md"
 	c := &typcfg.Context{

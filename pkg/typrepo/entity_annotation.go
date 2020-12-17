@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 
 	"github.com/typical-go/typical-go/pkg/tmplkit"
@@ -48,11 +49,6 @@ const (
 	noUpdateOpt = "no_update"
 )
 
-var (
-	// Stdout standard out
-	Stdout = os.Stdout
-)
-
 //
 // EntityAnnotation
 //
@@ -64,7 +60,7 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 	annots, _ := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
 	for _, a := range annots {
 		if err := m.process(a); err != nil {
-			fmt.Fprintf(Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
+			fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
 		}
 	}
 	return nil
@@ -79,10 +75,10 @@ func (m *EntityAnnotation) process(a *typast.Annot2) error {
 	if err != nil {
 		return err
 	}
-	folder := fmt.Sprintf("internal/generated/%s_repo", entity.Package)
+	folder := fmt.Sprintf("internal/generated/entity/%s_repo", entity.Package)
 	os.MkdirAll(folder, 0777)
 	path := fmt.Sprintf("%s/%s_repo.go", folder, strings.ToLower(entity.Name))
-	fmt.Fprintf(Stdout, "Generate repository: %s\n", path)
+	fmt.Fprintf(oskit.Stdout, "Generate repository: %s\n", path)
 	if err := tmplkit.WriteFile(path, tmpl, entity); err != nil {
 		return err
 	}
