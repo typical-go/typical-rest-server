@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/oskit"
-	"github.com/typical-go/typical-go/pkg/typgo"
-
 	"github.com/typical-go/typical-go/pkg/tmplkit"
 	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgo"
+	"github.com/typical-go/typical-go/pkg/typmock"
 )
 
 type (
@@ -25,8 +25,8 @@ type (
 		Table      string
 		Dialect    string
 		CtorDB     string
-		Target     string
 		Package    string
+		DestFolder string
 		Fields     []*Field
 		Imports    map[string]string
 		PrimaryKey *Field
@@ -59,27 +59,38 @@ var _ typast.Annotator = (*EntityAnnotation)(nil)
 func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 	annots, _ := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
 	for _, a := range annots {
-		if err := m.process(a); err != nil {
+		ent, err := m.createEntity(a)
+		if err != nil {
+			return err
+		}
+		if err := m.process(ent); err != nil {
 			fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
 		}
+
+		m.mock(c, ent)
 	}
 	return nil
 }
 
-func (m *EntityAnnotation) process(a *typast.Annot2) error {
-	entity, err := m.createEntity(a)
+func (m *EntityAnnotation) mock(c *typast.Context, ent *EntityTmplData) error {
+	destPkg := ent.Package + "_repo_mock"
+	dest := ent.DestFolder + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
+	pkg := typgo.ProjectPkg + "/" + ent.DestFolder
+	name := ent.Name + "Repo"
+
+	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
+}
+
+func (m *EntityAnnotation) process(ent *EntityTmplData) error {
+	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
 	}
-	tmpl, err := getTemplate(entity.Dialect)
-	if err != nil {
-		return err
-	}
-	folder := fmt.Sprintf("internal/generated/entity/%s_repo", entity.Package)
-	os.MkdirAll(folder, 0777)
-	path := fmt.Sprintf("%s/%s_repo.go", folder, strings.ToLower(entity.Name))
+
+	os.MkdirAll(ent.DestFolder, 0777)
+	path := fmt.Sprintf("%s/%s_repo.go", ent.DestFolder, strings.ToLower(ent.Name))
 	fmt.Fprintf(oskit.Stdout, "Generate repository: %s\n", path)
-	if err := tmplkit.WriteFile(path, tmpl, entity); err != nil {
+	if err := tmplkit.WriteFile(path, tmpl, ent); err != nil {
 		return err
 	}
 	typgo.GoImports(path)
@@ -123,10 +134,9 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 		ctorDB = fmt.Sprintf("`name:\"%s\"`", ctorDB)
 	}
 
-	target := a.TagParam.Get("target")
-	if target == "" {
-		target = filepath.Dir(a.Path)
-	}
+	source := filepath.Dir(a.Path)
+	pkg := filepath.Base(source)
+	destFolder := fmt.Sprintf("internal/generated/entity/%s_repo", pkg)
 
 	var fields []*Field
 	var primaryKey *Field
@@ -174,8 +184,8 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 		Table:      table,
 		Dialect:    dialect,
 		CtorDB:     ctorDB,
-		Target:     target,
-		Package:    filepath.Base(target),
+		Package:    pkg,
+		DestFolder: destFolder,
 		Fields:     fields,
 		PrimaryKey: primaryKey,
 		Imports:    imports,

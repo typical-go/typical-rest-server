@@ -40,7 +40,9 @@ var descriptor = typgo.Descriptor{
 			Before: typgo.TaskNames{"annotate", "build"},
 		},
 		// mock
-		&typmock.GenerateMock{},
+		&typmock.GenerateMock{
+			Sources: []string{"internal"},
+		},
 		// docker
 		&typdocker.DockerTool{},
 		// pg

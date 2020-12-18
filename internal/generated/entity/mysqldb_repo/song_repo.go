@@ -37,7 +37,6 @@ var (
 
 type (
 	// SongRepo to get songs data from database
-	// @mock
 	SongRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*mysqldb.Song, error)

@@ -9,10 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/internal/generated/postgresdb_repo"
-	"github.com/typical-go/typical-rest-server/internal/generated/postgresdb_repo_mock"
-
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/postgresdb_repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/postgresdb_repo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 

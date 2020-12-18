@@ -38,7 +38,6 @@ var (
 
 type (
 	// BookRepo to get books data from database
-	// @mock
 	BookRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*postgresdb.Book, error)

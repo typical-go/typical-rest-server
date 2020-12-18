@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/internal/generated/postgresdb_repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/postgresdb_repo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"

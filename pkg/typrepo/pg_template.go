@@ -23,7 +23,6 @@ var (
 
 type (
 	// {{.Name}}Repo to get {{.Table}} data from database
-	// @mock
 	{{.Name}}Repo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*{{.Package}}.{{.Name}}, error)
