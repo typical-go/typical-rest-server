@@ -52,17 +52,9 @@ func TestStore_Middleware(t *testing.T) {
 			},
 
 			assertFn: func(t *testing.T, r *miniredis.Miniredis) {
-				data, _ := r.Get("cache_/:body")
-				lastModified, _ := r.Get("cache_/:time")
-				head, _ := r.Get("cache_/:head")
-
-				require.Equal(t, "\"some-response\"\n", data)
-				require.Equal(t, "Wed, 16 Dec 2020 00:00:00 GMT", lastModified)
-				require.Equal(t, "{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"]}}", head)
-
-				require.Equal(t, 30*time.Second, r.TTL("cache_/:body"))
-				require.Equal(t, 30*time.Second, r.TTL("cache_/:time"))
-				require.Equal(t, 30*time.Second, r.TTL("cache_/:head"))
+				data, _ := r.Get("cache_/")
+				require.Equal(t, "{\"LastModified\":\"Wed, 16 Dec 2020 00:00:00 GMT\",\"Body\":\"InNvbWUtcmVzcG9uc2UiCg==\",\"Head\":{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"]}}}", data)
+				require.Equal(t, 30*time.Second, r.TTL("cache_/"))
 			},
 		},
 		{
@@ -89,12 +81,8 @@ func TestStore_Middleware(t *testing.T) {
 				},
 			},
 			beforeFn: func(r *miniredis.Miniredis) {
-				r.Set("cache_/:body", "\"some-response\"\n")
-				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
-				r.Set("cache_/:head", "{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"],\"X-Total-Count\":[\"6\"]}}")
-				r.SetTTL("cache_/:body", 30*time.Second)
-				r.SetTTL("cache_/:time", 30*time.Second)
-				r.SetTTL("cache_/:head", 30*time.Second)
+				r.Set("cache_/", "{\"LastModified\":\"Wed, 16 Dec 2020 00:00:00 GMT\",\"Body\":\"InNvbWUtcmVzcG9uc2UiCg==\",\"Head\":{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"],\"X-Total-Count\":[\"6\"]}}}")
+				r.SetTTL("cache_/", 30*time.Second)
 			},
 		},
 		{
@@ -105,12 +93,8 @@ func TestStore_Middleware(t *testing.T) {
 				"If-Modified-Since": "Wed, 16 Dec 2020 00:00:05 GMT",
 			},
 			beforeFn: func(r *miniredis.Miniredis) {
-				r.Set("cache_/:body", "\"some-response\"\n")
-				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
-				r.Set("cache_/:head", "{}")
-				r.SetTTL("cache_/:body", 30*time.Second)
-				r.SetTTL("cache_/:time", 30*time.Second)
-				r.SetTTL("cache_/:head", 30*time.Second)
+				r.Set("cache_/", "{\"LastModified\":\"Wed, 16 Dec 2020 00:00:00 GMT\",\"Body\":\"InNvbWUtcmVzcG9uc2UiCg==\",\"Head\":{\"StatusCode\":200,\"Header\":{}}}")
+				r.SetTTL("cache_/", 30*time.Second)
 			},
 			expectedErr: "code=304, message=Not Modified",
 		},
@@ -125,12 +109,8 @@ func TestStore_Middleware(t *testing.T) {
 				"If-Modified-Since": "Wed, 15 Dec 2020 23:59:00 GMT",
 			},
 			beforeFn: func(r *miniredis.Miniredis) {
-				r.Set("cache_/:body", "\"some-response\"\n")
-				r.Set("cache_/:time", "Wed, 16 Dec 2020 00:00:00 GMT")
-				r.Set("cache_/:head", "{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"]}}")
-				r.SetTTL("cache_/:body", 30*time.Second)
-				r.SetTTL("cache_/:time", 30*time.Second)
-				r.SetTTL("cache_/:head", 30*time.Second)
+				r.Set("cache_/", "{\"LastModified\":\"Wed, 16 Dec 2020 00:00:00 GMT\",\"Body\":\"InNvbWUtcmVzcG9uc2UiCg==\",\"Head\":{\"StatusCode\":200,\"Header\":{\"Content-Type\":[\"application/json; charset=UTF-8\"]}}}")
+				r.SetTTL("cache_/", 30*time.Second)
 			},
 			expected: echotest.Response{
 				Code: 200,
