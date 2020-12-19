@@ -56,7 +56,7 @@ var descriptor = typgo.Descriptor{
 				Port:   "5432",
 			},
 			DockerName:   "typical-rest-server_pg01_1",
-			MigrationSrc: "file://databases/postgresdb/migration",
+			MigrationSrc: "databases/postgresdb/migration",
 			SeedSrc:      "databases/postgresdb/seed",
 		},
 		// mysql
@@ -70,7 +70,7 @@ var descriptor = typgo.Descriptor{
 				Port:   "3306",
 			},
 			DockerName:   "typical-rest-server_mysql01_1",
-			MigrationSrc: "file://databases/mysqldb/migration",
+			MigrationSrc: "databases/mysqldb/migration",
 			SeedSrc:      "databases/mysqldb/seed",
 		},
 		// reset

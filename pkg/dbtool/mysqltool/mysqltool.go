@@ -40,6 +40,7 @@ func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
 			{Name: "create", Usage: "Create database", Action: sys.ExecuteFn(t.CreateDB)},
 			{Name: "drop", Usage: "Drop database", Action: sys.ExecuteFn(t.DropDB)},
 			{Name: "migrate", Usage: "Migrate database", Action: sys.ExecuteFn(t.MigrateDB)},
+			{Name: "migration", Usage: "Create Migration file", Action: sys.ExecuteFn(t.MigrationFile)},
 			{Name: "rollback", Usage: "Rollback database", Action: sys.ExecuteFn(t.RollbackDB)},
 			{Name: "seed", Usage: "Seed database", Action: sys.ExecuteFn(t.SeedDB)},
 			{Name: "console", Usage: "Postgres console", Action: sys.ExecuteFn(t.Console)},
@@ -49,7 +50,6 @@ func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
 
 // Console interactice for postgres
 func (t *MySQLTool) Console(c *typgo.Context) error {
-
 	os.Setenv("PGPASSWORD", t.Config.DBPass)
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
@@ -138,6 +138,18 @@ func (t *MySQLTool) SeedDB(c *typgo.Context) error {
 	return nil
 }
 
+// MigrationFile seed database
+func (t *MySQLTool) MigrationFile(c *typgo.Context) error {
+	args := c.Args().Slice()
+	if len(args) < 1 {
+		args = []string{"migration"}
+	}
+	for _, arg := range args {
+		dbtool.CreateMigrationFile(t.MigrationSrc, arg)
+	}
+	return nil
+}
+
 func (t *MySQLTool) createMigration() (*migrate.Migrate, error) {
 	db, err := t.createConn()
 	if err != nil {
@@ -147,7 +159,7 @@ func (t *MySQLTool) createMigration() (*migrate.Migrate, error) {
 	if err != nil {
 		return nil, err
 	}
-	return migrate.NewWithDatabaseInstance(t.MigrationSrc, "mysql", driver)
+	return migrate.NewWithDatabaseInstance("file://"+t.MigrationSrc, "mysql", driver)
 }
 
 func (t *MySQLTool) createConn() (*sql.DB, error) {
