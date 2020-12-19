@@ -74,9 +74,11 @@ Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build
 var descriptor = typgo.Descriptor{
   ProjectName:    "typical-rest-server",
   ProjectVersion: "0.9.7",
-  ProjectLayouts: []string{"internal", "pkg"},
   
-  // commands ... 
+  Tasks: []typgo.Tasker{
+    // tasks ... 
+  }
+}
 ```
 
 ## Project Layout
@@ -125,7 +127,7 @@ Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Mult
 
 ## Dependency Injection
 
-Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) using [uber-dig](https://github.com/uber-go/dig) and annotations (`@ctor` for constructor and `@dtor` for destructor).
+Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) using [uber-dig](https://github.com/uber-go/dig) and annotations (`@ctor`).
 
 ```go
 // NewConn ... 
@@ -198,10 +200,10 @@ In `Service` layer
 ```go
 func (s *SvcImpl) SomeOperation(ctx context.Context) (err error){
   // begin the transaction 
-  commitFn := dbtxn.Begin(&ctx)
+  txn := dbtxn.Begin(&ctx)
 
   // commit/rollback in end function
-  defer func(){ err = commitFn() }()
+  defer func(){ err = txn.Commit() }()
   // ...
 }
 ```
@@ -219,7 +221,6 @@ cacheStore := &cachekit.Store{
 e := echo.New()
 e.GET("/", handle, cacheStore.Middleware)
 ```
-
 
 ## References
 
