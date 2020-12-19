@@ -1,6 +1,6 @@
 package typrepo
 
-const postgresTmpl = `package {{.Package}}_repo
+const postgresTmpl = `package {{.Pkg}}
 
 /* {{.Signature}} */
 
@@ -25,11 +25,11 @@ type (
 	// {{.Name}}Repo to get {{.Table}} data from database
 	{{.Name}}Repo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
-		Find(context.Context, ...sqkit.SelectOption) ([]*{{.Package}}.{{.Name}}, error)
-		Create(context.Context, *{{.Package}}.{{.Name}}) (int64, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*{{.SourcePkg}}.{{.Name}}, error)
+		Create(context.Context, *{{.SourcePkg}}.{{.Name}}) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
-		Update(context.Context, *{{.Package}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
-		Patch(context.Context, *{{.Package}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
+		Update(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
 	}
 	// {{.Name}}RepoImpl is implementation {{.Table}} repository
 	{{.Name}}RepoImpl struct {
@@ -68,7 +68,7 @@ func New{{.Name}}Repo(impl {{.Name}}RepoImpl) {{.Name}}Repo {
 }
 
 // Find {{.Table}}
-func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*{{.Package}}.{{.Name}}, err error) {
+func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*{{.SourcePkg}}.{{.Name}}, err error) {
 	builder := sq.
 		Select(
 			{{range .Fields}}{{$.Name}}Table.{{.Name}},
@@ -87,9 +87,9 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption
 		return
 	}
 
-	list = make([]*{{.Package}}.{{.Name}}, 0)
+	list = make([]*{{.SourcePkg}}.{{.Name}}, 0)
 	for rows.Next() {
-		ent := new({{.Package}}.{{.Name}})
+		ent := new({{.SourcePkg}}.{{.Name}})
 		if err = rows.Scan({{range .Fields}}
 			&ent.{{.Name}},{{end}}
 		); err != nil {
@@ -101,7 +101,7 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption
 }
 
 // Create {{.Table}}
-func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.Package}}.{{.Name}}) (int64, error) {
+func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.SourcePkg}}.{{.Name}}) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -130,7 +130,7 @@ func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.Package}}.{{.Nam
 
 
 // Update {{.Table}}
-func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.Package}}.{{.Name}}, opt sqkit.UpdateOption) (int64, error) {
+func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.SourcePkg}}.{{.Name}}, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -157,7 +157,7 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.Package}}.{{.Nam
 }
 
 // Patch {{.Table}}
-func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.Package}}.{{.Name}}, opt sqkit.UpdateOption) (int64, error) {
+func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.SourcePkg}}.{{.Name}}, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err

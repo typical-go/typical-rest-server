@@ -25,8 +25,9 @@ type (
 		Table      string
 		Dialect    string
 		CtorDB     string
-		Package    string
-		DestFolder string
+		Pkg        string
+		SourcePkg  string
+		Dest       string
 		Fields     []*Field
 		Imports    map[string]string
 		PrimaryKey *Field
@@ -67,15 +68,15 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 			fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
 		}
 
-		m.mock(c, ent)
+		m.mock(c, a, ent)
 	}
 	return nil
 }
 
-func (m *EntityAnnotation) mock(c *typast.Context, ent *EntityTmplData) error {
-	destPkg := ent.Package + "_repo_mock"
-	dest := ent.DestFolder + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
-	pkg := typgo.ProjectPkg + "/" + ent.DestFolder
+func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot2, ent *EntityTmplData) error {
+	destPkg := filepath.Base(ent.Dest) + "_mock"
+	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
+	pkg := typgo.ProjectPkg + "/" + ent.Dest
 	name := ent.Name + "Repo"
 
 	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
@@ -87,8 +88,8 @@ func (m *EntityAnnotation) process(ent *EntityTmplData) error {
 		return err
 	}
 
-	os.MkdirAll(ent.DestFolder, 0777)
-	path := fmt.Sprintf("%s/%s_repo.go", ent.DestFolder, strings.ToLower(ent.Name))
+	os.MkdirAll(ent.Dest, 0777)
+	path := fmt.Sprintf("%s/%s_repo.go", ent.Dest, strings.ToLower(ent.Name))
 	fmt.Fprintf(oskit.Stdout, "Generate repository: %s\n", path)
 	if err := tmplkit.WriteFile(path, tmpl, ent); err != nil {
 		return err
@@ -134,12 +135,49 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 		ctorDB = fmt.Sprintf("`name:\"%s\"`", ctorDB)
 	}
 
-	source := filepath.Dir(a.Path)
-	pkg := filepath.Base(source)
-	destFolder := fmt.Sprintf("internal/generated/entity/%s_repo", pkg)
+	dest := m.getDest(a.Path)
+	pkg := filepath.Base(dest)
+	sourcePkg := filepath.Base(filepath.Dir(a.Path))
+	fields, primaryKey := m.createFields(a)
 
-	var fields []*Field
-	var primaryKey *Field
+	imports := map[string]string{
+		"context":                         "",
+		"database/sql":                    "",
+		"fmt":                             "",
+		"time":                            "",
+		"github.com/Masterminds/squirrel": "sq",
+		"github.com/typical-go/typical-rest-server/pkg/sqkit":      "",
+		"github.com/typical-go/typical-rest-server/pkg/dbtxn":      "",
+		"github.com/typical-go/typical-rest-server/pkg/reflectkit": "",
+		"github.com/typical-go/typical-go/pkg/typapp":              "",
+		"go.uber.org/dig": "",
+		typgo.ProjectPkg + "/" + filepath.Dir(a.File.Path): "",
+	}
+
+	return &EntityTmplData{
+		Signature:  typast.Signature{TagName: m.getTagName()},
+		Name:       name,
+		Table:      table,
+		Dialect:    dialect,
+		CtorDB:     ctorDB,
+		Pkg:        pkg,
+		SourcePkg:  sourcePkg,
+		Dest:       dest,
+		Fields:     fields,
+		PrimaryKey: primaryKey,
+		Imports:    imports,
+	}, nil
+}
+
+func (m *EntityAnnotation) getDest(path string) string {
+	source := filepath.Dir(path)
+	if strings.HasPrefix(source, "internal/") {
+		source = source[9:]
+	}
+	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
+}
+
+func (m *EntityAnnotation) createFields(a *typast.Annot2) (fields []*Field, primaryKey *Field) {
 	structDecl := a.Decl.Type.(*typast.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]
@@ -163,33 +201,7 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 			primaryKey = field
 		}
 	}
-
-	imports := map[string]string{
-		"context":                         "",
-		"database/sql":                    "",
-		"fmt":                             "",
-		"time":                            "",
-		"github.com/Masterminds/squirrel": "sq",
-		"github.com/typical-go/typical-rest-server/pkg/sqkit":      "",
-		"github.com/typical-go/typical-rest-server/pkg/dbtxn":      "",
-		"github.com/typical-go/typical-rest-server/pkg/reflectkit": "",
-		"github.com/typical-go/typical-go/pkg/typapp":              "",
-		"go.uber.org/dig": "",
-		typgo.ProjectPkg + "/" + filepath.Dir(a.File.Path): "",
-	}
-
-	return &EntityTmplData{
-		Signature:  typast.Signature{TagName: m.getTagName()},
-		Name:       name,
-		Table:      table,
-		Dialect:    dialect,
-		CtorDB:     ctorDB,
-		Package:    pkg,
-		DestFolder: destFolder,
-		Fields:     fields,
-		PrimaryKey: primaryKey,
-		Imports:    imports,
-	}, nil
+	return
 }
 
 //

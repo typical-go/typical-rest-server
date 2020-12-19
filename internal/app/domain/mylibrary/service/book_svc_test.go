@@ -10,8 +10,8 @@ import (
 
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/postgresdb_repo"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/postgresdb_repo_mock"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/data_access/postgresdb_repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/data_access/postgresdb_repo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
 	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/mysqldb_repo_mock"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/data_access/mysqldb_repo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 
