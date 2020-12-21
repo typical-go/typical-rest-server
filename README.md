@@ -29,7 +29,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
   - [x] Request ID in logger
 - RESTful
   - [x] Create Resource (`POST` verb)
-  - [x] Update Resource (`UPDATE` verb)
+  - [x] Update Resource (`PUT` verb)
   - [x] Partially Update Resource (`PATCH` verb)
   - [x] Find Resource (`GET` verb)
     - [x] Offset Pagination (Query param `?limit=100&offset=0`)
