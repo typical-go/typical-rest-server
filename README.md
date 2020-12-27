@@ -23,7 +23,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 - HTTP Server
   - [x] [Echo framework](https://echo.labstack.com/)
   - [x] Server Side Caching 
-    - [x] Skip Caching (Header `Cache-Control: no-cache`)
+    - [x] Cache but revalidate (Header `Cache-Control: no-cache`)
     - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
     - [x] Return 304 if not modified (Header `If-Modified-Since: Sat, 31 Oct 2020 10:28:02 GMT`)
   - [x] Request ID in logger
@@ -110,8 +110,6 @@ Others directory:
 
 
 ## Layered Architecture
-
-<img src="architecture.png"  style="max-width:450px;"/>
 
 Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) as most adoptable architectural pattern
 
