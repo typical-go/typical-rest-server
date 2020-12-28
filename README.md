@@ -34,7 +34,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
   - [x] Find Resource (`GET` verb)
     - [x] Offset Pagination (Query param `?limit=100&offset=0`)
     - [x] Sorting (Query param `?sort=-title,created_at`)
-    - [x] Total count (Header `X-Total-Count`)
+    - [x] Total count (Header `X-Total-Count: 99`)
   - [x] Check resource (`HEAD` verb)
   - [x] Delete resource (`DELETE` verb, idempotent)
 - Testing
