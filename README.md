@@ -26,7 +26,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
     - [x] Cache but revalidate (Header `Cache-Control: no-cache`)
     - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
     - [x] Return 304 if not modified (Header `If-Modified-Since: Sat, 31 Oct 2020 10:28:02 GMT`)
-  - [x] Request ID in logger
+  - [x] Request ID in logger (Header `X-Request-Id: xxx`)
 - RESTful
   - [x] Create Resource (`POST` verb)
   - [x] Update Resource (`PUT` verb)
@@ -34,6 +34,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
   - [x] Find Resource (`GET` verb)
     - [x] Offset Pagination (Query param `?limit=100&offset=0`)
     - [x] Sorting (Query param `?sort=-title,created_at`)
+    - [x] Total count (Header `X-Total-Count`)
   - [x] Check resource (`HEAD` verb)
   - [x] Delete resource (`DELETE` verb, idempotent)
 - Testing
