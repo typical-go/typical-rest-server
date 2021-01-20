@@ -57,7 +57,7 @@ func TestUse(t *testing.T) {
 			TestName: "non transactional",
 			DB:       &sql.DB{},
 			Ctx:      context.Background(),
-			Expected: &dbtxn.UseHandler{DB: &sql.DB{}},
+			Expected: &dbtxn.UseHandler{BaseRunner: &sql.DB{}},
 		},
 		{
 			TestName: "begin error",
@@ -86,10 +86,13 @@ func TestUse(t *testing.T) {
 func TestUse_success(t *testing.T) {
 	db, mock, _ := sqlmock.New()
 	mock.ExpectBegin()
-	ctx := context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{})
+	ctx := context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{TxMap: make(map[*sql.DB]dbtxn.Tx)})
 	handler, err := dbtxn.Use(ctx, db)
+
 	require.NoError(t, err)
-	require.Equal(t, handler.DB, handler.Context.Tx)
+	require.Equal(t, map[*sql.DB]dbtxn.Tx{
+		db: handler.BaseRunner.(dbtxn.Tx),
+	}, handler.Context.TxMap)
 }
 
 func TestContext_Commit(t *testing.T) {
@@ -97,17 +100,20 @@ func TestContext_Commit(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 		mock.ExpectBegin()
 		mock.ExpectRollback()
-		tx, _ := db.Begin()
-		c := &dbtxn.Context{Tx: tx}
-		c.Err = errors.New("some-error")
+
+		c := dbtxn.NewContext()
+		c.Begin(context.Background(), db)
+		c.SetError(errors.New("some-error"))
+
 		require.NoError(t, c.Commit())
 	})
 	t.Run("expect commit when no error", func(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 		mock.ExpectBegin()
 		mock.ExpectCommit()
-		tx, _ := db.Begin()
-		c := &dbtxn.Context{Tx: tx}
+
+		c := dbtxn.NewContext()
+		c.Begin(context.Background(), db)
 		require.NoError(t, c.Commit())
 	})
 }

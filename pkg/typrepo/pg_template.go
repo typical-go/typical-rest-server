@@ -117,7 +117,7 @@ func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 			fmt.Sprintf("RETURNING \"%s\"", {{$.Name}}Table.{{.PrimaryKey.Name}}),
 		).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB).
+		RunWith(txn).
 		QueryRowContext(ctx)
 
 	var id {{.PrimaryKey.Type}}
@@ -140,7 +140,7 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 		Update({{.Name}}TableName).{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}
 		Set({{$.Name}}Table.{{.Name}},{{if .DefaultValue}}{{.DefaultValue}}{{else}}ent.{{.Name}},{{end}}).{{end}}{{end}}
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB)
+		RunWith(txn)
 
 	if opt != nil {
 		builder = opt.CompileUpdate(builder)
@@ -166,7 +166,7 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.SourcePkg}}.{{.Na
 	builder := sq.
 		Update({{.Name}}TableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB)
+		RunWith(txn)
 
 	{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}{{if .DefaultValue}}
 	builder = builder.Set({{$.Name}}Table.{{.Name}}, {{.DefaultValue}}){{else}}
@@ -200,7 +200,7 @@ func (r *{{.Name}}RepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) 
 	builder := sq.
 		Delete({{.Name}}TableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(txn.DB)
+		RunWith(txn)
 
 	if opt != nil {
 		builder = opt.CompileDelete(builder)

@@ -185,7 +185,7 @@ func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
   if err != nil {                  // create transaction error
       return -1, err
   }
-  db := txn.DB                     // transaction object or database connection
+  db := txn                     // transaction object or database connection
   // result, err := ...
   if err != nil {
       txn.SetError(err)            // set the error and plan for rollback

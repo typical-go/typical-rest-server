@@ -141,7 +141,7 @@ func (r *SongRepoImpl) Create(ctx context.Context, ent *mysqldb.Song) (int64, er
 			time.Now(),
 			time.Now(),
 		).
-		RunWith(txn.DB).
+		RunWith(txn).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -166,7 +166,7 @@ func (r *SongRepoImpl) Update(ctx context.Context, ent *mysqldb.Song, opt sqkit.
 		Set(SongTable.Title, ent.Title).
 		Set(SongTable.Artist, ent.Artist).
 		Set(SongTable.UpdatedAt, time.Now()).
-		RunWith(txn.DB)
+		RunWith(txn)
 
 	if opt != nil {
 		builder = opt.CompileUpdate(builder)
@@ -189,7 +189,7 @@ func (r *SongRepoImpl) Patch(ctx context.Context, ent *mysqldb.Song, opt sqkit.U
 		return -1, err
 	}
 
-	builder := sq.Update(SongTableName).RunWith(txn.DB)
+	builder := sq.Update(SongTableName).RunWith(txn)
 
 	if !reflectkit.IsZero(ent.Title) {
 		builder = builder.Set(SongTable.Title, ent.Title)
@@ -221,7 +221,7 @@ func (r *SongRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int6
 		return -1, err
 	}
 
-	builder := sq.Delete(SongTableName).RunWith(txn.DB)
+	builder := sq.Delete(SongTableName).RunWith(txn)
 	if opt != nil {
 		builder = opt.CompileDelete(builder)
 	}

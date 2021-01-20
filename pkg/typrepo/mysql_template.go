@@ -113,7 +113,7 @@ func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 		{{end}}).
 		Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
 		{{end}}).
-		RunWith(txn.DB).
+		RunWith(txn).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -137,7 +137,7 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 	builder := sq.
 		Update({{.Name}}TableName).{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}
 		Set({{$.Name}}Table.{{.Name}},{{if .DefaultValue}}{{.DefaultValue}}{{else}}ent.{{.Name}},{{end}}).{{end}}{{end}}
-		RunWith(txn.DB)
+		RunWith(txn)
 
 	if opt != nil {
 		builder = opt.CompileUpdate(builder)
@@ -160,7 +160,7 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.SourcePkg}}.{{.Na
 		return -1, err
 	}
 
-	builder := sq.Update({{.Name}}TableName).RunWith(txn.DB)
+	builder := sq.Update({{.Name}}TableName).RunWith(txn)
 	{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}{{if .DefaultValue}}
 	builder = builder.Set({{$.Name}}Table.{{.Name}}, {{.DefaultValue}}){{else}}
 	if !reflectkit.IsZero(ent.{{.Name}}) {
@@ -190,7 +190,7 @@ func (r *{{.Name}}RepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) 
 		return -1, err
 	}
 
-	builder := sq.Delete({{.Name}}TableName).RunWith(txn.DB)
+	builder := sq.Delete({{.Name}}TableName).RunWith(txn)
 	if opt != nil {
 		builder = opt.CompileDelete(builder)
 	}
