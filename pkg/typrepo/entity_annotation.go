@@ -135,7 +135,7 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 		ctorDB = fmt.Sprintf("`name:\"%s\"`", ctorDB)
 	}
 
-	dest := m.getDest(a.Path)
+	dest := m.GetDest(a.Path)
 	pkg := filepath.Base(dest)
 	sourcePkg := filepath.Base(filepath.Dir(a.Path))
 	fields, primaryKey := m.createFields(a)
@@ -169,10 +169,17 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, erro
 	}, nil
 }
 
-func (m *EntityAnnotation) getDest(path string) string {
-	source := filepath.Dir(path)
+// GetDest get destination
+func (*EntityAnnotation) GetDest(file string) string {
+	source := filepath.Dir(file)
 	if strings.HasPrefix(source, "internal/") {
 		source = source[9:]
+	}
+	if strings.HasSuffix(source, "entity") {
+		source = source[:len(source)-6]
+	}
+	if strings.HasSuffix(source, "/") || strings.HasSuffix(source, "_") {
+		return fmt.Sprintf("internal/generated/entity/%srepo", source)
 	}
 	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
 }
