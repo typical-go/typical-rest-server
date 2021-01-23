@@ -11,10 +11,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/controller"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/controller"
+	"github.com/typical-go/typical-rest-server/internal/app/service"
+	"github.com/typical-go/typical-rest-server/internal/app/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )
@@ -65,7 +65,7 @@ func TestSongCntrl_FindOne(t *testing.T) {
 				},
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
-				svc.EXPECT().FindOne(gomock.Any(), "1").Return(&mysqldb.Song{ID: 1, Title: "title1", Artist: "artist1"}, nil)
+				svc.EXPECT().FindOne(gomock.Any(), "1").Return(&entity.Song{ID: 1, Title: "title1", Artist: "artist1"}, nil)
 			},
 		},
 		{
@@ -142,9 +142,9 @@ func TestSongCntrl_Find(t *testing.T) {
 				svc.EXPECT().
 					Find(gomock.Any(), &service.FindSongReq{}).
 					Return(&service.FindSongResp{
-						Songs: []*mysqldb.Song{
-							&mysqldb.Song{ID: 1, Title: "title1", Artist: "artist1"},
-							&mysqldb.Song{ID: 2, Title: "title2", Artist: "artist2"},
+						Songs: []*entity.Song{
+							&entity.Song{ID: 1, Title: "title1", Artist: "artist1"},
+							&entity.Song{ID: 2, Title: "title2", Artist: "artist2"},
 						},
 						TotalCount: "10",
 					}, nil)
@@ -202,7 +202,7 @@ func TestSongCntrl_Update(t *testing.T) {
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
+					Update(gomock.Any(), "1", &entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -225,8 +225,8 @@ func TestSongCntrl_Update(t *testing.T) {
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
 				svc.EXPECT().
-					Update(gomock.Any(), "1", &mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
-					Return(&mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}, nil)
+					Update(gomock.Any(), "1", &entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
+					Return(&entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}, nil)
 			},
 		},
 	}
@@ -267,7 +267,7 @@ func TestSongCntrl_Patch(t *testing.T) {
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
 				svc.EXPECT().
-					Patch(gomock.Any(), "1", &mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
+					Patch(gomock.Any(), "1", &entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
 					Return(nil, errors.New("some-error"))
 			},
 		},
@@ -290,8 +290,8 @@ func TestSongCntrl_Patch(t *testing.T) {
 			},
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
 				svc.EXPECT().
-					Patch(gomock.Any(), "1", &mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
-					Return(&mysqldb.Song{ID: 1, Title: "some-title", Artist: "some-artist"}, nil)
+					Patch(gomock.Any(), "1", &entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}).
+					Return(&entity.Song{ID: 1, Title: "some-title", Artist: "some-artist"}, nil)
 			},
 		},
 	}
@@ -407,7 +407,7 @@ func TestSongCntrl_Create(t *testing.T) {
 			SongCntrlFn: func(svc *service_mock.MockSongSvc) {
 				svc.EXPECT().
 					Create(gomock.Any(), gomock.Any()).
-					Return(&mysqldb.Song{ID: 999, Artist: "some-artist", Title: "some-title"}, nil)
+					Return(&entity.Song{ID: 999, Artist: "some-artist", Title: "some-title"}, nil)
 			},
 		},
 	}

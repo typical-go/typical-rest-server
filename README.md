@@ -89,17 +89,10 @@ Typical-Rest encourage [standard go project layout](https://github.com/golang-st
 Source codes:
 - [`internal`](internal): private codes for the project
   - [`internal/app`](internal/app) 
-    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
-    - [`internal/app/domain`](internal/app/domain) 
-      - [`internal/app/domain/mylibrary`](internal/app/domain/mylibrary)
-        - [`internal/app/domain/mylibrary/controller`](internal/app/domain/mylibrary/controller): presentation for mylibrary domain
-        - [`internal/app/domain/mylibrary/service`](internal/app/domain/mylibrary/service): logic for mylibrary domain
-      - [`internal/app/domain/mymusic`](internal/app/domain/mymusic)
-        - [`internal/app/domain/mymusic/controller`](internal/app/domain/mymusic/controller): presentation for mymusic domain
-        - [`internal/app/domain/mymusic/service`](internal/app/domain/mymusic/service): logic for mymusic domain
-    - [`internal/app/data_access`](internal/app/data_access)
-      - [`internal/app/data_access/postgresdb`](internal/app/data_access/postgresdb): data access to postgresdb
-      - [`internal/app/data_access/mysqldb`](internal/app/data_access/mysqldb): data access to postgresdb
+    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object    
+      - [`internal/app/entity`](internal/app/entity): database layer entity
+      - [`internal/app/controller`](internal/app/controller): presentation layer
+      - [`internal/app/service`](internal/app/service): logic layer
   - [`internal/app/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package

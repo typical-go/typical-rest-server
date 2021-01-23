@@ -58,6 +58,7 @@ var _ typast.Annotator = (*EntityAnnotation)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
 func (m *EntityAnnotation) Annotate(c *typast.Context) error {
+	os.RemoveAll("internal/generated/entity")
 	annots, _ := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
 	for _, a := range annots {
 		ent, err := m.createEntity(a)

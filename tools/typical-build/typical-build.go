@@ -30,8 +30,8 @@ var descriptor = typgo.Descriptor{
 		},
 		// test
 		&typgo.GoTest{
-			Includes: []string{"internal/app/*/**", "pkg/**"},
-			// Excludes: []string{"internal/app/*"},
+			Includes: []string{"internal/app/**", "pkg/**"},
+			// Excludes: []string{"internal/generated/*"},
 		},
 		// compile
 		&typgo.GoBuild{},
@@ -56,8 +56,8 @@ var descriptor = typgo.Descriptor{
 				Port:   "5432",
 			},
 			DockerName:   "typical-rest-server_pg01_1",
-			MigrationSrc: "databases/postgresdb/migration",
-			SeedSrc:      "databases/postgresdb/seed",
+			MigrationSrc: "databases/entity/migration",
+			SeedSrc:      "databases/entity/seed",
 		},
 		// mysql
 		&mysqltool.MySQLTool{
@@ -70,8 +70,8 @@ var descriptor = typgo.Descriptor{
 				Port:   "3306",
 			},
 			DockerName:   "typical-rest-server_mysql01_1",
-			MigrationSrc: "databases/mysqldb/migration",
-			SeedSrc:      "databases/mysqldb/seed",
+			MigrationSrc: "databases/entity/migration",
+			SeedSrc:      "databases/entity/seed",
 		},
 		// reset
 		&typgo.Task{

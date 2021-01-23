@@ -1,4 +1,4 @@
-package postgresdb_repo
+package repo
 
 /* DO NOT EDIT. This file generated due to '@entity' annotation */
 
@@ -10,7 +10,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
+	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
@@ -40,11 +40,11 @@ type (
 	// BookRepo to get books data from database
 	BookRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
-		Find(context.Context, ...sqkit.SelectOption) ([]*postgresdb.Book, error)
-		Create(context.Context, *postgresdb.Book) (int64, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Book, error)
+		Create(context.Context, *entity.Book) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
-		Update(context.Context, *postgresdb.Book, sqkit.UpdateOption) (int64, error)
-		Patch(context.Context, *postgresdb.Book, sqkit.UpdateOption) (int64, error)
+		Update(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
 	}
 	// BookRepoImpl is implementation books repository
 	BookRepoImpl struct {
@@ -83,7 +83,7 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 }
 
 // Find books
-func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*postgresdb.Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Book, err error) {
 	builder := sq.
 		Select(
 			BookTable.ID,
@@ -105,9 +105,9 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 		return
 	}
 
-	list = make([]*postgresdb.Book, 0)
+	list = make([]*entity.Book, 0)
 	for rows.Next() {
-		ent := new(postgresdb.Book)
+		ent := new(entity.Book)
 		if err = rows.Scan(
 			&ent.ID,
 			&ent.Title,
@@ -123,7 +123,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 }
 
 // Create books
-func (r *BookRepoImpl) Create(ctx context.Context, ent *postgresdb.Book) (int64, error) {
+func (r *BookRepoImpl) Create(ctx context.Context, ent *entity.Book) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -159,7 +159,7 @@ func (r *BookRepoImpl) Create(ctx context.Context, ent *postgresdb.Book) (int64,
 }
 
 // Update books
-func (r *BookRepoImpl) Update(ctx context.Context, ent *postgresdb.Book, opt sqkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -188,7 +188,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *postgresdb.Book, opt sqk
 }
 
 // Patch books
-func (r *BookRepoImpl) Patch(ctx context.Context, ent *postgresdb.Book, opt sqkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err

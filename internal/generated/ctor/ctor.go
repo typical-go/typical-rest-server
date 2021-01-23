@@ -4,15 +4,14 @@ package ctor
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	a "github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary/service"
-	b "github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
-	c "github.com/typical-go/typical-rest-server/internal/app/infra"
+	a "github.com/typical-go/typical-rest-server/internal/app/infra"
+	b "github.com/typical-go/typical-rest-server/internal/app/service"
 )
 
 func init() {
-	typapp.Provide("", a.NewBookSvc)
+	typapp.Provide("", a.NewCacheStore)
+	typapp.Provide("", a.NewDatabases)
+	typapp.Provide("", a.NewServer)
+	typapp.Provide("", b.NewBookSvc)
 	typapp.Provide("", b.NewSongSvc)
-	typapp.Provide("", c.NewCacheStore)
-	typapp.Provide("", c.NewDatabases)
-	typapp.Provide("", c.NewServer)
 }

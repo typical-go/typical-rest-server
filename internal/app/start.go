@@ -8,8 +8,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mylibrary"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic"
 	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
@@ -31,8 +29,7 @@ type (
 		dig.In
 		*echo.Echo
 		Config      *infra.AppCfg
-		MyLibrary   mylibrary.Router
-		MyMusic     mymusic.Router
+		Router      Router
 		HealthCheck HealthCheck
 	}
 )
@@ -55,16 +52,13 @@ func Start(a app) (err error) {
 	})
 }
 
+func setRoute(a app) {
+	echokit.SetRoute(a, &a.Router)
+}
+
 func setMiddleware(a app) {
 	a.Use(log.Middleware)
 	a.Use(middleware.Recover())
-}
-
-func setRoute(a app) {
-	echokit.SetRoute(a,
-		&a.MyLibrary,
-		&a.MyMusic,
-	)
 }
 
 func setProfiler(a app) {

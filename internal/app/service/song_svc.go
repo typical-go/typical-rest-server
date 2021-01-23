@@ -9,8 +9,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/data_access/mysqldb_repo"
+	"github.com/typical-go/typical-rest-server/internal/app/entity"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
@@ -21,17 +21,17 @@ type (
 	// SongSvc contain logic for Song Controller
 	// @mock
 	SongSvc interface {
-		FindOne(context.Context, string) (*mysqldb.Song, error)
+		FindOne(context.Context, string) (*entity.Song, error)
 		Find(context.Context, *FindSongReq) (*FindSongResp, error)
-		Create(context.Context, *mysqldb.Song) (*mysqldb.Song, error)
+		Create(context.Context, *entity.Song) (*entity.Song, error)
 		Delete(context.Context, string) error
-		Update(context.Context, string, *mysqldb.Song) (*mysqldb.Song, error)
-		Patch(context.Context, string, *mysqldb.Song) (*mysqldb.Song, error)
+		Update(context.Context, string, *entity.Song) (*entity.Song, error)
+		Patch(context.Context, string, *entity.Song) (*entity.Song, error)
 	}
 	// SongSvcImpl is implementation of SongSvc
 	SongSvcImpl struct {
 		dig.In
-		Repo mysqldb_repo.SongRepo
+		Repo repo.SongRepo
 	}
 	// FindSongReq find request
 	FindSongReq struct {
@@ -41,7 +41,7 @@ type (
 	}
 	// FindSongResp find song response
 	FindSongResp struct {
-		Songs      []*mysqldb.Song
+		Songs      []*entity.Song
 		TotalCount string
 	}
 )
@@ -53,7 +53,7 @@ func NewSongSvc(impl SongSvcImpl) SongSvc {
 }
 
 // Create Song
-func (b *SongSvcImpl) Create(ctx context.Context, book *mysqldb.Song) (*mysqldb.Song, error) {
+func (b *SongSvcImpl) Create(ctx context.Context, book *entity.Song) (*entity.Song, error) {
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
@@ -86,14 +86,14 @@ func (b *SongSvcImpl) Find(ctx context.Context, req *FindSongReq) (*FindSongResp
 }
 
 // FindOne book
-func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*mysqldb.Song, error) {
+func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*entity.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 
 	return b.findOne(ctx, id)
 }
 
-func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, error) {
-	books, err := b.Repo.Find(ctx, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
+func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*entity.Song, error) {
+	books, err := b.Repo.Find(ctx, sqkit.Eq{repo.SongTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -105,12 +105,12 @@ func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*mysqldb.Song, err
 // Delete book
 func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	_, err := b.Repo.Delete(ctx, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
+	_, err := b.Repo.Delete(ctx, sqkit.Eq{repo.SongTable.ID: id})
 	return err
 }
 
 // Update book
-func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.Song) (*mysqldb.Song, error) {
+func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *entity.Song) (*entity.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 
 	if err := validator.New().Struct(book); err != nil {
@@ -125,8 +125,8 @@ func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *mysqldb.
 	return b.findOne(ctx, id)
 }
 
-func (b *SongSvcImpl) update(ctx context.Context, id int64, song *mysqldb.Song) error {
-	affectedRow, err := b.Repo.Update(ctx, song, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
+func (b *SongSvcImpl) update(ctx context.Context, id int64, song *entity.Song) error {
+	affectedRow, err := b.Repo.Update(ctx, song, sqkit.Eq{repo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (b *SongSvcImpl) update(ctx context.Context, id int64, song *mysqldb.Song) 
 }
 
 // Patch book
-func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *mysqldb.Song) (*mysqldb.Song, error) {
+func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *entity.Song) (*entity.Song, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 
 	if _, err := b.findOne(ctx, id); err != nil {
@@ -149,8 +149,8 @@ func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *mysqldb.S
 	return b.findOne(ctx, id)
 }
 
-func (b *SongSvcImpl) patch(ctx context.Context, id int64, song *mysqldb.Song) error {
-	affectedRow, err := b.Repo.Patch(ctx, song, sqkit.Eq{mysqldb_repo.SongTable.ID: id})
+func (b *SongSvcImpl) patch(ctx context.Context, id int64, song *entity.Song) error {
+	affectedRow, err := b.Repo.Patch(ctx, song, sqkit.Eq{repo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/mysqldb"
-	"github.com/typical-go/typical-rest-server/internal/app/domain/mymusic/service"
+	"github.com/typical-go/typical-rest-server/internal/app/service"
+	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
@@ -36,7 +36,7 @@ func (c *SongCntrl) SetRoute(e echokit.Server) {
 
 // Create book
 func (c *SongCntrl) Create(ec echo.Context) (err error) {
-	var book mysqldb.Song
+	var book entity.Song
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (c *SongCntrl) Delete(ec echo.Context) (err error) {
 
 // Update book
 func (c *SongCntrl) Update(ec echo.Context) (err error) {
-	var book mysqldb.Song
+	var book entity.Song
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (c *SongCntrl) Update(ec echo.Context) (err error) {
 
 // Patch book
 func (c *SongCntrl) Patch(ec echo.Context) (err error) {
-	var book mysqldb.Song
+	var book entity.Song
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}

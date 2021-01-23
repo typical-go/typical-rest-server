@@ -9,8 +9,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/typical-go/typical-rest-server/internal/app/data_access/postgresdb"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/data_access/postgresdb_repo"
+	"github.com/typical-go/typical-rest-server/internal/app/entity"
+	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
@@ -21,17 +21,17 @@ type (
 	// BookSvc contain logic for Book Controller
 	// @mock
 	BookSvc interface {
-		FindOne(context.Context, string) (*postgresdb.Book, error)
+		FindOne(context.Context, string) (*entity.Book, error)
 		Find(context.Context, *FindBookReq) (*FindBookResp, error)
-		Create(context.Context, *postgresdb.Book) (*postgresdb.Book, error)
+		Create(context.Context, *entity.Book) (*entity.Book, error)
 		Delete(context.Context, string) error
-		Update(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
-		Patch(context.Context, string, *postgresdb.Book) (*postgresdb.Book, error)
+		Update(context.Context, string, *entity.Book) (*entity.Book, error)
+		Patch(context.Context, string, *entity.Book) (*entity.Book, error)
 	}
 	// BookSvcImpl is implementation of BookSvc
 	BookSvcImpl struct {
 		dig.In
-		Repo postgresdb_repo.BookRepo
+		Repo repo.BookRepo
 	}
 	// FindBookReq find request
 	FindBookReq struct {
@@ -41,7 +41,7 @@ type (
 	}
 	// FindBookResp find book resp
 	FindBookResp struct {
-		Books      []*postgresdb.Book
+		Books      []*entity.Book
 		TotalCount string
 	}
 )
@@ -53,7 +53,7 @@ func NewBookSvc(impl BookSvcImpl) BookSvc {
 }
 
 // Create Book
-func (b *BookSvcImpl) Create(ctx context.Context, book *postgresdb.Book) (*postgresdb.Book, error) {
+func (b *BookSvcImpl) Create(ctx context.Context, book *entity.Book) (*entity.Book, error) {
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
@@ -86,13 +86,13 @@ func (b *BookSvcImpl) Find(ctx context.Context, req *FindBookReq) (*FindBookResp
 }
 
 // FindOne book
-func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*postgresdb.Book, error) {
+func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*entity.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	return b.findOne(ctx, id)
 }
 
-func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, error) {
-	books, err := b.Repo.Find(ctx, sqkit.Eq{postgresdb_repo.BookTable.ID: id})
+func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*entity.Book, error) {
+	books, err := b.Repo.Find(ctx, sqkit.Eq{repo.BookTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -104,12 +104,12 @@ func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*postgresdb.Book, 
 // Delete book
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	_, err := b.Repo.Delete(ctx, sqkit.Eq{postgresdb_repo.BookTable.ID: id})
+	_, err := b.Repo.Delete(ctx, sqkit.Eq{repo.BookTable.ID: id})
 	return err
 }
 
 // Update book
-func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgresdb.Book) (*postgresdb.Book, error) {
+func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *entity.Book) (*entity.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
@@ -123,8 +123,8 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *postgres
 	return b.findOne(ctx, id)
 }
 
-func (b *BookSvcImpl) update(ctx context.Context, id int64, book *postgresdb.Book) error {
-	affectedRow, err := b.Repo.Update(ctx, book, sqkit.Eq{postgresdb_repo.BookTable.ID: id})
+func (b *BookSvcImpl) update(ctx context.Context, id int64, book *entity.Book) error {
+	affectedRow, err := b.Repo.Update(ctx, book, sqkit.Eq{repo.BookTable.ID: id})
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (b *BookSvcImpl) update(ctx context.Context, id int64, book *postgresdb.Boo
 }
 
 // Patch book
-func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresdb.Book) (*postgresdb.Book, error) {
+func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *entity.Book) (*entity.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
 	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err
@@ -146,8 +146,8 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *postgresd
 	return b.findOne(ctx, id)
 }
 
-func (b *BookSvcImpl) patch(ctx context.Context, id int64, book *postgresdb.Book) error {
-	affectedRow, err := b.Repo.Patch(ctx, book, sqkit.Eq{postgresdb_repo.BookTable.ID: id})
+func (b *BookSvcImpl) patch(ctx context.Context, id int64, book *entity.Book) error {
+	affectedRow, err := b.Repo.Patch(ctx, book, sqkit.Eq{repo.BookTable.ID: id})
 	if err != nil {
 		return err
 	}
