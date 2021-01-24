@@ -108,15 +108,16 @@ Others directory:
 
 Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) as most adoptable architectural pattern
 
-- Presentation Layer at [`internal/app/domain/[DOMAIN]/controller`](internal/server/controller)
+- Presentation Layer at [`internal/app/controller`](internal/app/controller)
   - Parsing the request
   - Sending response
-- Logic Layer at [`internal/app/domain/[DOMAIN]/service`](internal/server/service)
+- Logic Layer at [`internal/app/service`](internal/app/service)
   - Intermediary between controller (end-point) and repository (data)
   - Logic of controller
   - Data Validation
-- Data Access Layer at [`internal/app/data_access/[DATABASE]`](internal/server/repository)
+- Data Access Layer at [`internal/app/entity`](internal/app/entity) (database) or [`internal/app/model`](internal/app/model) (business)
   - No logic except operation to database
+  - Repository pattern for Database entity or Business Model
 
 ## Dependency Injection
 
