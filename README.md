@@ -90,9 +90,10 @@ Source codes:
 - [`internal`](internal): private codes for the project
   - [`internal/app`](internal/app) 
     - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object    
-      - [`internal/app/entity`](internal/app/entity): database layer entity
-      - [`internal/app/controller`](internal/app/controller): presentation layer
-      - [`internal/app/service`](internal/app/service): logic layer
+    - [`internal/app/controller`](internal/app/controller): presentation layer
+    - [`internal/app/service`](internal/app/service): logic layer
+    - [`internal/app/entity`](internal/app/entity): data-access layer for database entity
+    - [`internal/app/model`](internal/app/entity): data-access layer for business/domain model
   - [`internal/app/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package

@@ -9,13 +9,13 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
-func TestRoute(t *testing.T) {
+func TestProfiler(t *testing.T) {
 	e := echo.New()
-	echokit.SetRoute(e, &app.Router{})
+	app.SetProfiler(e, app.HealthCheck{})
+
 	require.Equal(t, []string{
-		"/books\tGET,POST",
-		"/books/:id\tDELETE,GET,HEAD,PATCH,PUT",
-		"/songs\tGET,POST",
-		"/songs/:id\tDELETE,GET,HEAD,PATCH,PUT",
+		"/application/health\tGET,HEAD",
+		"/debug/*\tGET",
+		"/debug/*/*\tGET",
 	}, echokit.DumpEcho(e))
 }

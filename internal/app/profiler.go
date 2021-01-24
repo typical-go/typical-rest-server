@@ -24,6 +24,22 @@ type (
 	}
 )
 
+const (
+	healthCheckPath = "/application/health"
+)
+
+// SetProfiler ...
+func SetProfiler(e *echo.Echo, hc HealthCheck) {
+	e.GET(healthCheckPath, hc.Handle)
+	e.HEAD(healthCheckPath, hc.Handle)
+	e.GET("/debug/*", echo.WrapHandler(http.DefaultServeMux))
+	e.GET("/debug/*/*", echo.WrapHandler(http.DefaultServeMux))
+}
+
+//
+// HealthCheck
+//
+
 // Handle echo function
 func (h *HealthCheck) Handle(ec echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
