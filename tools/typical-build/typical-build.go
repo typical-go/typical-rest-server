@@ -31,7 +31,7 @@ var descriptor = typgo.Descriptor{
 		// test
 		&typgo.GoTest{
 			Includes: []string{"internal/app/**", "pkg/**"},
-			// Excludes: []string{"internal/generated/*"},
+			Excludes: []string{"internal/app/model"},
 		},
 		// compile
 		&typgo.GoBuild{},
