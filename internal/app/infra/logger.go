@@ -1,6 +1,7 @@
-package log
+package infra
 
 import (
+	"log"
 	"strconv"
 	"time"
 
@@ -10,8 +11,25 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/logruskit"
 )
 
-// Middleware log every request
-func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
+var _debug bool
+
+// SetLogger set logger
+func SetLogger(debug bool) *logrus.Logger {
+	_debug = debug
+	logger := logrus.StandardLogger()
+	if debug {
+		logger.SetLevel(logrus.DebugLevel)
+		logger.SetFormatter(&logrus.TextFormatter{})
+	} else {
+		logger.SetLevel(logrus.WarnLevel)
+		logger.SetFormatter(&logrus.JSONFormatter{})
+	}
+	log.SetOutput(logger.Writer())
+	return logger
+}
+
+// LogMiddleware log every request
+func LogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := c.Request()
 		res := c.Response()

@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/typical-go/typical-rest-server/internal/app/controller"
-	"github.com/typical-go/typical-rest-server/internal/app/infra/log"
+	"github.com/typical-go/typical-rest-server/internal/app/infra"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 )
 
@@ -16,7 +16,7 @@ func SetServer(
 ) {
 
 	// set middleware
-	e.Use(log.Middleware)
+	e.Use(infra.LogMiddleware)
 	e.Use(middleware.Recover())
 
 	// set route
