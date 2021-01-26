@@ -94,7 +94,7 @@ Source codes:
     - [`internal/app/service`](internal/app/service): logic layer
     - [`internal/app/entity`](internal/app/entity): data-access layer for database entity
     - [`internal/app/model`](internal/app/entity): data-access layer for business/domain model
-  - [`internal/app/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
+  - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package
 
