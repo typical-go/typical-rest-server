@@ -28,28 +28,37 @@ var (
 var _ typgo.Tasker = (*DockerTool)(nil)
 
 // Task for docker
-func (m *DockerTool) Task(sys *typgo.Descriptor) *cli.Command {
-	return &cli.Command{
+func (m *DockerTool) Task() *typgo.Task {
+	return &typgo.Task{
 		Name:  "docker",
 		Usage: "Docker utility",
-		Subcommands: []*cli.Command{
-			m.CmdUp(sys),
-			m.CmdDown(sys),
-			m.CmdWipe(sys),
+		SubTasks: []*typgo.Task{
+			{
+				Name:    "up",
+				Aliases: []string{"start"},
+				Flags: []cli.Flag{
+					&cli.BoolFlag{Name: "wipe"},
+				},
+				Usage:  "Spin up docker containers according docker-compose",
+				Action: typgo.NewAction(DockerUp),
+			},
+			{
+				Name:    "down",
+				Aliases: []string{"stop"},
+				Usage:   "Take down all docker containers according docker-compose",
+				Action:  typgo.NewAction(DockerDown),
+			},
+			{
+				Name:   "wipe",
+				Usage:  "Kill all running docker container",
+				Action: typgo.NewAction(DockerWipe),
+			},
 		},
 	}
 }
 
-// CmdWipe command wipe
-func (m *DockerTool) CmdWipe(d *typgo.Descriptor) *cli.Command {
-	return &cli.Command{
-		Name:   "wipe",
-		Usage:  "Kill all running docker container",
-		Action: d.Action(typgo.NewAction(m.dockerWipe)),
-	}
-}
-
-func (m *DockerTool) dockerWipe(c *typgo.Context) error {
+// DockerWipe clean all docker process
+func DockerWipe(c *typgo.Context) error {
 	ids, err := dockerIDs(c)
 	if err != nil {
 		return fmt.Errorf("Docker-ID: %w", err)
@@ -62,22 +71,10 @@ func (m *DockerTool) dockerWipe(c *typgo.Context) error {
 	return nil
 }
 
-// CmdUp command up
-func (m *DockerTool) CmdUp(d *typgo.Descriptor) *cli.Command {
-	return &cli.Command{
-		Name:    "up",
-		Aliases: []string{"start"},
-		Flags: []cli.Flag{
-			&cli.BoolFlag{Name: "wipe"},
-		},
-		Usage:  "Spin up docker containers according docker-compose",
-		Action: d.Action(typgo.NewAction(m.dockerUp)),
-	}
-}
-
-func (m *DockerTool) dockerUp(c *typgo.Context) (err error) {
+// DockerUp docker up
+func DockerUp(c *typgo.Context) (err error) {
 	if c.Bool("wipe") {
-		if err := m.dockerWipe(c); err != nil {
+		if err := DockerWipe(c); err != nil {
 			return err
 		}
 	}
@@ -89,17 +86,8 @@ func (m *DockerTool) dockerUp(c *typgo.Context) (err error) {
 	})
 }
 
-// CmdDown command down
-func (m *DockerTool) CmdDown(c *typgo.Descriptor) *cli.Command {
-	return &cli.Command{
-		Name:    "down",
-		Aliases: []string{"stop"},
-		Usage:   "Take down all docker containers according docker-compose",
-		Action:  c.Action(typgo.NewAction(dockerDown)),
-	}
-}
-
-func dockerDown(c *typgo.Context) error {
+// DockerDown docker down
+func DockerDown(c *typgo.Context) error {
 	return c.Execute(&typgo.Bash{
 		Name:   "docker-compose",
 		Args:   []string{"down", "-v"},

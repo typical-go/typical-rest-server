@@ -11,7 +11,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
-	"github.com/urfave/cli/v2"
 
 	// load migration file
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -32,18 +31,18 @@ type (
 var _ (typgo.Tasker) = (*MySQLTool)(nil)
 
 // Task for postgress
-func (t *MySQLTool) Task(d *typgo.Descriptor) *cli.Command {
-	return &cli.Command{
+func (t *MySQLTool) Task() *typgo.Task {
+	return &typgo.Task{
 		Name:  t.Name,
 		Usage: t.Name + " utility",
-		Subcommands: []*cli.Command{
-			{Name: "create", Usage: "Create database", Action: d.Action(typgo.NewAction(t.CreateDB))},
-			{Name: "drop", Usage: "Drop database", Action: d.Action(typgo.NewAction(t.DropDB))},
-			{Name: "migrate", Usage: "Migrate database", Action: d.Action(typgo.NewAction(t.MigrateDB))},
-			{Name: "migration", Usage: "Create Migration file", Action: d.Action(typgo.NewAction(t.MigrationFile))},
-			{Name: "rollback", Usage: "Rollback database", Action: d.Action(typgo.NewAction(t.RollbackDB))},
-			{Name: "seed", Usage: "Seed database", Action: d.Action(typgo.NewAction(t.SeedDB))},
-			{Name: "console", Usage: "Postgres console", Action: d.Action(typgo.NewAction(t.Console))},
+		SubTasks: []*typgo.Task{
+			{Name: "create", Usage: "Create database", Action: typgo.NewAction(t.CreateDB)},
+			{Name: "drop", Usage: "Drop database", Action: typgo.NewAction(t.DropDB)},
+			{Name: "migrate", Usage: "Migrate database", Action: typgo.NewAction(t.MigrateDB)},
+			{Name: "migration", Usage: "Create Migration file", Action: typgo.NewAction(t.MigrationFile)},
+			{Name: "rollback", Usage: "Rollback database", Action: typgo.NewAction(t.RollbackDB)},
+			{Name: "seed", Usage: "Seed database", Action: typgo.NewAction(t.SeedDB)},
+			{Name: "console", Usage: "Postgres console", Action: typgo.NewAction(t.Console)},
 		},
 	}
 }

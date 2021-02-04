@@ -16,7 +16,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.9.11",
+	ProjectVersion: "0.9.12",
 	EnvLoader:      typgo.DotEnv(".env"),
 
 	Tasks: []typgo.Tasker{
