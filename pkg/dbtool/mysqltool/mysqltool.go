@@ -32,18 +32,18 @@ type (
 var _ (typgo.Tasker) = (*MySQLTool)(nil)
 
 // Task for postgress
-func (t *MySQLTool) Task(sys *typgo.BuildSys) *cli.Command {
+func (t *MySQLTool) Task(d *typgo.Descriptor) *cli.Command {
 	return &cli.Command{
 		Name:  t.Name,
 		Usage: t.Name + " utility",
 		Subcommands: []*cli.Command{
-			{Name: "create", Usage: "Create database", Action: sys.ExecuteFn(t.CreateDB)},
-			{Name: "drop", Usage: "Drop database", Action: sys.ExecuteFn(t.DropDB)},
-			{Name: "migrate", Usage: "Migrate database", Action: sys.ExecuteFn(t.MigrateDB)},
-			{Name: "migration", Usage: "Create Migration file", Action: sys.ExecuteFn(t.MigrationFile)},
-			{Name: "rollback", Usage: "Rollback database", Action: sys.ExecuteFn(t.RollbackDB)},
-			{Name: "seed", Usage: "Seed database", Action: sys.ExecuteFn(t.SeedDB)},
-			{Name: "console", Usage: "Postgres console", Action: sys.ExecuteFn(t.Console)},
+			{Name: "create", Usage: "Create database", Action: d.Action(typgo.NewAction(t.CreateDB))},
+			{Name: "drop", Usage: "Drop database", Action: d.Action(typgo.NewAction(t.DropDB))},
+			{Name: "migrate", Usage: "Migrate database", Action: d.Action(typgo.NewAction(t.MigrateDB))},
+			{Name: "migration", Usage: "Create Migration file", Action: d.Action(typgo.NewAction(t.MigrationFile))},
+			{Name: "rollback", Usage: "Rollback database", Action: d.Action(typgo.NewAction(t.RollbackDB))},
+			{Name: "seed", Usage: "Seed database", Action: d.Action(typgo.NewAction(t.SeedDB))},
+			{Name: "console", Usage: "Postgres console", Action: d.Action(typgo.NewAction(t.Console))},
 		},
 	}
 }

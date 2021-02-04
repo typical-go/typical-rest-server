@@ -16,7 +16,7 @@ func TestCmdUp(t *testing.T) {
 			{CommandLine: "docker-compose up --remove-orphans -d"},
 		})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdUp(&typgo.BuildSys{})
+		command := cmd.CmdUp(&typgo.Descriptor{})
 		cliCtx := cli.NewContext(nil, &flag.FlagSet{}, nil)
 		require.NoError(t, command.Action(cliCtx))
 	})
@@ -26,7 +26,7 @@ func TestCmdUp(t *testing.T) {
 			{CommandLine: "docker-compose up --remove-orphans -d"},
 		})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdUp(&typgo.BuildSys{})
+		command := cmd.CmdUp(&typgo.Descriptor{})
 		flagSet := &flag.FlagSet{}
 		flagSet.Bool("wipe", true, "")
 
@@ -36,7 +36,7 @@ func TestCmdUp(t *testing.T) {
 	t.Run("with wipe error", func(t *testing.T) {
 		defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdUp(&typgo.BuildSys{})
+		command := cmd.CmdUp(&typgo.Descriptor{})
 		flagSet := &flag.FlagSet{}
 		flagSet.Bool("wipe", true, "")
 
@@ -53,7 +53,7 @@ func TestCmdWipe(t *testing.T) {
 			{CommandLine: "docker kill pid-2"},
 		})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdWipe(&typgo.BuildSys{})
+		command := cmd.CmdWipe(&typgo.Descriptor{})
 
 		require.NoError(t, command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil)))
 	})
@@ -61,7 +61,7 @@ func TestCmdWipe(t *testing.T) {
 	t.Run("when ps error", func(t *testing.T) {
 		defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdWipe(&typgo.BuildSys{})
+		command := cmd.CmdWipe(&typgo.Descriptor{})
 
 		err := command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil))
 		require.EqualError(t, err, "Docker-ID: typgo-mock: no run expectation for \"docker ps -q\"")
@@ -72,7 +72,7 @@ func TestCmdWipe(t *testing.T) {
 			{CommandLine: "docker ps -q", OutputBytes: []byte("pid-1\npid-2")},
 		})(t)
 		cmd := &typdocker.DockerTool{}
-		command := cmd.CmdWipe(&typgo.BuildSys{})
+		command := cmd.CmdWipe(&typgo.Descriptor{})
 
 		err := command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil))
 		require.EqualError(t, err, "Fail to kill #pid-1: typgo-mock: no run expectation for \"docker kill pid-1\"")
@@ -81,13 +81,12 @@ func TestCmdWipe(t *testing.T) {
 }
 
 func TestCmdDown(t *testing.T) {
-
 	defer typgo.PatchBash([]*typgo.RunExpectation{
 		{CommandLine: "docker-compose down -v"},
 	})(t)
 
 	cmd := &typdocker.DockerTool{}
-	command := cmd.CmdDown(&typgo.BuildSys{})
+	command := cmd.CmdDown(&typgo.Descriptor{})
 
 	require.NoError(t, command.Action(cli.NewContext(nil, &flag.FlagSet{}, nil)))
 }

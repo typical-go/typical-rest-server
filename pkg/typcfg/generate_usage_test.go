@@ -36,11 +36,9 @@ func TestGenerateUsage(t *testing.T) {
 		},
 		Context: &typast.Context{
 			Context: &typgo.Context{
-				BuildSys: &typgo.BuildSys{
-					Descriptor: &typgo.Descriptor{
-						ProjectName:    "NAME",
-						ProjectVersion: "VERSION",
-					},
+				Descriptor: &typgo.Descriptor{
+					ProjectName:    "NAME",
+					ProjectVersion: "VERSION",
 				},
 			},
 		},

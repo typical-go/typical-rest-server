@@ -28,7 +28,7 @@ var (
 var _ typgo.Tasker = (*DockerTool)(nil)
 
 // Task for docker
-func (m *DockerTool) Task(sys *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) Task(sys *typgo.Descriptor) *cli.Command {
 	return &cli.Command{
 		Name:  "docker",
 		Usage: "Docker utility",
@@ -41,11 +41,11 @@ func (m *DockerTool) Task(sys *typgo.BuildSys) *cli.Command {
 }
 
 // CmdWipe command wipe
-func (m *DockerTool) CmdWipe(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdWipe(d *typgo.Descriptor) *cli.Command {
 	return &cli.Command{
 		Name:   "wipe",
 		Usage:  "Kill all running docker container",
-		Action: c.ExecuteFn(m.dockerWipe),
+		Action: d.Action(typgo.NewAction(m.dockerWipe)),
 	}
 }
 
@@ -63,7 +63,7 @@ func (m *DockerTool) dockerWipe(c *typgo.Context) error {
 }
 
 // CmdUp command up
-func (m *DockerTool) CmdUp(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdUp(d *typgo.Descriptor) *cli.Command {
 	return &cli.Command{
 		Name:    "up",
 		Aliases: []string{"start"},
@@ -71,7 +71,7 @@ func (m *DockerTool) CmdUp(c *typgo.BuildSys) *cli.Command {
 			&cli.BoolFlag{Name: "wipe"},
 		},
 		Usage:  "Spin up docker containers according docker-compose",
-		Action: c.ExecuteFn(m.dockerUp),
+		Action: d.Action(typgo.NewAction(m.dockerUp)),
 	}
 }
 
@@ -90,12 +90,12 @@ func (m *DockerTool) dockerUp(c *typgo.Context) (err error) {
 }
 
 // CmdDown command down
-func (m *DockerTool) CmdDown(c *typgo.BuildSys) *cli.Command {
+func (m *DockerTool) CmdDown(c *typgo.Descriptor) *cli.Command {
 	return &cli.Command{
 		Name:    "down",
 		Aliases: []string{"stop"},
 		Usage:   "Take down all docker containers according docker-compose",
-		Action:  c.ExecuteFn(dockerDown),
+		Action:  c.Action(typgo.NewAction(dockerDown)),
 	}
 }
 

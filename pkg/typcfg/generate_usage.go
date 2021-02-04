@@ -40,7 +40,7 @@ func GenerateUsage(target string, c *Context) error {
 		usageTmpl,
 		usageTmplData{
 			Signature:   typast.Signature{TagName: "@envconfig"},
-			ProjectName: c.BuildSys.ProjectName,
+			ProjectName: c.Descriptor.ProjectName,
 			Fields:      fields,
 			EnvSnippet:  envSnippet(fields),
 		},
