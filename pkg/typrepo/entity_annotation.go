@@ -59,22 +59,22 @@ var _ typast.Annotator = (*EntityAnnotation)(nil)
 // Annotate Envconfig to prepare dependency-injection and env-file
 func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 	os.RemoveAll("internal/generated/entity")
-	annots, _ := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
-	for _, a := range annots {
-		ent, err := m.createEntity(a)
-		if err != nil {
-			return err
+	for _, a := range c.Annots {
+		if a.TagName == m.getTagName() && typast.IsStruct(a) && typast.IsPublic(a) {
+			ent, err := m.createEntity(a)
+			if err != nil {
+				return err
+			}
+			if err := m.process(ent); err != nil {
+				fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
+			}
+			m.mock(c, a, ent)
 		}
-		if err := m.process(ent); err != nil {
-			fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
-		}
-
-		m.mock(c, a, ent)
 	}
 	return nil
 }
 
-func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot2, ent *EntityTmplData) error {
+func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
 	destPkg := filepath.Base(ent.Dest) + "_mock"
 	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
 	pkg := typgo.ProjectPkg + "/" + ent.Dest
@@ -121,7 +121,7 @@ func (m *EntityAnnotation) getTagName() string {
 //
 
 // CreateEntity create entity
-func (m *EntityAnnotation) createEntity(a *typast.Annot2) (*EntityTmplData, error) {
+func (m *EntityAnnotation) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 	name := a.GetName()
 	table := a.TagParam.Get("table")
 
@@ -185,7 +185,7 @@ func (*EntityAnnotation) GetDest(file string) string {
 	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
 }
 
-func (m *EntityAnnotation) createFields(a *typast.Annot2) (fields []*Field, primaryKey *Field) {
+func (m *EntityAnnotation) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
 	structDecl := a.Decl.Type.(*typast.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]

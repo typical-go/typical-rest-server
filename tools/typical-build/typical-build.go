@@ -56,8 +56,8 @@ var descriptor = typgo.Descriptor{
 				Port:   "5432",
 			},
 			DockerName:   "typical-rest-server_pg01_1",
-			MigrationSrc: "databases/entity/migration",
-			SeedSrc:      "databases/entity/seed",
+			MigrationSrc: "databases/pg/migration",
+			SeedSrc:      "databases/pg/seed",
 		},
 		// mysql
 		&mysqltool.MySQLTool{
@@ -70,16 +70,16 @@ var descriptor = typgo.Descriptor{
 				Port:   "3306",
 			},
 			DockerName:   "typical-rest-server_mysql01_1",
-			MigrationSrc: "databases/entity/migration",
-			SeedSrc:      "databases/entity/seed",
+			MigrationSrc: "databases/mysql/migration",
+			SeedSrc:      "databases/mysql/seed",
 		},
 		// reset
 		&typgo.Task{
 			Name:  "reset",
 			Usage: "reset the project locally (postgres/etc)",
 			Action: typgo.TaskNames{
-				"pg.drop", "pg.create", "pg.migrate", "pg.seed",
-				"mysql.drop", "mysql.create", "mysql.migrate", "mysql.seed",
+				"pg drop", "pg create", "pg migrate", "pg seed",
+				"mysql drop", "mysql create", "mysql migrate", "mysql seed",
 			},
 		},
 		// release

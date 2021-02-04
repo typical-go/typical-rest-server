@@ -116,15 +116,18 @@ func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
 	var configs []*Envconfig
 
-	annots, imports := typast.FindAnnot(c, m.getTagName(), typast.EqualStruct)
-	imports["github.com/kelseyhightower/envconfig"] = ""
-	imports["github.com/typical-go/typical-go/pkg/typapp"] = ""
-	imports["fmt"] = ""
-
-	for _, annot := range annots {
-		configs = append(configs, createEnvconfig(annot))
+	importAliases := typast.NewImportAliases()
+	for _, a := range c.Annots {
+		if a.TagName == m.getTagName() && typast.IsPublic(a) && typast.IsStruct(a) {
+			importAlias := importAliases.Append(typast.Package(a))
+			configs = append(configs, createEnvconfig(a, importAlias))
+		}
 	}
-	return &Context{Context: c, Configs: configs, Imports: imports}
+	importAliases.Map["github.com/kelseyhightower/envconfig"] = ""
+	importAliases.Map["github.com/typical-go/typical-go/pkg/typapp"] = ""
+	importAliases.Map["fmt"] = ""
+
+	return &Context{Context: c, Configs: configs, Imports: importAliases.Map}
 }
 
 func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
@@ -174,7 +177,7 @@ func createImports(dirs []string) []string {
 	return imports
 }
 
-func createEnvconfig(a *typast.Annot2) *Envconfig {
+func createEnvconfig(a *typast.Annot, importAlias string) *Envconfig {
 	prefix := getPrefix(a)
 	structDecl := a.Type.(*typast.StructDecl)
 
@@ -184,7 +187,7 @@ func createEnvconfig(a *typast.Annot2) *Envconfig {
 		Ctor:     ctor,
 		Name:     name,
 		Prefix:   prefix,
-		SpecType: fmt.Sprintf("%s.%s", a.ImportAlias, name),
+		SpecType: fmt.Sprintf("%s.%s", importAlias, name),
 		Fields:   createFields(structDecl, prefix),
 		FnName:   fmt.Sprintf("Load%s%s", strcase.ToCamel(ctor), name),
 	}
@@ -214,11 +217,11 @@ func CreateField(prefix string, field *typast.Field) *Field {
 	}
 }
 
-func getCtorName(annot *typast.Annot2) string {
+func getCtorName(annot *typast.Annot) string {
 	return annot.TagParam.Get("ctor")
 }
 
-func getPrefix(annot *typast.Annot2) string {
+func getPrefix(annot *typast.Annot) string {
 	prefix := annot.TagParam.Get("prefix")
 	if prefix == "" {
 		prefix = strings.ToUpper(annot.GetName())
