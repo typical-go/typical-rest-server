@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/tmplkit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
@@ -65,8 +64,8 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 			if err != nil {
 				return err
 			}
-			if err := m.process(ent); err != nil {
-				fmt.Fprintf(oskit.Stdout, "WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
+			if err := m.process(c, ent); err != nil {
+				c.Infof("WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
 			}
 			m.mock(c, a, ent)
 		}
@@ -83,7 +82,7 @@ func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot, ent *EntityT
 	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
 }
 
-func (m *EntityAnnotation) process(ent *EntityTmplData) error {
+func (m *EntityAnnotation) process(c *typast.Context, ent *EntityTmplData) error {
 	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
@@ -91,7 +90,7 @@ func (m *EntityAnnotation) process(ent *EntityTmplData) error {
 
 	os.MkdirAll(ent.Dest, 0777)
 	path := fmt.Sprintf("%s/%s_repo.go", ent.Dest, strings.ToLower(ent.Name))
-	fmt.Fprintf(oskit.Stdout, "Generate repository: %s\n", path)
+	c.Infof("Generate repository: %s\n", path)
 	if err := tmplkit.WriteFile(path, tmpl, ent); err != nil {
 		return err
 	}

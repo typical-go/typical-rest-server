@@ -8,16 +8,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
+	"github.com/urfave/cli/v2"
 )
 
 func TestGenerateUsage(t *testing.T) {
 	var out strings.Builder
-	defer oskit.PatchStdout(&out)()
-
 	target := "sample.md"
 	c := &typcfg.Context{
 		Configs: []*typcfg.Envconfig{
@@ -40,6 +38,10 @@ func TestGenerateUsage(t *testing.T) {
 					ProjectName:    "NAME",
 					ProjectVersion: "VERSION",
 				},
+				Context: &cli.Context{
+					Command: &cli.Command{},
+				},
+				Stdout: &out,
 			},
 		},
 	}
@@ -66,5 +68,5 @@ func TestGenerateUsage(t *testing.T) {
 `, "```\nAPP_NAME=some-name\nAPP_DEBUG=false\nDB_HOST=some-host\nDB_PORT=some-port\n```")
 	require.Equal(t, expected, string(b))
 
-	require.Equal(t, "Generate 'sample.md'\n", out.String())
+	require.Equal(t, "NAME:> Generate 'sample.md'\n", out.String())
 }

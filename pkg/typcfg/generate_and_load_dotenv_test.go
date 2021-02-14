@@ -3,23 +3,25 @@ package typcfg_test
 import (
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/oskit"
+	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 )
 
 func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	target := "some-env"
 	ioutil.WriteFile(target, []byte("key1=val111\nkey2=val222"), 0777)
-	var out strings.Builder
 
-	defer oskit.PatchStdout(&out)()
 	defer os.Remove(target)
 
-	c := &typcfg.Context{
+	c, out := typgo.DummyContext()
+	cc := &typcfg.Context{
+		Context: &typast.Context{
+			Context: c,
+		},
 		Configs: []*typcfg.Envconfig{
 			{
 				Fields: []*typcfg.Field{
@@ -31,9 +33,9 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 		},
 	}
 
-	typcfg.GenerateAndLoadDotEnv(target, c)
+	typcfg.GenerateAndLoadDotEnv(target, cc)
 
 	b, _ := ioutil.ReadFile(target)
 	require.Equal(t, "key1=val111\nkey2=val222\nkey3=val3\n", string(b))
-	require.Equal(t, "New keys added in 'some-env': key3\n", out.String())
+	require.Equal(t, "some-project:dummy> New keys added in 'some-env': key3\n", out.String())
 }

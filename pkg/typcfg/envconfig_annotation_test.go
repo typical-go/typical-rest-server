@@ -4,10 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
-	"strings"
 	"testing"
-
-	"github.com/typical-go/typical-go/pkg/oskit"
 
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/typast"
@@ -21,14 +18,10 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 
 	defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
 
-	var out strings.Builder
-	defer oskit.PatchStdout(&out)()
-
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{}
-	c := &typast.Context{
-		Context: &typgo.Context{
-			Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
-		},
+	c, out := typgo.DummyContext()
+	ac := &typast.Context{
+		Context: c,
 		Summary: &typast.Summary{
 			Annots: []*typast.Annot{
 				{
@@ -48,7 +41,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, EnvconfigAnnotation.Annotate(c))
+	require.NoError(t, EnvconfigAnnotation.Annotate(ac))
 
 	b, _ := ioutil.ReadFile("internal/generated/envcfg/envcfg.go")
 	require.Equal(t, `package envcfg
@@ -77,15 +70,12 @@ func LoadSomeSample() (*a.SomeSample, error) {
 }
 `, string(b))
 
-	require.Equal(t, "Generate @envconfig to internal/generated/envcfg/envcfg.go\n", out.String())
+	require.Equal(t, "some-project:dummy> Generate @envconfig to internal/generated/envcfg/envcfg.go\n", out.String())
 
 }
 
 func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
-	var out strings.Builder
-
 	defer typgo.PatchBash(nil)(t)
-	defer oskit.PatchStdout(&out)()
 	defer os.Clearenv()
 	defer os.RemoveAll("folder")
 
@@ -95,10 +85,10 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		DotEnv:   ".env33",
 		UsageDoc: "some-usage.md",
 	}
-	c := &typast.Context{
-		Context: &typgo.Context{
-			Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
-		},
+
+	c, out := typgo.DummyContext()
+	ac := &typast.Context{
+		Context: c,
 		Summary: &typast.Summary{Annots: []*typast.Annot{
 			{
 				TagName:  "@envconfig",
@@ -117,7 +107,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		}},
 	}
 
-	require.NoError(t, a.Annotate(c))
+	require.NoError(t, a.Annotate(ac))
 	defer os.Remove(a.Target)
 	defer os.Remove(a.DotEnv)
 	defer os.Remove(a.UsageDoc)
@@ -130,7 +120,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
 
-	require.Equal(t, "Generate @envconfig to folder/some-target\nNew keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\nGenerate 'some-usage.md'\n", out.String())
+	require.Equal(t, "some-project:dummy> Generate @envconfig to folder/some-target\nsome-project:dummy> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\nsome-project:dummy> Generate 'some-usage.md'\n", out.String())
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
@@ -142,10 +132,9 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 		Template: "some-template",
 		Target:   "predefined/cfg-target",
 	}
-	c := &typast.Context{
-		Context: &typgo.Context{
-			Descriptor: &typgo.Descriptor{ProjectName: "some-project"},
-		},
+	c, _ := typgo.DummyContext()
+	ac := &typast.Context{
+		Context: c,
 		Summary: &typast.Summary{
 			Annots: []*typast.Annot{
 				{
@@ -161,7 +150,7 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 			},
 		},
 	}
-	require.NoError(t, EnvconfigAnnotation.Annotate(c))
+	require.NoError(t, EnvconfigAnnotation.Annotate(ac))
 
 	b, _ := ioutil.ReadFile("predefined/cfg-target")
 	require.Equal(t, `some-template`, string(b))

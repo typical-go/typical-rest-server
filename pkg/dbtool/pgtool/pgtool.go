@@ -8,7 +8,6 @@ import (
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
-	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 
@@ -74,7 +73,7 @@ func (t *PgTool) CreateDB(c *typgo.Context) error {
 	defer conn.Close()
 
 	q := fmt.Sprintf("CREATE DATABASE \"%s\"", t.Config.DBName)
-	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
+	c.Infof("%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
@@ -88,14 +87,14 @@ func (t *PgTool) DropDB(c *typgo.Context) error {
 	defer conn.Close()
 
 	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", t.Config.DBName)
-	fmt.Fprintf(oskit.Stdout, "\n%s: %s\n", t.Name, q)
+	c.Infof("%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // MigrateDB migrate database
 func (t *PgTool) MigrateDB(c *typgo.Context) error {
-	fmt.Fprintf(oskit.Stdout, "\n%s: Migrate '%s'\n", t.Name, t.MigrationSrc)
+	c.Infof("%s: Migrate '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -106,7 +105,7 @@ func (t *PgTool) MigrateDB(c *typgo.Context) error {
 
 // RollbackDB rollback database
 func (t *PgTool) RollbackDB(c *typgo.Context) error {
-	fmt.Fprintf(oskit.Stdout, "\n%s: Rollback '%s'\n", t.Name, t.MigrationSrc)
+	c.Infof("%s: Rollback '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
 		return err
@@ -126,7 +125,7 @@ func (t *PgTool) SeedDB(c *typgo.Context) error {
 	files, _ := ioutil.ReadDir(t.SeedSrc)
 	for _, f := range files {
 		filename := fmt.Sprintf("%s/%s", t.SeedSrc, f.Name())
-		fmt.Fprintf(oskit.Stdout, "\n%s: Seed '%s'\n", t.Name, filename)
+		c.Infof("%s: Seed '%s'\n", t.Name, filename)
 		b, _ := ioutil.ReadFile(filename)
 		_, err = db.ExecContext(c.Ctx(), string(b))
 		if err != nil {

@@ -21,7 +21,7 @@ var descriptor = typgo.Descriptor{
 
 	Tasks: []typgo.Tasker{
 		// annotate
-		&typast.AnnotateMe{
+		&typast.AnnotateProject{
 			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
@@ -41,7 +41,7 @@ var descriptor = typgo.Descriptor{
 			Before: typgo.TaskNames{"annotate", "build"},
 		},
 		// mock
-		&typmock.GenerateMock{
+		&typmock.GoMock{
 			Sources: []string{"internal"},
 		},
 		// docker
@@ -84,7 +84,7 @@ var descriptor = typgo.Descriptor{
 			},
 		},
 		// release
-		&typrls.ReleaseTool{
+		&typrls.ReleaseProject{
 			Before: typgo.TaskNames{"test", "build"},
 			// Releaser:  &typrls.CrossCompiler{Targets: []typrls.Target{"darwin/amd64", "linux/amd64"}},
 			Publisher: &typrls.Github{Owner: "typical-go", Repo: "typical-rest-server"},

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/typical-go/typical-go/pkg/oskit"
 	"github.com/typical-go/typical-go/pkg/tmplkit"
 	"github.com/typical-go/typical-go/pkg/typast"
 )
@@ -34,7 +33,7 @@ const usageTmpl = `# {{.ProjectName}}
 // GenerateUsage generate usage document
 func GenerateUsage(target string, c *Context) error {
 	fields := fields(c)
-	fmt.Fprintf(oskit.Stdout, "Generate '%s'\n", target)
+	c.Infof("Generate '%s'\n", target)
 	return tmplkit.WriteFile(
 		target,
 		usageTmpl,
