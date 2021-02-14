@@ -94,7 +94,7 @@ func (m *EntityAnnotation) process(c *typast.Context, ent *EntityTmplData) error
 	if err := tmplkit.WriteFile(path, tmpl, ent); err != nil {
 		return err
 	}
-	typgo.GoImports(path)
+	typgo.GoImports(c.Context, path)
 	return nil
 }
 

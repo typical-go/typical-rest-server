@@ -3,6 +3,7 @@ package typcfg_test
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,7 +18,8 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 
 	defer os.Remove(target)
 
-	c, out := typgo.DummyContext()
+	var out strings.Builder
+	c := &typgo.Context{Stdout: &out}
 	cc := &typcfg.Context{
 		Context: &typast.Context{
 			Context: c,
@@ -37,5 +39,5 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 
 	b, _ := ioutil.ReadFile(target)
 	require.Equal(t, "key1=val111\nkey2=val222\nkey3=val3\n", string(b))
-	require.Equal(t, "some-project:dummy> New keys added in 'some-env': key3\n", out.String())
+	require.Equal(t, "> New keys added in 'some-env': key3\n", out.String())
 }

@@ -1,25 +1,28 @@
 package typcfg_test
 
 import (
+	"flag"
 	"io/ioutil"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
+	"github.com/urfave/cli/v2"
 )
 
 func TestCfgAnnotation_Annotate(t *testing.T) {
 	typgo.ProjectPkg = "github.com/user/project"
 	defer os.RemoveAll("internal")
 
-	defer typgo.PatchBash([]*typgo.RunExpectation{})(t)
-
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{}
-	c, out := typgo.DummyContext()
+	var out strings.Builder
+	c := &typgo.Context{Stdout: &out}
+	defer c.PatchBash([]*typgo.MockBash{})(t)
 	ac := &typast.Context{
 		Context: c,
 		Summary: &typast.Summary{
@@ -70,12 +73,12 @@ func LoadSomeSample() (*a.SomeSample, error) {
 }
 `, string(b))
 
-	require.Equal(t, "some-project:dummy> Generate @envconfig to internal/generated/envcfg/envcfg.go\n", out.String())
+	require.Equal(t, "> Generate @envconfig to internal/generated/envcfg/envcfg.go\n> go build -o /bin/goimports golang.org/x/tools/cmd/goimports\n", out.String())
 
 }
 
 func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
-	defer typgo.PatchBash(nil)(t)
+
 	defer os.Clearenv()
 	defer os.RemoveAll("folder")
 
@@ -86,7 +89,13 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		UsageDoc: "some-usage.md",
 	}
 
-	c, out := typgo.DummyContext()
+	var out strings.Builder
+	c := &typgo.Context{
+		Context:    cli.NewContext(nil, &flag.FlagSet{}, nil),
+		Descriptor: &typgo.Descriptor{},
+		Stdout:     &out,
+	}
+	defer c.PatchBash(nil)(t)
 	ac := &typast.Context{
 		Context: c,
 		Summary: &typast.Summary{Annots: []*typast.Annot{
@@ -120,11 +129,11 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
 
-	require.Equal(t, "some-project:dummy> Generate @envconfig to folder/some-target\nsome-project:dummy> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\nsome-project:dummy> Generate 'some-usage.md'\n", out.String())
+	require.Equal(t, ":> Generate @envconfig to folder/some-target\n:> go build -o /bin/goimports golang.org/x/tools/cmd/goimports\n:> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\n:> Generate 'some-usage.md'\n", out.String())
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
-	defer typgo.PatchBash(nil)(t)
+
 	defer os.RemoveAll("predefined")
 
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{
@@ -132,7 +141,8 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 		Template: "some-template",
 		Target:   "predefined/cfg-target",
 	}
-	c, _ := typgo.DummyContext()
+	c := &typgo.Context{}
+	defer c.PatchBash(nil)(t)
 	ac := &typast.Context{
 		Context: c,
 		Summary: &typast.Summary{

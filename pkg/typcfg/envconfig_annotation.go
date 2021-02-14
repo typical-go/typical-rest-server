@@ -143,7 +143,7 @@ func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
 	}); err != nil {
 		return err
 	}
-	typgo.GoImports(target)
+	typgo.GoImports(c.Context.Context, target)
 	return nil
 }
 
