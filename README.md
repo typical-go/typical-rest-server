@@ -92,8 +92,7 @@ Source codes:
     - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object    
     - [`internal/app/controller`](internal/app/controller): presentation layer
     - [`internal/app/service`](internal/app/service): logic layer
-    - [`internal/app/entity`](internal/app/entity): data-access layer for database entity
-    - [`internal/app/model`](internal/app/entity): data-access layer for business/domain model
+    - [`internal/app/entity`](internal/app/entity): data-access layer for database entity or domain model
   - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package
@@ -106,16 +105,16 @@ Others directory:
 
 ## Layered Architecture
 
-Typical-Rest encourage [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) as most adoptable architectural pattern
+Typical-Rest adopts [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID). Please check [this article](https://blog.ploeh.dk/2013/12/03/layers-onions-ports-adapters-its-all-the-same/).
 
 - Presentation Layer at [`internal/app/controller`](internal/app/controller)
   - Parsing the request
   - Sending response
-- Logic Layer at [`internal/app/service`](internal/app/service)
+- Business Logic Layer at [`internal/app/service`](internal/app/service)
   - Intermediary between controller (end-point) and repository (data)
   - Logic of controller
   - Data Validation
-- Data Access Layer at [`internal/app/entity`](internal/app/entity) (database) or [`internal/app/model`](internal/app/model) (business)
+- Data Access Layer at [`internal/app/entity`](internal/app/entity) (database) 
   - No logic except operation to database
   - Repository pattern for Database entity or Business Model
 
