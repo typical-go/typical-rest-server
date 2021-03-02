@@ -10,7 +10,7 @@ import (
 func GenerateAndLoadDotEnv(target string, c *Context) error {
 	envmap, err := envkit.ReadFile(target)
 	if err != nil {
-		envmap = make(envkit.Map)
+		envmap = make(map[string]string)
 	}
 
 	var updatedKeys []string

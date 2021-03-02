@@ -41,7 +41,7 @@ func TestGenerateUsage(t *testing.T) {
 				Context: &cli.Context{
 					Command: &cli.Command{},
 				},
-				Stdout: &out,
+				Logger: typgo.Logger{Stdout: &out},
 			},
 		},
 	}
@@ -68,5 +68,5 @@ func TestGenerateUsage(t *testing.T) {
 `, "```\nAPP_NAME=some-name\nAPP_DEBUG=false\nDB_HOST=some-host\nDB_PORT=some-port\n```")
 	require.Equal(t, expected, string(b))
 
-	require.Equal(t, "NAME:> Generate 'sample.md'\n", out.String())
+	require.Equal(t, "> Generate 'sample.md'\n", out.String())
 }

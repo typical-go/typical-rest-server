@@ -21,7 +21,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 
 	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{}
 	var out strings.Builder
-	c := &typgo.Context{Stdout: &out}
+	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	defer c.PatchBash([]*typgo.MockBash{})(t)
 	ac := &typast.Context{
 		Context: c,
@@ -93,7 +93,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	c := &typgo.Context{
 		Context:    cli.NewContext(nil, &flag.FlagSet{}, nil),
 		Descriptor: &typgo.Descriptor{},
-		Stdout:     &out,
+		Logger:     typgo.Logger{Stdout: &out},
 	}
 	defer c.PatchBash(nil)(t)
 	ac := &typast.Context{
@@ -129,7 +129,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
 
-	require.Equal(t, ":> Generate @envconfig to folder/some-target\n:> go build -o /bin/goimports golang.org/x/tools/cmd/goimports\n:> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\n:> Generate 'some-usage.md'\n", out.String())
+	require.Equal(t, "> Generate @envconfig to folder/some-target\n> go build -o /bin/goimports golang.org/x/tools/cmd/goimports\n> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\n> Generate 'some-usage.md'\n", out.String())
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {

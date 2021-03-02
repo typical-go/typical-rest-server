@@ -2,7 +2,6 @@ package typdocker_test
 
 import (
 	"flag"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -21,7 +20,6 @@ func TestCmdUp(t *testing.T) {
 }
 
 func TestCmdUp_WithPipe(t *testing.T) {
-
 	flagSet := &flag.FlagSet{}
 	flagSet.Bool("wipe", true, "")
 	cc := cli.NewContext(nil, flagSet, nil)
@@ -30,7 +28,6 @@ func TestCmdUp_WithPipe(t *testing.T) {
 	c := &typgo.Context{
 		Context:    cc,
 		Descriptor: &typgo.Descriptor{},
-		Stdout:     &strings.Builder{},
 	}
 	defer c.PatchBash([]*typgo.MockBash{
 		{CommandLine: "docker ps -q"},
@@ -52,7 +49,6 @@ func TestCmdUp_WithPipeError(t *testing.T) {
 	c := &typgo.Context{
 		Context:    cc,
 		Descriptor: &typgo.Descriptor{},
-		Stdout:     &strings.Builder{},
 	}
 	defer c.PatchBash([]*typgo.MockBash{})(t)
 

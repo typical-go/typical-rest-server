@@ -19,7 +19,7 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	defer os.Remove(target)
 
 	var out strings.Builder
-	c := &typgo.Context{Stdout: &out}
+	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	cc := &typcfg.Context{
 		Context: &typast.Context{
 			Context: c,
