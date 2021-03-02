@@ -25,11 +25,11 @@ type (
 	// UseHandler responsible to handle transaction
 	UseHandler struct {
 		*Context
-		sq.BaseRunner
+		sq.StdSqlCtx
 	}
 	// Tx is interface for *db.Tx
 	Tx interface {
-		sq.BaseRunner
+		sq.StdSqlCtx
 		Rollback() error
 		Commit() error
 	}
@@ -55,7 +55,7 @@ func Use(ctx context.Context, db *sql.DB) (*UseHandler, error) {
 
 	c := Find(ctx)
 	if c == nil { // NOTE: not transactional
-		return &UseHandler{BaseRunner: db}, nil
+		return &UseHandler{StdSqlCtx: db}, nil
 	}
 
 	tx, err := c.Begin(ctx, db)
@@ -63,7 +63,7 @@ func Use(ctx context.Context, db *sql.DB) (*UseHandler, error) {
 		return nil, err
 	}
 
-	return &UseHandler{BaseRunner: tx, Context: c}, nil
+	return &UseHandler{StdSqlCtx: tx, Context: c}, nil
 }
 
 // Find transaction context
@@ -88,7 +88,7 @@ func Error(ctx context.Context) error {
 //
 
 // Begin transaction
-func (c *Context) Begin(ctx context.Context, db *sql.DB) (sq.BaseRunner, error) {
+func (c *Context) Begin(ctx context.Context, db *sql.DB) (sq.StdSqlCtx, error) {
 	tx, ok := c.TxMap[db]
 	if ok {
 		return tx, nil

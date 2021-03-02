@@ -57,7 +57,7 @@ func TestUse(t *testing.T) {
 			TestName: "non transactional",
 			DB:       &sql.DB{},
 			Ctx:      context.Background(),
-			Expected: &dbtxn.UseHandler{BaseRunner: &sql.DB{}},
+			Expected: &dbtxn.UseHandler{StdSqlCtx: &sql.DB{}},
 		},
 		{
 			TestName: "begin error",
@@ -91,7 +91,7 @@ func TestUse_success(t *testing.T) {
 
 	require.NoError(t, err)
 	require.Equal(t, map[*sql.DB]dbtxn.Tx{
-		db: handler.BaseRunner.(dbtxn.Tx),
+		db: handler.StdSqlCtx.(dbtxn.Tx),
 	}, handler.Context.TxMap)
 }
 

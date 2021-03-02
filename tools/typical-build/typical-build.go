@@ -11,7 +11,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/dbtool/pgtool"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
-	"github.com/typical-go/typical-rest-server/pkg/typrepo"
 )
 
 var descriptor = typgo.Descriptor{
@@ -25,7 +24,7 @@ var descriptor = typgo.Descriptor{
 			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
-				&typrepo.EntityAnnotation{},
+				// &typrepo.EntityAnnotation{},
 				&typcfg.EnvconfigAnnotation{DotEnv: ".env", UsageDoc: "USAGE.md"},
 			},
 		},
