@@ -1,0 +1,22 @@
+version: "3"
+services:
+  mysql:
+    container_name: typical-rest-server-mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DBNAME}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DBPASS}
+      MYSQL_PASSWORD: ${MYSQL_DBNAME}
+      MYSQL_USER: ${MYSQL_DBUSER}
+    volumes:
+    - mysql:/var/lib/mysql
+    ports:
+    - 3306:${MYSQL_PORT}
+    networks:
+    - mysql
+    restart: unless-stopped
+networks:
+  mysql:
+    driver: bridge
+volumes:
+  mysql: null

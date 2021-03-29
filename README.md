@@ -56,8 +56,10 @@ cp .env.sample .env    # copy the working .env
 
 Setup the local environment
 ```bash
-./typicalw docker up   # equivalent with `docker-compose up -d`
-./typicalw reset       # reset infra: drop, create and migrate postgres database 
+./typicalw docker up -d  # equivalent with `docker-compose up -d`
+
+# wait few seconds to make sure docker ready
+./typicalw setup         # setup dependency e.g. mysql and postgres
 ```
 
 Run application:

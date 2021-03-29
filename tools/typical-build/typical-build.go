@@ -43,11 +43,14 @@ var descriptor = typgo.Descriptor{
 			Sources: []string{"internal"},
 		},
 		// docker
-		&typdocker.DockerTool{},
+		&typdocker.DockerTool{
+			ComposeFiles: typdocker.ComposeFiles("deploy/docker"),
+			EnvFile:      ".env",
+		},
 		// pg
 		&pgtool.PgTool{
 			Name: "pg",
-			Config: dbtool.Config{ // based on docker-compose.yml
+			Config: dbtool.Config{
 				DBName: "dbname",
 				DBUser: "dbuser",
 				DBPass: "dbpass",
@@ -61,7 +64,7 @@ var descriptor = typgo.Descriptor{
 		// mysql
 		&mysqltool.MySQLTool{
 			Name: "mysql",
-			Config: dbtool.Config{ // based on docker-compose.yml
+			Config: dbtool.Config{
 				DBName: "dbname",
 				DBUser: "dbuser",
 				DBPass: "dbpass",
@@ -74,8 +77,8 @@ var descriptor = typgo.Descriptor{
 		},
 		// reset
 		&typgo.Task{
-			Name:  "reset",
-			Usage: "reset the project locally (postgres/etc)",
+			Name:  "setup",
+			Usage: "setup dependency",
 			Action: typgo.TaskNames{
 				"pg drop", "pg create", "pg migrate", "pg seed",
 				"mysql drop", "mysql create", "mysql migrate", "mysql seed",

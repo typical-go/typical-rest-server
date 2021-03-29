@@ -2,23 +2,19 @@ package typdocker
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/typgo"
-	"github.com/urfave/cli/v2"
 )
 
 type (
-	// DockerTool for docker
-	DockerTool struct{}
-)
-
-var (
-	// DockerComposeYml is yml file
-	DockerComposeYml = "docker-compose.yml"
-	// Version of docker compose
-	Version = "3"
+	// DockerTool is wrapper for docker-compose command support with predefined multiple compose file and environment
+	DockerTool struct {
+		ComposeFiles []string
+		EnvFile      string
+	}
 )
 
 //
@@ -31,40 +27,26 @@ var _ typgo.Tasker = (*DockerTool)(nil)
 func (m *DockerTool) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  "docker",
-		Usage: "Docker utility",
+		Usage: "docker-compose wrapper",
 		SubTasks: []*typgo.Task{
-			{
-				Name:    "up",
-				Aliases: []string{"start"},
-				Flags: []cli.Flag{
-					&cli.BoolFlag{Name: "wipe"},
-				},
-				Usage:  "Spin up docker containers according docker-compose",
-				Action: typgo.NewAction(DockerUp),
-			},
-			{
-				Name:    "down",
-				Aliases: []string{"stop"},
-				Usage:   "Take down all docker containers according docker-compose",
-				Action:  typgo.NewAction(DockerDown),
-			},
 			{
 				Name:   "wipe",
 				Usage:  "Kill all running docker container",
-				Action: typgo.NewAction(DockerWipe),
+				Action: typgo.NewAction(m.DockerWipe),
 			},
 		},
+		Action: typgo.NewAction(m.DockerCompose),
 	}
 }
 
 // DockerWipe clean all docker process
-func DockerWipe(c *typgo.Context) error {
-	ids, err := dockerIDs(c)
+func (m *DockerTool) DockerWipe(c *typgo.Context) error {
+	ids, err := m.dockerIDs(c)
 	if err != nil {
 		return fmt.Errorf("Docker-ID: %w", err)
 	}
 	for _, id := range ids {
-		if err := kill(c, id); err != nil {
+		if err := m.kill(c, id); err != nil {
 			return fmt.Errorf("Fail to kill #%s: %s", id, err.Error())
 		}
 	}
@@ -72,54 +54,61 @@ func DockerWipe(c *typgo.Context) error {
 }
 
 // DockerUp docker up
-func DockerUp(c *typgo.Context) (err error) {
-	if c.Bool("wipe") {
-		if err := DockerWipe(c); err != nil {
-			return err
-		}
+func (m *DockerTool) DockerCompose(c *typgo.Context) (err error) {
+	var args []string
+	if m.EnvFile != "" {
+		args = append(args, "--env-file", m.EnvFile)
 	}
+
+	for _, file := range m.ComposeFiles {
+		args = append(args, "-f", file)
+	}
+	args = append(args, c.Context.Args().Slice()...)
+
 	return c.Execute(&typgo.Bash{
 		Name:   "docker-compose",
-		Args:   []string{"up", "--remove-orphans", "-d"},
+		Args:   args,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	})
 }
 
-// DockerDown docker down
-func DockerDown(c *typgo.Context) error {
-	return c.Execute(&typgo.Bash{
-		Name:   "docker-compose",
-		Args:   []string{"down", "-v"},
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-	})
-}
-
-func dockerIDs(c *typgo.Context) (ids []string, err error) {
+func (m *DockerTool) dockerIDs(c *typgo.Context) ([]string, error) {
 	var out strings.Builder
 
-	if err = c.Execute(&typgo.Bash{
+	err := c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"ps", "-q"},
 		Stderr: os.Stderr,
 		Stdout: &out,
-	}); err != nil {
-		return
+	})
+	if err != nil {
+		return nil, err
 	}
 
+	var ids []string
 	for _, id := range strings.Split(out.String(), "\n") {
 		if id != "" {
 			ids = append(ids, id)
 		}
 	}
-	return
+	return ids, nil
 }
 
-func kill(c *typgo.Context, id string) (err error) {
+func (m *DockerTool) kill(c *typgo.Context, id string) (err error) {
 	return c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"kill", id},
 		Stderr: os.Stderr,
 	})
+}
+
+func ComposeFiles(dir string) []string {
+	fileInfos, _ := ioutil.ReadDir(dir)
+	var paths []string
+	for _, info := range fileInfos {
+		path := fmt.Sprintf("%s/%s", dir, info.Name())
+		paths = append(paths, path)
+	}
+	return paths
 }

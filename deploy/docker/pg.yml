@@ -1,0 +1,21 @@
+version: "3"
+services:
+  pg:
+    container_name: typical-rest-server-pg
+    image: postgres
+    environment:
+      PGDATA: /data/postgres
+      POSTGRES_USER: ${PG_DBUSER}
+      POSTGRES_PASSWORD: ${PG_DBPASS}
+    volumes:
+    - pg:/data/postgres
+    ports:
+    - 5432:${PG_PORT}
+    networks:
+    - pg
+    restart: unless-stopped
+networks:
+  pg:
+    driver: bridge
+volumes:
+  pg: null
