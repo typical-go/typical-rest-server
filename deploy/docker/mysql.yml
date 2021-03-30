@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DBNAME}
       MYSQL_ROOT_PASSWORD: ${MYSQL_DBPASS}
-      MYSQL_PASSWORD: ${MYSQL_DBNAME}
+      MYSQL_PASSWORD: ${MYSQL_DBPASS}
       MYSQL_USER: ${MYSQL_DBUSER}
     volumes:
     - mysql:/var/lib/mysql

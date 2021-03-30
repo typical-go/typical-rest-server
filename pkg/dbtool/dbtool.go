@@ -6,17 +6,6 @@ import (
 	"time"
 )
 
-type (
-	// Config config for postgres tool
-	Config struct {
-		DBName string
-		DBUser string
-		DBPass string
-		Host   string
-		Port   string
-	}
-)
-
 // CreateMigrationFile createa migration file
 func CreateMigrationFile(migrationSrc, name string) {
 	epoch := time.Now().Unix()

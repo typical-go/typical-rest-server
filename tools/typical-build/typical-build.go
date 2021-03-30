@@ -7,8 +7,6 @@ import (
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/pkg/dbtool"
-	"github.com/typical-go/typical-rest-server/pkg/dbtool/mysqltool"
-	"github.com/typical-go/typical-rest-server/pkg/dbtool/pgtool"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdocker"
 )
@@ -48,34 +46,22 @@ var descriptor = typgo.Descriptor{
 			EnvFile:      ".env",
 		},
 		// pg
-		&pgtool.PgTool{
-			Name: "pg",
-			Config: dbtool.Config{
-				DBName: "dbname",
-				DBUser: "dbuser",
-				DBPass: "dbpass",
-				Host:   "localhost",
-				Port:   "5432",
-			},
-			DockerName:   "typical-rest-server_pg01_1",
+		&dbtool.Postgres{
+			Name:         "pg",
+			DockerName:   "typical-rest-server-pg",
+			EnvKeys:      dbtool.EnvKeysWithPrefix("PG"),
 			MigrationSrc: "databases/pg/migration",
 			SeedSrc:      "databases/pg/seed",
 		},
 		// mysql
-		&mysqltool.MySQLTool{
-			Name: "mysql",
-			Config: dbtool.Config{
-				DBName: "dbname",
-				DBUser: "dbuser",
-				DBPass: "dbpass",
-				Host:   "localhost",
-				Port:   "3306",
-			},
-			DockerName:   "typical-rest-server_mysql01_1",
+		&dbtool.MySQL{
+			Name:         "mysql",
+			DockerName:   "typical-rest-server-mysql",
+			EnvKeys:      dbtool.EnvKeysWithPrefix("MYSQL"),
 			MigrationSrc: "databases/mysql/migration",
 			SeedSrc:      "databases/mysql/seed",
 		},
-		// reset
+		// setup
 		&typgo.Task{
 			Name:  "setup",
 			Usage: "setup dependency",
