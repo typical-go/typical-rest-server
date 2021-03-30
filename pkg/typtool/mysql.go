@@ -1,4 +1,4 @@
-package dbtool
+package typtool
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/golang-migrate/migrate/database/postgres"
+	"github.com/golang-migrate/migrate/database/mysql"
 	"github.com/typical-go/typical-go/pkg/typgo"
 
 	// load migration file
@@ -14,19 +14,20 @@ import (
 )
 
 type (
-	Postgres struct {
+	// MySQL for postgres
+	MySQL struct {
 		Name         string
-		EnvKeys      *EnvKeys
-		DockerName   string
+		EnvKeys      *DBEnvKeys
 		MigrationSrc string
 		SeedSrc      string
+		DockerName   string
 	}
 )
 
-var _ (typgo.Tasker) = (*Postgres)(nil)
+var _ (typgo.Tasker) = (*MySQL)(nil)
 
-// Task for postgres
-func (t *Postgres) Task() *typgo.Task {
+// Task for postgress
+func (t *MySQL) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  t.Name,
 		Usage: t.Name + " utility",
@@ -43,17 +44,18 @@ func (t *Postgres) Task() *typgo.Task {
 }
 
 // Console interactice for postgres
-func (t *Postgres) Console(c *typgo.Context) error {
+func (t *MySQL) Console(c *typgo.Context) error {
 	cfg := t.EnvKeys.GetConfig()
-	os.Setenv("PGPASSWORD", cfg.DBPass)
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
-			"exec", "-it", t.DockerName,
-			"psql",
-			"-h", cfg.Host,
-			"-p", cfg.Port,
-			"-U", cfg.DBUser,
+			"exec", "-it", t.dockerName(),
+			"mysql",
+			"-h", cfg.Host, // host
+			"-P", cfg.Port, // port
+			"-u", cfg.DBUser, // user
+			fmt.Sprintf("-p%s", cfg.DBPass), // password flag can't be spaced
+			cfg.DBName,
 		},
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -61,38 +63,46 @@ func (t *Postgres) Console(c *typgo.Context) error {
 	})
 }
 
+func (t *MySQL) dockerName() string {
+	dockerName := t.DockerName
+	if dockerName == "" {
+		dockerName = typgo.ProjectName + "-" + t.Name
+	}
+	return dockerName
+}
+
 // CreateDB create database
-func (t *Postgres) CreateDB(c *typgo.Context) error {
+func (t *MySQL) CreateDB(c *typgo.Context) error {
 	cfg := t.EnvKeys.GetConfig()
-	conn, err := openPostgresForAdmin(cfg)
+	conn, err := openMySQLForAdmin(cfg)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("CREATE DATABASE \"%s\"", cfg.DBName)
+	q := fmt.Sprintf("CREATE DATABASE `%s`", cfg.DBName)
 	c.Infof("%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // DropDB delete database
-func (t *Postgres) DropDB(c *typgo.Context) error {
+func (t *MySQL) DropDB(c *typgo.Context) error {
 	cfg := t.EnvKeys.GetConfig()
-	conn, err := openPostgresForAdmin(cfg)
+	conn, err := openMySQLForAdmin(cfg)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	q := fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\"", cfg.DBName)
+	q := fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", cfg.DBName)
 	c.Infof("%s: %s\n", t.Name, q)
 	_, err = conn.ExecContext(c.Ctx(), q)
 	return err
 }
 
 // MigrateDB migrate database
-func (t *Postgres) MigrateDB(c *typgo.Context) error {
+func (t *MySQL) MigrateDB(c *typgo.Context) error {
 	c.Infof("%s: Migrate '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
@@ -103,7 +113,7 @@ func (t *Postgres) MigrateDB(c *typgo.Context) error {
 }
 
 // RollbackDB rollback database
-func (t *Postgres) RollbackDB(c *typgo.Context) error {
+func (t *MySQL) RollbackDB(c *typgo.Context) error {
 	c.Infof("%s: Rollback '%s'\n", t.Name, t.MigrationSrc)
 	migration, err := t.createMigration()
 	if err != nil {
@@ -114,9 +124,9 @@ func (t *Postgres) RollbackDB(c *typgo.Context) error {
 }
 
 // SeedDB seed database
-func (t *Postgres) SeedDB(c *typgo.Context) error {
+func (t *MySQL) SeedDB(c *typgo.Context) error {
 	cfg := t.EnvKeys.GetConfig()
-	db, err := openPostgres(cfg)
+	db, err := openMySQL(cfg)
 	if err != nil {
 		return err
 	}
@@ -136,7 +146,7 @@ func (t *Postgres) SeedDB(c *typgo.Context) error {
 }
 
 // MigrationFile seed database
-func (t *Postgres) MigrationFile(c *typgo.Context) error {
+func (t *MySQL) MigrationFile(c *typgo.Context) error {
 	args := c.Args().Slice()
 	if len(args) < 1 {
 		args = []string{"migration"}
@@ -147,15 +157,15 @@ func (t *Postgres) MigrationFile(c *typgo.Context) error {
 	return nil
 }
 
-func (t *Postgres) createMigration() (*migrate.Migrate, error) {
+func (t *MySQL) createMigration() (*migrate.Migrate, error) {
 	cfg := t.EnvKeys.GetConfig()
-	db, err := openPostgres(cfg)
+	db, err := openMySQL(cfg)
 	if err != nil {
 		return nil, err
 	}
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
 		return nil, err
 	}
-	return migrate.NewWithDatabaseInstance("file://"+t.MigrationSrc, "postgres", driver)
+	return migrate.NewWithDatabaseInstance("file://"+t.MigrationSrc, "mysql", driver)
 }

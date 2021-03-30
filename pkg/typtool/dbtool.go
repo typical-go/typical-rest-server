@@ -1,4 +1,4 @@
-package dbtool
+package typtool
 
 import (
 	"fmt"

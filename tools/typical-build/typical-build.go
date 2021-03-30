@@ -6,9 +6,8 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
-	"github.com/typical-go/typical-rest-server/pkg/dbtool"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
-	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+	"github.com/typical-go/typical-rest-server/pkg/typtool"
 )
 
 var descriptor = typgo.Descriptor{
@@ -41,23 +40,21 @@ var descriptor = typgo.Descriptor{
 			Sources: []string{"internal"},
 		},
 		// docker
-		&typdocker.DockerTool{
-			ComposeFiles: typdocker.ComposeFiles("deploy/docker"),
+		&typtool.Docker{
+			ComposeFiles: typtool.ComposeFiles("deploy/docker"),
 			EnvFile:      ".env",
 		},
 		// pg
-		&dbtool.Postgres{
+		&typtool.Postgres{
 			Name:         "pg",
-			DockerName:   "typical-rest-server-pg",
-			EnvKeys:      dbtool.EnvKeysWithPrefix("PG"),
+			EnvKeys:      typtool.DBEnvKeysWithPrefix("PG"),
 			MigrationSrc: "databases/pg/migration",
 			SeedSrc:      "databases/pg/seed",
 		},
 		// mysql
-		&dbtool.MySQL{
+		&typtool.MySQL{
 			Name:         "mysql",
-			DockerName:   "typical-rest-server-mysql",
-			EnvKeys:      dbtool.EnvKeysWithPrefix("MYSQL"),
+			EnvKeys:      typtool.DBEnvKeysWithPrefix("MYSQL"),
 			MigrationSrc: "databases/mysql/migration",
 			SeedSrc:      "databases/mysql/seed",
 		},

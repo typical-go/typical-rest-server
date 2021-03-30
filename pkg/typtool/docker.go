@@ -1,4 +1,4 @@
-package typdocker
+package typtool
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 )
 
 type (
-	// DockerTool is wrapper for docker-compose command support with predefined multiple compose file and environment
-	DockerTool struct {
+	// Docker is wrapper for docker-compose command support with predefined multiple compose file and environment
+	Docker struct {
 		ComposeFiles []string
 		EnvFile      string
 	}
@@ -21,10 +21,10 @@ type (
 // Command
 //
 
-var _ typgo.Tasker = (*DockerTool)(nil)
+var _ typgo.Tasker = (*Docker)(nil)
 
 // Task for docker
-func (m *DockerTool) Task() *typgo.Task {
+func (m *Docker) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  "docker",
 		Usage: "docker-compose wrapper",
@@ -40,7 +40,7 @@ func (m *DockerTool) Task() *typgo.Task {
 }
 
 // DockerWipe clean all docker process
-func (m *DockerTool) DockerWipe(c *typgo.Context) error {
+func (m *Docker) DockerWipe(c *typgo.Context) error {
 	ids, err := m.dockerIDs(c)
 	if err != nil {
 		return fmt.Errorf("Docker-ID: %w", err)
@@ -54,7 +54,7 @@ func (m *DockerTool) DockerWipe(c *typgo.Context) error {
 }
 
 // DockerUp docker up
-func (m *DockerTool) DockerCompose(c *typgo.Context) (err error) {
+func (m *Docker) DockerCompose(c *typgo.Context) (err error) {
 	var args []string
 	if m.EnvFile != "" {
 		args = append(args, "--env-file", m.EnvFile)
@@ -73,7 +73,7 @@ func (m *DockerTool) DockerCompose(c *typgo.Context) (err error) {
 	})
 }
 
-func (m *DockerTool) dockerIDs(c *typgo.Context) ([]string, error) {
+func (m *Docker) dockerIDs(c *typgo.Context) ([]string, error) {
 	var out strings.Builder
 
 	err := c.Execute(&typgo.Bash{
@@ -95,7 +95,7 @@ func (m *DockerTool) dockerIDs(c *typgo.Context) ([]string, error) {
 	return ids, nil
 }
 
-func (m *DockerTool) kill(c *typgo.Context, id string) (err error) {
+func (m *Docker) kill(c *typgo.Context, id string) (err error) {
 	return c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"kill", id},
