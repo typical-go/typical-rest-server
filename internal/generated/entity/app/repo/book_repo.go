@@ -59,10 +59,14 @@ func init() {
 
 // Count books
 func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
 	builder := sq.
 		Select("count(*)").
 		From(BookTableName).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)

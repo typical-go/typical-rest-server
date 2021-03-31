@@ -63,10 +63,14 @@ func NewSongRepo(impl SongRepoImpl) SongRepo {
 
 // Count songs
 func (r *SongRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
 	builder := sq.
 		Select("count(*)").
 		From(SongTableName).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)
@@ -83,6 +87,10 @@ func (r *SongRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (i
 
 // Find songs
 func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Song, err error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return nil, err
+	}
 	builder := sq.
 		Select(
 			SongTable.ID,
@@ -92,7 +100,7 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 			SongTable.CreatedAt,
 		).
 		From(SongTableName).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)

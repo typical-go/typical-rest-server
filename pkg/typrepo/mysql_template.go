@@ -49,10 +49,14 @@ func New{{.Name}}Repo(impl {{.Name}}RepoImpl) {{.Name}}Repo {
 
 // Count {{.Table}}
 func (r *{{.Name}}RepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
 	builder := sq.
 		Select("count(*)").
 		From({{.Name}}TableName).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)
@@ -70,13 +74,17 @@ func (r *{{.Name}}RepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOptio
 
 // Find {{.Table}}
 func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*{{.SourcePkg}}.{{.Name}}, err error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return nil, err
+	}
 	builder := sq.
 		Select(
 			{{range .Fields}}{{$.Name}}Table.{{.Name}},
 			{{end}}
 		).
 		From({{.Name}}TableName).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)
