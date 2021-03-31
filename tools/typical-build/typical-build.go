@@ -13,7 +13,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.9.14",
+	ProjectVersion: "0.9.15",
 	Environment:    typgo.DotEnv(".env"),
 
 	Tasks: []typgo.Tasker{
