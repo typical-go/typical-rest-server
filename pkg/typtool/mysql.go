@@ -30,7 +30,7 @@ var _ (typgo.Tasker) = (*MySQL)(nil)
 func (t *MySQL) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  t.Name,
-		Usage: t.Name + " utility",
+		Usage: "mysql database tool",
 		SubTasks: []*typgo.Task{
 			{Name: "create", Usage: "Create database", Action: typgo.NewAction(t.CreateDB)},
 			{Name: "drop", Usage: "Drop database", Action: typgo.NewAction(t.DropDB)},

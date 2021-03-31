@@ -29,7 +29,7 @@ var _ (typgo.Tasker) = (*Postgres)(nil)
 func (t *Postgres) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  t.Name,
-		Usage: t.Name + " utility",
+		Usage: "postgres database tool",
 		SubTasks: []*typgo.Task{
 			{Name: "create", Usage: "Create database", Action: typgo.NewAction(t.CreateDB)},
 			{Name: "drop", Usage: "Drop database", Action: typgo.NewAction(t.DropDB)},

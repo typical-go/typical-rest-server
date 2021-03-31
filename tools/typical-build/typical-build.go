@@ -58,6 +58,11 @@ var descriptor = typgo.Descriptor{
 			MigrationSrc: "databases/mysql/migration",
 			SeedSrc:      "databases/mysql/seed",
 		},
+		// mysql
+		&typtool.Redis{
+			Name:    "cache",
+			EnvKeys: typtool.RedisEnvKeysWithPrefix("CACHE_REDIS"),
+		},
 		// setup
 		&typgo.Task{
 			Name:  "setup",
