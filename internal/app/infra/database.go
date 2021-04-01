@@ -3,6 +3,7 @@ package infra
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"go.uber.org/dig"
@@ -15,29 +16,43 @@ import (
 )
 
 type (
-	dbConfigs struct {
-		dig.In
-		PgCfg    *DatabaseCfg `name:"pg"`
-		MysqlCfg *DatabaseCfg `name:"mysql"`
-	}
 	// Databases setup output
 	Databases struct {
 		dig.Out
 		Pg    *sql.DB `name:"pg"`
 		MySQL *sql.DB `name:"mysql"`
 	}
+	DatabaseCfgs struct {
+		dig.In
+		Pg    *DatabaseCfg `name:"pg"`
+		Mysql *DatabaseCfg `name:"mysql"`
+	}
+	// DatabaseCfg is MySQL configuration
+	// @envconfig (prefix:"MYSQL" ctor:"mysql")
+	// @envconfig (prefix:"PG" ctor:"pg")
+	DatabaseCfg struct {
+		DBName string `envconfig:"DBNAME" required:"true" default:"dbname"`
+		DBUser string `envconfig:"DBUSER" required:"true" default:"dbuser"`
+		DBPass string `envconfig:"DBPASS" required:"true" default:"dbpass"`
+		Host   string `envconfig:"HOST" required:"true" default:"localhost"`
+		Port   string `envconfig:"PORT" required:"true" default:"9999"`
+
+		MaxOpenConns    int           `envconfig:"MAX_OPEN_CONNS" default:"30" required:"true"`
+		MaxIdleConns    int           `envconfig:"MAX_IDLE_CONNS" default:"6" required:"true"`
+		ConnMaxLifetime time.Duration `envconfig:"CONN_MAX_LIFETIME" default:"30m" required:"true"`
+	}
 )
 
 // NewDatabases return new instance of databases
 // @ctor
-func NewDatabases(c dbConfigs) Databases {
+func NewDatabases(cfgs DatabaseCfgs) Databases {
 	return Databases{
-		Pg:    createPGConn(c.PgCfg),
-		MySQL: createMySQLConn(c.MysqlCfg),
+		Pg:    openPostgres(cfgs.Pg),
+		MySQL: openMySQL(cfgs.Mysql),
 	}
 }
 
-func createMySQLConn(p *DatabaseCfg) *sql.DB {
+func openMySQL(p *DatabaseCfg) *sql.DB {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&parseTime=true",
 		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName))
 	if err != nil {
@@ -52,7 +67,7 @@ func createMySQLConn(p *DatabaseCfg) *sql.DB {
 	return db
 }
 
-func createPGConn(p *DatabaseCfg) *sql.DB {
+func openPostgres(p *DatabaseCfg) *sql.DB {
 	conn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		p.DBUser, p.DBPass, p.Host, p.Port, p.DBName,

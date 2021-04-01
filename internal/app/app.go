@@ -25,7 +25,11 @@ import (
 )
 
 // Start app
-func Start(di *dig.Container, cfg *infra.AppCfg, e *echo.Echo) (err error) {
+func Start(
+	di *dig.Container,
+	cfg *infra.AppCfg,
+	e *echo.Echo,
+) (err error) {
 	if err := di.Invoke(SetServer); err != nil {
 		return err
 	}

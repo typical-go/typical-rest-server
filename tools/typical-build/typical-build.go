@@ -49,15 +49,15 @@ var descriptor = typgo.Descriptor{
 		&typtool.Postgres{
 			Name:         "pg",
 			EnvKeys:      typtool.DBEnvKeysWithPrefix("PG"),
-			MigrationSrc: "databases/pg/migration",
-			SeedSrc:      "databases/pg/seed",
+			MigrationSrc: "database/pg/migration",
+			SeedSrc:      "database/pg/seed",
 		},
 		// mysql
 		&typtool.MySQL{
 			Name:         "mysql",
 			EnvKeys:      typtool.DBEnvKeysWithPrefix("MYSQL"),
-			MigrationSrc: "databases/mysql/migration",
-			SeedSrc:      "databases/mysql/seed",
+			MigrationSrc: "database/mysql/migration",
+			SeedSrc:      "database/mysql/seed",
 		},
 		// mysql
 		&typtool.Redis{

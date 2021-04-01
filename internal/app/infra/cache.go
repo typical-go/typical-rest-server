@@ -10,6 +10,18 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 )
 
+type (
+	// CacheCfg cache onfiguration
+	// @envconfig (prefix:"CACHE")
+	CacheCfg struct {
+		DefaultMaxAge time.Duration `envconfig:"DEFAULT_MAX_AGE" default:"30s"`
+		PrefixKey     string        `envconfig:"PREFIX_KEY" default:"cache_"`
+		RedisHost     string        `envconfig:"REDIS_HOST" required:"true" default:"localhost"`
+		RedisPort     string        `envconfig:"REDIS_PORT" required:"true" default:"6379"`
+		RedisPass     string        `envconfig:"REDIS_PASS" default:"redispass"`
+	}
+)
+
 // NewCacheStore return new instaence of cache store
 // @ctor
 func NewCacheStore(cfg *CacheCfg) *cachekit.Store {
