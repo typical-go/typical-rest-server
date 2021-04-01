@@ -56,10 +56,10 @@ func (m *Docker) DockerWipe(c *typgo.Context) error {
 // DockerUp docker up
 func (m *Docker) DockerCompose(c *typgo.Context) (err error) {
 	var args []string
+	args = append(args, "-p", typgo.ProjectName)
 	if m.EnvFile != "" {
 		args = append(args, "--env-file", m.EnvFile)
 	}
-
 	for _, file := range m.ComposeFiles {
 		args = append(args, "-f", file)
 	}

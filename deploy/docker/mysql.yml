@@ -11,7 +11,7 @@ services:
     volumes:
     - mysql:/var/lib/mysql
     ports:
-    - 3306:${MYSQL_PORT}
+    - ${MYSQL_PORT}:3306
     networks:
     - mysql
     restart: unless-stopped

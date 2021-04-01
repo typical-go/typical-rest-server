@@ -10,7 +10,7 @@ services:
     volumes:
     - pg:/data/postgres
     ports:
-    - 5432:${PG_PORT}
+    - ${PG_PORT}:5432
     networks:
     - pg
     restart: unless-stopped
