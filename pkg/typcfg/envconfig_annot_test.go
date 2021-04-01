@@ -19,7 +19,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	typgo.ProjectPkg = "github.com/user/project"
 	defer os.RemoveAll("internal")
 
-	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{}
+	EnvconfigAnnot := &typcfg.EnvconfigAnnot{}
 	var out strings.Builder
 	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	defer c.PatchBash([]*typgo.MockBash{})(t)
@@ -44,7 +44,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, EnvconfigAnnotation.Annotate(ac))
+	require.NoError(t, EnvconfigAnnot.Annotate(ac))
 
 	b, _ := ioutil.ReadFile("internal/generated/envcfg/envcfg.go")
 	require.Equal(t, `package envcfg
@@ -82,11 +82,11 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	defer os.Clearenv()
 	defer os.RemoveAll("folder")
 
-	a := &typcfg.EnvconfigAnnotation{
-		Target:   "folder/some-target",
-		Template: "some-template",
-		DotEnv:   ".env33",
-		UsageDoc: "some-usage.md",
+	a := &typcfg.EnvconfigAnnot{
+		Target:    "folder/some-target",
+		Template:  "some-template",
+		GenDotEnv: ".env33",
+		GenDoc:    "some-usage.md",
 	}
 
 	var out strings.Builder
@@ -118,13 +118,13 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 
 	require.NoError(t, a.Annotate(ac))
 	defer os.Remove(a.Target)
-	defer os.Remove(a.DotEnv)
-	defer os.Remove(a.UsageDoc)
+	defer os.Remove(a.GenDotEnv)
+	defer os.Remove(a.GenDoc)
 
 	b, _ := ioutil.ReadFile(a.Target)
 	require.Equal(t, `some-template`, string(b))
 
-	b, _ = ioutil.ReadFile(a.DotEnv)
+	b, _ = ioutil.ReadFile(a.GenDotEnv)
 	require.Equal(t, "SS_SOMEFIELD1=some-text\nSS_SOMEFIELD2=9876\n", string(b))
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
@@ -136,7 +136,7 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 
 	defer os.RemoveAll("predefined")
 
-	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{
+	EnvconfigAnnot := &typcfg.EnvconfigAnnot{
 		TagName:  "@some-tag",
 		Template: "some-template",
 		Target:   "predefined/cfg-target",
@@ -160,7 +160,7 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 			},
 		},
 	}
-	require.NoError(t, EnvconfigAnnotation.Annotate(ac))
+	require.NoError(t, EnvconfigAnnot.Annotate(ac))
 
 	b, _ := ioutil.ReadFile("predefined/cfg-target")
 	require.Equal(t, `some-template`, string(b))
@@ -175,8 +175,8 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 		Summary: &typast.Summary{},
 	}
 
-	EnvconfigAnnotation := &typcfg.EnvconfigAnnotation{Target: target}
-	require.NoError(t, EnvconfigAnnotation.Annotate(c))
+	EnvconfigAnnot := &typcfg.EnvconfigAnnot{Target: target}
+	require.NoError(t, EnvconfigAnnot.Annotate(c))
 	_, err := os.Stat(target)
 	require.True(t, os.IsNotExist(err))
 }

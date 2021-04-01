@@ -13,14 +13,14 @@ import (
 )
 
 type (
-	// EnvconfigAnnotation handle @envconfig annotation
+	// EnvconfigAnnot handle @envconfig annotation
 	// e.g. `@envconfig (prefix: "PREFIX" ctor:"CTOR")`
-	EnvconfigAnnotation struct {
-		TagName  string // By default is `@envconfig`
-		Template string // By default defined in defaultCfgTemplate variable
-		Target   string // By default is `cmd/PROJECT_NAME/envconfig_annotated.go`
-		DotEnv   string // Dotenv path. It will be generated if not empty
-		UsageDoc string // Usage documentation path. It will be if not emtpy
+	EnvconfigAnnot struct {
+		TagName   string // By default is `@envconfig`
+		Template  string // By default defined in defaultCfgTemplate variable
+		Target    string // By default is `cmd/PROJECT_NAME/envconfig_annotated.go`
+		GenDotEnv string // Dotenv path. It will be generated if not empty
+		GenDoc    string // Usage documentation path. It will be if not emtpy
 	}
 	// EnvconfigTmplData template
 	EnvconfigTmplData struct {
@@ -80,13 +80,13 @@ func {{$c.FnName}}() (*{{$c.SpecType}}, error) {
 `
 
 //
-// EnvconfigAnnotation
+// EnvconfigAnnot
 //
 
-var _ typast.Annotator = (*EnvconfigAnnotation)(nil)
+var _ typast.Annotator = (*EnvconfigAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
+func (m *EnvconfigAnnot) Annotate(c *typast.Context) error {
 	context := m.Context(c)
 	target := m.getTarget(context)
 
@@ -96,14 +96,14 @@ func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 		return err
 	}
 
-	if m.DotEnv != "" {
-		if err := GenerateAndLoadDotEnv(m.DotEnv, context); err != nil {
+	if m.GenDotEnv != "" {
+		if err := GenerateAndLoadDotEnv(m.GenDotEnv, context); err != nil {
 			return err
 		}
 	}
 
-	if m.UsageDoc != "" {
-		if err := GenerateUsage(m.UsageDoc, context); err != nil {
+	if m.GenDoc != "" {
+		if err := GenerateDoc(m.GenDoc, context); err != nil {
 			return err
 		}
 	}
@@ -112,7 +112,7 @@ func (m *EnvconfigAnnotation) Annotate(c *typast.Context) error {
 }
 
 // Context create context instance
-func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
+func (m *EnvconfigAnnot) Context(c *typast.Context) *Context {
 	var configs []*Envconfig
 
 	importAliases := typast.NewImportAliases()
@@ -129,7 +129,7 @@ func (m *EnvconfigAnnotation) Context(c *typast.Context) *Context {
 	return &Context{Context: c, Configs: configs, Imports: importAliases.Map}
 }
 
-func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
+func (m *EnvconfigAnnot) generate(c *Context, target string) error {
 
 	dest := filepath.Dir(target)
 	os.MkdirAll(dest, 0777)
@@ -147,21 +147,21 @@ func (m *EnvconfigAnnotation) generate(c *Context, target string) error {
 	return nil
 }
 
-func (m *EnvconfigAnnotation) getTagName() string {
+func (m *EnvconfigAnnot) getTagName() string {
 	if m.TagName == "" {
 		m.TagName = "@envconfig"
 	}
 	return m.TagName
 }
 
-func (m *EnvconfigAnnotation) getTemplate() string {
+func (m *EnvconfigAnnot) getTemplate() string {
 	if m.Template == "" {
 		m.Template = defaultCfgTemplate
 	}
 	return m.Template
 }
 
-func (m *EnvconfigAnnotation) getTarget(c *Context) string {
+func (m *EnvconfigAnnot) getTarget(c *Context) string {
 	if m.Target == "" {
 		m.Target = defaultCfgTarget
 	}

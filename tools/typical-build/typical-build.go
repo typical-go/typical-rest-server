@@ -23,7 +23,7 @@ var descriptor = typgo.Descriptor{
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
 				&typrepo.EntityAnnotation{},
-				&typcfg.EnvconfigAnnotation{DotEnv: ".env", UsageDoc: "USAGE.md"},
+				&typcfg.EnvconfigAnnot{GenDotEnv: ".env", GenDoc: "USAGE.md"},
 			},
 		},
 		// test

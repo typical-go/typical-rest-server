@@ -150,7 +150,7 @@ Generate usage documentation ([USAGE.md](USAGE.md)) and .env file
 ```go
 // in typical-build
 
-&typcfg.EnvconfigAnnotation{
+&typcfg.EnvconfigAnnot{
   DotEnv:   ".env",     // generate .env file
   UsageDoc: "USAGE.md", // generate USAGE.md
 }

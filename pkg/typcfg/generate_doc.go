@@ -30,8 +30,8 @@ const usageTmpl = `# {{.ProjectName}}
 {{.EnvSnippet}}
 `
 
-// GenerateUsage generate usage document
-func GenerateUsage(target string, c *Context) error {
+// GenerateDoc generate usage document
+func GenerateDoc(target string, c *Context) error {
 	fields := fields(c)
 	c.Infof("Generate '%s'\n", target)
 	return tmplkit.WriteFile(

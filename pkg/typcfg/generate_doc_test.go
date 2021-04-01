@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func TestGenerateUsage(t *testing.T) {
+func TestGenerateDoc(t *testing.T) {
 	var out strings.Builder
 	target := "sample.md"
 	c := &typcfg.Context{
@@ -45,7 +45,7 @@ func TestGenerateUsage(t *testing.T) {
 			},
 		},
 	}
-	err := typcfg.GenerateUsage(target, c)
+	err := typcfg.GenerateDoc(target, c)
 	require.NoError(t, err)
 	defer os.Remove(target)
 
