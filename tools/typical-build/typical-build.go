@@ -22,7 +22,7 @@ var descriptor = typgo.Descriptor{
 			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
-				&typrepo.EntityAnnotation{},
+				&typrepo.EntityAnnot{},
 				&typcfg.EnvconfigAnnot{GenDotEnv: ".env", GenDoc: "USAGE.md"},
 			},
 		},

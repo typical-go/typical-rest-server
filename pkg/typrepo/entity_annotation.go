@@ -13,8 +13,8 @@ import (
 )
 
 type (
-	// EntityAnnotation ...
-	EntityAnnotation struct {
+	// EntityAnnot ...
+	EntityAnnot struct {
 		TagName string // By default is @entity
 	}
 	// EntityTmplData ...
@@ -50,13 +50,13 @@ const (
 )
 
 //
-// EntityAnnotation
+// EntityAnnot
 //
 
-var _ typast.Annotator = (*EntityAnnotation)(nil)
+var _ typast.Annotator = (*EntityAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *EntityAnnotation) Annotate(c *typast.Context) error {
+func (m *EntityAnnot) Annotate(c *typast.Context) error {
 	os.RemoveAll("internal/generated/entity")
 	for _, a := range c.Annots {
 		if a.TagName == m.getTagName() && typast.IsStruct(a) && typast.IsPublic(a) {
@@ -73,7 +73,7 @@ func (m *EntityAnnotation) Annotate(c *typast.Context) error {
 	return nil
 }
 
-func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
+func (m *EntityAnnot) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
 	destPkg := filepath.Base(ent.Dest) + "_mock"
 	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
 	pkg := typgo.ProjectPkg + "/" + ent.Dest
@@ -82,7 +82,7 @@ func (m *EntityAnnotation) mock(c *typast.Context, a *typast.Annot, ent *EntityT
 	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
 }
 
-func (m *EntityAnnotation) process(c *typast.Context, ent *EntityTmplData) error {
+func (m *EntityAnnot) process(c *typast.Context, ent *EntityTmplData) error {
 	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
@@ -108,7 +108,7 @@ func getTemplate(dialect string) (string, error) {
 	return "", fmt.Errorf("Unknown dialect: %s", dialect)
 }
 
-func (m *EntityAnnotation) getTagName() string {
+func (m *EntityAnnot) getTagName() string {
 	if m.TagName == "" {
 		m.TagName = "@entity"
 	}
@@ -120,7 +120,7 @@ func (m *EntityAnnotation) getTagName() string {
 //
 
 // CreateEntity create entity
-func (m *EntityAnnotation) createEntity(a *typast.Annot) (*EntityTmplData, error) {
+func (m *EntityAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 	name := a.GetName()
 	table := a.TagParam.Get("table")
 
@@ -170,7 +170,7 @@ func (m *EntityAnnotation) createEntity(a *typast.Annot) (*EntityTmplData, error
 }
 
 // GetDest get destination
-func (*EntityAnnotation) GetDest(file string) string {
+func (*EntityAnnot) GetDest(file string) string {
 	source := filepath.Dir(file)
 	if strings.HasPrefix(source, "internal/") {
 		source = source[9:]
@@ -184,7 +184,7 @@ func (*EntityAnnotation) GetDest(file string) string {
 	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
 }
 
-func (m *EntityAnnotation) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
+func (m *EntityAnnot) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
 	structDecl := a.Decl.Type.(*typast.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]

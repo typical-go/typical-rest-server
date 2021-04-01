@@ -19,7 +19,7 @@ func TestGetDest(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.Name, func(t *testing.T) {
-			a := typrepo.EntityAnnotation{}
+			a := typrepo.EntityAnnot{}
 			require.Equal(t, tt.Expected, a.GetDest(tt.Path))
 		})
 	}
