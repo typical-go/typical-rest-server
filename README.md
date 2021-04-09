@@ -104,22 +104,6 @@ Others directory:
 - [`api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
 - [`databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
 
-
-## Layered Architecture
-
-Typical-Rest adopts [layered architecture](https://en.wikipedia.org/wiki/Multitier_architecture) with [SOLID Principle](https://en.wikipedia.org/wiki/SOLID). Please check [this article](https://blog.ploeh.dk/2013/12/03/layers-onions-ports-adapters-its-all-the-same/).
-
-- Presentation Layer at [`internal/app/controller`](internal/app/controller)
-  - Parsing the request
-  - Sending response
-- Business Logic Layer at [`internal/app/service`](internal/app/service)
-  - Intermediary between controller (end-point) and repository (data)
-  - Logic of controller
-  - Data Validation
-- Data Access Layer at [`internal/app/entity`](internal/app/entity) (database) 
-  - No logic except operation to database
-  - Repository pattern for Database entity or Business Model
-
 ## Dependency Injection
 
 Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) using [uber-dig](https://github.com/uber-go/dig) and annotations (`@ctor`).
@@ -129,6 +113,13 @@ Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Depe
 // @ctor
 func NewConn() *sql.DB{
 }
+```
+
+Add import side-effect to make it work
+```go
+import(
+  _ "github.com/typical-go/typical-rest-server/internal/generated/ctor"
+)
 ```
 
 ## Application Config
@@ -154,6 +145,13 @@ Generate usage documentation ([USAGE.md](USAGE.md)) and .env file
   DotEnv:   ".env",     // generate .env file
   UsageDoc: "USAGE.md", // generate USAGE.md
 }
+```
+
+Add import side-effect to make it work
+```go
+import(
+  _ "github.com/typical-go/typical-rest-server/internal/generated/envcfg"
+)
 ```
 
 ## Mocking
