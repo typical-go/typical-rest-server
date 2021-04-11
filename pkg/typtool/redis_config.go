@@ -2,6 +2,12 @@ package typtool
 
 import "os"
 
+var DefaultRedisEnvKeys = &RedisEnvKeys{
+	Host: "HOST",
+	Port: "PORT",
+	Pass: "PASS",
+}
+
 type (
 	RedisConfig struct {
 		Host string
@@ -10,12 +16,6 @@ type (
 	}
 	RedisEnvKeys RedisConfig
 )
-
-var DefaultRedisEnvKeys = &RedisEnvKeys{
-	Host: "HOST",
-	Port: "PORT",
-	Pass: "PASS",
-}
 
 func RedisEnvKeysWithPrefix(prefix string) *RedisEnvKeys {
 	return &RedisEnvKeys{

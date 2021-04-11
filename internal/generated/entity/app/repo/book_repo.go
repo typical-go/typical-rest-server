@@ -88,6 +88,10 @@ func NewBookRepo(impl BookRepoImpl) BookRepo {
 
 // Find books
 func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Book, err error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return nil, err
+	}
 	builder := sq.
 		Select(
 			BookTable.ID,
@@ -98,7 +102,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 		).
 		From(BookTableName).
 		PlaceholderFormat(sq.Dollar).
-		RunWith(r)
+		RunWith(txn)
 
 	for _, opt := range opts {
 		builder = opt.CompileSelect(builder)

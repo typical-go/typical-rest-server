@@ -1,10 +1,16 @@
 package typtool
 
 import (
-	"database/sql"
-	"fmt"
 	"os"
 )
+
+var DefaultDBEnvKeys = &DBEnvKeys{
+	DBName: "DBNAME",
+	DBUser: "DBUSER",
+	DBPass: "DBPASS",
+	Host:   "HOST",
+	Port:   "PORT",
+}
 
 type (
 	DBConfig struct {
@@ -17,15 +23,9 @@ type (
 	DBEnvKeys DBConfig
 )
 
-var (
-	DefaultDBEnvKeys = &DBEnvKeys{
-		DBName: "DBNAME",
-		DBUser: "DBUSER",
-		DBPass: "DBPASS",
-		Host:   "HOST",
-		Port:   "PORT",
-	}
-)
+//
+// DBEnvKeys
+//
 
 func DBEnvKeysWithPrefix(prefix string) *DBEnvKeys {
 	return &DBEnvKeys{
@@ -37,34 +37,7 @@ func DBEnvKeysWithPrefix(prefix string) *DBEnvKeys {
 	}
 }
 
-func openMySQL(c *DBConfig) (*sql.DB, error) {
-	return sql.Open("mysql", fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
-		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
-	))
-}
-
-func openMySQLForAdmin(c *DBConfig) (*sql.DB, error) {
-	return sql.Open("mysql", fmt.Sprintf(
-		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
-		c.DBPass, c.Host, c.Port,
-	))
-}
-
-func openPostgres(c *DBConfig) (*sql.DB, error) {
-	return sql.Open("postgres", fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
-	))
-}
-
-func openPostgresForAdmin(c *DBConfig) (*sql.DB, error) {
-	return sql.Open("postgres", fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/template1?sslmode=disable",
-		c.DBUser, c.DBPass, c.Host, c.Port))
-}
-
-func (e *DBEnvKeys) GetConfig() *DBConfig {
+func (e *DBEnvKeys) Config() *DBConfig {
 	return &DBConfig{
 		DBName: os.Getenv(e.DBName),
 		DBUser: os.Getenv(e.DBUser),
