@@ -1,6 +1,6 @@
 package repo
 
-/* DO NOT EDIT. This file generated due to '@entity' annotation */
+/* DO NOT EDIT. This file generated due to '@dbrepo' annotation */
 
 import (
 	"context"
@@ -40,7 +40,7 @@ type (
 	SongRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Song, error)
-		Create(context.Context, *entity.Song) (int64, error)
+		Insert(context.Context, ...*entity.Song) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
@@ -128,30 +128,32 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 	return
 }
 
-// Create songs
-func (r *SongRepoImpl) Create(ctx context.Context, ent *entity.Song) (int64, error) {
+// Insert songs
+func (r *SongRepoImpl) Insert(ctx context.Context, ents ...*entity.Song) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
-	res, err := sq.
+	builder := sq.
 		Insert(SongTableName).
 		Columns(
 			SongTable.Title,
 			SongTable.Artist,
 			SongTable.UpdatedAt,
 			SongTable.CreatedAt,
-		).
-		Values(
+		)
+
+	for _, ent := range ents {
+		builder = builder.Values(
 			ent.Title,
 			ent.Artist,
 			time.Now(),
 			time.Now(),
-		).
-		RunWith(txn).
-		ExecContext(ctx)
+		)
+	}
 
+	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
 		txn.SetError(err)
 		return -1, err

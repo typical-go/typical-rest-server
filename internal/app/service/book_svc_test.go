@@ -48,7 +48,7 @@ func TestBookSvc_Create(t *testing.T) {
 			expectedErr: "create-error",
 			bookSvcFn: func(mockRepo *repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(-1), errors.New("create-error"))
 			},
 		},
@@ -58,7 +58,7 @@ func TestBookSvc_Create(t *testing.T) {
 			expectedErr: "find-error",
 			bookSvcFn: func(mockRepo *repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
@@ -73,7 +73,7 @@ func TestBookSvc_Create(t *testing.T) {
 			expected: &entity.Book{Author: "some-author", Title: "some-title"},
 			bookSvcFn: func(mockRepo *repo_mock.MockBookRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Book{Author: "some-author", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).

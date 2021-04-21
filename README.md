@@ -43,7 +43,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 - Others
   - [x] Database migration and seed tool
   - [x] Generate code, `.env` file and `USAGE.md` according the configuration (using `@envconfig` annotation)
-  - [x] Generate code for repository layer (using `@entity` annotation)
+  - [x] Generate code for repository layer (using `@dbrepo` annotation)
   - [x] Releaser
 
 

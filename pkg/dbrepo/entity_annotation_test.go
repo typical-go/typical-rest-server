@@ -1,10 +1,10 @@
-package typrepo_test
+package dbrepo_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typrepo"
+	"github.com/typical-go/typical-rest-server/pkg/dbrepo"
 )
 
 func TestGetDest(t *testing.T) {
@@ -19,7 +19,7 @@ func TestGetDest(t *testing.T) {
 	}
 	for _, tt := range testcases {
 		t.Run(tt.Name, func(t *testing.T) {
-			a := typrepo.EntityAnnot{}
+			a := dbrepo.DBRepoAnnot{}
 			require.Equal(t, tt.Expected, a.GetDest(tt.Path))
 		})
 	}

@@ -1,4 +1,4 @@
-package typrepo
+package dbrepo
 
 import (
 	"fmt"
@@ -13,9 +13,9 @@ import (
 )
 
 type (
-	// EntityAnnot ...
-	EntityAnnot struct {
-		TagName string // By default is @entity
+	// DBRepoAnnot ...
+	DBRepoAnnot struct {
+		TagName string // By default is @dbrepo
 	}
 	// EntityTmplData ...
 	EntityTmplData struct {
@@ -50,13 +50,13 @@ const (
 )
 
 //
-// EntityAnnot
+// DBRepoAnnot
 //
 
-var _ typast.Annotator = (*EntityAnnot)(nil)
+var _ typast.Annotator = (*DBRepoAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *EntityAnnot) Annotate(c *typast.Context) error {
+func (m *DBRepoAnnot) Annotate(c *typast.Context) error {
 	os.RemoveAll("internal/generated/entity")
 	for _, a := range c.Annots {
 		if a.TagName == m.getTagName() && typast.IsStruct(a) && typast.IsPublic(a) {
@@ -65,7 +65,7 @@ func (m *EntityAnnot) Annotate(c *typast.Context) error {
 				return err
 			}
 			if err := m.process(c, ent); err != nil {
-				c.Infof("WARN: Failed process @entity at '%s': %s\n", a.GetName(), err.Error())
+				c.Infof("WARN: Failed process @dbrepo at '%s': %s\n", a.GetName(), err.Error())
 			}
 			m.mock(c, a, ent)
 		}
@@ -73,7 +73,7 @@ func (m *EntityAnnot) Annotate(c *typast.Context) error {
 	return nil
 }
 
-func (m *EntityAnnot) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
 	destPkg := filepath.Base(ent.Dest) + "_mock"
 	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
 	pkg := typgo.ProjectPkg + "/" + ent.Dest
@@ -82,7 +82,7 @@ func (m *EntityAnnot) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplDa
 	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
 }
 
-func (m *EntityAnnot) process(c *typast.Context, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) process(c *typast.Context, ent *EntityTmplData) error {
 	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
@@ -108,9 +108,9 @@ func getTemplate(dialect string) (string, error) {
 	return "", fmt.Errorf("Unknown dialect: %s", dialect)
 }
 
-func (m *EntityAnnot) getTagName() string {
+func (m *DBRepoAnnot) getTagName() string {
 	if m.TagName == "" {
-		m.TagName = "@entity"
+		m.TagName = "@dbrepo"
 	}
 	return m.TagName
 }
@@ -120,7 +120,7 @@ func (m *EntityAnnot) getTagName() string {
 //
 
 // CreateEntity create entity
-func (m *EntityAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
+func (m *DBRepoAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 	name := a.GetName()
 	table := a.TagParam.Get("table")
 
@@ -170,7 +170,7 @@ func (m *EntityAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 }
 
 // GetDest get destination
-func (*EntityAnnot) GetDest(file string) string {
+func (*DBRepoAnnot) GetDest(file string) string {
 	source := filepath.Dir(file)
 	if strings.HasPrefix(source, "internal/") {
 		source = source[9:]
@@ -184,7 +184,7 @@ func (*EntityAnnot) GetDest(file string) string {
 	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
 }
 
-func (m *EntityAnnot) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
+func (m *DBRepoAnnot) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
 	structDecl := a.Decl.Type.(*typast.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]

@@ -55,21 +55,6 @@ func (mr *MockSongRepoMockRecorder) Count(arg0 interface{}, arg1 ...interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockSongRepo)(nil).Count), varargs...)
 }
 
-// Create mocks base method
-func (m *MockSongRepo) Create(arg0 context.Context, arg1 *entity.Song) (int64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Create indicates an expected call of Create
-func (mr *MockSongRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockSongRepo)(nil).Create), arg0, arg1)
-}
-
 // Delete mocks base method
 func (m *MockSongRepo) Delete(arg0 context.Context, arg1 sqkit.DeleteOption) (int64, error) {
 	m.ctrl.T.Helper()
@@ -103,6 +88,26 @@ func (mr *MockSongRepoMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) 
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0}, arg1...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockSongRepo)(nil).Find), varargs...)
+}
+
+// Insert mocks base method
+func (m *MockSongRepo) Insert(arg0 context.Context, arg1 ...*entity.Song) (int64, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0}
+	for _, a := range arg1 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Insert", varargs...)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Insert indicates an expected call of Insert
+func (mr *MockSongRepoMockRecorder) Insert(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0}, arg1...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockSongRepo)(nil).Insert), varargs...)
 }
 
 // Patch mocks base method

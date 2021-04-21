@@ -57,7 +57,7 @@ func (b *BookSvcImpl) Create(ctx context.Context, book *entity.Book) (*entity.Bo
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
-	id, err := b.Repo.Create(ctx, book)
+	id, err := b.Repo.Insert(ctx, book)
 	if err != nil {
 		return nil, err
 	}

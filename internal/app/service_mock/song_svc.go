@@ -7,8 +7,8 @@ package service_mock
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	service "github.com/typical-go/typical-rest-server/internal/app/service"
 	entity "github.com/typical-go/typical-rest-server/internal/app/entity"
+	service "github.com/typical-go/typical-rest-server/internal/app/service"
 	reflect "reflect"
 )
 

@@ -1,6 +1,6 @@
 package repo
 
-/* DO NOT EDIT. This file generated due to '@entity' annotation */
+/* DO NOT EDIT. This file generated due to '@dbrepo' annotation */
 
 import (
 	"context"
@@ -41,7 +41,7 @@ type (
 	BookRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Book, error)
-		Create(context.Context, *entity.Book) (int64, error)
+		Insert(context.Context, ...*entity.Book) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
@@ -130,14 +130,14 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 	return
 }
 
-// Create books
-func (r *BookRepoImpl) Create(ctx context.Context, ent *entity.Book) (int64, error) {
+// Insert books
+func (r *BookRepoImpl) Insert(ctx context.Context, ents ...*entity.Book) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
-	scanner := sq.
+	builder := sq.
 		Insert(BookTableName).
 		Columns(
 			BookTable.Title,
@@ -145,18 +145,21 @@ func (r *BookRepoImpl) Create(ctx context.Context, ent *entity.Book) (int64, err
 			BookTable.UpdatedAt,
 			BookTable.CreatedAt,
 		).
-		Values(
+		Suffix(
+			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
+		).
+		PlaceholderFormat(sq.Dollar)
+
+	for _, ent := range ents {
+		builder = builder.Values(
 			ent.Title,
 			ent.Author,
 			time.Now(),
 			time.Now(),
-		).
-		Suffix(
-			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
-		).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(txn).
-		QueryRowContext(ctx)
+		)
+	}
+
+	scanner := builder.RunWith(txn).QueryRowContext(ctx)
 
 	var id int64
 	if err := scanner.Scan(&id); err != nil {

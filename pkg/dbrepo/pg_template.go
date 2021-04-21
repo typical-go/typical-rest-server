@@ -1,6 +1,6 @@
-package typrepo
+package dbrepo
 
-const mysqlTmpl = `package {{.Pkg}}
+const postgresTmpl = `package {{.Pkg}}
 
 /* {{.Signature}} */
 
@@ -26,7 +26,7 @@ type (
 	{{.Name}}Repo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*{{.SourcePkg}}.{{.Name}}, error)
-		Create(context.Context, *{{.SourcePkg}}.{{.Name}}) (int64, error)
+		Insert(context.Context, ...*{{.SourcePkg}}.{{.Name}}) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
@@ -40,11 +40,6 @@ type (
 
 func init() {
 	typapp.Provide("",New{{.Name}}Repo)
-}
-
-// New{{.Name}}Repo return new instance of {{.Name}}Repo
-func New{{.Name}}Repo(impl {{.Name}}RepoImpl) {{.Name}}Repo {
-	return &impl
 }
 
 // Count {{.Table}}
@@ -71,6 +66,10 @@ func (r *{{.Name}}RepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOptio
 	return cnt, nil
 }
 
+// New{{.Name}}Repo return new instance of {{.Name}}Repo
+func New{{.Name}}Repo(impl {{.Name}}RepoImpl) {{.Name}}Repo {
+	return &impl
+}
 
 // Find {{.Table}}
 func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*{{.SourcePkg}}.{{.Name}}, err error) {
@@ -84,6 +83,7 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption
 			{{end}}
 		).
 		From({{.Name}}TableName).
+		PlaceholderFormat(sq.Dollar).
 		RunWith(txn)
 
 	for _, opt := range opts {
@@ -108,30 +108,35 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption
 	return
 }
 
-// Create {{.Table}}
-func (r *{{.Name}}RepoImpl) Create(ctx context.Context, ent *{{.SourcePkg}}.{{.Name}}) (int64, error) {
+// Insert {{.Table}}
+func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ents ...*{{.SourcePkg}}.{{.Name}}) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
-	res, err := sq.
+	builder := sq.
 		Insert({{$.Name}}TableName).
 		Columns({{range .Fields}}{{if not .PrimaryKey}}	{{$.Name}}Table.{{.Name}},{{end}}	
 		{{end}}).
-		Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
-		{{end}}).
-		RunWith(txn).
-		ExecContext(ctx)
+		Suffix(
+			fmt.Sprintf("RETURNING \"%s\"", {{$.Name}}Table.{{.PrimaryKey.Name}}),
+		).
+		PlaceholderFormat(sq.Dollar)
+	
+	for _, ent := range ents {
+		builder = builder.Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
+			{{end}})
+	}
 
-	if err != nil {
+	scanner := builder.RunWith(txn).QueryRowContext(ctx)
+
+	var id {{.PrimaryKey.Type}}
+	if err := scanner.Scan(&id); err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-
-	lastInsertID, err := res.LastInsertId()
-	txn.SetError(err)
-	return lastInsertID, err
+	return id, nil
 }
 
 
@@ -145,6 +150,7 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 	builder := sq.
 		Update({{.Name}}TableName).{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}
 		Set({{$.Name}}Table.{{.Name}},{{if .DefaultValue}}{{.DefaultValue}}{{else}}ent.{{.Name}},{{end}}).{{end}}{{end}}
+		PlaceholderFormat(sq.Dollar).
 		RunWith(txn)
 
 	if opt != nil {
@@ -168,14 +174,18 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.SourcePkg}}.{{.Na
 		return -1, err
 	}
 
-	builder := sq.Update({{.Name}}TableName).RunWith(txn)
+	builder := sq.
+		Update({{.Name}}TableName).
+		PlaceholderFormat(sq.Dollar).
+		RunWith(txn)
+
 	{{range .Fields}}{{if and (not .PrimaryKey) (not .SkipUpdate)}}{{if .DefaultValue}}
 	builder = builder.Set({{$.Name}}Table.{{.Name}}, {{.DefaultValue}}){{else}}
 	if !reflectkit.IsZero(ent.{{.Name}}) {
 		builder = builder.Set({{$.Name}}Table.{{.Name}}, ent.{{.Name}})
 	}{{end}}{{end}}{{end}}
 
-	if opt != nil {
+	if opt != nil{
 		builder = opt.CompileUpdate(builder)
 	}
 
@@ -198,7 +208,11 @@ func (r *{{.Name}}RepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) 
 		return -1, err
 	}
 
-	builder := sq.Delete({{.Name}}TableName).RunWith(txn)
+	builder := sq.
+		Delete({{.Name}}TableName).
+		PlaceholderFormat(sq.Dollar).
+		RunWith(txn)
+
 	if opt != nil {
 		builder = opt.CompileDelete(builder)
 	}

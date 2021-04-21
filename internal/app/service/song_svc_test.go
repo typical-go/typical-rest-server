@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/internal/app/service"
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
+	"github.com/typical-go/typical-rest-server/internal/app/service"
 	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
@@ -46,7 +46,7 @@ func TestSongSvc_Create(t *testing.T) {
 			expectedErr: "create-error",
 			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(-1), errors.New("create-error"))
 			},
 		},
@@ -56,7 +56,7 @@ func TestSongSvc_Create(t *testing.T) {
 			expectedErr: "Find-error",
 			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
@@ -71,7 +71,7 @@ func TestSongSvc_Create(t *testing.T) {
 			expected: &entity.Song{Artist: "some-artist", Title: "some-title"},
 			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
-					Create(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
+					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).

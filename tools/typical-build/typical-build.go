@@ -6,8 +6,8 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
+	"github.com/typical-go/typical-rest-server/pkg/dbrepo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
-	"github.com/typical-go/typical-rest-server/pkg/typrepo"
 	"github.com/typical-go/typical-rest-server/pkg/typtool"
 )
 
@@ -22,7 +22,7 @@ var descriptor = typgo.Descriptor{
 			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
 				&typapp.CtorAnnotation{},
-				&typrepo.EntityAnnot{},
+				&dbrepo.DBRepoAnnot{},
 				&typcfg.EnvconfigAnnot{GenDotEnv: ".env", GenDoc: "USAGE.md"},
 			},
 		},

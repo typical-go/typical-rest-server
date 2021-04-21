@@ -57,7 +57,7 @@ func (b *SongSvcImpl) Create(ctx context.Context, book *entity.Song) (*entity.So
 	if err := validator.New().Struct(book); err != nil {
 		return nil, echokit.NewValidErr(err.Error())
 	}
-	id, err := b.Repo.Create(ctx, book)
+	id, err := b.Repo.Insert(ctx, book)
 	if err != nil {
 		return nil, err
 	}
