@@ -1,4 +1,4 @@
-package typtool
+package typdocker
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 )
 
 type (
-	// Docker is wrapper for docker-compose command support with predefined multiple compose file and environment
-	Docker struct {
+	// DockerTool is wrapper for docker-compose command support with predefined multiple compose file and environment
+	DockerTool struct {
 		ComposeFiles []string
 		EnvFile      string
 	}
@@ -21,10 +21,10 @@ type (
 // Command
 //
 
-var _ typgo.Tasker = (*Docker)(nil)
+var _ typgo.Tasker = (*DockerTool)(nil)
 
 // Task for docker
-func (m *Docker) Task() *typgo.Task {
+func (m *DockerTool) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  "docker",
 		Usage: "docker-compose wrapper",
@@ -40,21 +40,21 @@ func (m *Docker) Task() *typgo.Task {
 }
 
 // DockerWipe clean all docker process
-func (m *Docker) DockerWipe(c *typgo.Context) error {
+func (m *DockerTool) DockerWipe(c *typgo.Context) error {
 	ids, err := m.dockerIDs(c)
 	if err != nil {
-		return fmt.Errorf("Docker-ID: %w", err)
+		return fmt.Errorf("DockerTool-ID: %w", err)
 	}
 	for _, id := range ids {
 		if err := m.kill(c, id); err != nil {
-			return fmt.Errorf("Fail to kill #%s: %s", id, err.Error())
+			return fmt.Errorf("fail to kill #%s: %s", id, err.Error())
 		}
 	}
 	return nil
 }
 
-// DockerUp docker up
-func (m *Docker) DockerCompose(c *typgo.Context) (err error) {
+// DockerToolUp docker up
+func (m *DockerTool) DockerCompose(c *typgo.Context) (err error) {
 	var args []string
 	args = append(args, "-p", typgo.ProjectName)
 	if m.EnvFile != "" {
@@ -73,7 +73,7 @@ func (m *Docker) DockerCompose(c *typgo.Context) (err error) {
 	})
 }
 
-func (m *Docker) dockerIDs(c *typgo.Context) ([]string, error) {
+func (m *DockerTool) dockerIDs(c *typgo.Context) ([]string, error) {
 	var out strings.Builder
 
 	err := c.Execute(&typgo.Bash{
@@ -95,7 +95,7 @@ func (m *Docker) dockerIDs(c *typgo.Context) ([]string, error) {
 	return ids, nil
 }
 
-func (m *Docker) kill(c *typgo.Context, id string) (err error) {
+func (m *DockerTool) kill(c *typgo.Context, id string) (err error) {
 	return c.Execute(&typgo.Bash{
 		Name:   "docker",
 		Args:   []string{"kill", id},

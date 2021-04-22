@@ -1,4 +1,4 @@
-package typtool
+package typdb
 
 import (
 	"database/sql"
@@ -15,16 +15,16 @@ type (
 	DBTool struct {
 		DBConn
 		Name         string
-		EnvKeys      *DBEnvKeys
+		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		CreateFormat string
 		DropFormat   string
 	}
 	DBConn interface {
-		Connect(*DBConfig) (*sql.DB, error)
-		ConnectAdmin(*DBConfig) (*sql.DB, error)
-		Migrate(src string, cfg *DBConfig) (*migrate.Migrate, error)
+		Connect(*Config) (*sql.DB, error)
+		ConnectAdmin(*Config) (*sql.DB, error)
+		Migrate(src string, cfg *Config) (*migrate.Migrate, error)
 	}
 )
 

@@ -1,11 +1,11 @@
-package typtool_test
+package typdb_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typtool"
+	"github.com/typical-go/typical-rest-server/pkg/typdb"
 )
 
 func TestDBConfig(t *testing.T) {
@@ -15,12 +15,12 @@ func TestDBConfig(t *testing.T) {
 	os.Setenv("ABC_DBUSER", "some-dbuser")
 	os.Setenv("ABC_DBPASS", "some-dbpass")
 	defer os.Clearenv()
-	redisConfig := typtool.DBEnvKeysWithPrefix("ABC")
-	require.Equal(t, &typtool.DBConfig{
+	Config := typdb.EnvKeysWithPrefix("ABC")
+	require.Equal(t, &typdb.Config{
 		Host:   "some-host",
 		Port:   "some-port",
 		DBName: "some-dbname",
 		DBUser: "some-dbuser",
 		DBPass: "some-dbpass",
-	}, redisConfig.Config())
+	}, Config.Config())
 }

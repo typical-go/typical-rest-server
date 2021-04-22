@@ -1,4 +1,4 @@
-package typtool
+package typredis
 
 import (
 	"os"
@@ -7,16 +7,16 @@ import (
 )
 
 type (
-	Redis struct {
+	RedisTool struct {
 		Name       string
-		EnvKeys    *RedisEnvKeys
+		EnvKeys    *EnvKeys
 		DockerName string
 	}
 )
 
-var _ (typgo.Tasker) = (*Redis)(nil)
+var _ (typgo.Tasker) = (*RedisTool)(nil)
 
-func (t *Redis) Task() *typgo.Task {
+func (t *RedisTool) Task() *typgo.Task {
 	return &typgo.Task{
 		Name:  t.Name,
 		Usage: "redis tool",
@@ -26,7 +26,7 @@ func (t *Redis) Task() *typgo.Task {
 	}
 }
 
-func (t *Redis) Console(c *typgo.Context) error {
+func (t *RedisTool) Console(c *typgo.Context) error {
 	cfg := t.config()
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
@@ -43,7 +43,7 @@ func (t *Redis) Console(c *typgo.Context) error {
 	})
 }
 
-func (t *Redis) dockerName() string {
+func (t *RedisTool) dockerName() string {
 	dockerName := t.DockerName
 	if dockerName == "" {
 		dockerName = typgo.ProjectName + "-" + t.Name
@@ -51,6 +51,6 @@ func (t *Redis) dockerName() string {
 	return dockerName
 }
 
-func (t *Redis) config() *RedisConfig {
+func (t *RedisTool) config() *Config {
 	return t.EnvKeys.Config()
 }

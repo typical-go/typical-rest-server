@@ -8,7 +8,8 @@ import (
 	"github.com/typical-go/typical-go/pkg/typrls"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/typical-go/typical-rest-server/pkg/typdb"
-	"github.com/typical-go/typical-rest-server/pkg/typtool"
+	"github.com/typical-go/typical-rest-server/pkg/typdocker"
+	"github.com/typical-go/typical-rest-server/pkg/typredis"
 )
 
 var descriptor = typgo.Descriptor{
@@ -38,28 +39,28 @@ var descriptor = typgo.Descriptor{
 		// mock
 		&typmock.GoMock{},
 		// docker
-		&typtool.Docker{
-			ComposeFiles: typtool.ComposeFiles("deploy/docker"),
+		&typdocker.DockerTool{
+			ComposeFiles: typdocker.ComposeFiles("deploy/docker"),
 			EnvFile:      ".env",
 		},
 		// pg
-		&typtool.Postgres{
+		&typdb.Postgres{
 			Name:         "pg",
-			EnvKeys:      typtool.DBEnvKeysWithPrefix("PG"),
+			EnvKeys:      typdb.EnvKeysWithPrefix("PG"),
 			MigrationSrc: "database/pg/migration",
 			SeedSrc:      "database/pg/seed",
 		},
 		// mysql
-		&typtool.MySQL{
+		&typdb.MySQL{
 			Name:         "mysql",
-			EnvKeys:      typtool.DBEnvKeysWithPrefix("MYSQL"),
+			EnvKeys:      typdb.EnvKeysWithPrefix("MYSQL"),
 			MigrationSrc: "database/mysql/migration",
 			SeedSrc:      "database/mysql/seed",
 		},
 		// mysql
-		&typtool.Redis{
+		&typredis.RedisTool{
 			Name:    "cache",
-			EnvKeys: typtool.RedisEnvKeysWithPrefix("CACHE_REDIS"),
+			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REDIS"),
 		},
 		// setup
 		&typgo.Task{

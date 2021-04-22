@@ -1,24 +1,24 @@
-package typtool_test
+package typdb_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typtool"
+	"github.com/typical-go/typical-rest-server/pkg/typdb"
 )
 
 func TestMySQL_DBTool(t *testing.T) {
-	mysql := typtool.MySQL{
+	mysql := typdb.MySQL{
 		Name:         "some-name",
-		EnvKeys:      &typtool.DBEnvKeys{},
+		EnvKeys:      &typdb.EnvKeys{},
 		MigrationSrc: "some-migr",
 		SeedSrc:      "some-seed",
 		DockerName:   "some-docker",
 	}
-	require.Equal(t, &typtool.DBTool{
-		DBConn:       &typtool.MySQLConn{},
+	require.Equal(t, &typdb.DBTool{
+		DBConn:       &typdb.MySQLConn{},
 		Name:         "some-name",
-		EnvKeys:      &typtool.DBEnvKeys{},
+		EnvKeys:      &typdb.EnvKeys{},
 		MigrationSrc: "some-migr",
 		SeedSrc:      "some-seed",
 		CreateFormat: "CREATE DATABASE `%s`",

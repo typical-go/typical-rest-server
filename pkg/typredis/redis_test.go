@@ -1,4 +1,4 @@
-package typtool_test
+package typredis_test
 
 import "testing"
 

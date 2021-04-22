@@ -1,4 +1,4 @@
-package typtool
+package typdb
 
 import (
 	"database/sql"
@@ -16,7 +16,7 @@ import (
 type (
 	Postgres struct {
 		Name         string
-		EnvKeys      *DBEnvKeys
+		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		DockerName   string
@@ -88,20 +88,20 @@ func (t *Postgres) dockerName() string {
 
 var _ DBConn = (*PGConn)(nil)
 
-func (PGConn) Connect(c *DBConfig) (*sql.DB, error) {
+func (PGConn) Connect(c *Config) (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
 	))
 }
 
-func (PGConn) ConnectAdmin(c *DBConfig) (*sql.DB, error) {
+func (PGConn) ConnectAdmin(c *Config) (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/template1?sslmode=disable",
 		c.DBUser, c.DBPass, c.Host, c.Port))
 }
 
-func (p PGConn) Migrate(src string, cfg *DBConfig) (*migrate.Migrate, error) {
+func (p PGConn) Migrate(src string, cfg *Config) (*migrate.Migrate, error) {
 	db, err := p.Connect(cfg)
 	if err != nil {
 		return nil, err

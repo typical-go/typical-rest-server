@@ -1,4 +1,4 @@
-package typtool
+package typdb
 
 import (
 	"database/sql"
@@ -17,7 +17,7 @@ type (
 	// MySQL for postgres
 	MySQL struct {
 		Name         string
-		EnvKeys      *DBEnvKeys
+		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		DockerName   string
@@ -89,21 +89,21 @@ func (t *MySQL) dockerName() string {
 
 var _ DBConn = (*MySQLConn)(nil)
 
-func (MySQLConn) Connect(c *DBConfig) (*sql.DB, error) {
+func (MySQLConn) Connect(c *Config) (*sql.DB, error) {
 	return sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
 		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
 	))
 }
 
-func (MySQLConn) ConnectAdmin(c *DBConfig) (*sql.DB, error) {
+func (MySQLConn) ConnectAdmin(c *Config) (*sql.DB, error) {
 	return sql.Open("mysql", fmt.Sprintf(
 		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
 		c.DBPass, c.Host, c.Port,
 	))
 }
 
-func (m MySQLConn) Migrate(src string, cfg *DBConfig) (*migrate.Migrate, error) {
+func (m MySQLConn) Migrate(src string, cfg *Config) (*migrate.Migrate, error) {
 	db, err := m.Connect(cfg)
 	if err != nil {
 		return nil, err
