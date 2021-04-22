@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/restkit"
 	"go.uber.org/dig"
 )
 
@@ -45,7 +45,7 @@ func (h *HealthCheck) Handle(ec echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	health := typrest.HealthMap{
+	health := restkit.HealthMap{
 		"postgres": h.PG.Ping(),
 		"mysql":    h.MySQL.Ping(),
 		"cache":    h.Cache.Ping(ctx).Err(),

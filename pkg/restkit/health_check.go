@@ -1,4 +1,4 @@
-package typrest
+package restkit
 
 // HealthStatusOK is health status ok
 var HealthStatusOK = "OK"

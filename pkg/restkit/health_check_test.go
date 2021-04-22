@@ -1,22 +1,22 @@
-package typrest_test
+package restkit_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-rest-server/pkg/typrest"
+	"github.com/typical-go/typical-rest-server/pkg/restkit"
 )
 
 func TestHealthCheck(t *testing.T) {
 	testcases := []struct {
 		TestName string
-		typrest.HealthMap
+		restkit.HealthMap
 		Expected   map[string]string
 		ExpectedOk bool
 	}{
 		{
-			HealthMap: typrest.HealthMap{
+			HealthMap: restkit.HealthMap{
 				"postgres": nil,
 				"redis":    nil,
 			},
@@ -27,7 +27,7 @@ func TestHealthCheck(t *testing.T) {
 			},
 		},
 		{
-			HealthMap: typrest.HealthMap{
+			HealthMap: restkit.HealthMap{
 				"postgres": errors.New("postgres-error"),
 				"redis":    errors.New("redis-error"),
 			},
