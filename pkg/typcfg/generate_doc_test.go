@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/urfave/cli/v2"
@@ -32,17 +31,16 @@ func TestGenerateDoc(t *testing.T) {
 				},
 			},
 		},
-		Context: &typast.Context{
-			Context: &typgo.Context{
-				Descriptor: &typgo.Descriptor{
-					ProjectName:    "NAME",
-					ProjectVersion: "VERSION",
-				},
-				Context: &cli.Context{
-					Command: &cli.Command{},
-				},
-				Logger: typgo.Logger{Stdout: &out},
+
+		Context: &typgo.Context{
+			Descriptor: &typgo.Descriptor{
+				ProjectName:    "NAME",
+				ProjectVersion: "VERSION",
 			},
+			Context: &cli.Context{
+				Command: &cli.Command{},
+			},
+			Logger: typgo.Logger{Stdout: &out},
 		},
 	}
 	err := typcfg.GenerateDoc(target, c)

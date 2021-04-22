@@ -62,7 +62,12 @@ Setup the local environment
 ./typicalw setup         # setup dependency e.g. mysql and postgres
 ```
 
-Run application:
+Generate code by annotation (if any change required)
+```bash
+./typicalw annotate
+```
+
+Build + Run application:
 ```bash
 ./typicalw run         # run the application
 ```

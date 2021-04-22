@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/internal/app/service"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo_mock"
+	"github.com/typical-go/typical-rest-server/internal/generated/dbrepo_mock"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 )
 
-type songSvcFn func(mockRepo *repo_mock.MockSongRepo)
+type songSvcFn func(mockRepo *dbrepo_mock.MockSongRepo)
 
 func createSongSvc(t *testing.T, fn songSvcFn) (service.SongSvc, *gomock.Controller) {
 	mock := gomock.NewController(t)
-	mockRepo := repo_mock.NewMockSongRepo(mock)
+	mockRepo := dbrepo_mock.NewMockSongRepo(mock)
 	if fn != nil {
 		fn(mockRepo)
 	}
@@ -44,7 +44,7 @@ func TestSongSvc_Create(t *testing.T) {
 			testName:    "create error",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "create-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(-1), errors.New("create-error"))
@@ -54,7 +54,7 @@ func TestSongSvc_Create(t *testing.T) {
 			testName:    "Find error",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "Find-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
@@ -69,7 +69,7 @@ func TestSongSvc_Create(t *testing.T) {
 				Title:  "some-title",
 			},
 			expected: &entity.Song{Artist: "some-artist", Title: "some-title"},
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Insert(gomock.Any(), &entity.Song{Artist: "some-artist", Title: "some-title"}).
 					Return(int64(1), nil)
@@ -104,7 +104,7 @@ func TestSongSvc_FindOne(t *testing.T) {
 	}{
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("some-error"))
@@ -113,7 +113,7 @@ func TestSongSvc_FindOne(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -122,7 +122,7 @@ func TestSongSvc_FindOne(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{}, nil)
@@ -156,7 +156,7 @@ func TestSongSvc_Find(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{}).
@@ -176,7 +176,7 @@ func TestSongSvc_Find(t *testing.T) {
 		},
 		{
 			testName: "find error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{Limit: 20, Offset: 10}, sqkit.Sorts{"title", "created_at"}).
@@ -187,7 +187,7 @@ func TestSongSvc_Find(t *testing.T) {
 		},
 		{
 			testName: "count error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(-1), errors.New("count-error"))
 			},
 			req:         &service.FindSongReq{Limit: 20, Offset: 10, Sort: "title,created_at"},
@@ -220,7 +220,7 @@ func TestSongSvc_Delete(t *testing.T) {
 		{
 			paramID:     "1",
 			expectedErr: `some-error`,
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Delete(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(int64(0), errors.New("some-error"))
@@ -228,7 +228,7 @@ func TestSongSvc_Delete(t *testing.T) {
 		},
 		{
 			paramID: "1",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Delete(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(int64(1), nil)
@@ -237,7 +237,7 @@ func TestSongSvc_Delete(t *testing.T) {
 		{
 			testName: "success even if no affected row (idempotent)",
 			paramID:  "1",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Delete(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(int64(0), nil)
@@ -278,7 +278,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "update error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -292,7 +292,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "no affected row",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -306,7 +306,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "find-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("find-error"))
@@ -317,7 +317,7 @@ func TestSongSvc_Update(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "find-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -359,7 +359,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "patch-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -373,7 +373,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "no affected row",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -387,7 +387,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "find-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return(nil, errors.New("find-error"))
@@ -398,7 +398,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:     "1",
 			song:        &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expectedErr: "find-error",
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)
@@ -414,7 +414,7 @@ func TestSongSvc_Patch(t *testing.T) {
 			paramID:  "1",
 			song:     &entity.Song{Artist: "some-artist", Title: "some-title"},
 			expected: &entity.Song{Artist: "some-artist", Title: "some-title"},
-			songSvcFn: func(mockRepo *repo_mock.MockSongRepo) {
+			songSvcFn: func(mockRepo *dbrepo_mock.MockSongRepo) {
 				mockRepo.EXPECT().
 					Find(gomock.Any(), sqkit.Eq{"id": int64(1)}).
 					Return([]*entity.Song{{ID: 1, Title: "some-title"}}, nil)

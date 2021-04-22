@@ -8,9 +8,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/dbrepo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
@@ -31,7 +30,7 @@ type (
 	// BookSvcImpl is implementation of BookSvc
 	BookSvcImpl struct {
 		dig.In
-		Repo repo.BookRepo
+		Repo dbrepo.BookRepo
 	}
 	// FindBookReq find request
 	FindBookReq struct {
@@ -92,7 +91,7 @@ func (b *BookSvcImpl) FindOne(ctx context.Context, paramID string) (*entity.Book
 }
 
 func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*entity.Book, error) {
-	books, err := b.Repo.Find(ctx, sqkit.Eq{repo.BookTable.ID: id})
+	books, err := b.Repo.Find(ctx, sqkit.Eq{dbrepo.BookTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -104,7 +103,7 @@ func (b *BookSvcImpl) findOne(ctx context.Context, id int64) (*entity.Book, erro
 // Delete book
 func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	_, err := b.Repo.Delete(ctx, sqkit.Eq{repo.BookTable.ID: id})
+	_, err := b.Repo.Delete(ctx, sqkit.Eq{dbrepo.BookTable.ID: id})
 	return err
 }
 
@@ -124,7 +123,7 @@ func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *entity.B
 }
 
 func (b *BookSvcImpl) update(ctx context.Context, id int64, book *entity.Book) error {
-	affectedRow, err := b.Repo.Update(ctx, book, sqkit.Eq{repo.BookTable.ID: id})
+	affectedRow, err := b.Repo.Update(ctx, book, sqkit.Eq{dbrepo.BookTable.ID: id})
 	if err != nil {
 		return err
 	}
@@ -147,7 +146,7 @@ func (b *BookSvcImpl) Patch(ctx context.Context, paramID string, book *entity.Bo
 }
 
 func (b *BookSvcImpl) patch(ctx context.Context, id int64, book *entity.Book) error {
-	affectedRow, err := b.Repo.Patch(ctx, book, sqkit.Eq{repo.BookTable.ID: id})
+	affectedRow, err := b.Repo.Patch(ctx, book, sqkit.Eq{dbrepo.BookTable.ID: id})
 	if err != nil {
 		return err
 	}

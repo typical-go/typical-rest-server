@@ -23,28 +23,24 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	var out strings.Builder
 	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	defer c.PatchBash([]*typgo.MockBash{})(t)
-	ac := &typast.Context{
-		Context: c,
-		Summary: &typast.Summary{
-			Annots: []*typast.Annot{
-				{
-					TagName: "@envconfig",
-					Decl: &typast.Decl{
-						File: typast.File{Package: "mypkg", Path: "pkg/file.go"},
-						Type: &typast.StructDecl{
-							TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-							Fields: []*typast.Field{
-								{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
-								{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
-							},
-						},
+
+	directives := []*typast.Directive{
+		{
+			TagName: "@envconfig",
+			Decl: &typast.Decl{
+				File: typast.File{Package: "mypkg", Path: "pkg/file.go"},
+				Type: &typast.StructDecl{
+					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+					Fields: []*typast.Field{
+						{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
+						{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 					},
 				},
 			},
 		},
 	}
 
-	require.NoError(t, EnvconfigAnnot.Annotate(ac))
+	require.NoError(t, EnvconfigAnnot.Annotate().Process(c, directives))
 
 	b, _ := ioutil.ReadFile("internal/generated/envcfg/envcfg.go")
 	require.Equal(t, `package envcfg
@@ -96,27 +92,25 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		Logger:     typgo.Logger{Stdout: &out},
 	}
 	defer c.PatchBash(nil)(t)
-	ac := &typast.Context{
-		Context: c,
-		Summary: &typast.Summary{Annots: []*typast.Annot{
-			{
-				TagName:  "@envconfig",
-				TagParam: `ctor:"ctor1" prefix:"SS"`,
-				Decl: &typast.Decl{
-					File: typast.File{Package: "mypkg"},
-					Type: &typast.StructDecl{
-						TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-						Fields: []*typast.Field{
-							{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
-							{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
-						},
+
+	directives := []*typast.Directive{
+		{
+			TagName:  "@envconfig",
+			TagParam: `ctor:"ctor1" prefix:"SS"`,
+			Decl: &typast.Decl{
+				File: typast.File{Package: "mypkg"},
+				Type: &typast.StructDecl{
+					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+					Fields: []*typast.Field{
+						{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
+						{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 					},
 				},
 			},
-		}},
+		},
 	}
 
-	require.NoError(t, a.Annotate(ac))
+	require.NoError(t, a.Annotate().Process(c, directives))
 	defer os.Remove(a.Target)
 	defer os.Remove(a.GenDotEnv)
 	defer os.Remove(a.GenDoc)
@@ -143,24 +137,21 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 	}
 	c := &typgo.Context{}
 	defer c.PatchBash(nil)(t)
-	ac := &typast.Context{
-		Context: c,
-		Summary: &typast.Summary{
-			Annots: []*typast.Annot{
-				{
-					TagName: "@some-tag",
-					Decl: &typast.Decl{
-						File: typast.File{Package: "mypkg"},
-						Type: &typast.StructDecl{
-							TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-							Fields:   []*typast.Field{},
-						},
-					},
+
+	directives := []*typast.Directive{
+		{
+			TagName: "@some-tag",
+			Decl: &typast.Decl{
+				File: typast.File{Package: "mypkg"},
+				Type: &typast.StructDecl{
+					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
+					Fields:   []*typast.Field{},
 				},
 			},
 		},
 	}
-	require.NoError(t, EnvconfigAnnot.Annotate(ac))
+
+	require.NoError(t, EnvconfigAnnot.Annotate().Process(c, directives))
 
 	b, _ := ioutil.ReadFile("predefined/cfg-target")
 	require.Equal(t, `some-template`, string(b))
@@ -170,13 +161,9 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 	target := "target1"
 	defer os.Remove(target)
 	ioutil.WriteFile(target, []byte("some-content"), 0777)
-	c := &typast.Context{
-		Context: &typgo.Context{},
-		Summary: &typast.Summary{},
-	}
 
 	EnvconfigAnnot := &typcfg.EnvconfigAnnot{Target: target}
-	require.NoError(t, EnvconfigAnnot.Annotate(c))
+	require.NoError(t, EnvconfigAnnot.Annotate().Process(nil, nil))
 	_, err := os.Stat(target)
 	require.True(t, os.IsNotExist(err))
 }

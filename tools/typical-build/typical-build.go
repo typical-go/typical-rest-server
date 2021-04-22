@@ -6,8 +6,8 @@ import (
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
-	"github.com/typical-go/typical-rest-server/pkg/dbrepo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
+	"github.com/typical-go/typical-rest-server/pkg/typdb"
 	"github.com/typical-go/typical-rest-server/pkg/typtool"
 )
 
@@ -19,10 +19,9 @@ var descriptor = typgo.Descriptor{
 	Tasks: []typgo.Tasker{
 		// annotate
 		&typast.AnnotateProject{
-			Sources: []string{"internal"},
 			Annotators: []typast.Annotator{
-				&typapp.CtorAnnotation{},
-				&dbrepo.DBRepoAnnot{},
+				&typapp.CtorAnnot{},
+				&typdb.DBRepoAnnot{},
 				&typcfg.EnvconfigAnnot{GenDotEnv: ".env", GenDoc: "USAGE.md"},
 			},
 		},
@@ -34,12 +33,10 @@ var descriptor = typgo.Descriptor{
 		&typgo.GoBuild{},
 		// run
 		&typgo.RunBinary{
-			Before: typgo.TaskNames{"annotate", "build"},
+			Before: typgo.TaskNames{"build"},
 		},
 		// mock
-		&typmock.GoMock{
-			Sources: []string{"internal"},
-		},
+		&typmock.GoMock{},
 		// docker
 		&typtool.Docker{
 			ComposeFiles: typtool.ComposeFiles("deploy/docker"),

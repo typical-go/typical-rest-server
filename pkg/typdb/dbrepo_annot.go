@@ -1,4 +1,4 @@
-package dbrepo
+package typdb
 
 import (
 	"fmt"
@@ -47,6 +47,7 @@ const (
 	pkOpt       = "pk"
 	nowOpt      = "now"
 	noUpdateOpt = "no_update"
+	parentDest  = "internal/generated/dbrepo"
 )
 
 //
@@ -54,35 +55,47 @@ const (
 //
 
 var _ typast.Annotator = (*DBRepoAnnot)(nil)
+var _ typast.Processor = (*DBRepoAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *DBRepoAnnot) Annotate(c *typast.Context) error {
-	os.RemoveAll("internal/generated/entity")
-	for _, a := range c.Annots {
-		if a.TagName == m.getTagName() && typast.IsStruct(a) && typast.IsPublic(a) {
-			ent, err := m.createEntity(a)
-			if err != nil {
-				return err
-			}
-			if err := m.process(c, ent); err != nil {
-				c.Infof("WARN: Failed process @dbrepo at '%s': %s\n", a.GetName(), err.Error())
-			}
-			m.mock(c, a, ent)
+func (m *DBRepoAnnot) Annotate() typast.Processor {
+	return &typast.Annotation{
+		Filter: typast.Filters{
+			&typast.TagNameFilter{m.getTagName()},
+			&typast.StructFilter{},
+			&typast.PublicFilter{},
+		},
+		Processor: m,
+	}
+}
+
+func (m *DBRepoAnnot) Process(c *typgo.Context, directive typast.Directives) error {
+	os.RemoveAll(parentDest)
+	for _, directive := range directive {
+
+		ent, err := m.createEntity(directive)
+		if err != nil {
+			return err
 		}
+		if err := m.process(c, ent); err != nil {
+			c.Infof("WARN: Failed process @dbrepo at '%s': %s\n", directive.GetName(), err.Error())
+		}
+		m.mock(c, directive, ent)
+
 	}
 	return nil
 }
 
-func (m *DBRepoAnnot) mock(c *typast.Context, a *typast.Annot, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) mock(c *typgo.Context, a *typast.Directive, ent *EntityTmplData) error {
 	destPkg := filepath.Base(ent.Dest) + "_mock"
 	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
 	pkg := typgo.ProjectPkg + "/" + ent.Dest
 	name := ent.Name + "Repo"
 
-	return typmock.MockGen(c.Context, destPkg, dest, pkg, name)
+	return typmock.MockGen(c, destPkg, dest, pkg, name)
 }
 
-func (m *DBRepoAnnot) process(c *typast.Context, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) process(c *typgo.Context, ent *EntityTmplData) error {
 	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
@@ -94,7 +107,7 @@ func (m *DBRepoAnnot) process(c *typast.Context, ent *EntityTmplData) error {
 	if err := tmplkit.WriteFile(path, tmpl, ent); err != nil {
 		return err
 	}
-	typgo.GoImports(c.Context, path)
+	typgo.GoImports(c, path)
 	return nil
 }
 
@@ -105,7 +118,7 @@ func getTemplate(dialect string) (string, error) {
 	case "mysql":
 		return mysqlTmpl, nil
 	}
-	return "", fmt.Errorf("Unknown dialect: %s", dialect)
+	return "", fmt.Errorf("unknown dialect: %s", dialect)
 }
 
 func (m *DBRepoAnnot) getTagName() string {
@@ -120,25 +133,25 @@ func (m *DBRepoAnnot) getTagName() string {
 //
 
 // CreateEntity create entity
-func (m *DBRepoAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
-	name := a.GetName()
-	table := a.TagParam.Get("table")
+func (m *DBRepoAnnot) createEntity(directive *typast.Directive) (*EntityTmplData, error) {
+	name := directive.GetName()
+	table := directive.TagParam.Get("table")
 
 	if table == "" {
 		table = strings.ToLower(name) + "s"
 	}
 
-	dialect := a.TagParam.Get("dialect")
+	dialect := directive.TagParam.Get("dialect")
 
-	ctorDB := a.TagParam.Get("ctor_db")
+	ctorDB := directive.TagParam.Get("ctor_db")
 	if ctorDB != "" {
 		ctorDB = fmt.Sprintf("`name:\"%s\"`", ctorDB)
 	}
 
-	dest := m.GetDest(a.Path)
+	dest := m.GetDest(directive.Path)
 	pkg := filepath.Base(dest)
-	sourcePkg := filepath.Base(filepath.Dir(a.Path))
-	fields, primaryKey := m.createFields(a)
+	sourcePkg := filepath.Base(filepath.Dir(directive.Path))
+	fields, primaryKey := m.createFields(directive)
 
 	imports := map[string]string{
 		"context":                         "",
@@ -151,7 +164,7 @@ func (m *DBRepoAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 		"github.com/typical-go/typical-rest-server/pkg/reflectkit": "",
 		"github.com/typical-go/typical-go/pkg/typapp":              "",
 		"go.uber.org/dig": "",
-		typgo.ProjectPkg + "/" + filepath.Dir(a.File.Path): "",
+		typgo.ProjectPkg + "/" + filepath.Dir(directive.File.Path): "",
 	}
 
 	return &EntityTmplData{
@@ -172,29 +185,26 @@ func (m *DBRepoAnnot) createEntity(a *typast.Annot) (*EntityTmplData, error) {
 // GetDest get destination
 func (*DBRepoAnnot) GetDest(file string) string {
 	source := filepath.Dir(file)
-	if strings.HasPrefix(source, "internal/") {
-		source = source[9:]
-	}
+	source = strings.TrimPrefix(source, "internal/")
+
 	if strings.HasSuffix(source, "entity") {
-		source = source[:len(source)-6]
+		return parentDest
 	}
 	if strings.HasSuffix(source, "/") || strings.HasSuffix(source, "_") {
-		return fmt.Sprintf("internal/generated/entity/%srepo", source)
+		return fmt.Sprintf("%s/%srepo", parentDest, source)
 	}
-	return fmt.Sprintf("internal/generated/entity/%s_repo", source)
+	return fmt.Sprintf("%s/%s_repo", parentDest, source)
 }
 
-func (m *DBRepoAnnot) createFields(a *typast.Annot) (fields []*Field, primaryKey *Field) {
-	structDecl := a.Decl.Type.(*typast.StructDecl)
+func (m *DBRepoAnnot) createFields(directive *typast.Directive) (fields []*Field, primaryKey *Field) {
+	structDecl := directive.Decl.Type.(*typast.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]
 		column := f.StructTag.Get("column")
 		if column == "" {
 			column = strings.ToLower(name)
 		}
-		var opts fieldOptions
-		opts = strings.Split(f.StructTag.Get("option"), ",")
-
+		var opts fieldOptions = strings.Split(f.StructTag.Get("option"), ",")
 		field := &Field{
 			Name:         name,
 			Type:         f.Type,

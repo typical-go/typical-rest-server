@@ -1,4 +1,4 @@
-package dbrepo
+package typdb
 
 const mysqlTmpl = `package {{.Pkg}}
 

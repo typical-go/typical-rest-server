@@ -1,11 +1,10 @@
-package repo
+package dbrepo
 
 /* DO NOT EDIT. This file generated due to '@dbrepo' annotation */
 
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -18,54 +17,59 @@ import (
 )
 
 var (
-	// BookTableName is table name for books entity
-	BookTableName = "books"
-	// BookTable is columns for books entity
-	BookTable = struct {
+	// SongTableName is table name for songs entity
+	SongTableName = "songs"
+	// SongTable is columns for songs entity
+	SongTable = struct {
 		ID        string
 		Title     string
-		Author    string
+		Artist    string
 		UpdatedAt string
 		CreatedAt string
 	}{
 		ID:        "id",
 		Title:     "title",
-		Author:    "author",
+		Artist:    "artist",
 		UpdatedAt: "updated_at",
 		CreatedAt: "created_at",
 	}
 )
 
 type (
-	// BookRepo to get books data from database
-	BookRepo interface {
+	// SongRepo to get songs data from database
+	SongRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
-		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Book, error)
-		Insert(context.Context, ...*entity.Book) (int64, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Song, error)
+		Insert(context.Context, ...*entity.Song) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
-		Update(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
-		Patch(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
+		Update(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
 	}
-	// BookRepoImpl is implementation books repository
-	BookRepoImpl struct {
+	// SongRepoImpl is implementation songs repository
+	SongRepoImpl struct {
 		dig.In
-		*sql.DB `name:"pg"`
+		*sql.DB `name:"mysql"`
 	}
 )
 
 func init() {
-	typapp.Provide("", NewBookRepo)
+	typapp.Provide("", NewSongRepo)
 }
 
-// Count books
-func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
+// NewSongRepo return new instance of SongRepo
+func NewSongRepo(impl SongRepoImpl) SongRepo {
+	return &impl
+}
+
+// Count songs
+func (r *SongRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 	builder := sq.
 		Select("count(*)").
-		From(BookTableName).
+		From(SongTableName).
 		RunWith(txn)
 
 	for _, opt := range opts {
@@ -81,27 +85,21 @@ func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (i
 	return cnt, nil
 }
 
-// NewBookRepo return new instance of BookRepo
-func NewBookRepo(impl BookRepoImpl) BookRepo {
-	return &impl
-}
-
-// Find books
-func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Book, err error) {
+// Find songs
+func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Song, err error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return nil, err
 	}
 	builder := sq.
 		Select(
-			BookTable.ID,
-			BookTable.Title,
-			BookTable.Author,
-			BookTable.UpdatedAt,
-			BookTable.CreatedAt,
+			SongTable.ID,
+			SongTable.Title,
+			SongTable.Artist,
+			SongTable.UpdatedAt,
+			SongTable.CreatedAt,
 		).
-		From(BookTableName).
-		PlaceholderFormat(sq.Dollar).
+		From(SongTableName).
 		RunWith(txn)
 
 	for _, opt := range opts {
@@ -113,13 +111,13 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 		return
 	}
 
-	list = make([]*entity.Book, 0)
+	list = make([]*entity.Song, 0)
 	for rows.Next() {
-		ent := new(entity.Book)
+		ent := new(entity.Song)
 		if err = rows.Scan(
 			&ent.ID,
 			&ent.Title,
-			&ent.Author,
+			&ent.Artist,
 			&ent.UpdatedAt,
 			&ent.CreatedAt,
 		); err != nil {
@@ -130,58 +128,54 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 	return
 }
 
-// Insert books
-func (r *BookRepoImpl) Insert(ctx context.Context, ents ...*entity.Book) (int64, error) {
+// Insert songs
+func (r *SongRepoImpl) Insert(ctx context.Context, ents ...*entity.Song) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
 	builder := sq.
-		Insert(BookTableName).
+		Insert(SongTableName).
 		Columns(
-			BookTable.Title,
-			BookTable.Author,
-			BookTable.UpdatedAt,
-			BookTable.CreatedAt,
-		).
-		Suffix(
-			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
-		).
-		PlaceholderFormat(sq.Dollar)
+			SongTable.Title,
+			SongTable.Artist,
+			SongTable.UpdatedAt,
+			SongTable.CreatedAt,
+		)
 
 	for _, ent := range ents {
 		builder = builder.Values(
 			ent.Title,
-			ent.Author,
+			ent.Artist,
 			time.Now(),
 			time.Now(),
 		)
 	}
 
-	scanner := builder.RunWith(txn).QueryRowContext(ctx)
-
-	var id int64
-	if err := scanner.Scan(&id); err != nil {
+	res, err := builder.RunWith(txn).ExecContext(ctx)
+	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return id, nil
+
+	lastInsertID, err := res.LastInsertId()
+	txn.SetError(err)
+	return lastInsertID, err
 }
 
-// Update books
-func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
+// Update songs
+func (r *SongRepoImpl) Update(ctx context.Context, ent *entity.Song, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
 	builder := sq.
-		Update(BookTableName).
-		Set(BookTable.Title, ent.Title).
-		Set(BookTable.Author, ent.Author).
-		Set(BookTable.UpdatedAt, time.Now()).
-		PlaceholderFormat(sq.Dollar).
+		Update(SongTableName).
+		Set(SongTable.Title, ent.Title).
+		Set(SongTable.Artist, ent.Artist).
+		Set(SongTable.UpdatedAt, time.Now()).
 		RunWith(txn)
 
 	if opt != nil {
@@ -198,25 +192,22 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.U
 	return affectedRow, err
 }
 
-// Patch books
-func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
+// Patch songs
+func (r *SongRepoImpl) Patch(ctx context.Context, ent *entity.Song, opt sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
-	builder := sq.
-		Update(BookTableName).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(txn)
+	builder := sq.Update(SongTableName).RunWith(txn)
 
 	if !reflectkit.IsZero(ent.Title) {
-		builder = builder.Set(BookTable.Title, ent.Title)
+		builder = builder.Set(SongTable.Title, ent.Title)
 	}
-	if !reflectkit.IsZero(ent.Author) {
-		builder = builder.Set(BookTable.Author, ent.Author)
+	if !reflectkit.IsZero(ent.Artist) {
+		builder = builder.Set(SongTable.Artist, ent.Artist)
 	}
-	builder = builder.Set(BookTable.UpdatedAt, time.Now())
+	builder = builder.Set(SongTable.UpdatedAt, time.Now())
 
 	if opt != nil {
 		builder = opt.CompileUpdate(builder)
@@ -233,18 +224,14 @@ func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.Up
 	return affectedRow, err
 }
 
-// Delete books
-func (r *BookRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int64, error) {
+// Delete songs
+func (r *SongRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
 	}
 
-	builder := sq.
-		Delete(BookTableName).
-		PlaceholderFormat(sq.Dollar).
-		RunWith(txn)
-
+	builder := sq.Delete(SongTableName).RunWith(txn)
 	if opt != nil {
 		builder = opt.CompileDelete(builder)
 	}

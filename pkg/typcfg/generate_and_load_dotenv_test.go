@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/typast"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 )
@@ -21,9 +20,7 @@ func TestCreateAndLoadDotEnv_EnvFileExist(t *testing.T) {
 	var out strings.Builder
 	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	cc := &typcfg.Context{
-		Context: &typast.Context{
-			Context: c,
-		},
+		Context: c,
 		Configs: []*typcfg.Envconfig{
 			{
 				Fields: []*typcfg.Field{

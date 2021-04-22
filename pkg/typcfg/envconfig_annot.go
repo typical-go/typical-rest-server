@@ -31,7 +31,7 @@ type (
 	}
 	// Context of config
 	Context struct {
-		*typast.Context
+		*typgo.Context
 		Configs []*Envconfig
 		Imports map[string]string
 	}
@@ -52,42 +52,27 @@ type (
 	}
 )
 
-const (
-	defaultCfgTarget = "internal/generated/envcfg/envcfg.go"
-)
-
-const defaultCfgTemplate = `package {{.Package}}
-
-/* {{.Signature}} */
-
-import ({{range $import, $alias := .Imports}}
-	{{$alias}} "{{$import}}"{{end}}
-)
-
-func init() { {{if .Configs}}{{range $c := .Configs}}
-	typapp.Provide("{{$c.Ctor}}",{{$c.FnName}}){{end}}{{end}}
-}
-{{range $c := .Configs}}
-// {{$c.FnName}} load env to new instance of {{$c.Name}}
-func {{$c.FnName}}() (*{{$c.SpecType}}, error) {
-	var cfg {{$c.SpecType}}
-	prefix := "{{$c.Prefix}}"
-	if err := envconfig.Process(prefix, &cfg); err != nil {
-		return nil, fmt.Errorf("%s: %w", prefix, err)
-	}
-	return &cfg, nil
-}{{end}}
-`
-
 //
 // EnvconfigAnnot
 //
 
 var _ typast.Annotator = (*EnvconfigAnnot)(nil)
+var _ typast.Processor = (*EnvconfigAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *EnvconfigAnnot) Annotate(c *typast.Context) error {
-	context := m.Context(c)
+func (m *EnvconfigAnnot) Annotate() typast.Processor {
+	return &typast.Annotation{
+		Filter: typast.Filters{
+			&typast.TagNameFilter{m.getTagName()},
+			&typast.PublicFilter{},
+			&typast.StructFilter{},
+		},
+		Processor: m,
+	}
+}
+
+func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typast.Directives) error {
+	context := m.Context(c, directives)
 	target := m.getTarget(context)
 
 	if len(context.Configs) < 1 {
@@ -107,20 +92,17 @@ func (m *EnvconfigAnnot) Annotate(c *typast.Context) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
 // Context create context instance
-func (m *EnvconfigAnnot) Context(c *typast.Context) *Context {
+func (m *EnvconfigAnnot) Context(c *typgo.Context, directive typast.Directives) *Context {
 	var configs []*Envconfig
 
 	importAliases := typast.NewImportAliases()
-	for _, a := range c.Annots {
-		if a.TagName == m.getTagName() && typast.IsPublic(a) && typast.IsStruct(a) {
-			importAlias := importAliases.Append(typast.Package(a))
-			configs = append(configs, createEnvconfig(a, importAlias))
-		}
+	for _, a := range directive {
+		importAlias := importAliases.Append(a.Package())
+		configs = append(configs, createEnvconfig(a, importAlias))
 	}
 	importAliases.Map["github.com/kelseyhightower/envconfig"] = ""
 	importAliases.Map["github.com/typical-go/typical-go/pkg/typapp"] = ""
@@ -143,7 +125,7 @@ func (m *EnvconfigAnnot) generate(c *Context, target string) error {
 	}); err != nil {
 		return err
 	}
-	typgo.GoImports(c.Context.Context, target)
+	typgo.GoImports(c.Context, target)
 	return nil
 }
 
@@ -176,7 +158,7 @@ func createImports(dirs []string) []string {
 	return imports
 }
 
-func createEnvconfig(a *typast.Annot, importAlias string) *Envconfig {
+func createEnvconfig(a *typast.Directive, importAlias string) *Envconfig {
 	prefix := getPrefix(a)
 	structDecl := a.Type.(*typast.StructDecl)
 
@@ -216,11 +198,11 @@ func CreateField(prefix string, field *typast.Field) *Field {
 	}
 }
 
-func getCtorName(annot *typast.Annot) string {
+func getCtorName(annot *typast.Directive) string {
 	return annot.TagParam.Get("ctor")
 }
 
-func getPrefix(annot *typast.Annot) string {
+func getPrefix(annot *typast.Directive) string {
 	prefix := annot.TagParam.Get("prefix")
 	if prefix == "" {
 		prefix = strings.ToUpper(annot.GetName())

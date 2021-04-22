@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
-	"github.com/typical-go/typical-rest-server/internal/generated/entity/app/repo"
+	"github.com/typical-go/typical-rest-server/internal/generated/dbrepo"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
@@ -31,7 +31,7 @@ type (
 	// SongSvcImpl is implementation of SongSvc
 	SongSvcImpl struct {
 		dig.In
-		Repo repo.SongRepo
+		Repo dbrepo.SongRepo
 	}
 	// FindSongReq find request
 	FindSongReq struct {
@@ -93,7 +93,7 @@ func (b *SongSvcImpl) FindOne(ctx context.Context, paramID string) (*entity.Song
 }
 
 func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*entity.Song, error) {
-	books, err := b.Repo.Find(ctx, sqkit.Eq{repo.SongTable.ID: id})
+	books, err := b.Repo.Find(ctx, sqkit.Eq{dbrepo.SongTable.ID: id})
 	if err != nil {
 		return nil, err
 	} else if len(books) < 1 {
@@ -105,7 +105,7 @@ func (b *SongSvcImpl) findOne(ctx context.Context, id int64) (*entity.Song, erro
 // Delete book
 func (b *SongSvcImpl) Delete(ctx context.Context, paramID string) error {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	_, err := b.Repo.Delete(ctx, sqkit.Eq{repo.SongTable.ID: id})
+	_, err := b.Repo.Delete(ctx, sqkit.Eq{dbrepo.SongTable.ID: id})
 	return err
 }
 
@@ -126,7 +126,7 @@ func (b *SongSvcImpl) Update(ctx context.Context, paramID string, book *entity.S
 }
 
 func (b *SongSvcImpl) update(ctx context.Context, id int64, song *entity.Song) error {
-	affectedRow, err := b.Repo.Update(ctx, song, sqkit.Eq{repo.SongTable.ID: id})
+	affectedRow, err := b.Repo.Update(ctx, song, sqkit.Eq{dbrepo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func (b *SongSvcImpl) Patch(ctx context.Context, paramID string, song *entity.So
 }
 
 func (b *SongSvcImpl) patch(ctx context.Context, id int64, song *entity.Song) error {
-	affectedRow, err := b.Repo.Patch(ctx, song, sqkit.Eq{repo.SongTable.ID: id})
+	affectedRow, err := b.Repo.Patch(ctx, song, sqkit.Eq{dbrepo.SongTable.ID: id})
 	if err != nil {
 		return err
 	}
