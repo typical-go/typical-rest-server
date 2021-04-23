@@ -40,7 +40,8 @@ type (
 	SongRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Song, error)
-		Insert(context.Context, ...*entity.Song) (int64, error)
+		Insert(context.Context, *entity.Song) (int64, error)
+		BulkInsert(context.Context, ...*entity.Song) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *entity.Song, sqkit.UpdateOption) (int64, error)
@@ -128,8 +129,8 @@ func (r *SongRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 	return
 }
 
-// Insert songs
-func (r *SongRepoImpl) Insert(ctx context.Context, ents ...*entity.Song) (int64, error) {
+// BulkInsert songs and return affected row
+func (r *SongRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Song) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -152,6 +153,39 @@ func (r *SongRepoImpl) Insert(ctx context.Context, ents ...*entity.Song) (int64,
 			time.Now(),
 		)
 	}
+
+	res, err := builder.RunWith(txn).ExecContext(ctx)
+	if err != nil {
+		txn.SetError(err)
+		return -1, err
+	}
+
+	affectedRow, err := res.RowsAffected()
+	txn.SetError(err)
+	return affectedRow, err
+}
+
+// Insert songs and return last inserted id
+func (r *SongRepoImpl) Insert(ctx context.Context, ent *entity.Song) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
+	builder := sq.
+		Insert(SongTableName).
+		Columns(
+			SongTable.Title,
+			SongTable.Artist,
+			SongTable.UpdatedAt,
+			SongTable.CreatedAt,
+		).
+		Values(
+			ent.Title,
+			ent.Artist,
+			time.Now(),
+			time.Now(),
+		)
 
 	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {

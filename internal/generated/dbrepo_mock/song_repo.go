@@ -35,6 +35,26 @@ func (m *MockSongRepo) EXPECT() *MockSongRepoMockRecorder {
 	return m.recorder
 }
 
+// BulkInsert mocks base method
+func (m *MockSongRepo) BulkInsert(arg0 context.Context, arg1 ...*entity.Song) (int64, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0}
+	for _, a := range arg1 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "BulkInsert", varargs...)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BulkInsert indicates an expected call of BulkInsert
+func (mr *MockSongRepoMockRecorder) BulkInsert(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0}, arg1...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BulkInsert", reflect.TypeOf((*MockSongRepo)(nil).BulkInsert), varargs...)
+}
+
 // Count mocks base method
 func (m *MockSongRepo) Count(arg0 context.Context, arg1 ...sqkit.SelectOption) (int64, error) {
 	m.ctrl.T.Helper()
@@ -91,23 +111,18 @@ func (mr *MockSongRepoMockRecorder) Find(arg0 interface{}, arg1 ...interface{}) 
 }
 
 // Insert mocks base method
-func (m *MockSongRepo) Insert(arg0 context.Context, arg1 ...*entity.Song) (int64, error) {
+func (m *MockSongRepo) Insert(arg0 context.Context, arg1 *entity.Song) (int64, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{arg0}
-	for _, a := range arg1 {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "Insert", varargs...)
+	ret := m.ctrl.Call(m, "Insert", arg0, arg1)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert
-func (mr *MockSongRepoMockRecorder) Insert(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+func (mr *MockSongRepoMockRecorder) Insert(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{arg0}, arg1...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockSongRepo)(nil).Insert), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockSongRepo)(nil).Insert), arg0, arg1)
 }
 
 // Patch mocks base method

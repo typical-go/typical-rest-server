@@ -41,7 +41,8 @@ type (
 	BookRepo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Book, error)
-		Insert(context.Context, ...*entity.Book) (int64, error)
+		Insert(context.Context, *entity.Book) (int64, error)
+		BulkInsert(context.Context, ...*entity.Book) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
@@ -130,8 +131,8 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 	return
 }
 
-// Insert books
-func (r *BookRepoImpl) Insert(ctx context.Context, ents ...*entity.Book) (int64, error) {
+// Insert books and return last inserted id
+func (r *BookRepoImpl) Insert(ctx context.Context, ent *entity.Book) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -148,6 +149,39 @@ func (r *BookRepoImpl) Insert(ctx context.Context, ents ...*entity.Book) (int64,
 		Suffix(
 			fmt.Sprintf("RETURNING \"%s\"", BookTable.ID),
 		).
+		PlaceholderFormat(sq.Dollar).
+		Values(
+			ent.Title,
+			ent.Author,
+			time.Now(),
+			time.Now(),
+		)
+
+	scanner := builder.RunWith(txn).QueryRowContext(ctx)
+
+	var id int64
+	if err := scanner.Scan(&id); err != nil {
+		txn.SetError(err)
+		return -1, err
+	}
+	return id, nil
+}
+
+// BulkInsert books and return affected rows
+func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Book) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
+	builder := sq.
+		Insert(BookTableName).
+		Columns(
+			BookTable.Title,
+			BookTable.Author,
+			BookTable.UpdatedAt,
+			BookTable.CreatedAt,
+		).
 		PlaceholderFormat(sq.Dollar)
 
 	for _, ent := range ents {
@@ -159,14 +193,14 @@ func (r *BookRepoImpl) Insert(ctx context.Context, ents ...*entity.Book) (int64,
 		)
 	}
 
-	scanner := builder.RunWith(txn).QueryRowContext(ctx)
-
-	var id int64
-	if err := scanner.Scan(&id); err != nil {
+	res, err := builder.ExecContext(ctx)
+	if err != nil {
 		txn.SetError(err)
 		return -1, err
 	}
-	return id, nil
+	affectedRow, err := res.RowsAffected()
+	txn.SetError(err)
+	return affectedRow, err
 }
 
 // Update books

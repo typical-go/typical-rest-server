@@ -26,7 +26,8 @@ type (
 	{{.Name}}Repo interface {
 		Count(context.Context, ...sqkit.SelectOption) (int64, error)
 		Find(context.Context, ...sqkit.SelectOption) ([]*{{.SourcePkg}}.{{.Name}}, error)
-		Insert(context.Context, ...*{{.SourcePkg}}.{{.Name}}) (int64, error)
+		Insert(context.Context, *{{.SourcePkg}}.{{.Name}}) (int64, error)
+		BulkInsert(context.Context, ...*{{.SourcePkg}}.{{.Name}}) (int64, error)
 		Delete(context.Context, sqkit.DeleteOption) (int64, error)
 		Update(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
 		Patch(context.Context, *{{.SourcePkg}}.{{.Name}}, sqkit.UpdateOption) (int64, error)
@@ -108,8 +109,8 @@ func (r *{{.Name}}RepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption
 	return
 }
 
-// Insert {{.Table}}
-func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ents ...*{{.SourcePkg}}.{{.Name}}) (int64, error) {
+// Insert {{.Table}} and return last inserted id
+func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ent *{{.SourcePkg}}.{{.Name}}) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -122,12 +123,9 @@ func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ents ...*{{.SourcePkg}}.
 		Suffix(
 			fmt.Sprintf("RETURNING \"%s\"", {{$.Name}}Table.{{.PrimaryKey.Name}}),
 		).
-		PlaceholderFormat(sq.Dollar)
-	
-	for _, ent := range ents {
-		builder = builder.Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
-			{{end}})
-	}
+		PlaceholderFormat(sq.Dollar).
+		Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
+		{{end}})
 
 	scanner := builder.RunWith(txn).QueryRowContext(ctx)
 
@@ -137,6 +135,35 @@ func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ents ...*{{.SourcePkg}}.
 		return -1, err
 	}
 	return id, nil
+}
+
+// BulkInsert {{.Table}} and return affected rows
+func (r *{{.Name}}RepoImpl) BulkInsert(ctx context.Context, ents ...*{{.SourcePkg}}.{{.Name}}) (int64, error) {
+	txn, err := dbtxn.Use(ctx, r.DB)
+	if err != nil {
+		return -1, err
+	}
+
+	builder := sq.
+		Insert({{$.Name}}TableName).
+		Columns({{range .Fields}}{{if not .PrimaryKey}}	{{$.Name}}Table.{{.Name}},{{end}}	
+		{{end}}).
+		PlaceholderFormat(sq.Dollar)
+		
+	
+	for _, ent := range ents {
+		builder = builder.Values({{range .Fields}}{{if .DefaultValue}}	{{.DefaultValue}},{{else if not .PrimaryKey}}	ent.{{.Name}},{{end}}
+			{{end}})
+	}
+
+	res, err := builder.ExecContext(ctx)
+	if err != nil {
+		txn.SetError(err)
+		return -1, err
+	}
+	affectedRow, err := res.RowsAffected()
+	txn.SetError(err)
+	return affectedRow, err
 }
 
 
