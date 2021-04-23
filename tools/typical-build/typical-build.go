@@ -14,7 +14,7 @@ import (
 
 var descriptor = typgo.Descriptor{
 	ProjectName:    "typical-rest-server",
-	ProjectVersion: "0.9.17",
+	ProjectVersion: "0.9.18",
 	Environment:    typgo.DotEnv(".env"),
 
 	Tasks: []typgo.Tasker{
@@ -60,7 +60,7 @@ var descriptor = typgo.Descriptor{
 		// mysql
 		&typredis.RedisTool{
 			Name:    "cache",
-			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REDIS"),
+			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REsDIS"),
 		},
 		// setup
 		&typgo.Task{
