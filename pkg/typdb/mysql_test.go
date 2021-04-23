@@ -8,7 +8,7 @@ import (
 )
 
 func TestMySQL_DBTool(t *testing.T) {
-	mysql := typdb.MySQL{
+	mysql := typdb.MySQLTool{
 		Name:         "some-name",
 		EnvKeys:      &typdb.EnvKeys{},
 		MigrationSrc: "some-migr",

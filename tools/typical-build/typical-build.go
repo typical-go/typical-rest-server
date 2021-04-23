@@ -44,14 +44,14 @@ var descriptor = typgo.Descriptor{
 			EnvFile:      ".env",
 		},
 		// pg
-		&typdb.Postgres{
+		&typdb.PostgresTool{
 			Name:         "pg",
 			EnvKeys:      typdb.EnvKeysWithPrefix("PG"),
 			MigrationSrc: "database/pg/migration",
 			SeedSrc:      "database/pg/seed",
 		},
 		// mysql
-		&typdb.MySQL{
+		&typdb.MySQLTool{
 			Name:         "mysql",
 			EnvKeys:      typdb.EnvKeysWithPrefix("MYSQL"),
 			MigrationSrc: "database/mysql/migration",

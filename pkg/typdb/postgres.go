@@ -14,24 +14,24 @@ import (
 )
 
 type (
-	Postgres struct {
+	PostgresTool struct {
 		Name         string
 		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		DockerName   string
 	}
-	MySQLConn struct{}
+	PGConn struct{}
 )
 
 //
 // Postgres
 //
 
-var _ (typgo.Tasker) = (*Postgres)(nil)
+var _ (typgo.Tasker) = (*PostgresTool)(nil)
 
 // Task for postgres
-func (t *Postgres) Task() *typgo.Task {
+func (t *PostgresTool) Task() *typgo.Task {
 	dbtool := t.DBTool()
 	subtasks := []*typgo.Task{
 		{Name: "console", Usage: "Postgres console", Action: typgo.NewAction(t.Console)},
@@ -42,7 +42,7 @@ func (t *Postgres) Task() *typgo.Task {
 	return task
 }
 
-func (t *Postgres) DBTool() *DBTool {
+func (t *PostgresTool) DBTool() *DBTool {
 	return &DBTool{
 		DBConn:       &PGConn{},
 		Name:         t.Name,
@@ -55,7 +55,7 @@ func (t *Postgres) DBTool() *DBTool {
 }
 
 // Console interactice for postgres
-func (t *Postgres) Console(c *typgo.Context) error {
+func (t *PostgresTool) Console(c *typgo.Context) error {
 	cfg := t.EnvKeys.Config()
 	os.Setenv("PGPASSWORD", cfg.DBPass)
 	return c.Execute(&typgo.Bash{
@@ -63,7 +63,7 @@ func (t *Postgres) Console(c *typgo.Context) error {
 		Args: []string{
 			"exec", "-it", t.dockerName(),
 			"psql",
-			"-h", "locahost",
+			"-h", "localhost",
 			"-p", "5432",
 			"-U", cfg.DBUser,
 			"-d", cfg.DBName,
@@ -74,7 +74,7 @@ func (t *Postgres) Console(c *typgo.Context) error {
 	})
 }
 
-func (t *Postgres) dockerName() string {
+func (t *PostgresTool) dockerName() string {
 	dockerName := t.DockerName
 	if dockerName == "" {
 		dockerName = typgo.ProjectName + "-" + t.Name

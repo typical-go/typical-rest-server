@@ -14,25 +14,24 @@ import (
 )
 
 type (
-	// MySQL for postgres
-	MySQL struct {
+	MySQLTool struct {
 		Name         string
 		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		DockerName   string
 	}
-	PGConn struct{}
+	MySQLConn struct{}
 )
 
 //
 // MySQL
 //
 
-var _ (typgo.Tasker) = (*MySQL)(nil)
+var _ (typgo.Tasker) = (*MySQLTool)(nil)
 
 // Task for postgress
-func (t *MySQL) Task() *typgo.Task {
+func (t *MySQLTool) Task() *typgo.Task {
 	dbtool := t.DBTool()
 	subtasks := []*typgo.Task{
 		{Name: "console", Usage: "Postgres console", Action: typgo.NewAction(t.Console)},
@@ -43,7 +42,7 @@ func (t *MySQL) Task() *typgo.Task {
 	return task
 }
 
-func (t *MySQL) DBTool() *DBTool {
+func (t *MySQLTool) DBTool() *DBTool {
 	return &DBTool{
 		DBConn:       &MySQLConn{},
 		Name:         t.Name,
@@ -56,14 +55,14 @@ func (t *MySQL) DBTool() *DBTool {
 }
 
 // Console interactice for postgres
-func (t *MySQL) Console(c *typgo.Context) error {
+func (t *MySQLTool) Console(c *typgo.Context) error {
 	cfg := t.EnvKeys.Config()
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
 			"exec", "-it", t.dockerName(),
 			"mysql",
-			"-h", "locahost",
+			"-h", "localhost",
 			"-P", "3306",
 			"-u", cfg.DBUser,
 			fmt.Sprintf("-p%s", cfg.DBPass), // password flag can't be spaced
@@ -75,7 +74,7 @@ func (t *MySQL) Console(c *typgo.Context) error {
 	})
 }
 
-func (t *MySQL) dockerName() string {
+func (t *MySQLTool) dockerName() string {
 	dockerName := t.DockerName
 	if dockerName == "" {
 		dockerName = typgo.ProjectName + "-" + t.Name

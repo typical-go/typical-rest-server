@@ -8,7 +8,7 @@ import (
 )
 
 func TestPostgres_DBTool(t *testing.T) {
-	mysql := typdb.Postgres{
+	mysql := typdb.PostgresTool{
 		Name:         "some-name",
 		EnvKeys:      &typdb.EnvKeys{},
 		MigrationSrc: "some-migr",
