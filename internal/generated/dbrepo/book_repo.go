@@ -161,7 +161,7 @@ func (r *BookRepoImpl) Insert(ctx context.Context, ent *entity.Book) (int64, err
 
 	var id int64
 	if err := scanner.Scan(&id); err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 	return id, nil
@@ -195,11 +195,11 @@ func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Book) (in
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -224,11 +224,11 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.U
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -258,12 +258,12 @@ func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.Up
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -285,11 +285,11 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int6
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }

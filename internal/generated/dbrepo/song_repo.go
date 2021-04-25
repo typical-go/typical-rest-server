@@ -156,12 +156,12 @@ func (r *SongRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Song) (in
 
 	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -189,12 +189,12 @@ func (r *SongRepoImpl) Insert(ctx context.Context, ent *entity.Song) (int64, err
 
 	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	lastInsertID, err := res.LastInsertId()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return lastInsertID, err
 }
 
@@ -218,11 +218,11 @@ func (r *SongRepoImpl) Update(ctx context.Context, ent *entity.Song, opt sqkit.U
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -249,12 +249,12 @@ func (r *SongRepoImpl) Patch(ctx context.Context, ent *entity.Song, opt sqkit.Up
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -272,11 +272,11 @@ func (r *SongRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int6
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }

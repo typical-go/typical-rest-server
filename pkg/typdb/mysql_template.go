@@ -128,12 +128,12 @@ func (r *{{.Name}}RepoImpl) BulkInsert(ctx context.Context, ents ...*{{.SourcePk
 
 	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -153,12 +153,12 @@ func (r *{{.Name}}RepoImpl) Insert(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 
 	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	lastInsertID, err := res.LastInsertId()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return lastInsertID, err
 }
 
@@ -181,11 +181,11 @@ func (r *{{.Name}}RepoImpl) Update(ctx context.Context, ent *{{.SourcePkg}}.{{.N
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -209,12 +209,12 @@ func (r *{{.Name}}RepoImpl) Patch(ctx context.Context, ent *{{.SourcePkg}}.{{.Na
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 
@@ -233,12 +233,12 @@ func (r *{{.Name}}RepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) 
 
 	res, err := builder.ExecContext(ctx)
 	if err != nil {
-		txn.SetError(err)
+		txn.AppendError(err)
 		return -1, err
 	}
 
 	affectedRow, err := res.RowsAffected()
-	txn.SetError(err)
+	txn.AppendError(err)
 	return affectedRow, err
 }
 `

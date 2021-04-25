@@ -67,7 +67,7 @@ func TestUse(t *testing.T) {
 				return db
 			}(),
 			Ctx:         context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{}),
-			ExpectedErr: "dbtxn: begin-error",
+			ExpectedErr: "begin-error",
 		},
 	}
 	for _, tt := range testcases {
@@ -84,15 +84,31 @@ func TestUse(t *testing.T) {
 }
 
 func TestUse_success(t *testing.T) {
-	db, mock, _ := sqlmock.New()
-	mock.ExpectBegin()
-	ctx := context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{TxMap: make(map[*sql.DB]dbtxn.Tx)})
-	handler, err := dbtxn.Use(ctx, db)
 
-	require.NoError(t, err)
-	require.Equal(t, map[*sql.DB]dbtxn.Tx{
-		db: handler.StdSqlCtx.(dbtxn.Tx),
-	}, handler.Context.TxMap)
+	ctx := context.WithValue(context.Background(), dbtxn.ContextKey, &dbtxn.Context{TxMap: make(map[*sql.DB]dbtxn.Tx)})
+	db, mock, _ := sqlmock.New()
+
+	var handler *dbtxn.UseHandler
+	var err error
+	t.Run("trigger begin transaction when no transaction object", func(t *testing.T) {
+
+		mock.ExpectBegin()
+
+		handler, err = dbtxn.Use(ctx, db)
+
+		require.NoError(t, err)
+		require.Equal(t, map[*sql.DB]dbtxn.Tx{
+			db: handler.StdSqlCtx.(dbtxn.Tx),
+		}, handler.Context.TxMap)
+	})
+
+	t.Run("using available transaction", func(t *testing.T) {
+		handler2, err := dbtxn.Use(ctx, db)
+
+		require.NoError(t, err)
+		require.Equal(t, handler, handler2)
+	})
+
 }
 
 func TestContext_Commit(t *testing.T) {
@@ -103,7 +119,7 @@ func TestContext_Commit(t *testing.T) {
 
 		c := dbtxn.NewContext()
 		c.Begin(context.Background(), db)
-		c.SetError(errors.New("some-error"))
+		c.AppendError(errors.New("some-error"))
 
 		require.NoError(t, c.Commit())
 	})
@@ -118,15 +134,23 @@ func TestContext_Commit(t *testing.T) {
 	})
 }
 
-func TestSetError(t *testing.T) {
+func TestAppendError(t *testing.T) {
 	ctx := context.Background()
-	dbtxn.Begin(&ctx)
+	t.Run("no txn error before begin", func(t *testing.T) {
+		require.Nil(t, dbtxn.Error(ctx))
+	})
 
-	db, mock, _ := sqlmock.New()
-	mock.ExpectBegin()
-	handler, err := dbtxn.Use(ctx, db)
-	require.NoError(t, err)
+	t.Run("append multiple error", func(t *testing.T) {
+		dbtxn.Begin(&ctx)
 
-	handler.SetError(errors.New("some-error"))
-	require.EqualError(t, dbtxn.Error(ctx), "some-error")
+		db, mock, _ := sqlmock.New()
+		mock.ExpectBegin()
+		handler, err := dbtxn.Use(ctx, db)
+		require.NoError(t, err)
+
+		require.True(t, handler.AppendError(errors.New("some-error-1")))
+		require.False(t, handler.AppendError(nil))
+		require.True(t, handler.AppendError(errors.New("some-error-2")))
+		require.EqualError(t, dbtxn.Error(ctx), "some-error-1; some-error-2")
+	})
 }

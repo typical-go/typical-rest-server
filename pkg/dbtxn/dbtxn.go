@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/typical-go/typical-go/pkg/errkit"
@@ -18,7 +17,7 @@ type (
 	// Context of transaction
 	Context struct {
 		TxMap map[*sql.DB]Tx
-		Err   error
+		Errs  errkit.Errors
 	}
 	// CommitFn is commit function to close the transaction
 	CommitFn func() error
@@ -78,7 +77,7 @@ func Find(ctx context.Context) *Context {
 // Error of transaction
 func Error(ctx context.Context) error {
 	if c := Find(ctx); c != nil {
-		return c.Err
+		return c.Errs.Unwrap()
 	}
 	return nil
 }
@@ -96,8 +95,8 @@ func (c *Context) Begin(ctx context.Context, db *sql.DB) (sq.StdSqlCtx, error) {
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		c.Err = fmt.Errorf("dbtxn: %w", err)
-		return nil, c.Err
+		c.AppendError(err)
+		return nil, err
 	}
 	c.TxMap[db] = tx
 	return tx, nil
@@ -106,23 +105,23 @@ func (c *Context) Begin(ctx context.Context, db *sql.DB) (sq.StdSqlCtx, error) {
 // Commit if no error
 func (c *Context) Commit() error {
 	var errs errkit.Errors
-	if c.Err != nil {
+	if len(c.Errs) > 0 {
 		for _, tx := range c.TxMap {
-			errs.Append(tx.Rollback())
+			errs = append(errs, tx.Rollback())
 		}
 	} else {
 		for _, tx := range c.TxMap {
-			errs.Append(tx.Commit())
+			errs = append(errs, tx.Commit())
 		}
 	}
 
 	return errs.Unwrap()
 }
 
-// SetError to set error to txn context
-func (c *Context) SetError(err error) bool {
+// AppendError to append error to txn context
+func (c *Context) AppendError(err error) bool {
 	if c != nil && err != nil {
-		c.Err = err
+		c.Errs = append(c.Errs, err)
 		return true
 	}
 	return false
