@@ -156,7 +156,7 @@ func (r *{{.Name}}RepoImpl) BulkInsert(ctx context.Context, ents ...*{{.SourcePk
 			{{end}})
 	}
 
-	res, err := builder.ExecContext(ctx)
+	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
 		txn.AppendError(err)
 		return -1, err

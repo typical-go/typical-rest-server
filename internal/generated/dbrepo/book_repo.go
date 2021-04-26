@@ -193,7 +193,7 @@ func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Book) (in
 		)
 	}
 
-	res, err := builder.ExecContext(ctx)
+	res, err := builder.RunWith(txn).ExecContext(ctx)
 	if err != nil {
 		txn.AppendError(err)
 		return -1, err
