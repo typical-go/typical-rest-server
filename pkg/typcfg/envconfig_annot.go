@@ -153,14 +153,6 @@ func (m *EnvconfigAnnot) getTarget(c *Context) string {
 	return m.Target
 }
 
-func createImports(dirs []string) []string {
-	var imports []string
-	for _, dir := range dirs {
-		imports = append(imports, fmt.Sprintf("%s/%s", typgo.ProjectPkg, dir))
-	}
-	return imports
-}
-
 func createEnvconfig(a *typgen.Directive, importAlias string) *Envconfig {
 	prefix := getPrefix(a)
 	structDecl := a.Type.(*typgen.StructDecl)

@@ -44,19 +44,9 @@ var descriptor = typgo.Descriptor{
 			EnvFile:      ".env",
 		},
 		// pg
-		&typdb.PostgresTool{
-			Name:         "pg",
-			EnvKeys:      typdb.EnvKeysWithPrefix("PG"),
-			MigrationSrc: "database/pg/migration",
-			SeedSrc:      "database/pg/seed",
-		},
+		&typdb.PostgresTool{Name: "pg"},
 		// mysql
-		&typdb.MySQLTool{
-			Name:         "mysql",
-			EnvKeys:      typdb.EnvKeysWithPrefix("MYSQL"),
-			MigrationSrc: "database/mysql/migration",
-			SeedSrc:      "database/mysql/seed",
-		},
+		&typdb.MySQLTool{Name: "mysql"},
 		// mysql
 		&typredis.RedisTool{
 			Name:    "cache",

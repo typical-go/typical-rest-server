@@ -8,23 +8,26 @@ import (
 	"time"
 
 	"github.com/golang-migrate/migrate"
+	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
 type (
 	DBTool struct {
-		DBConn
+		DBToolHandler
 		Name         string
 		EnvKeys      *EnvKeys
 		MigrationSrc string
 		SeedSrc      string
 		CreateFormat string
 		DropFormat   string
+		DockerName   string
 	}
-	DBConn interface {
+	DBToolHandler interface {
 		Connect(*Config) (*sql.DB, error)
 		ConnectAdmin(*Config) (*sql.DB, error)
 		Migrate(src string, cfg *Config) (*migrate.Migrate, error)
+		Console(*DBTool, *typgo.Context) error
 	}
 )
 
@@ -32,7 +35,8 @@ var _ (typgo.Tasker) = (*DBTool)(nil)
 
 // Task for postgres
 func (t *DBTool) Task() *typgo.Task {
-	return &typgo.Task{
+	t.initDefault()
+	task := &typgo.Task{
 		Name:  t.Name,
 		Usage: fmt.Sprintf("%s database tool", t.Name),
 		SubTasks: []*typgo.Task{
@@ -42,7 +46,27 @@ func (t *DBTool) Task() *typgo.Task {
 			{Name: "migration", Usage: "Create Migration file", Action: typgo.NewAction(t.MigrationFile)},
 			{Name: "rollback", Usage: "Rollback database", Action: typgo.NewAction(t.RollbackDB)},
 			{Name: "seed", Usage: "Seed database", Action: typgo.NewAction(t.SeedDB)},
+			{Name: "console", Usage: "Database client console", Action: typgo.NewAction(t.SeedDB)},
 		},
+	}
+	return task
+}
+
+func (t *DBTool) initDefault() {
+	if t.Name == "" {
+		t.Name = "db"
+	}
+	if t.EnvKeys == nil {
+		t.EnvKeys = EnvKeysWithPrefix(strcase.ToScreamingSnake(t.Name))
+	}
+	if t.MigrationSrc == "" {
+		t.MigrationSrc = fmt.Sprintf("database/%s/migration", t.Name)
+	}
+	if t.SeedSrc == "" {
+		t.SeedSrc = fmt.Sprintf("database/%s/migration", t.Name)
+	}
+	if t.DockerName == "" {
+		t.DockerName = fmt.Sprintf("%s_%s", typgo.ProjectName, t.Name)
 	}
 }
 
@@ -143,4 +167,12 @@ func createMigration(migrationSrc, name string) {
 	if _, err := os.Create(downScript); err == nil {
 		fmt.Println(downScript)
 	}
+}
+
+// Console interactice for postgres
+func (t *DBTool) Console(c *typgo.Context) error {
+	if t.DBToolHandler == nil {
+		return nil
+	}
+	return t.DBToolHandler.Console(t, c)
 }

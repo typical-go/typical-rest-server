@@ -21,7 +21,7 @@ type (
 		SeedSrc      string
 		DockerName   string
 	}
-	MySQLConn struct{}
+	MySQLHandler struct{}
 )
 
 //
@@ -32,35 +32,64 @@ var _ (typgo.Tasker) = (*MySQLTool)(nil)
 
 // Task for postgress
 func (t *MySQLTool) Task() *typgo.Task {
-	dbtool := t.DBTool()
-	subtasks := []*typgo.Task{
-		{Name: "console", Usage: "Postgres console", Action: typgo.NewAction(t.Console)},
-	}
-
-	task := dbtool.Task()
-	task.SubTasks = append(task.SubTasks, subtasks...)
-	return task
+	return t.DBTool().Task()
 }
 
 func (t *MySQLTool) DBTool() *DBTool {
+	if t.Name == "" {
+		t.Name = "mysql"
+	}
 	return &DBTool{
-		DBConn:       &MySQLConn{},
-		Name:         t.Name,
-		EnvKeys:      t.EnvKeys,
-		MigrationSrc: t.MigrationSrc,
-		SeedSrc:      t.SeedSrc,
-		CreateFormat: "CREATE DATABASE `%s`",
-		DropFormat:   "DROP DATABASE IF EXISTS `%s`",
+		DBToolHandler: &MySQLHandler{},
+		Name:          t.Name,
+		EnvKeys:       t.EnvKeys,
+		MigrationSrc:  t.MigrationSrc,
+		SeedSrc:       t.SeedSrc,
+		CreateFormat:  "CREATE DATABASE `%s`",
+		DropFormat:    "DROP DATABASE IF EXISTS `%s`",
+		DockerName:    t.DockerName,
 	}
 }
 
+//
+// MySQLHandler
+//
+
+var _ DBToolHandler = (*MySQLHandler)(nil)
+
+func (MySQLHandler) Connect(c *Config) (*sql.DB, error) {
+	return sql.Open("mysql", fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
+		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
+	))
+}
+
+func (MySQLHandler) ConnectAdmin(c *Config) (*sql.DB, error) {
+	return sql.Open("mysql", fmt.Sprintf(
+		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
+		c.DBPass, c.Host, c.Port,
+	))
+}
+
+func (m MySQLHandler) Migrate(src string, cfg *Config) (*migrate.Migrate, error) {
+	db, err := m.Connect(cfg)
+	if err != nil {
+		return nil, err
+	}
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return migrate.NewWithDatabaseInstance(src, "mysql", driver)
+}
+
 // Console interactice for postgres
-func (t *MySQLTool) Console(c *typgo.Context) error {
-	cfg := t.EnvKeys.Config()
+func (m MySQLHandler) Console(d *DBTool, c *typgo.Context) error {
+	cfg := d.EnvKeys.Config()
 	return c.Execute(&typgo.Bash{
 		Name: "docker",
 		Args: []string{
-			"exec", "-it", t.dockerName(),
+			"exec", "-it", d.DockerName,
 			"mysql",
 			"-h", "localhost",
 			"-P", "3306",
@@ -72,44 +101,4 @@ func (t *MySQLTool) Console(c *typgo.Context) error {
 		Stderr: os.Stderr,
 		Stdin:  os.Stdin,
 	})
-}
-
-func (t *MySQLTool) dockerName() string {
-	dockerName := t.DockerName
-	if dockerName == "" {
-		dockerName = typgo.ProjectName + "-" + t.Name
-	}
-	return dockerName
-}
-
-//
-// MySQLConn
-//
-
-var _ DBConn = (*MySQLConn)(nil)
-
-func (MySQLConn) Connect(c *Config) (*sql.DB, error) {
-	return sql.Open("mysql", fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?tls=false&multiStatements=true",
-		c.DBUser, c.DBPass, c.Host, c.Port, c.DBName,
-	))
-}
-
-func (MySQLConn) ConnectAdmin(c *Config) (*sql.DB, error) {
-	return sql.Open("mysql", fmt.Sprintf(
-		"root:%s@tcp(%s:%s)/?tls=false&multiStatements=true",
-		c.DBPass, c.Host, c.Port,
-	))
-}
-
-func (m MySQLConn) Migrate(src string, cfg *Config) (*migrate.Migrate, error) {
-	db, err := m.Connect(cfg)
-	if err != nil {
-		return nil, err
-	}
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
-	if err != nil {
-		return nil, err
-	}
-	return migrate.NewWithDatabaseInstance(src, "mysql", driver)
 }

@@ -49,9 +49,7 @@ func GenerateDoc(target string, c *Context) error {
 func fields(c *Context) []*Field {
 	var fields []*Field
 	for _, config := range c.Configs {
-		for _, field := range config.Fields {
-			fields = append(fields, field)
-		}
+		fields = append(fields, config.Fields...)
 	}
 	return fields
 }
