@@ -32,7 +32,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.7.0
-	github.com/typical-go/typical-go v0.11.4
+	github.com/typical-go/typical-go v0.11.5
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da // indirect
 	go.uber.org/dig v1.10.0

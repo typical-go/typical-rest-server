@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgen"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 	"github.com/typical-go/typical-go/pkg/typrls"
@@ -18,9 +18,9 @@ var descriptor = typgo.Descriptor{
 	Environment:    typgo.DotEnv(".env"),
 
 	Tasks: []typgo.Tasker{
-		// annotate
-		&typast.AnnotateProject{
-			Annotators: []typast.Annotator{
+		// generate
+		&typgen.Generator{
+			Processor: typgen.Processors{
 				&typapp.CtorAnnot{},
 				&typdb.DBRepoAnnot{},
 				&typcfg.EnvconfigAnnot{GenDotEnv: ".env", GenDoc: "USAGE.md"},

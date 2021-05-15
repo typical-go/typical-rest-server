@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/tmplkit"
-	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgen"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-go/pkg/typmock"
 )
@@ -19,7 +19,7 @@ type (
 	}
 	// EntityTmplData ...
 	EntityTmplData struct {
-		typast.Signature
+		typgen.Signature
 		Name       string
 		Table      string
 		Dialect    string
@@ -54,39 +54,38 @@ const (
 // DBRepoAnnot
 //
 
-var _ typast.Annotator = (*DBRepoAnnot)(nil)
-var _ typast.Processor = (*DBRepoAnnot)(nil)
+var _ typgen.Processor = (*DBRepoAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *DBRepoAnnot) Annotate() typast.Processor {
-	return &typast.Annotation{
-		Filter: typast.Filters{
-			&typast.TagNameFilter{m.getTagName()},
-			&typast.StructFilter{},
-			&typast.PublicFilter{},
+func (m *DBRepoAnnot) Process(c *typgo.Context, directive typgen.Directives) error {
+	a := &typgen.Annotation{
+		Filter: typgen.Filters{
+			&typgen.TagNameFilter{m.getTagName()},
+			&typgen.StructFilter{},
+			&typgen.PublicFilter{},
 		},
-		Processor: m,
+		ProcessFn: m.process,
 	}
+
+	return a.Process(c, directive)
 }
 
-func (m *DBRepoAnnot) Process(c *typgo.Context, directive typast.Directives) error {
+func (m *DBRepoAnnot) process(c *typgo.Context, directive typgen.Directives) error {
 	os.RemoveAll(parentDest)
 	for _, directive := range directive {
-
 		ent, err := m.createEntity(directive)
 		if err != nil {
 			return err
 		}
-		if err := m.process(c, ent); err != nil {
+		if err := m.processEnt(c, ent); err != nil {
 			c.Infof("WARN: Failed process @dbrepo at '%s': %s\n", directive.GetName(), err.Error())
 		}
 		m.mock(c, directive, ent)
-
 	}
 	return nil
 }
 
-func (m *DBRepoAnnot) mock(c *typgo.Context, a *typast.Directive, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) mock(c *typgo.Context, a *typgen.Directive, ent *EntityTmplData) error {
 	destPkg := filepath.Base(ent.Dest) + "_mock"
 	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
 	pkg := typgo.ProjectPkg + "/" + ent.Dest
@@ -95,7 +94,7 @@ func (m *DBRepoAnnot) mock(c *typgo.Context, a *typast.Directive, ent *EntityTmp
 	return typmock.MockGen(c, destPkg, dest, pkg, name)
 }
 
-func (m *DBRepoAnnot) process(c *typgo.Context, ent *EntityTmplData) error {
+func (m *DBRepoAnnot) processEnt(c *typgo.Context, ent *EntityTmplData) error {
 	tmpl, err := getTemplate(ent.Dialect)
 	if err != nil {
 		return err
@@ -133,7 +132,7 @@ func (m *DBRepoAnnot) getTagName() string {
 //
 
 // CreateEntity create entity
-func (m *DBRepoAnnot) createEntity(directive *typast.Directive) (*EntityTmplData, error) {
+func (m *DBRepoAnnot) createEntity(directive *typgen.Directive) (*EntityTmplData, error) {
 	name := directive.GetName()
 	table := directive.TagParam.Get("table")
 
@@ -168,7 +167,7 @@ func (m *DBRepoAnnot) createEntity(directive *typast.Directive) (*EntityTmplData
 	}
 
 	return &EntityTmplData{
-		Signature:  typast.Signature{TagName: m.getTagName()},
+		Signature:  typgen.Signature{TagName: m.getTagName()},
 		Name:       name,
 		Table:      table,
 		Dialect:    dialect,
@@ -196,8 +195,8 @@ func (*DBRepoAnnot) GetDest(file string) string {
 	return fmt.Sprintf("%s/%s_repo", parentDest, source)
 }
 
-func (m *DBRepoAnnot) createFields(directive *typast.Directive) (fields []*Field, primaryKey *Field) {
-	structDecl := directive.Decl.Type.(*typast.StructDecl)
+func (m *DBRepoAnnot) createFields(directive *typgen.Directive) (fields []*Field, primaryKey *Field) {
+	structDecl := directive.Decl.Type.(*typgen.StructDecl)
 	for _, f := range structDecl.Fields {
 		name := f.Names[0]
 		column := f.StructTag.Get("column")

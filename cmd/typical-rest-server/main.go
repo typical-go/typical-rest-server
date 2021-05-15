@@ -14,8 +14,7 @@ import (
 
 func main() {
 	fmt.Printf("%s %s\n", typgo.ProjectName, typgo.ProjectVersion)
-
-	if err := typapp.StartService(app.Start, app.Shutdown); err != nil {
+	if err := typapp.StartApp(app.Start, app.Shutdown); err != nil {
 		logrus.Fatal(err.Error())
 	}
 }

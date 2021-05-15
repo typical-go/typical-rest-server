@@ -6,15 +6,13 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
-
-	"github.com/golang/mock/gomock"
-
 	"github.com/typical-go/typical-rest-server/internal/app/controller"
-	"github.com/typical-go/typical-rest-server/internal/app/service"
-	"github.com/typical-go/typical-rest-server/internal/app/service_mock"
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
+	"github.com/typical-go/typical-rest-server/internal/app/service"
+	"github.com/typical-go/typical-rest-server/internal/generated/mock/app/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )

@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/typical-go/typical-go/pkg/tmplkit"
-	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgen"
 )
 
 type (
 	usageTmplData struct {
-		typast.Signature
+		typgen.Signature
 		ProjectName string
 		Fields      []*Field
 		EnvSnippet  string
@@ -38,7 +38,7 @@ func GenerateDoc(target string, c *Context) error {
 		target,
 		usageTmpl,
 		usageTmplData{
-			Signature:   typast.Signature{TagName: "@envconfig"},
+			Signature:   typgen.Signature{TagName: "@envconfig"},
 			ProjectName: c.Descriptor.ProjectName,
 			Fields:      fields,
 			EnvSnippet:  envSnippet(fields),

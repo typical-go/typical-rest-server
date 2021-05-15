@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgen"
 	"github.com/typical-go/typical-go/pkg/typgo"
 	"github.com/typical-go/typical-rest-server/pkg/typcfg"
 	"github.com/urfave/cli/v2"
@@ -24,14 +24,14 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 	c := &typgo.Context{Logger: typgo.Logger{Stdout: &out}}
 	defer c.PatchBash([]*typgo.MockBash{})(t)
 
-	directives := []*typast.Directive{
+	directives := []*typgen.Directive{
 		{
 			TagName: "@envconfig",
-			Decl: &typast.Decl{
-				File: typast.File{Package: "mypkg", Path: "pkg/file.go"},
-				Type: &typast.StructDecl{
-					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-					Fields: []*typast.Field{
+			Decl: &typgen.Decl{
+				File: typgen.File{Package: "mypkg", Path: "pkg/file.go"},
+				Type: &typgen.StructDecl{
+					TypeDecl: typgen.TypeDecl{Name: "SomeSample"},
+					Fields: []*typgen.Field{
 						{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
 						{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 					},
@@ -40,7 +40,7 @@ func TestCfgAnnotation_Annotate(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, EnvconfigAnnot.Annotate().Process(c, directives))
+	require.NoError(t, EnvconfigAnnot.Process(c, directives))
 
 	b, _ := ioutil.ReadFile("internal/generated/envcfg/envcfg.go")
 	require.Equal(t, `package envcfg
@@ -93,15 +93,15 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	}
 	defer c.PatchBash(nil)(t)
 
-	directives := []*typast.Directive{
+	directives := []*typgen.Directive{
 		{
 			TagName:  "@envconfig",
 			TagParam: `ctor:"ctor1" prefix:"SS"`,
-			Decl: &typast.Decl{
-				File: typast.File{Package: "mypkg"},
-				Type: &typast.StructDecl{
-					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-					Fields: []*typast.Field{
+			Decl: &typgen.Decl{
+				File: typgen.File{Package: "mypkg"},
+				Type: &typgen.StructDecl{
+					TypeDecl: typgen.TypeDecl{Name: "SomeSample"},
+					Fields: []*typgen.Field{
 						{Names: []string{"SomeField1"}, Type: "string", StructTag: `default:"some-text"`},
 						{Names: []string{"SomeField2"}, Type: "int", StructTag: `default:"9876"`},
 					},
@@ -110,7 +110,7 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, a.Annotate().Process(c, directives))
+	require.NoError(t, a.Process(c, directives))
 	defer os.Remove(a.Target)
 	defer os.Remove(a.GenDotEnv)
 	defer os.Remove(a.GenDoc)
@@ -138,20 +138,20 @@ func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
 	c := &typgo.Context{}
 	defer c.PatchBash(nil)(t)
 
-	directives := []*typast.Directive{
+	directives := []*typgen.Directive{
 		{
 			TagName: "@some-tag",
-			Decl: &typast.Decl{
-				File: typast.File{Package: "mypkg"},
-				Type: &typast.StructDecl{
-					TypeDecl: typast.TypeDecl{Name: "SomeSample"},
-					Fields:   []*typast.Field{},
+			Decl: &typgen.Decl{
+				File: typgen.File{Package: "mypkg"},
+				Type: &typgen.StructDecl{
+					TypeDecl: typgen.TypeDecl{Name: "SomeSample"},
+					Fields:   []*typgen.Field{},
 				},
 			},
 		},
 	}
 
-	require.NoError(t, EnvconfigAnnot.Annotate().Process(c, directives))
+	require.NoError(t, EnvconfigAnnot.Process(c, directives))
 
 	b, _ := ioutil.ReadFile("predefined/cfg-target")
 	require.Equal(t, `some-template`, string(b))
@@ -163,7 +163,7 @@ func TestCfgAnnotation_Annotate_RemoveTargetWhenNoAnnotation(t *testing.T) {
 	ioutil.WriteFile(target, []byte("some-content"), 0777)
 
 	EnvconfigAnnot := &typcfg.EnvconfigAnnot{Target: target}
-	require.NoError(t, EnvconfigAnnot.Annotate().Process(nil, nil))
+	require.NoError(t, EnvconfigAnnot.Process(nil, nil))
 	_, err := os.Stat(target)
 	require.True(t, os.IsNotExist(err))
 }
@@ -172,17 +172,17 @@ func TestCreateField(t *testing.T) {
 	testnames := []struct {
 		TestName string
 		Prefix   string
-		Field    *typast.Field
+		Field    *typgen.Field
 		Expected *typcfg.Field
 	}{
 		{
 			Prefix:   "APP",
-			Field:    &typast.Field{Names: []string{"Address"}},
+			Field:    &typgen.Field{Names: []string{"Address"}},
 			Expected: &typcfg.Field{Key: "APP_ADDRESS"},
 		},
 		{
 			Prefix: "APP",
-			Field: &typast.Field{
+			Field: &typgen.Field{
 				Names:     []string{"some-name"},
 				StructTag: reflect.StructTag(`envconfig:"ADDRESS" default:"some-address" required:"true"`),
 			},

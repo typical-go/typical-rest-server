@@ -12,7 +12,7 @@ import (
 	"github.com/typical-go/typical-rest-server/internal/app/controller"
 	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/internal/app/service"
-	"github.com/typical-go/typical-rest-server/internal/app/service_mock"
+	"github.com/typical-go/typical-rest-server/internal/generated/mock/app/service_mock"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/echotest"
 )

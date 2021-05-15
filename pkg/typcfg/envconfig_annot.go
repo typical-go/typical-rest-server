@@ -8,7 +8,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/typical-go/typical-go/pkg/tmplkit"
-	"github.com/typical-go/typical-go/pkg/typast"
+	"github.com/typical-go/typical-go/pkg/typgen"
 	"github.com/typical-go/typical-go/pkg/typgo"
 )
 
@@ -24,7 +24,7 @@ type (
 	}
 	// EnvconfigTmplData template
 	EnvconfigTmplData struct {
-		typast.Signature
+		typgen.Signature
 		Package string
 		Configs []*Envconfig
 		Imports map[string]string
@@ -56,22 +56,23 @@ type (
 // EnvconfigAnnot
 //
 
-var _ typast.Annotator = (*EnvconfigAnnot)(nil)
-var _ typast.Processor = (*EnvconfigAnnot)(nil)
+var _ typgen.Processor = (*EnvconfigAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
-func (m *EnvconfigAnnot) Annotate() typast.Processor {
-	return &typast.Annotation{
-		Filter: typast.Filters{
-			&typast.TagNameFilter{m.getTagName()},
-			&typast.PublicFilter{},
-			&typast.StructFilter{},
+func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typgen.Directives) error {
+	a := &typgen.Annotation{
+		Filter: typgen.Filters{
+			&typgen.TagNameFilter{m.getTagName()},
+			&typgen.PublicFilter{},
+			&typgen.StructFilter{},
 		},
-		Processor: m,
+		ProcessFn: m.process,
 	}
+
+	return a.Process(c, directives)
 }
 
-func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typast.Directives) error {
+func (m *EnvconfigAnnot) process(c *typgo.Context, directives typgen.Directives) error {
 	context := m.Context(c, directives)
 	target := m.getTarget(context)
 
@@ -96,10 +97,10 @@ func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typast.Directives)
 }
 
 // Context create context instance
-func (m *EnvconfigAnnot) Context(c *typgo.Context, directive typast.Directives) *Context {
+func (m *EnvconfigAnnot) Context(c *typgo.Context, directive typgen.Directives) *Context {
 	var configs []*Envconfig
 
-	importAliases := typast.NewImportAliases()
+	importAliases := typgen.NewImportAliases()
 	for _, a := range directive {
 		importAlias := importAliases.Append(a.Package())
 		configs = append(configs, createEnvconfig(a, importAlias))
@@ -118,7 +119,7 @@ func (m *EnvconfigAnnot) generate(c *Context, target string) error {
 
 	c.Infof("Generate @envconfig to %s\n", target)
 	if err := tmplkit.WriteFile(target, m.getTemplate(), &EnvconfigTmplData{
-		Signature: typast.Signature{TagName: m.getTagName()},
+		Signature: typgen.Signature{TagName: m.getTagName()},
 		Package:   filepath.Base(dest),
 		Imports:   c.Imports,
 		Configs:   c.Configs,
@@ -158,9 +159,9 @@ func createImports(dirs []string) []string {
 	return imports
 }
 
-func createEnvconfig(a *typast.Directive, importAlias string) *Envconfig {
+func createEnvconfig(a *typgen.Directive, importAlias string) *Envconfig {
 	prefix := getPrefix(a)
-	structDecl := a.Type.(*typast.StructDecl)
+	structDecl := a.Type.(*typgen.StructDecl)
 
 	name := a.GetName()
 	ctor := getCtorName(a)
@@ -174,7 +175,7 @@ func createEnvconfig(a *typast.Directive, importAlias string) *Envconfig {
 	}
 }
 
-func createFields(structDecl *typast.StructDecl, prefix string) []*Field {
+func createFields(structDecl *typgen.StructDecl, prefix string) []*Field {
 	var fields []*Field
 	for _, field := range structDecl.Fields {
 		fields = append(fields, CreateField(prefix, field))
@@ -183,7 +184,7 @@ func createFields(structDecl *typast.StructDecl, prefix string) []*Field {
 }
 
 // CreateField create new instance of field
-func CreateField(prefix string, field *typast.Field) *Field {
+func CreateField(prefix string, field *typgen.Field) *Field {
 	// NOTE: mimic kelseyhightower/envconfig struct tags
 
 	name := field.Get("envconfig")
@@ -198,11 +199,11 @@ func CreateField(prefix string, field *typast.Field) *Field {
 	}
 }
 
-func getCtorName(annot *typast.Directive) string {
+func getCtorName(annot *typgen.Directive) string {
 	return annot.TagParam.Get("ctor")
 }
 
-func getPrefix(annot *typast.Directive) string {
+func getPrefix(annot *typgen.Directive) string {
 	prefix := annot.TagParam.Get("prefix")
 	if prefix == "" {
 		prefix = strings.ToUpper(annot.GetName())
