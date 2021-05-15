@@ -58,7 +58,11 @@ var _ typgen.Processor = (*DBRepoAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
 func (m *DBRepoAnnot) Process(c *typgo.Context, directive typgen.Directives) error {
-	a := &typgen.Annotation{
+	return m.Annotation().Process(c, directive)
+}
+
+func (m *DBRepoAnnot) Annotation() *typgen.Annotation {
+	return &typgen.Annotation{
 		Filter: typgen.Filters{
 			&typgen.TagNameFilter{m.getTagName()},
 			&typgen.StructFilter{},
@@ -66,8 +70,6 @@ func (m *DBRepoAnnot) Process(c *typgo.Context, directive typgen.Directives) err
 		},
 		ProcessFn: m.process,
 	}
-
-	return a.Process(c, directive)
 }
 
 func (m *DBRepoAnnot) process(c *typgo.Context, directive typgen.Directives) error {
@@ -86,9 +88,9 @@ func (m *DBRepoAnnot) process(c *typgo.Context, directive typgen.Directives) err
 }
 
 func (m *DBRepoAnnot) mock(c *typgo.Context, a *typgen.Directive, ent *EntityTmplData) error {
-	destPkg := filepath.Base(ent.Dest) + "_mock"
-	dest := ent.Dest + "_mock/" + strings.ToLower(ent.Name) + "_repo.go"
-	pkg := typgo.ProjectPkg + "/" + ent.Dest
+	destPkg := filepath.Base(ent.Dest)
+	dest := fmt.Sprintf("%s/%s_repo_mock.go", ent.Dest, strings.ToLower(ent.Name))
+	pkg := fmt.Sprintf("%s/%s", typgo.ProjectPkg, ent.Dest)
 	name := ent.Name + "Repo"
 
 	return typmock.MockGen(c, destPkg, dest, pkg, name)

@@ -60,7 +60,11 @@ var _ typgen.Processor = (*EnvconfigAnnot)(nil)
 
 // Annotate Envconfig to prepare dependency-injection and env-file
 func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typgen.Directives) error {
-	a := &typgen.Annotation{
+	return m.Annotation().Process(c, directives)
+}
+
+func (m *EnvconfigAnnot) Annotation() *typgen.Annotation {
+	return &typgen.Annotation{
 		Filter: typgen.Filters{
 			&typgen.TagNameFilter{m.getTagName()},
 			&typgen.PublicFilter{},
@@ -68,8 +72,6 @@ func (m *EnvconfigAnnot) Process(c *typgo.Context, directives typgen.Directives)
 		},
 		ProcessFn: m.process,
 	}
-
-	return a.Process(c, directives)
 }
 
 func (m *EnvconfigAnnot) process(c *typgo.Context, directives typgen.Directives) error {
