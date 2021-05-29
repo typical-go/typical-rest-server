@@ -12,7 +12,6 @@ import (
 func SetServer(
 	e *echo.Echo,
 	bookCntrl controller.BookCntrl,
-	songCntrl controller.SongCntrl,
 ) {
 
 	// set middleware
@@ -22,6 +21,5 @@ func SetServer(
 	// set route
 	echokit.SetRoute(e,
 		&bookCntrl,
-		&songCntrl,
 	)
 }

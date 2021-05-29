@@ -13,5 +13,4 @@ func init() {
 	typapp.Provide("", a.NewCacheStore)
 	typapp.Provide("", a.NewDatabases)
 	typapp.Provide("", b.NewBookSvc)
-	typapp.Provide("", b.NewSongSvc)
 }

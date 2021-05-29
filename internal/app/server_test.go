@@ -14,13 +14,10 @@ func TestServer(t *testing.T) {
 	e := echo.New()
 	app.SetServer(e,
 		controller.BookCntrl{},
-		controller.SongCntrl{},
 	)
 
 	require.Equal(t, []string{
 		"/books\tGET,POST",
 		"/books/:id\tDELETE,GET,HEAD,PATCH,PUT",
-		"/songs\tGET,POST",
-		"/songs/:id\tDELETE,GET,HEAD,PATCH,PUT",
 	}, echokit.DumpEcho(e))
 }

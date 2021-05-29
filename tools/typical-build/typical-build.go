@@ -46,11 +46,9 @@ var descriptor = typgo.Descriptor{
 		// pg
 		&typdb.PostgresTool{Name: "pg"},
 		// mysql
-		&typdb.MySQLTool{Name: "mysql"},
-		// mysql
 		&typredis.RedisTool{
 			Name:    "cache",
-			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REsDIS"),
+			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REDIS"),
 		},
 		// setup
 		&typgo.Task{
@@ -58,7 +56,6 @@ var descriptor = typgo.Descriptor{
 			Usage: "setup dependency",
 			Action: typgo.TaskNames{
 				"pg drop", "pg create", "pg migrate", "pg seed",
-				"mysql drop", "mysql create", "mysql migrate", "mysql seed",
 			},
 		},
 		// release
