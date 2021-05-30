@@ -13,7 +13,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 type (
@@ -53,14 +52,24 @@ func NewBookSvc(impl BookSvcImpl) BookSvc {
 
 // Create Book
 func (b *BookSvcImpl) Create(ctx context.Context, book *entity.Book) (*entity.Book, error) {
-	if err := validator.New().Struct(book); err != nil {
-		return nil, echokit.NewValidErr(err.Error())
+	if errMsg := b.validateBook(book); errMsg != "" {
+		return nil, echokit.NewValidErr(errMsg)
 	}
 	id, err := b.Repo.Insert(ctx, book)
 	if err != nil {
 		return nil, err
 	}
 	return b.findOne(ctx, id)
+}
+
+func (b *BookSvcImpl) validateBook(book *entity.Book) string {
+	if book.Title == "" {
+		return "title must be filled"
+	}
+	if book.Author == "" {
+		return "author must be filled"
+	}
+	return ""
 }
 
 // Find books
@@ -110,8 +119,8 @@ func (b *BookSvcImpl) Delete(ctx context.Context, paramID string) error {
 // Update book
 func (b *BookSvcImpl) Update(ctx context.Context, paramID string, book *entity.Book) (*entity.Book, error) {
 	id, _ := strconv.ParseInt(paramID, 10, 64)
-	if err := validator.New().Struct(book); err != nil {
-		return nil, echokit.NewValidErr(err.Error())
+	if errMsg := b.validateBook(book); errMsg != "" {
+		return nil, echokit.NewValidErr(errMsg)
 	}
 	if _, err := b.findOne(ctx, id); err != nil {
 		return nil, err

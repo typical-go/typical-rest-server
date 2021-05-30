@@ -38,9 +38,14 @@ func TestBookSvc_Create(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			testName:    "validation error",
+			testName:    "title is missing",
 			book:        &entity.Book{},
-			expectedErr: "code=422, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "code=422, message=title must be filled",
+		},
+		{
+			testName:    "author is missing",
+			book:        &entity.Book{Title: "some-title"},
+			expectedErr: "code=422, message=author must be filled",
 		},
 		{
 			testName:    "create error",
@@ -190,7 +195,9 @@ func TestBookSvc_Find(t *testing.T) {
 		{
 			testName: "find error",
 			bookSvcFn: func(mockRepo *dbrepo.MockBookRepo) {
-				mockRepo.EXPECT().Count(gomock.Any()).Return(int64(10), nil)
+				mockRepo.EXPECT().
+					Count(gomock.Any()).
+					Return(int64(10), nil)
 				mockRepo.EXPECT().
 					Find(gomock.Any(), &sqkit.OffsetPagination{Limit: 20, Offset: 10}, sqkit.Sorts{"title", "created_at"}).
 					Return(nil, errors.New("find-error"))
@@ -274,10 +281,16 @@ func TestBookSvc_Update(t *testing.T) {
 		expectedErr string
 	}{
 		{
-			testName:    "bad request",
+			testName:    "missing title",
 			paramID:     "1",
 			book:        &entity.Book{},
-			expectedErr: "code=422, message=Key: 'Book.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'Book.Author' Error:Field validation for 'Author' failed on the 'required' tag",
+			expectedErr: "code=422, message=title must be filled",
+		},
+		{
+			testName:    "missing author",
+			paramID:     "1",
+			book:        &entity.Book{Title: "some-title"},
+			expectedErr: "code=422, message=author must be filled",
 		},
 		{
 			testName:    "update error",
