@@ -89,7 +89,7 @@ func (s *Store) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		pragma.LastModified = lastModified
 		pragma.Expires = lastModified.Add(pragma.MaxAge)
 
-		addHeader(rec.HeaderMap, pragma.Header())
+		addHeader(rec.Header(), pragma.Header())
 		copyResponseWriter(rec, ogResp)
 		return nil
 	}
@@ -108,12 +108,13 @@ func (s *Store) getCacheData(ctx context.Context, key string) (*CacheData, error
 
 func (s *Store) store(ctx context.Context, key string, rec *httptest.ResponseRecorder, maxAge time.Duration) (time.Time, error) {
 	lastModified := time.Now()
+	// FIXME: rec.HeaderMap is depracted
 	bytes, _ := json.Marshal(CacheData{
 		LastModified: FormatTime(lastModified),
 		Body:         rec.Body.Bytes(),
 		Head: Head{
 			StatusCode: rec.Code,
-			Header:     rec.HeaderMap,
+			Header:     rec.Header(),
 		},
 	})
 
@@ -132,8 +133,8 @@ func ParseTime(raw string) time.Time {
 }
 
 func copyResponseWriter(from *httptest.ResponseRecorder, to http.ResponseWriter) {
-	for k := range from.HeaderMap {
-		to.Header().Add(k, from.HeaderMap.Get(k))
+	for k := range from.Header() {
+		to.Header().Add(k, from.Header().Get(k))
 	}
 	to.WriteHeader(from.Code)
 	to.Write(from.Body.Bytes()) // NOTE: commit the response

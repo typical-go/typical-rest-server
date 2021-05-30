@@ -16,9 +16,9 @@ type (
 	CacheCfg struct {
 		DefaultMaxAge time.Duration `envconfig:"DEFAULT_MAX_AGE" default:"30s"`
 		PrefixKey     string        `envconfig:"PREFIX_KEY" default:"cache_"`
-		RedisHost     string        `envconfig:"REDIS_HOST" required:"true" default:"localhost"`
-		RedisPort     string        `envconfig:"REDIS_PORT" required:"true" default:"6379"`
-		RedisPass     string        `envconfig:"REDIS_PASS" default:"redispass"`
+		Host          string        `envconfig:"HOST" required:"true" default:"localhost"`
+		Port          string        `envconfig:"PORT" required:"true" default:"6379"`
+		Pass          string        `envconfig:"PASS" default:"redispass"`
 	}
 )
 
@@ -26,8 +26,8 @@ type (
 // @ctor
 func NewCacheStore(cfg *CacheCfg) *cachekit.Store {
 	client := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
-		Password: cfg.RedisPass,
+		Addr:     fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Password: cfg.Pass,
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

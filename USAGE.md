@@ -11,17 +11,9 @@
 | APP_DEBUG | true |  |
 | CACHE_DEFAULT_MAX_AGE | 30s |  |
 | CACHE_PREFIX_KEY | cache_ |  |
-| CACHE_REDIS_HOST | localhost | Yes |
-| CACHE_REDIS_PORT | 6379 | Yes |
-| CACHE_REDIS_PASS | redispass |  |
-| MYSQL_DBNAME | dbname | Yes |
-| MYSQL_DBUSER | dbuser | Yes |
-| MYSQL_DBPASS | dbpass | Yes |
-| MYSQL_HOST | localhost | Yes |
-| MYSQL_PORT | 9999 | Yes |
-| MYSQL_MAX_OPEN_CONNS | 30 | Yes |
-| MYSQL_MAX_IDLE_CONNS | 6 | Yes |
-| MYSQL_CONN_MAX_LIFETIME | 30m | Yes |
+| CACHE_HOST | localhost | Yes |
+| CACHE_PORT | 6379 | Yes |
+| CACHE_PASS | redispass |  |
 | PG_DBNAME | dbname | Yes |
 | PG_DBUSER | dbuser | Yes |
 | PG_DBPASS | dbpass | Yes |
@@ -39,17 +31,9 @@ APP_WRITE_TIMEOUT=10s
 APP_DEBUG=true
 CACHE_DEFAULT_MAX_AGE=30s
 CACHE_PREFIX_KEY=cache_
-CACHE_REDIS_HOST=localhost
-CACHE_REDIS_PORT=6379
-CACHE_REDIS_PASS=redispass
-MYSQL_DBNAME=dbname
-MYSQL_DBUSER=dbuser
-MYSQL_DBPASS=dbpass
-MYSQL_HOST=localhost
-MYSQL_PORT=9999
-MYSQL_MAX_OPEN_CONNS=30
-MYSQL_MAX_IDLE_CONNS=6
-MYSQL_CONN_MAX_LIFETIME=30m
+CACHE_HOST=localhost
+CACHE_PORT=6379
+CACHE_PASS=redispass
 PG_DBNAME=dbname
 PG_DBUSER=dbuser
 PG_DBPASS=dbpass

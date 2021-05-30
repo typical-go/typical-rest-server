@@ -46,10 +46,7 @@ var descriptor = typgo.Descriptor{
 		// pg
 		&typdb.PostgresTool{Name: "pg"},
 		// mysql
-		&typredis.RedisTool{
-			Name:    "cache",
-			EnvKeys: typredis.EnvKeysWithPrefix("CACHE_REDIS"),
-		},
+		&typredis.RedisTool{Name: "cache"},
 		// setup
 		&typgo.Task{
 			Name:  "setup",

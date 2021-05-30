@@ -9,10 +9,6 @@ import (
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 )
 
-var (
-	gmt, _ = time.LoadLocation("GMT")
-)
-
 func TestCreatePragma(t *testing.T) {
 	testcases := []struct {
 		testName string
