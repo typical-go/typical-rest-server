@@ -13,7 +13,6 @@ import (
 func init() {
 	typapp.Provide("", LoadAppCfg)
 	typapp.Provide("", LoadCacheCfg)
-	typapp.Provide("mysql", LoadMysqlDatabaseCfg)
 	typapp.Provide("pg", LoadPgDatabaseCfg)
 }
 
@@ -31,16 +30,6 @@ func LoadAppCfg() (*a.AppCfg, error) {
 func LoadCacheCfg() (*a.CacheCfg, error) {
 	var cfg a.CacheCfg
 	prefix := "CACHE"
-	if err := envconfig.Process(prefix, &cfg); err != nil {
-		return nil, fmt.Errorf("%s: %w", prefix, err)
-	}
-	return &cfg, nil
-}
-
-// LoadMysqlDatabaseCfg load env to new instance of DatabaseCfg
-func LoadMysqlDatabaseCfg() (*a.DatabaseCfg, error) {
-	var cfg a.DatabaseCfg
-	prefix := "MYSQL"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
 	}

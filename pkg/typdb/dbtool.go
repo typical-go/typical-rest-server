@@ -46,7 +46,7 @@ func (t *DBTool) Task() *typgo.Task {
 			{Name: "migration", Usage: "Create Migration file", Action: typgo.NewAction(t.MigrationFile)},
 			{Name: "rollback", Usage: "Rollback database", Action: typgo.NewAction(t.RollbackDB)},
 			{Name: "seed", Usage: "Seed database", Action: typgo.NewAction(t.SeedDB)},
-			{Name: "console", Usage: "Database client console", Action: typgo.NewAction(t.SeedDB)},
+			{Name: "console", Usage: "Database client console", Action: typgo.NewAction(t.Console)},
 		},
 	}
 	return task
@@ -63,10 +63,10 @@ func (t *DBTool) initDefault() {
 		t.MigrationSrc = fmt.Sprintf("database/%s/migration", t.Name)
 	}
 	if t.SeedSrc == "" {
-		t.SeedSrc = fmt.Sprintf("database/%s/migration", t.Name)
+		t.SeedSrc = fmt.Sprintf("database/%s/seed", t.Name)
 	}
 	if t.DockerName == "" {
-		t.DockerName = fmt.Sprintf("%s_%s", typgo.ProjectName, t.Name)
+		t.DockerName = fmt.Sprintf("%s-%s", typgo.ProjectName, t.Name)
 	}
 }
 

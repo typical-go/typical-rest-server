@@ -18,8 +18,8 @@ type (
 	// HealthCheck ...
 	HealthCheck struct {
 		dig.In
-		PG    *sql.DB `name:"pg"`
-		MySQL *sql.DB `name:"mysql"`
+		PG *sql.DB `name:"pg"`
+		// MySQL *sql.DB `name:"mysql"`
 		Cache *cachekit.Store
 	}
 )
@@ -47,8 +47,8 @@ func (h *HealthCheck) Handle(ec echo.Context) error {
 
 	health := restkit.HealthMap{
 		"postgres": h.PG.Ping(),
-		"mysql":    h.MySQL.Ping(),
-		"cache":    h.Cache.Ping(ctx).Err(),
+		// "mysql":    h.MySQL.Ping(),
+		"cache": h.Cache.Ping(ctx).Err(),
 	}
 
 	status, ok := health.Status()

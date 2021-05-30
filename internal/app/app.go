@@ -50,8 +50,8 @@ func Start(
 // Shutdown infra
 func Shutdown(p struct {
 	dig.In
-	Pg    *sql.DB `name:"pg"`
-	MySQL *sql.DB `name:"mysql"`
+	Pg *sql.DB `name:"pg"`
+	// MySQL *sql.DB `name:"mysql"`
 	Cache *cachekit.Store
 	Echo  *echo.Echo
 }) error {
@@ -62,7 +62,7 @@ func Shutdown(p struct {
 
 	errs := errkit.Errors{
 		p.Pg.Close(),
-		p.MySQL.Close(),
+		// p.MySQL.Close(),
 		p.Cache.Close(),
 		p.Echo.Shutdown(ctx),
 	}
