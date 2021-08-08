@@ -9,8 +9,8 @@ import (
 )
 
 func init() {
-	typapp.Provide("", a.NewEcho)
 	typapp.Provide("", a.NewCacheStore)
 	typapp.Provide("", a.NewDatabases)
+	typapp.Provide("", a.NewEcho)
 	typapp.Provide("", b.NewBookSvc)
 }

@@ -11,19 +11,9 @@ import (
 )
 
 func init() {
-	typapp.Provide("", LoadAppCfg)
 	typapp.Provide("", LoadCacheCfg)
 	typapp.Provide("pg", LoadPgDatabaseCfg)
-}
-
-// LoadAppCfg load env to new instance of AppCfg
-func LoadAppCfg() (*a.AppCfg, error) {
-	var cfg a.AppCfg
-	prefix := "APP"
-	if err := envconfig.Process(prefix, &cfg); err != nil {
-		return nil, fmt.Errorf("%s: %w", prefix, err)
-	}
-	return &cfg, nil
+	typapp.Provide("", LoadEchoCfg)
 }
 
 // LoadCacheCfg load env to new instance of CacheCfg
@@ -40,6 +30,16 @@ func LoadCacheCfg() (*a.CacheCfg, error) {
 func LoadPgDatabaseCfg() (*a.DatabaseCfg, error) {
 	var cfg a.DatabaseCfg
 	prefix := "PG"
+	if err := envconfig.Process(prefix, &cfg); err != nil {
+		return nil, fmt.Errorf("%s: %w", prefix, err)
+	}
+	return &cfg, nil
+}
+
+// LoadEchoCfg load env to new instance of EchoCfg
+func LoadEchoCfg() (*a.EchoCfg, error) {
+	var cfg a.EchoCfg
+	prefix := "APP"
 	if err := envconfig.Process(prefix, &cfg); err != nil {
 		return nil, fmt.Errorf("%s: %w", prefix, err)
 	}
