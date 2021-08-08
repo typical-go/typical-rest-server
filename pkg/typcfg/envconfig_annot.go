@@ -180,14 +180,18 @@ func createFields(structDecl *typgen.StructDecl, prefix string) []*Field {
 // CreateField create new instance of field
 func CreateField(prefix string, field *typgen.Field) *Field {
 	// NOTE: mimic kelseyhightower/envconfig struct tags
-
 	name := field.Get("envconfig")
 	if name == "" {
 		name = strings.ToUpper(field.Names[0])
 	}
 
+	key := name
+	if prefix != "" {
+		key = fmt.Sprintf("%s_%s", prefix, name)
+	}
+
 	return &Field{
-		Key:      fmt.Sprintf("%s_%s", prefix, name),
+		Key:      key,
 		Default:  field.Get("default"),
 		Required: field.Get("required") == "true",
 	}
@@ -200,7 +204,10 @@ func getCtorName(annot *typgen.Directive) string {
 func getPrefix(annot *typgen.Directive) string {
 	prefix := annot.TagParam.Get("prefix")
 	if prefix == "" {
-		prefix = strings.ToUpper(annot.GetName())
+		return strings.ToUpper(annot.GetName())
+	}
+	if prefix == "-" || prefix == "_" {
+		return ""
 	}
 	return prefix
 }

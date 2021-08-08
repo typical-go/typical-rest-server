@@ -108,6 +108,34 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 				},
 			},
 		},
+		{
+			TagName:  "@envconfig",
+			TagParam: `prefix:"-"`,
+			Decl: &typgen.Decl{
+				File: typgen.File{Package: "mypkg"},
+				Type: &typgen.StructDecl{
+					TypeDecl: typgen.TypeDecl{Name: "SomeSample"},
+					Fields: []*typgen.Field{
+						{Names: []string{"SomeField3"}, Type: "string", StructTag: `default:"some-text"`},
+						{Names: []string{"SomeField4"}, Type: "int", StructTag: `default:"9876"`},
+					},
+				},
+			},
+		},
+		{
+			TagName:  "@envconfig",
+			TagParam: `prefix:"_"`,
+			Decl: &typgen.Decl{
+				File: typgen.File{Package: "mypkg"},
+				Type: &typgen.StructDecl{
+					TypeDecl: typgen.TypeDecl{Name: "SomeSample"},
+					Fields: []*typgen.Field{
+						{Names: []string{"SomeField5"}, Type: "string", StructTag: `default:"some-text"`},
+						{Names: []string{"SomeField6"}, Type: "int", StructTag: `default:"9876"`},
+					},
+				},
+			},
+		},
 	}
 
 	require.NoError(t, a.Process(c, directives))
@@ -119,11 +147,15 @@ func TestCfgAnnotation_Annotate_GenerateDotEnvAndUsageDoc(t *testing.T) {
 	require.Equal(t, `some-template`, string(b))
 
 	b, _ = ioutil.ReadFile(a.GenDotEnv)
-	require.Equal(t, "SS_SOMEFIELD1=some-text\nSS_SOMEFIELD2=9876\n", string(b))
+	require.Equal(t, `SOMEFIELD3=some-text
+SOMEFIELD4=9876
+SOMEFIELD5=some-text
+SOMEFIELD6=9876
+SS_SOMEFIELD1=some-text
+SS_SOMEFIELD2=9876
+`, string(b))
 	require.Equal(t, "some-text", os.Getenv("SS_SOMEFIELD1"))
 	require.Equal(t, "9876", os.Getenv("SS_SOMEFIELD2"))
-
-	require.Equal(t, "> Generate @envconfig to folder/some-target\n> go build -o /bin/goimports golang.org/x/tools/cmd/goimports\n> New keys added in '.env33': SS_SOMEFIELD1 SS_SOMEFIELD2\n> Generate 'some-usage.md'\n", out.String())
 }
 
 func TestCfgAnnotation_Annotate_Predefined(t *testing.T) {
