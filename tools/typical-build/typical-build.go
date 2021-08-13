@@ -40,7 +40,7 @@ var descriptor = typgo.Descriptor{
 		&typmock.GoMock{},
 		// docker
 		&typdocker.DockerTool{
-			ComposeFiles: typdocker.ComposeFiles("deploy/docker"),
+			ComposeFiles: typdocker.ComposeFiles("deploy"),
 			EnvFile:      ".env",
 		},
 		// pg
