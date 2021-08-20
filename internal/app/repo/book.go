@@ -1,6 +1,4 @@
-package dbrepo
-
-/* DO NOT EDIT. This file generated due to '@dbrepo' annotation */
+package repo
 
 import (
 	"context"
@@ -8,20 +6,43 @@ import (
 	"fmt"
 	"time"
 
-	sq "github.com/Masterminds/squirrel"
-	"github.com/typical-go/typical-go/pkg/typapp"
-	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/pkg/dbtxn"
 	"github.com/typical-go/typical-rest-server/pkg/reflectkit"
 	"github.com/typical-go/typical-rest-server/pkg/sqkit"
 	"go.uber.org/dig"
+
+	sq "github.com/Masterminds/squirrel"
+)
+
+// TODO: create repo code generator from database table
+
+type (
+	Book struct {
+		ID        int64     `column:"id" option:"pk" json:"id"`
+		Title     string    `column:"title" json:"title"`
+		Author    string    `column:"author" json:"author"`
+		UpdatedAt time.Time `column:"updated_at" option:"now" json:"update_at"`
+		CreatedAt time.Time `column:"created_at" option:"now,no_update" json:"created_at"`
+	}
+	// @mock
+	BookRepo interface {
+		Count(context.Context, ...sqkit.SelectOption) (int64, error)
+		Find(context.Context, ...sqkit.SelectOption) ([]*Book, error)
+		Insert(context.Context, *Book) (int64, error)
+		BulkInsert(context.Context, ...*Book) (int64, error)
+		Delete(context.Context, ...sqkit.DeleteOption) (int64, error)
+		Update(context.Context, *Book, ...sqkit.UpdateOption) (int64, error)
+		Patch(context.Context, *Book, ...sqkit.UpdateOption) (int64, error)
+	}
+	BookRepoImpl struct {
+		dig.In
+		*sql.DB `name:"pg"`
+	}
 )
 
 var (
-	// BookTableName is table name for books entity
 	BookTableName = "books"
-	// BookTable is columns for books entity
-	BookTable = struct {
+	BookTable     = struct {
 		ID        string
 		Title     string
 		Author    string
@@ -36,26 +57,9 @@ var (
 	}
 )
 
-type (
-	// BookRepo to get books data from database
-	BookRepo interface {
-		Count(context.Context, ...sqkit.SelectOption) (int64, error)
-		Find(context.Context, ...sqkit.SelectOption) ([]*entity.Book, error)
-		Insert(context.Context, *entity.Book) (int64, error)
-		BulkInsert(context.Context, ...*entity.Book) (int64, error)
-		Delete(context.Context, sqkit.DeleteOption) (int64, error)
-		Update(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
-		Patch(context.Context, *entity.Book, sqkit.UpdateOption) (int64, error)
-	}
-	// BookRepoImpl is implementation books repository
-	BookRepoImpl struct {
-		dig.In
-		*sql.DB `name:"pg"`
-	}
-)
-
-func init() {
-	typapp.Provide("", NewBookRepo)
+// @ctor
+func NewBookRepo(impl BookRepoImpl) BookRepo {
+	return &impl
 }
 
 // Count books
@@ -65,7 +69,7 @@ func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (i
 		return -1, err
 	}
 	builder := sq.
-		Select("count(*)").
+		Select("count(1)").
 		From(BookTableName).
 		RunWith(txn)
 
@@ -82,13 +86,8 @@ func (r *BookRepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOption) (i
 	return cnt, nil
 }
 
-// NewBookRepo return new instance of BookRepo
-func NewBookRepo(impl BookRepoImpl) BookRepo {
-	return &impl
-}
-
 // Find books
-func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*entity.Book, err error) {
+func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (list []*Book, err error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return nil, err
@@ -114,9 +113,9 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 		return
 	}
 
-	list = make([]*entity.Book, 0)
+	list = make([]*Book, 0)
 	for rows.Next() {
-		ent := new(entity.Book)
+		ent := new(Book)
 		if err = rows.Scan(
 			&ent.ID,
 			&ent.Title,
@@ -132,7 +131,7 @@ func (r *BookRepoImpl) Find(ctx context.Context, opts ...sqkit.SelectOption) (li
 }
 
 // Insert books and return last inserted id
-func (r *BookRepoImpl) Insert(ctx context.Context, ent *entity.Book) (int64, error) {
+func (r *BookRepoImpl) Insert(ctx context.Context, ent *Book) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -168,7 +167,7 @@ func (r *BookRepoImpl) Insert(ctx context.Context, ent *entity.Book) (int64, err
 }
 
 // BulkInsert books and return affected rows
-func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Book) (int64, error) {
+func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*Book) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -204,7 +203,7 @@ func (r *BookRepoImpl) BulkInsert(ctx context.Context, ents ...*entity.Book) (in
 }
 
 // Update books
-func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Update(ctx context.Context, ent *Book, opts ...sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -218,7 +217,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.U
 		PlaceholderFormat(sq.Dollar).
 		RunWith(txn)
 
-	if opt != nil {
+	for _, opt := range opts {
 		builder = opt.CompileUpdate(builder)
 	}
 
@@ -233,7 +232,7 @@ func (r *BookRepoImpl) Update(ctx context.Context, ent *entity.Book, opt sqkit.U
 }
 
 // Patch books
-func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.UpdateOption) (int64, error) {
+func (r *BookRepoImpl) Patch(ctx context.Context, ent *Book, opts ...sqkit.UpdateOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -252,7 +251,7 @@ func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.Up
 	}
 	builder = builder.Set(BookTable.UpdatedAt, time.Now())
 
-	if opt != nil {
+	for _, opt := range opts {
 		builder = opt.CompileUpdate(builder)
 	}
 
@@ -268,7 +267,7 @@ func (r *BookRepoImpl) Patch(ctx context.Context, ent *entity.Book, opt sqkit.Up
 }
 
 // Delete books
-func (r *BookRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int64, error) {
+func (r *BookRepoImpl) Delete(ctx context.Context, opts ...sqkit.DeleteOption) (int64, error) {
 	txn, err := dbtxn.Use(ctx, r.DB)
 	if err != nil {
 		return -1, err
@@ -279,7 +278,7 @@ func (r *BookRepoImpl) Delete(ctx context.Context, opt sqkit.DeleteOption) (int6
 		PlaceholderFormat(sq.Dollar).
 		RunWith(txn)
 
-	if opt != nil {
+	for _, opt := range opts {
 		builder = opt.CompileDelete(builder)
 	}
 

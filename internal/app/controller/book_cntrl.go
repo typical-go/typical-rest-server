@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/typical-go/typical-rest-server/internal/app/repo"
 	"github.com/typical-go/typical-rest-server/internal/app/service"
-	"github.com/typical-go/typical-rest-server/internal/app/entity"
 	"github.com/typical-go/typical-rest-server/pkg/cachekit"
 	"github.com/typical-go/typical-rest-server/pkg/echokit"
 	"go.uber.org/dig"
 )
 
 type (
-	// BookCntrl is controller to book entity
+	// BookCntrl is controller to book repo
 	BookCntrl struct {
 		dig.In
 		Svc   service.BookSvc
@@ -36,7 +36,7 @@ func (c *BookCntrl) SetRoute(e echokit.Server) {
 
 // Create book
 func (c *BookCntrl) Create(ec echo.Context) (err error) {
-	var book entity.Book
+	var book repo.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (c *BookCntrl) Delete(ec echo.Context) (err error) {
 
 // Update book
 func (c *BookCntrl) Update(ec echo.Context) (err error) {
-	var book entity.Book
+	var book repo.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (c *BookCntrl) Update(ec echo.Context) (err error) {
 
 // Patch book
 func (c *BookCntrl) Patch(ec echo.Context) (err error) {
-	var book entity.Book
+	var book repo.Book
 	if err = ec.Bind(&book); err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ package service_mock
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	entity "github.com/typical-go/typical-rest-server/internal/app/entity"
+	repo "github.com/typical-go/typical-rest-server/internal/app/repo"
 	service "github.com/typical-go/typical-rest-server/internal/app/service"
 	reflect "reflect"
 )
@@ -36,10 +36,10 @@ func (m *MockBookSvc) EXPECT() *MockBookSvcMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockBookSvc) Create(arg0 context.Context, arg1 *entity.Book) (*entity.Book, error) {
+func (m *MockBookSvc) Create(arg0 context.Context, arg1 *repo.Book) (*repo.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(*entity.Book)
+	ret0, _ := ret[0].(*repo.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -80,10 +80,10 @@ func (mr *MockBookSvcMockRecorder) Find(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // FindOne mocks base method
-func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*entity.Book, error) {
+func (m *MockBookSvc) FindOne(arg0 context.Context, arg1 string) (*repo.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindOne", arg0, arg1)
-	ret0, _ := ret[0].(*entity.Book)
+	ret0, _ := ret[0].(*repo.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -95,10 +95,10 @@ func (mr *MockBookSvcMockRecorder) FindOne(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // Patch mocks base method
-func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *entity.Book) (*entity.Book, error) {
+func (m *MockBookSvc) Patch(arg0 context.Context, arg1 string, arg2 *repo.Book) (*repo.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Patch", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*entity.Book)
+	ret0, _ := ret[0].(*repo.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -110,10 +110,10 @@ func (mr *MockBookSvcMockRecorder) Patch(arg0, arg1, arg2 interface{}) *gomock.C
 }
 
 // Update mocks base method
-func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *entity.Book) (*entity.Book, error) {
+func (m *MockBookSvc) Update(arg0 context.Context, arg1 string, arg2 *repo.Book) (*repo.Book, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1, arg2)
-	ret0, _ := ret[0].(*entity.Book)
+	ret0, _ := ret[0].(*repo.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -45,7 +45,7 @@ var descriptor = typgo.Descriptor{
 		},
 		// pg
 		&typdb.PostgresTool{Name: "pg"},
-		// mysql
+		// cache
 		&typredis.RedisTool{Name: "cache"},
 		// setup
 		&typgo.Task{

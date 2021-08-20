@@ -43,7 +43,7 @@ Pragmatic Golang RESTful Server Implementation. The project using [typical-go](h
 - Others
   - [x] Database migration and seed tool
   - [x] Generate code, `.env` file and `USAGE.md` according the configuration (using `@envconfig` annotation)
-  - [x] Generate code for repository layer (using `@dbrepo` annotation)
+  - [ ] Generate code for repository layer
   - [x] Releaser
 
 
@@ -99,7 +99,7 @@ Source codes:
     - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object    
     - [`internal/app/controller`](internal/app/controller): presentation layer
     - [`internal/app/service`](internal/app/service): logic layer
-    - [`internal/app/entity`](internal/app/entity): data-access layer for database entity or domain model
+    - [`internal/app/repo`](internal/app/repo): data-access layer for database repo or domain model
   - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
 - [`pkg`](pkg): shareable codes e.g. helper/utitily Library
 - [`cmd`](cmd): the main package

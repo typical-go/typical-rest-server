@@ -50,7 +50,7 @@ func (r *{{.Name}}RepoImpl) Count(ctx context.Context, opts ...sqkit.SelectOptio
 		return -1, err
 	}
 	builder := sq.
-		Select("count(*)").
+		Select("count(1)").
 		From({{.Name}}TableName).
 		RunWith(txn)
 
