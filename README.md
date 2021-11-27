@@ -8,21 +8,21 @@
 
 > The project status is `WIP` (Work in progress) which means the author continously evaluate and improve the project.
 
-Pragmatic Golang RESTful Server Implementation. The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool. 
+Pragmatic Golang RESTful Server Implementation. The project using [typical-go](https://github.com/typical-go/typical-go) as its build-tool.
 
 - Application
-  - [x] [Go-Standards](https://github.com/golang-standards/project-layout) Project Layout 
+  - [x] [Go-Standards](https://github.com/golang-standards/project-layout) Project Layout
   - [x] Environment Variable Configuration
   - [x] Health-Check and Debug API
   - [x] Graceful Shutdown
 - Layered architecture
-  - [x] [SOLID Principle](https://en.wikipedia.org/wiki/SOLID) 
+  - [x] [SOLID Principle](https://en.wikipedia.org/wiki/SOLID)
   - [x] Dependency Injection (using `@ctor` annotation)
   - [x] ORMHate
   - [x] Database Transaction
 - HTTP Server
   - [x] [Echo framework](https://echo.labstack.com/)
-  - [x] Server Side Caching 
+  - [x] Server Side Caching
     - [x] Cache but revalidate (Header `Cache-Control: no-cache`)
     - [x] Set Expiration Time (Header `Cache-Control: max-age=120`)
     - [x] Return 304 if not modified (Header `If-Modified-Since: Sat, 31 Oct 2020 10:28:02 GMT`)
@@ -64,7 +64,7 @@ Setup the local environment
 
 Generate code by annotation (if any change required)
 ```bash
-./typicalw annotate
+./typicalw generate
 ```
 
 Build + Run application:
@@ -74,7 +74,7 @@ Build + Run application:
 
 Test application:
 ```bash
-./typicalw test        # run test 
+./typicalw test        # run test
 ```
 
 Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build/typical-build.go)
@@ -82,9 +82,9 @@ Project descriptor at [tools/typical-build/typical-build.go](tools/typical-build
 var descriptor = typgo.Descriptor{
   ProjectName:    "typical-rest-server",
   ProjectVersion: "0.9.7",
-  
+
   Tasks: []typgo.Tasker{
-    // tasks ... 
+    // tasks ...
   }
 }
 ```
@@ -95,26 +95,26 @@ Typical-Rest encourage [standard go project layout](https://github.com/golang-st
 
 Source codes:
 - [`internal`](internal): private codes for the project
-  - [`internal/app`](internal/app) 
-    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object    
+  - [`internal/app`](internal/app)
+    - [`internal/app/infra`](internal/app/infra): infrastructure for the project e.g. config and connection object
     - [`internal/app/controller`](internal/app/controller): presentation layer
     - [`internal/app/service`](internal/app/service): logic layer
     - [`internal/app/repo`](internal/app/repo): data-access layer for database repo or domain model
   - [`internal/generated`](internal/generated): code generated e.g. typical, grpc, xsd, etc.
-- [`pkg`](pkg): shareable codes e.g. helper/utitily Library
+- [`pkg`](pkg): shareable codes e.g. helper/utility Library
 - [`cmd`](cmd): the main package
 
 Others directory:
-- [`tools`](tool) Supporting tool for the project e.g. Build Tool
+- [`tools`](tools) Supporting tool for the project e.g. Build Tool
 - [`api`](api) Any related scripts for API e.g. api-model script (swagger, raml, etc) or client script
-- [`databases`](database) Any related scripts for Databases e.g. migration scripts and seed data
+- [`database`](database) Any related scripts for Databases e.g. migration scripts and seed data
 
 ## Dependency Injection
 
 Typical-Rest encourage [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) using [uber-dig](https://github.com/uber-go/dig) and annotations (`@ctor`).
 
 ```go
-// NewConn ... 
+// NewConn ...
 // @ctor
 func NewConn() *sql.DB{
 }
@@ -122,14 +122,14 @@ func NewConn() *sql.DB{
 
 Add import side-effect to make it work
 ```go
-import(
+import (
   _ "github.com/typical-go/typical-rest-server/internal/generated/ctor"
 )
 ```
 
 ## Application Config
 
-Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@envconfig`). 
+Typical-Rest encourage [application config with environment variables](https://12factor.net/config) using [envconfig](https://github.com/kelseyhightower/envconfig) and annotation (`@envconfig`).
 
 ```go
 type (
@@ -142,7 +142,7 @@ type (
 )
 ```
 
-Generate usage documentation ([USAGE.md](USAGE.md)) and .env file 
+Generate usage documentation ([USAGE.md](USAGE.md)) and .env file
 ```go
 // in typical-build
 
@@ -161,7 +161,7 @@ import(
 
 ## Mocking
 
-Typical-Rest encourage [mocking](https://en.wikipedia.org/wiki/Mock_object) using [gomock](https://github.com/golang/mock) and annotation(`@mock`). 
+Typical-Rest encourage [mocking](https://en.wikipedia.org/wiki/Mock_object) using [gomock](https://github.com/golang/mock) and annotation(`@mock`).
 
 ```go
 type(
@@ -180,7 +180,7 @@ Mock class will be generated in `*_mock` package
 In `Repository` layer
 ```go
 func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
-  txn, err := dbtxn.Use(ctx, r.DB) // use transaction if begin detected 
+  txn, err := dbtxn.Use(ctx, r.DB) // use transaction if begin detected
   if err != nil {                  // create transaction error
       return -1, err
   }
@@ -197,7 +197,7 @@ func (r *RepoImpl) Delete(ctx context.Context) (int64, error) {
 In `Service` layer
 ```go
 func (s *SvcImpl) SomeOperation(ctx context.Context) (err error){
-  // begin the transaction 
+  // begin the transaction
   txn := dbtxn.Begin(&ctx)
 
   // commit/rollback in end function

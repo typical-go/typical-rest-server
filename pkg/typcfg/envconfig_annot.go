@@ -18,9 +18,9 @@ type (
 	EnvconfigAnnot struct {
 		TagName   string // By default is `@envconfig`
 		Template  string // By default defined in defaultCfgTemplate variable
-		Target    string // By default is `cmd/PROJECT_NAME/envconfig_annotated.go`
+		Target    string // By default is `internal/generated/envcfg/envcfg.go`
 		GenDotEnv string // Dotenv path. It will be generated if not empty
-		GenDoc    string // Usage documentation path. It will be if not emtpy
+		GenDoc    string // Usage documentation path. It will be if not empty
 	}
 	// EnvconfigTmplData template
 	EnvconfigTmplData struct {
