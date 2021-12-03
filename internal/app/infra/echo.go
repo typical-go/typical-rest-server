@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	// AppCfg application configuration
+	// EchoCfg application configuration
 	// @envconfig (prefix:"APP")
 	EchoCfg struct {
 		Address      string        `envconfig:"ADDRESS" default:":8089" required:"true"`
