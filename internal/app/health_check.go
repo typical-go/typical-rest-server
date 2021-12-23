@@ -37,8 +37,26 @@ func (h *HealthCheck) Handle(ec echo.Context) error {
 		"cache":    h.Cache.Ping(ctx).Err(),
 	}
 
+	// See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.21
+	ec.Response().Header().Set("Expires", "0")
+
+	// See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.32
+	ec.Response().Header().Set("Pragma", "no-cache")
+
+	// See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+	ec.Response().Header().Set(
+		"Cache-Control",
+		"no-cache, no-store, must-revalidate",
+	)
+
 	status, ok := health.Status()
-	return ec.JSON(h.httpStatus(ok), h.response(status))
+	code := h.httpStatus(ok)
+
+	if ec.Request().Method == http.MethodHead {
+		return ec.NoContent(code)
+	} else {
+		return ec.JSON(code, h.response(status))
+	}
 }
 
 func (h *HealthCheck) httpStatus(ok bool) int {
